@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { useAuth } from '../auth/AuthContext';
 
-export const Login: React.FC = () => {
+interface LoginProps {
+  onLogin: (username: string, password: string) => Promise<boolean>;
+}
+
+export const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
     try {
-      const success = await login(username, password);
+      const success = await onLogin(username, password);
       if (!success) {
         setError('Invalid credentials');
       }

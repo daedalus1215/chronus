@@ -1,45 +1,34 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./auth/useAuth";
+import { HomePage } from "./pages/HomePage/HomePage";
+import { LoginPage } from "./pages/LoginPage/LoginPage";
+import { ProtectedRoute } from "./router/ProtectedRoute";
 import "./App.css";
-import { useAuth } from "./auth/AuthContext";
-import { Login } from "./components/Login";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
+  console.log('App render - isAuthenticated:', isAuthenticated);
 
-  if (isAuthenticated) {
-    return (
-      <>
-        <div>
-          <a href="https://vite.dev" target="_blank">
-            <img src={viteLogo} className="logo" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" target="_blank">
-            <img src={reactLogo} className="logo react" alt="React logo" />
-          </a>
-        </div>
-        <h1>Chronus</h1>
-        <div className="card">
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </button>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test HMR
-          </p>
-        </div>
-        <p className="read-the-docs">
-          Click on the Vite and React logos to learn more
-        </p>
-        <div>
-          <button onClick={logout}>Sign out</button>
-        </div>
-      </>
-    );
-  }
-
-  return <Login />;
+  return (
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
