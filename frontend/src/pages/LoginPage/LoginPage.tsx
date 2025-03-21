@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Login } from './components/Login';
 import { useAuth } from '../../auth/useAuth';
+import styles from './LoginPage.module.css';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,8 +28,8 @@ export const LoginPage: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="login-page">
-      <h1>Welcome to Chronus</h1>
+    <div className={styles.loginPage}>
+      <h1 className={styles.title}>Chronus</h1>
       <Login onLogin={handleLogin} />
     </div>
   );

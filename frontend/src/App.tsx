@@ -2,7 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { useAuth } from "./auth/useAuth";
 import { HomePage } from "./pages/HomePage/HomePage";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage/RegisterPage";
 import { ProtectedRoute } from "./router/ProtectedRoute";
+import { Layout } from "./components/Layout/Layout";
 import "./App.css";
 
 function App() {
@@ -11,22 +13,30 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
-          }
-        />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
+            }
+          />
+        </Routes>
+      </Layout>
     </Router>
   );
 }

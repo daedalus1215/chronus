@@ -12,6 +12,7 @@ interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
+  register: (username: string, password: string) => Promise<boolean>;
 }
 
 interface JwtPayload {
@@ -82,6 +83,21 @@ export const useAuthProvider = () => {
     setUser(null);
   }, []);
 
+  const register = useCallback(async (username: string, password: string): Promise<boolean> => {
+    try {
+      console.log('Making registration request...');
+      await axios.post('http://localhost:3000/users/register', {
+        username,
+        password,
+      });
+      console.log('Registration successful');
+      return true;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      return false;
+    }
+  }, []);
+
   // Update authentication status if token changes in another tab/window
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
@@ -116,6 +132,7 @@ export const useAuthProvider = () => {
     user,
     login,
     logout,
+    register,
   };
 };
 
