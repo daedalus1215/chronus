@@ -1,8 +1,9 @@
 import React from 'react';
 import { useAuth } from '../../auth/useAuth';
 import { NoteListView } from './components/NoteListView';
+import styles from './HomePage.module.css';
 
-export const HomePage: React.FC = () => {
+export function HomePage() {
   const { user } = useAuth();
 
   if (!user) {
@@ -10,15 +11,16 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="home-page">
-      <header className="home-header">
-        <div>
-          <p className="welcome-text">Welcome, {user.username}!</p>
-        </div>
+    <div className={styles.homePage}>
+      <header className={styles.homeHeader}>
+        <p className={styles.welcomeText}>Welcome, {user.username}!</p>
       </header>
-      <main>
+      <main className={styles.main}>
         <NoteListView userId={user.id} />
       </main>
+      <button className={styles.fab} aria-label="Create new note">
+        +
+      </button>
     </div>
   );
-}; 
+} 

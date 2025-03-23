@@ -1,0 +1,61 @@
+.noteListItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #111;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+  transition: background-color 0.2s, border-left-color 0.2s;
+}
+
+.noteListItem:hover {
+  background-color: #1a1a1a;
+}
+
+.noteListItem.memo {
+  border-left-color: #6366f1;
+}
+
+.noteListItem.note {
+  border-left-color: #10b981;
+}
+
+.noteName {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.noteType {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
+}
+
+.noteTime {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.noteActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.actionButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+} 

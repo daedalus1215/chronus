@@ -39,6 +39,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <Link to="/memos" className={styles.navItem}>
             <span className={styles.navText}>Memos</span>
           </Link>
+          <Link to="/tags" className={styles.navItem}>
+            <span className={styles.navText}>Tags</span>
+          </Link>
         </nav>
       </aside>
     </>
