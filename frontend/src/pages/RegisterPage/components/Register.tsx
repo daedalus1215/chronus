@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Register.module.css';
+import { Logo } from '../../../components/Logo/Logo';
 
 interface RegisterProps {
   onRegister: (username: string, password: string) => Promise<boolean>;
@@ -34,7 +35,7 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
   return (
     <div className={styles.registerContainer}>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <h2>Register</h2>
+        <h2 className={styles.title}><Logo height={75} /><span>Register</span></h2>
         {error && <div className={styles.error}>{error}</div>}
         <div className={styles.formGroup}>
           <label htmlFor="username">Username</label>

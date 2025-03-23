@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Sidebar.module.css';
-import logo from '/public/chronus1.svg'
+import { Logo } from '../../../Logo/Logo';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -21,7 +21,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.header}>
           <Link to="/" className={styles.brand}>
-            <img src={logo} alt="Chronus Logo" className={styles.logo} />
+            <Logo />
             <span className={styles.name}>Chronus</span>
           </Link>
           <button className={styles.closeButton} onClick={onClose}>

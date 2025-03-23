@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../auth/useAuth';
 import { Sidebar } from './Sidebar/Sidebar';
 import styles from './Header.module.css';
+import { Logo } from '../../Logo/Logo';
 
 export const Header: React.FC = () => {
   const { logout } = useAuth();
@@ -23,7 +24,7 @@ export const Header: React.FC = () => {
       <header className={styles.header}>
         <div className={styles.container}>
           <button onClick={toggleSidebar} className={styles.brand}>
-            <img src="/chronus1.svg" alt="Chronus Logo" className={styles.logo} />
+            <Logo />
             <span className={styles.name}>Chronus</span>
           </button>
           <button 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './LandingPage.module.css';
+import { Logo } from '../../components/Logo/Logo';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -9,11 +10,12 @@ export const LandingPage: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.logoSection}>
-          <img src="/chronus1.svg" alt="Chronus Logo" className={styles.logo} />
+          <Logo height={350} />
         </div>
+
         <div className={styles.actionSection}>
           <h1 className={styles.title}>Chronus</h1>
-          <h2 className={styles.subtitle}>Join today.</h2>
+          <h2 className={styles.subtitle}>Join today</h2>
           
           <div className={styles.buttonGroup}>
             <button 
@@ -35,6 +37,7 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   );

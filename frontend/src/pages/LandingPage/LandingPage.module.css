@@ -7,10 +7,9 @@
 
 .content {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem;
   display: flex;
-  gap: 4rem;
   align-items: center;
 }
 
@@ -21,14 +20,8 @@
   align-items: center;
 }
 
-.logo {
-  width: 380px;
-  height: auto;
-  filter: brightness(0) invert(1); /* Make SVG white */
-}
-
 .actionSection {
-  flex: 1;
+  flex: 9;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -38,12 +31,14 @@
   font-size: 4rem;
   font-weight: 700;
   margin: 0;
+  max-width: 300px;
   line-height: 1.2;
 }
 
 .subtitle {
   font-size: 2rem;
   font-weight: 700;
+  max-width: 300px;
   margin: 0;
 }
 
@@ -125,10 +120,6 @@
     flex-direction: column;
     gap: 2rem;
     padding: 1rem;
-  }
-
-  .logo {
-    width: 250px;
   }
 
   .title {
