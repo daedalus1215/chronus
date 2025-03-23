@@ -3,6 +3,7 @@ import { useAuth } from "./auth/useAuth";
 import { HomePage } from "./pages/HomePage/HomePage";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage/RegisterPage";
+import { LandingPage } from "./pages/LandingPage/LandingPage";
 import { ProtectedRoute } from "./router/ProtectedRoute";
 import { Layout } from "./components/Layout/Layout";
 import "./App.css";
@@ -18,9 +19,13 @@ function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
+              isAuthenticated ? (
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              ) : (
+                <LandingPage />
+              )
             }
           />
           <Route

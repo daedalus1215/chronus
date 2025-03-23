@@ -2,9 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Register } from './components/Register';
 import { useAuth } from '../../auth/useAuth';
+import logo from '../../../public/chronus1.svg';
 import styles from './RegisterPage.module.css';
 
-export const RegisterPage: React.FC = () => {
+export function RegisterPage() {
   const navigate = useNavigate();
   const { register, isAuthenticated } = useAuth();
 
@@ -34,8 +35,11 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div className={styles.registerPage}>
-      <h1 className={styles.title}>Create an Account</h1>
+      <h1 className={styles.title}>
+        <img src={logo} alt="Chronus Logo" className={styles.logo} />
+        Create your account
+      </h1>
       <Register onRegister={handleRegister} />
     </div>
   );
-}; 
+} 

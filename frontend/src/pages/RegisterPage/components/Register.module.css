@@ -1,16 +1,23 @@
 .registerContainer {
+  width: 100%;
   max-width: 400px;
-  margin: 2rem auto;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: white;
+  border-radius: 16px;
+  background-color: #111;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.form h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .formGroup {
@@ -20,58 +27,61 @@
 }
 
 .formGroup label {
+  color: #e5e7eb;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #333;
 }
 
 .formGroup input {
   padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  background-color: #1a1a1a;
+  color: #fff;
   font-size: 1rem;
+  transition: border-color 0.2s;
 }
 
 .formGroup input:focus {
   outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+  border-color: #6366f1;
 }
 
 .error {
-  color: #dc2626;
-  background-color: #fee2e2;
-  padding: 0.75rem;
-  border-radius: 4px;
+  color: #ef4444;
+  font-size: 0.875rem;
   margin-bottom: 1rem;
 }
 
 .submitButton {
-  background-color: #0066cc;
-  color: white;
-  padding: 0.75rem;
+  width: 100%;
+  padding: 0.875rem;
+  border-radius: 9999px;
   border: none;
-  border-radius: 4px;
+  background-color: #6366f1;
+  color: #fff;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .submitButton:hover {
-  background-color: #0052a3;
+  background-color: #4f46e5;
 }
 
 .loginLink {
-  text-align: center;
   margin-top: 1.5rem;
-  color: #666;
+  text-align: center;
+  color: #9ca3af;
 }
 
 .loginLink a {
-  color: #0066cc;
+  color: #6366f1;
   text-decoration: none;
-  margin-left: 0.5rem;
+  font-weight: 500;
 }
 
 .loginLink a:hover {
-  text-decoration: underline;
+  color: #4f46e5;
 } 

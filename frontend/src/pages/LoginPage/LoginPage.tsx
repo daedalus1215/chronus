@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Login } from './components/Login';
 import { useAuth } from '../../auth/useAuth';
+import logo from '../../../public/chronus1.svg';
 import styles from './LoginPage.module.css';
 
 export const LoginPage: React.FC = () => {
@@ -29,8 +30,11 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className={styles.loginPage}>
-      <h1 className={styles.title}>Chronus</h1>
+      <h1 className={styles.title}>
+        <img src={logo} alt="Chronus Logo" className={styles.logo} />
+        Sign in to Chronus
+      </h1>
       <Login onLogin={handleLogin} />
     </div>
   );
-}; 
+} 
