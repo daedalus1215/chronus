@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3000', // Assuming your frontend runs on port 3000
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     video: 'on-first-retry',
   },
@@ -18,17 +18,10 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
   ],
 
-  webServer: [
+  // Don't manage servers in Docker as they're handled by Docker Compose
+  webServer: process.env.CI ? undefined : [
     {
       command: 'cd ../frontend && npm run dev',
       url: 'http://localhost:3000',

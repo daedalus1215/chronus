@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Register } from './components/Register';
 import { useAuth } from '../../auth/useAuth';
-import logo from '../../../public/chronus1.svg';
+import logo from '/public/chronus1.svg';
 import styles from './RegisterPage.module.css';
 
 export function RegisterPage() {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Login } from './components/Login';
 import { useAuth } from '../../auth/useAuth';
-import logo from '../../../public/chronus1.svg';
+import logo from '/public/chronus1.svg';
 import styles from './LoginPage.module.css';
 
 export const LoginPage: React.FC = () => {

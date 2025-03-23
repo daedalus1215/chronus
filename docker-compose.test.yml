@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.test
+    environment:
+      NODE_ENV: test
+      DATABASE_URL: "file:/app/data/test.db"
+      JWT_SECRET: test_secret_key
+    ports:
+      - "3002:3001"
+    volumes:
+      - ./backend/data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.test
+    environment:
+      VITE_API_URL: http://backend:3001
+    ports:
+      - "3003:3000"
+    depends_on:
+      - backend
+
+  e2e:
+    build:
+      context: ./e2e
+      dockerfile: Dockerfile
+    environment:
+      PLAYWRIGHT_BASE_URL: http://frontend:3000
+    depends_on:
+      - frontend
+      - backend
+    volumes:
+      - ./e2e/test-results:/e2e/test-results
+      - ./e2e/playwright-report:/e2e/playwright-report 

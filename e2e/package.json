@@ -9,13 +9,15 @@
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
     "show-report": "playwright show-report"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "E2E tests for the application",
+  "description": "E2E tests for Chronus application",
   "devDependencies": {
-    "@playwright/test": "^1.42.1"
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.24"
   }
 }

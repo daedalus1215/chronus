@@ -13,7 +13,6 @@ export const HomePage: React.FC = () => {
     <div className="home-page">
       <header className="home-header">
         <div>
-          <h1>Chronus Notes</h1>
           <p className="welcome-text">Welcome, {user.username}!</p>
         </div>
       </header>
