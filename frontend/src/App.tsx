@@ -1,49 +1,50 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./auth/useAuth";
-import { HomePage } from "./pages/HomePage/HomePage";
-import { LoginPage } from "./pages/LoginPage/LoginPage";
-import { RegisterPage } from "./pages/RegisterPage/RegisterPage";
-import { LandingPage } from "./pages/LandingPage/LandingPage";
-import { ProtectedRoute } from "./router/ProtectedRoute";
-import { Layout } from "./components/Layout/Layout";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './auth/AuthContext';
+import { useAuth } from './auth/useAuth';
+import { HomePage } from './pages/HomePage/HomePage';
+import { LoginPage } from './pages/LoginPage/LoginPage';
+import { RegisterPage } from './pages/RegisterPage/RegisterPage';
+import { LandingPage } from './pages/LandingPage/LandingPage';
+import { NotePage } from './pages/NotePage/NotePage';
+import { Header } from './components/Layout/Header/Header';
 
-function App() {
+function AppRoutes() {
   const { isAuthenticated } = useAuth();
-  console.log('App render - isAuthenticated:', isAuthenticated);
+
+  if (isAuthenticated) {
+    return (
+      <>
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/notes/:id" element={<NotePage />} />
+          {/* Redirect authenticated users trying to access auth pages */}
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          <Route path="/register" element={<Navigate to="/" replace />} />
+          {/* Catch all other routes and redirect to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </>
+    );
+  }
 
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <ProtectedRoute>
-                  <HomePage />
-                </ProtectedRoute>
-              ) : (
-                <LandingPage />
-              )
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
-            }
-          />
-        </Routes>
-      </Layout>
-    </Router>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      {/* Redirect unauthenticated users trying to access protected pages */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
   );
 }
 
-export default App;
+export function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
+  );
+}

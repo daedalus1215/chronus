@@ -2,18 +2,12 @@
   min-height: 100vh;
   background-color: #000;
   color: #fff;
-  padding-top: 64px; /* Height of the header */
+  /* padding-top: 64px; Height of the header */
 }
 
 .homeHeader {
   padding: 1rem;
   border-bottom: 1px solid #2f3336;
-}
-
-.welcomeText {
-  color: #9ca3af;
-  font-size: 0.875rem;
-  margin: 0;
 }
 
 .main {

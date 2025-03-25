@@ -1,0 +1,64 @@
+.notePage {
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  padding: calc(64px + 2rem) 1rem 2rem; /* Account for header height */
+}
+
+.noteHeader {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #111;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.noteTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  color: #fff;
+}
+
+.noteMetadata {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+.noteDate {
+  color: #6b7280;
+}
+
+.tagList {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 0.25rem 0.75rem;
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.noteLoading,
+.noteError {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: #111;
+  border-radius: 12px;
+}
+
+.noteError {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+} 

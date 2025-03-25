@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './NoteItem.module.css';
 
-type Note = {
+interface Note {
   id: number;
   name: string;
   userId: string;
@@ -10,11 +10,11 @@ type Note = {
   createdAt?: string;
 }
 
-type NoteItemProps = {
+interface NoteItemProps {
   note: Note;
 }
 
-export const NoteItem:React.FC<NoteItemProps> = ({ note }) => {
+export function NoteItem({ note }: NoteItemProps) {
   const navigate = useNavigate();
   const timeAgo = note.createdAt ? '39m' : ''; // This should be calculated from note.createdAt
 
@@ -55,4 +55,4 @@ export const NoteItem:React.FC<NoteItemProps> = ({ note }) => {
       </div>
     </div>
   );
-} 
+}

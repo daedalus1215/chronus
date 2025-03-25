@@ -2,9 +2,10 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { NoteTagRepository } from 'src/notes/infra/repositories/note-tag.repository';
 
 @Controller('notes')
-export class getNoteNamesByUserIdAction {
+export class GetNoteNamesByUserIdAction {
   constructor(private readonly noteRepository: NoteTagRepository) {}
 
+  //@TODO: change to something like names/userId/:userId
   @Get(':userId/names')
   async apply(@Param('userId') userId: string): Promise<{name:string, id:number}[]> {
     return await this.noteRepository.getNoteNamesByUserId(userId);

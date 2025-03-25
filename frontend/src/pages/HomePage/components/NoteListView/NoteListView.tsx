@@ -1,13 +1,13 @@
 import React from 'react';
-import { useNotes } from '../../../../hooks/useNotes';
-import { NoteItem } from './NoteItem';
+import { useNotes } from '../../hooks/useNotes';
+import { NoteItem } from './NoteItem/NoteItem';
 import styles from './NoteListView.module.css';
 
-interface NoteListViewProps {
+type NoteListViewProps = {
   userId: string;
 }
 
-export function NoteListView({ userId }: NoteListViewProps) {
+export const NoteListView:React.FC<NoteListViewProps> = ({ userId }) => {
   const { notes, isLoading, error } = useNotes(userId);
 
   if (isLoading) {

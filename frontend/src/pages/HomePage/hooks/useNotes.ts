@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface Note {
+  id: number;
   name: string;
   userId: string;
   isMemo: boolean;

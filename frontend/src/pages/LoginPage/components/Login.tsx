@@ -6,15 +6,17 @@ import { Logo } from '../../../components/Logo/Logo';
 interface LoginProps {
   onLogin: (username: string, password: string) => Promise<boolean>;
 }
- 
-export const Login: React.FC<LoginProps> = ({ onLogin }) => {
+
+export function Login({ onLogin }: LoginProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
     
     try {
       const success = await onLogin(username, password);
@@ -23,6 +25,8 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
       }
     } catch {
       setError('An error occurred during login');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -42,6 +46,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            disabled={isSubmitting}
           />
         </div>
         <div className={styles.formGroup}>
@@ -52,13 +57,20 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={isSubmitting}
           />
         </div>
-        <button type="submit" className={styles.submitButton}>Login</button>
+        <button 
+          type="submit" 
+          className={styles.submitButton}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Logging in...' : 'Login'}
+        </button>
       </form>
       <div className={styles.registerLink}>
         Don't have an account? <Link to="/register">Register here</Link>
       </div>
     </div>
   );
-}; 
+} 
