@@ -4,7 +4,9 @@ import axios from 'axios';
 export type Note = {
   id: number;
   name: string;
+  description?: string;
   userId: string;
+  isMemo: boolean;
   createdAt: string;
   updatedAt: string;
   tags: Array<{
@@ -13,7 +15,7 @@ export type Note = {
   }>;
 };
 
-export const useNote = (noteId: string) => {
+export const useNote = (noteId: number) => {
   const [note, setNote] = useState<Note | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,5 +40,21 @@ export const useNote = (noteId: string) => {
     }
   }, [noteId]);
 
-  return { note, isLoading, error };
+  const updateNote = async (updatedNote: Partial<Note>) => {
+    if (!note) return;
+    
+    try {
+      const response = await axios.patch<Note>(
+        `http://localhost:3000/notes/${note.id}`,
+        updatedNote
+      );
+      setNote(response.data);
+      return response.data;
+    } catch (err) {
+      console.error('Error updating note:', err);
+      throw new Error('Failed to update note');
+    }
+  };
+
+  return { note, isLoading, error, updateNote };
 }; 

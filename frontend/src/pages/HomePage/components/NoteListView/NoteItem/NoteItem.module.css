@@ -6,11 +6,27 @@
   background-color: #111;
   border-radius: 8px;
   border-left: 4px solid transparent;
-  transition: background-color 0.2s, border-left-color 0.2s;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  outline: none;
 }
 
 .noteListItem:hover {
   background-color: #1a1a1a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.noteListItem:active {
+  transform: translateY(0px);
+  background-color: #222;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.noteListItem:focus-visible {
+  box-shadow: 0 0 0 2px #6366f1;
 }
 
 .noteListItem.memo {
@@ -19,6 +35,14 @@
 
 .noteListItem.note {
   border-left-color: #10b981;
+}
+
+.noteListItem.memo:hover {
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.noteListItem.note:hover {
+  background-color: rgba(16, 185, 129, 0.1);
 }
 
 .noteName {
@@ -52,10 +76,18 @@
   background-color: transparent;
   color: #9ca3af;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  z-index: 2;
 }
 
 .actionButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
   color: #fff;
+  transform: scale(1.1);
+}
+
+.actionButton:active {
+  transform: scale(0.95);
+  background-color: rgba(255, 255, 255, 0.2);
 } 

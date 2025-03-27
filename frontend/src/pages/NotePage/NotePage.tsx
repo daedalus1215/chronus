@@ -1,55 +1,64 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useNote } from './hooks/useNote';
+import { NoteEditor } from './components/NoteEditor/NoteEditor';
 import styles from './NotePage.module.css';
 
-export const NotePage:React.FC = () => {
+export const NotePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { note, isLoading, error } = useNote(id || '');
+  const navigate = useNavigate();
+  const { note, isLoading, error, updateNote } = useNote(Number(id));
+  const [isSaving, setIsSaving] = React.useState(false);
 
   if (isLoading) {
     return (
-      <div className={styles.notePage}>
-        <div className={styles.noteLoading}>Loading note...</div>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner} />
+        Loading note...
       </div>
     );
   }
 
-  if (error) {
+  if (error || !note) {
     return (
-      <div className={styles.notePage}>
-        <div className={styles.noteError}>{error}</div>
+      <div className={styles.errorContainer}>
+        <h2>Error loading note</h2>
+        <p>{error || 'Note not found'}</p>
+        <button 
+          onClick={() => navigate(-1)}
+          className={styles.backButton}
+        >
+          Go back
+        </button>
       </div>
     );
   }
 
-  if (!note) {
-    return (
-      <div className={styles.notePage}>
-        <div className={styles.noteError}>Note not found</div>
-      </div>
-    );
-  }
+  const handleSave = async (updatedNote: Partial<typeof note>) => {
+    setIsSaving(true);
+    try {
+      await updateNote(updatedNote);
+    } catch (err) {
+      console.error('Failed to save note:', err);
+      // You might want to show an error toast here
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
-    <div className={styles.notePage}>
-      <div className={styles.noteHeader}>
-        <h1 className={styles.noteTitle}>{note.name}</h1>
-        <div className={styles.noteMetadata}>
-          <span className={styles.noteDate}>
-            {new Date(note.createdAt).toLocaleDateString()}
-          </span>
-          {note.tags.length > 0 && (
-            <div className={styles.tagList}>
-              {note.tags.map((tag) => (
-                <span key={tag.id} className={styles.tag}>
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+    <div className={styles.pageContainer}>
+      <button 
+        onClick={() => navigate(-1)}
+        className={styles.backButton}
+      >
+        ← Back
+      </button>
+      <NoteEditor 
+        note={note}
+        onSave={handleSave}
+        isLoading={isSaving}
+      />
     </div>
   );
-} 
+}; 
