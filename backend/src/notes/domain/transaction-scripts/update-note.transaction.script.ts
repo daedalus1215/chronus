@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Note } from "../entities/notes/note.entity";
+import { Memo } from "../entities/notes/memo.entity";
 import { UpdateNoteDto } from "src/notes/apps/dtos/requests/update-note.dto";
 import { NoteTagRepository } from "../../infra/repositories/note-tag.repository";
+import { NoteResponseDto } from "../../apps/dtos/responses/note.response.dto";
 
 @Injectable()
 export class UpdateNoteTransactionScript {
@@ -9,7 +11,7 @@ export class UpdateNoteTransactionScript {
     private readonly noteRepository: NoteTagRepository
   ) {}
 
-  async apply(id: number, updateNoteDto: UpdateNoteDto): Promise<Note> {
+  async apply(id: number, updateNoteDto: UpdateNoteDto): Promise<NoteResponseDto> {
     let note = await this.noteRepository.findById(id);
 
     if (!note) {
@@ -20,7 +22,11 @@ export class UpdateNoteTransactionScript {
       note.name = updateNoteDto.name;
     }
 
-    if (updateNoteDto?.description) {
+    if (updateNoteDto?.description !== undefined) {
+      // Create memo if it doesn't exist
+      if (!note.memo) {
+        note.memo = new Memo();
+      }
       note.memo.description = updateNoteDto.description;
     }
 
@@ -38,7 +44,8 @@ export class UpdateNoteTransactionScript {
       await this.addTags(newTags, note);
     }
 
-    return await this.noteRepository.save(note);
+    const savedNote = await this.noteRepository.save(note);
+    return new NoteResponseDto(savedNote);
   }
 
   private async addTags(newTags: string[], note: Note) {

@@ -10,17 +10,21 @@ import { Module } from "@nestjs/common";
 import { NoteTagRepository } from "./infra/repositories/note-tag.repository";
 import { GetNoteByIdAction } from './apps/actions/get-note-by-id.action';
 import { GetNoteByIdTransactionScript } from './domain/transaction-scripts/get-note-by-id.transaction.script';
+import { UpdateNoteAction } from "./apps/actions/update-note.action";
+import { UpdateNoteTransactionScript } from "./domain/transaction-scripts/update-note.transaction.script";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo, Tag, TagNote])],
   controllers: [
     GetNoteNamesByUserIdAction,
     CreateNoteAction,
-    GetNoteByIdAction
+    GetNoteByIdAction,
+    UpdateNoteAction
   ],
   providers: [
     CreateNoteTransactionScript,
     GetNoteByIdTransactionScript,
+    UpdateNoteTransactionScript,
     NoteTagRepository,
   ],
   exports: [NoteTagRepository]

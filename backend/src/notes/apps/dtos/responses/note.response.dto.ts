@@ -24,6 +24,9 @@ export class NoteResponseDto {
   @ApiProperty({ type: [Tag] })
   tags: Tag[];
 
+  @ApiProperty()
+  description: string;
+
   constructor(note: Note) {
     this.id = note.id;
     this.name = note.name;
@@ -31,6 +34,7 @@ export class NoteResponseDto {
     this.userId = note.userId;
     this.createdAt = new Date(note.createdAt);
     this.updatedAt = new Date(note.updatedAt);
+    this.description = note.memo?.description || '';
     this.tags = note.tags;
   }
 } 

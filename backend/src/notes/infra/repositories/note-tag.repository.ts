@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Note } from '../../domain/entities/notes/note.entity';
 import { Tag } from '../../domain/entities/tag/tag.entity';
+import { Memo } from '../../domain/entities/notes/memo.entity';
 
 //@TODO: We probably want to break this repo up into two separate ones.
 @Injectable()
@@ -11,17 +12,25 @@ export class NoteTagRepository {
         @InjectRepository(Note)
         private readonly repository: Repository<Note>,
         @InjectRepository(Tag)
-        private readonly tagRepository: Repository<Tag>
+        private readonly tagRepository: Repository<Tag>,
+        @InjectRepository(Memo)
+        private readonly memoRepository: Repository<Memo>
     ) {}
 
     async findById(id: number): Promise<Note | null> {
-        return this.repository.findOne({
-            where: { id },
-            relations: ["tags"]
-        });
+        return this.repository
+            .createQueryBuilder('note')
+            .leftJoinAndSelect('note.memo', 'memo')
+            .leftJoinAndSelect('note.tags', 'tags')
+            .where('note.id = :id', { id })
+            .getOne();
     }
 
     async save(note: Note): Promise<Note> {
+        // If there's a memo, save it first
+        if (note.memo) {
+            note.memo = await this.memoRepository.save(note.memo);
+        }
         return this.repository.save(note);
     }
 
@@ -47,5 +56,5 @@ export class NoteTagRepository {
           .getRawMany();
     
         return notes.map((note) => ({name:note.name, id:note.id}));
-      }
+    }
 } 

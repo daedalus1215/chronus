@@ -44,9 +44,10 @@ export const useNote = (noteId: number) => {
     if (!note) return;
     
     try {
+      const { name, description, tags } = updatedNote;
       const response = await axios.patch<Note>(
-        `http://localhost:3000/notes/${note.id}`,
-        updatedNote
+        `http://localhost:3000/notes/detail/${note.id}`,
+        { name, description, tags }
       );
       setNote(response.data);
       return response.data;
