@@ -3,19 +3,19 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CreateNoteDto } from "src/notes/apps/dtos/requests/create-note.dto";
 import { Memo } from "src/notes/domain/entities/notes/memo.entity";
 import { Note } from "src/notes/domain/entities/notes/note.entity";
-import { NoteTagRepository } from "src/notes/infra/repositories/note-tag.repository";
+import { NoteMemoTagRepository } from "src/notes/infra/repositories/note-memo-tag.repository";
 import { Repository } from "typeorm";
 
 @Injectable()
 export class CreateNoteTransactionScript {
   constructor(
     @InjectRepository(Note)
-    private noteTagRepository: NoteTagRepository,
+    private noteTagRepository: NoteMemoTagRepository,
     @InjectRepository(Memo)
     private memoRepository: Repository<Memo>
   ) {}
 
-  async apply(createNoteDto: CreateNoteDto): Promise<Note> {
+  async apply(createNoteDto: CreateNoteDto & {userId:string}): Promise<Note> {
     const { name, userId, isMemo } = createNoteDto;
 
     const note = new Note();

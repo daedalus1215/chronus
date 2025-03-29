@@ -6,10 +6,6 @@ export class CreateNoteDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ description: 'User ID of the note owner' })
-  @IsString()
-  userId: string;
-
   @ApiProperty({ description: 'Is this note a memo?' })
   @IsBoolean()
   @IsOptional()

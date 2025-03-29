@@ -1,6 +1,6 @@
 import { Controller, Patch, Param, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { UpdateNoteTransactionScript } from '../../domain/transaction-scripts/update-note.transaction.script';
+import { UpdateNoteTransactionScript } from '../../domain/transaction-scripts/update-note-TS/update-note.transaction.script';
 import { UpdateNoteDto } from '../dtos/requests/update-note.dto';
 import { NoteResponseDto } from '../dtos/responses/note.response.dto';
 

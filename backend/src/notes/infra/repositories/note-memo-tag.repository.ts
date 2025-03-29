@@ -5,9 +5,8 @@ import { Note } from '../../domain/entities/notes/note.entity';
 import { Tag } from '../../domain/entities/tag/tag.entity';
 import { Memo } from '../../domain/entities/notes/memo.entity';
 
-//@TODO: We probably want to break this repo up into two separate ones.
 @Injectable()
-export class NoteTagRepository {
+export class NoteMemoTagRepository {
     constructor(
         @InjectRepository(Note)
         private readonly repository: Repository<Note>,
@@ -27,7 +26,6 @@ export class NoteTagRepository {
     }
 
     async save(note: Note): Promise<Note> {
-        // If there's a memo, save it first
         if (note.memo) {
             note.memo = await this.memoRepository.save(note.memo);
         }

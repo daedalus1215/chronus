@@ -1,9 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { NoteTagRepository } from 'src/notes/infra/repositories/note-tag.repository';
+import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
 
 @Controller('notes')
 export class GetNoteNamesByUserIdAction {
-  constructor(private readonly noteRepository: NoteTagRepository) {}
+  constructor(private readonly noteRepository: NoteMemoTagRepository) {}
 
   //@TODO: change to something like names/userId/:userId
   @Get(':userId/names')

@@ -53,7 +53,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current);
     }
-    timeoutRef.current = window.setTimeout(saveChanges, 2000);
+    timeoutRef.current = window.setTimeout(saveChanges, 1000);
   }, [saveChanges]);
 
   const handleContentChange = React.useCallback((updates: Partial<NoteContent>) => {
@@ -70,14 +70,6 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
     handleContentChange({ description: e.target.value });
   };
 
-  const handleManualSave = () => {
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-    }
-    saveChanges();
-  };
-
-  // Cleanup on unmount
   React.useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -112,15 +104,6 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
         placeholder="Start typing your note..."
         aria-label="Note description"
       />
-      {isDirty && (
-        <button 
-          className={styles.saveButton}
-          onClick={handleManualSave}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Saving...' : 'Save changes'}
-        </button>
-      )}
     </div>
   );
 }; 
