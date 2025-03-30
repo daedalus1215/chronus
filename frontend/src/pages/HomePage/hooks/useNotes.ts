@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios.interceptor';
 
-interface Note {
+type Note = {
   id: number;
   name: string;
   userId: string;
   isMemo: boolean;
+  createdAt?: string;
 }
 
 export const useNotes = (userId: string) => {
@@ -18,7 +19,7 @@ export const useNotes = (userId: string) => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await axios.get<Note[]>(`http://localhost:3000/notes/${userId}/names`);
+        const response = await api.get<Note[]>(`/notes/names`);
         setNotes(response.data);
       } catch (err) {
         setError('Failed to fetch notes');

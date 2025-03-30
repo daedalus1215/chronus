@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../api/axios.interceptor';
 
 export type Note = {
   id: number;
@@ -25,7 +25,7 @@ export const useNote = (noteId: number) => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await axios.get<Note>(`http://localhost:3000/notes/detail/${noteId}`);
+        const response = await api.get<Note>(`/notes/detail/${noteId}`);
         setNote(response.data);
       } catch (err) {
         console.error('Error fetching note:', err);
@@ -45,8 +45,8 @@ export const useNote = (noteId: number) => {
     
     try {
       const { name, description, tags } = updatedNote;
-      const response = await axios.patch<Note>(
-        `http://localhost:3000/notes/detail/${note.id}`,
+      const response = await api.patch<Note>(
+        `/notes/detail/${note.id}`,
         { name, description, tags }
       );
       setNote(response.data);

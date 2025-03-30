@@ -56,8 +56,7 @@ export const NotePage: React.FC = () => {
       <NoteEditor 
         note={note}
         onSave={handleSave}
-        isLoading={isSaving}
       />
     </div>
   );
-}; 
+};                      

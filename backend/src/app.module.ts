@@ -1,11 +1,8 @@
 import { Module } from '@nestjs/common';
-import { DummyController } from './dummy-domain/app/dummy.controller';
-import { DummyService } from './dummy-domain/domain/dummy.service';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DummyDomainModule } from './dummy-domain/dummy-domain.module';
 import { NotesModule } from './notes/notes.module';
 import { User } from './users/domain/entities/user.entity';
 import { Note } from './notes/domain/entities/notes/note.entity';
@@ -25,16 +22,15 @@ import { TagNote } from './notes/domain/entities/tag/tag-note.entity';
         type: 'sqlite',
         database: configService.get<string>('DATABASE'),
         entities: [User, Note, Tag, Memo, TagNote],
-        synchronize: false, // Set to false in production
+        synchronize: false,
       }),
       inject: [ConfigService],
     }),
     UsersModule,
     AuthModule,
-    DummyDomainModule,
     NotesModule,
   ],
-  controllers: [DummyController],
-  providers: [DummyService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule { }

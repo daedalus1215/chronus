@@ -1,13 +1,18 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
+import { ProtectedAction } from 'src/shared-kernel/decorators/protected-action.decorator';
+import { GetAuthUser } from 'src/auth/get-auth-user.decorator';
+import { GetNoteNamesByUserIdSwagger } from './get-note-names-by-userId.swagger';
 
 @Controller('notes')
 export class GetNoteNamesByUserIdAction {
   constructor(private readonly noteRepository: NoteMemoTagRepository) {}
 
-  //@TODO: change to something like names/userId/:userId
-  @Get(':userId/names')
-  async apply(@Param('userId') userId: string): Promise<{name:string, id:number}[]> {
+  @Get('names')
+  @ProtectedAction(GetNoteNamesByUserIdSwagger)
+  async apply(
+    @GetAuthUser('userId') userId: string
+  ): Promise<{name: string, id: number}[]> {
     return await this.noteRepository.getNoteNamesByUserId(userId);
   }
 }

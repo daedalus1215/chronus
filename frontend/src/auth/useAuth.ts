@@ -1,13 +1,13 @@
 import { createContext, useContext, useCallback, useState, useEffect } from 'react';
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import api from '../api/axios.interceptor';
 
-interface User {
+type User = {
   id: string;
   username: string;
 }
 
-interface AuthContextType {
+type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
   login: (username: string, password: string) => Promise<boolean>;
@@ -15,7 +15,7 @@ interface AuthContextType {
   register: (username: string, password: string) => Promise<boolean>;
 }
 
-interface JwtPayload {
+type JwtPayload = {
   sub: string;  // This will be our user ID
   username: string;
   iat: number;
@@ -52,7 +52,7 @@ export const useAuthProvider = () => {
   const login = useCallback(async (username: string, password: string): Promise<boolean> => {
     try {
       console.log('Making login request...');
-      const response = await axios.post<{ access_token: string }>('http://localhost:3000/auth/login', {
+      const response = await api.post<{ access_token: string }>('/auth/login', {
         username,
         password,
       });
@@ -86,7 +86,7 @@ export const useAuthProvider = () => {
   const register = useCallback(async (username: string, password: string): Promise<boolean> => {
     try {
       console.log('Making registration request...');
-      await axios.post('http://localhost:3000/users/register', {
+      await api.post('/users/register', {
         username,
         password,
       });

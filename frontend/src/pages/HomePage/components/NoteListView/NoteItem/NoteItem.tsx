@@ -14,7 +14,7 @@ interface NoteItemProps {
   note: Note;
 }
 
-export function NoteItem({ note }: NoteItemProps) {
+export const NoteItem:React.FC<NoteItemProps> = ({ note }) => {
   const navigate = useNavigate();
   const timeAgo = note.createdAt ? '39m' : ''; // This should be calculated from note.createdAt
 
