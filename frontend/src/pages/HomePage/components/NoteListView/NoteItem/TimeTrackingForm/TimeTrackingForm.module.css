@@ -1,0 +1,118 @@
+.container {
+  padding: 20px;
+}
+
+.title {
+  margin: 0 0 20px;
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  background-color: #2d2d2d;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.durationInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.durationButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background-color: #404040;
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.durationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.durationInput {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  background-color: #2d2d2d;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  background-color: #2d2d2d;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.button[data-variant="primary"] {
+  background-color: #6366f1;
+  color: #fff;
+}
+
+.button[data-variant="primary"]:hover {
+  background-color: #4f46e5;
+}
+
+.button[data-variant="secondary"] {
+  background-color: #2d2d2d;
+  color: #fff;
+}
+
+.button[data-variant="secondary"]:hover {
+  background-color: #404040;
+}

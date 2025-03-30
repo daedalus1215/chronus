@@ -68,3 +68,4 @@ e2e/*.sln
 e2e/.env
 e2e/*.sw?
 e2e/.env.development
+node_modules

@@ -1,0 +1,55 @@
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  padding: 16px 8px;
+}
+
+.actionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.actionButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.actionButton[data-variant="danger"] {
+  color: #ef4444;
+}
+
+.actionButton[data-variant="danger"]:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.icon {
+  font-size: 24px !important; /* Override Material-UI default size */
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Make grid responsive */
+@media (max-width: 480px) {
+  .actionGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 360px) {
+  .actionGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+} 
