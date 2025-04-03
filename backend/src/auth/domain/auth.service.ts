@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/domain/users.service';
+import { UsersService } from '../../users/domain/users.service';
 import * as bcrypt from 'bcrypt';
-import { User } from '../users/domain/entities/user.entity';
+import { User } from '../../users/domain/entities/user.entity';
 
-//@TODO: This service depends directly onl another service - user service. We ought to export out an user aggregator, to mitigate any chance of cylical dependency flows and to adhere to DDD flow (service will stitch together its current domain TS and other domain's Aggregators).
 @Injectable()
 export class AuthService {
     constructor(

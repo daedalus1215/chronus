@@ -1,8 +1,8 @@
 import { Controller, Post, Body, HttpCode, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../domain/auth.service';
 
 @Controller('auth')
-export class AuthController {
+export class LoginAction {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')

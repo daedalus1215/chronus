@@ -1,4 +1,4 @@
-import { ProtectedActionOptions } from 'src/shared-kernel/decorators/protected-action.decorator';
+import { ProtectedActionOptions } from 'src/time-tracks/apps/decorators/protected-action.decorator';
 
 type NoteNameResponse = {
   id: number;

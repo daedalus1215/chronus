@@ -3,8 +3,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { AuthService } from './domain/auth.service';
+import { LoginAction } from './app/actions/login.action';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
@@ -21,7 +21,7 @@ import { UsersModule } from 'src/users/users.module';
         UsersModule,
     ],
     providers: [AuthService, JwtStrategy],
-    controllers: [AuthController],
+    controllers: [LoginAction],
     exports: [AuthService],
 })
 export class AuthModule { }

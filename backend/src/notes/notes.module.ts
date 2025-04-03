@@ -13,6 +13,7 @@ import { GetNoteByIdTransactionScript } from './domain/transaction-scripts/get-n
 import { UpdateNoteAction } from "./apps/actions/update-note-action/update-note.action";
 import { UpdateNoteTransactionScript } from "./domain/transaction-scripts/update-note-TS/update-note.transaction.script";
 import { NoteDtoToEntityConverter } from "./domain/transaction-scripts/update-note-TS/note-dto-to-entity.converter";
+import { NoteAggregator } from './domain/aggregators/note.aggregator';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo, Tag, TagNote])],
@@ -28,7 +29,8 @@ import { NoteDtoToEntityConverter } from "./domain/transaction-scripts/update-no
     GetNoteByIdTransactionScript,
     UpdateNoteTransactionScript,
     NoteMemoTagRepository,
+    NoteAggregator,
   ],
-  exports: [NoteMemoTagRepository]
+  exports: [NoteMemoTagRepository, NoteAggregator]
 })
 export class NotesModule {}
