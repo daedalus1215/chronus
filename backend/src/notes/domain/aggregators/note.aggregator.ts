@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
 
 type NoteReference = {
@@ -30,9 +30,13 @@ export class NoteAggregator {
     };
   }
 
-  async belongsToUser(params:{noteId: number, userId: string}): Promise<boolean> {
+  async belongsToUser(params:{noteId: number, user:{id: number}}) {
+    //@TODO: refactor to use transaction script
     const note = await this.noteRepository.findById(params.noteId);
-    return note?.userId === params.userId;
+
+    if (parseInt(note.userId) !== params.user.id) {
+      throw new ForbiddenException('Not authorized to access this note');
+    }
   }
 
   async isArchived(noteId: number): Promise<boolean> {

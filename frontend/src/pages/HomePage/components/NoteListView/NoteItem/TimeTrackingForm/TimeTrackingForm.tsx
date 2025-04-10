@@ -7,12 +7,13 @@ type TimeTrackingFormProps = {
   onClose: () => void;
   onSubmit: (data: TimeTrackingData) => void;
   initialData?: TimeTrackingData;
+  isSubmitting?: boolean;
 }
 
 export type TimeTrackingData = {
   date: string;
   startTime: string;
-  duration: number; // in minutes
+  durationMinutes: number;
   note?: string;
 }
 
@@ -20,12 +21,13 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  initialData
+  initialData,
+  isSubmitting
 }) => {
   const [formData, setFormData] = useState<TimeTrackingData>(initialData || {
     date: new Date().toISOString().split('T')[0],
     startTime: new Date().toTimeString().slice(0, 5),
-    duration: 30,
+    durationMinutes: 30,
     note: ''
   });
 
@@ -68,24 +70,23 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
             <div className={styles.durationInputGroup}>
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, duration: formData.duration - 15 })}
+                onClick={() => setFormData({ ...formData, durationMinutes: formData.durationMinutes - 15 })}
                 className={styles.durationButton}
-                disabled={formData.duration <= 15}
+                disabled={formData.durationMinutes <= 0}
               >
                 -
               </button>
               <input
                 type="number"
                 id="duration"
-                value={formData.duration}
-                onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
-                min="1"
+                value={formData.durationMinutes}
+                onChange={(e) => setFormData({ ...formData, durationMinutes: Number(e.target.value) })}
                 step="15"
                 className={styles.durationInput}
               />
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, duration: formData.duration + 15 })}
+                onClick={() => setFormData({ ...formData, durationMinutes: formData.durationMinutes + 15 })}
                 className={styles.durationButton}
               >
                 +
@@ -118,8 +119,9 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
               type="submit"
               className={styles.button}
               data-variant="primary"
+              disabled={isSubmitting}
             >
-              Save Time Entry
+              {isSubmitting ? 'Saving...' : 'Save Time Entry'}
             </button>
           </div>
         </form>

@@ -4,11 +4,12 @@ import { Note } from 'src/notes/domain/entities/notes/note.entity';
 import { Memo } from 'src/notes/domain/entities/notes/memo.entity';
 import { Tag } from 'src/notes/domain/entities/tag/tag.entity';
 import { TagNote } from 'src/notes/domain/entities/tag/tag-note.entity';
+import { TimeTrack } from 'src/time-tracks/domain/entities/time-track-entity/time-track.entity';
 
 const AppDataSource = new DataSource({
     type: 'sqlite',
     database: 'db.sqlite',
-    entities: [User, Note, Memo, Tag, TagNote],
+    entities: [User, Note, Memo, Tag, TagNote, TimeTrack],
     migrations: ['src/typeorm/migrations/*.ts'],
     synchronize: false,
     logging: true

@@ -53,6 +53,7 @@ export class TimeTrackRepository {
 
   async findOverlappingEntries(params: OverlapCheckParams): Promise<TimeTrack[]> {
     const endTime = this.calculateEndTime(params.startTime, params.durationMinutes);
+    const startTime = params.startTime;
     
     return this.repository
       .createQueryBuilder('timeTrack')
@@ -60,8 +61,8 @@ export class TimeTrackRepository {
       .andWhere('timeTrack.date = :date', { date: params.date })
       .andWhere(
         '(timeTrack.startTime <= :endTime AND ' +
-        'ADDTIME(timeTrack.startTime, SEC_TO_TIME(timeTrack.durationMinutes * 60)) >= :startTime)',
-        { startTime: params.startTime, endTime }
+        'time(timeTrack.startTime, \'+\' || timeTrack.durationMinutes || \' minutes\') >= :startTime)',
+        { startTime, endTime }
       )
       .getMany();
   }

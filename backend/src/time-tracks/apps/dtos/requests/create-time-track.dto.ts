@@ -1,8 +1,8 @@
 import { IsDate, IsNumber, IsString, IsOptional, Min, Max } from 'class-validator';
 
 export class CreateTimeTrackDto {
-  @IsDate()
-  date: Date;
+  @IsString()
+  date: string;
 
   @IsString()
   startTime: string;
@@ -12,7 +12,10 @@ export class CreateTimeTrackDto {
   @Max(1440) // Max minutes in a day
   durationMinutes: number;
 
+  @IsNumber()
+  noteId: number;
+
   @IsString()
   @IsOptional()
-  note?: string;
+  note: string;
 } 

@@ -9,6 +9,8 @@ import { Note } from './notes/domain/entities/notes/note.entity';
 import { Tag } from './notes/domain/entities/tag/tag.entity';
 import { Memo } from './notes/domain/entities/notes/memo.entity';
 import { TagNote } from './notes/domain/entities/tag/tag-note.entity';
+import { TimeTracksModule } from './time-tracks/time-tracks.module';
+import { TimeTrack } from './time-tracks/domain/entities/time-track-entity/time-track.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { TagNote } from './notes/domain/entities/tag/tag-note.entity';
       useFactory: async (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get<string>('DATABASE'),
-        entities: [User, Note, Tag, Memo, TagNote],
+        entities: [User, Note, Tag, Memo, TagNote, TimeTrack],
         synchronize: false,
       }),
       inject: [ConfigService],
@@ -29,6 +31,7 @@ import { TagNote } from './notes/domain/entities/tag/tag-note.entity';
     UsersModule,
     AuthModule,
     NotesModule,
+    TimeTracksModule
   ],
   controllers: [],
   providers: [],

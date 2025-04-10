@@ -31,6 +31,9 @@ import { NoteAggregator } from './domain/aggregators/note.aggregator';
     NoteMemoTagRepository,
     NoteAggregator,
   ],
-  exports: [NoteMemoTagRepository, NoteAggregator]
+  exports: [
+    NoteMemoTagRepository,
+    NoteAggregator,
+  ]
 })
 export class NotesModule {}

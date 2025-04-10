@@ -31,7 +31,7 @@ type NoteActionsProps = {
   onLabel: () => void;
 }
 
-export const NoteActions: React.FC<NoteActionsProps> = ({
+export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   isOpen,
   onClose,
   onTimeTracking,

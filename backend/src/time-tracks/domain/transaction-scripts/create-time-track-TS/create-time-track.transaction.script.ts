@@ -9,6 +9,9 @@ export class CreateTimeTrackTransactionScript {
   ) {}
 
   async apply(command: CreateTimeTrackCommand) {
-    return await this.timeTrackRepository.create(command);
+    return await this.timeTrackRepository.create({
+      ...command,
+      date: new Date(command.date)
+    });
   }
 } 
