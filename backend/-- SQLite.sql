@@ -5,6 +5,10 @@
 .tables
 
 -- Query the user table (note: the table name is 'user' not 'users')
+-- SQLite
+select * from time_track;
+select * from notes;
+
 select * from user;
 
 

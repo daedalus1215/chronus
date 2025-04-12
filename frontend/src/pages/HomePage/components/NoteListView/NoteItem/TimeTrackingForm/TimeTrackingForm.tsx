@@ -8,6 +8,7 @@ type TimeTrackingFormProps = {
   onSubmit: (data: TimeTrackingData) => void;
   initialData?: TimeTrackingData;
   isSubmitting?: boolean;
+  hasPendingTracks: boolean;
 }
 
 export type TimeTrackingData = {
@@ -22,7 +23,8 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   onClose,
   onSubmit,
   initialData,
-  isSubmitting
+  isSubmitting,
+  hasPendingTracks
 }) => {
   const [formData, setFormData] = useState<TimeTrackingData>(initialData || {
     date: new Date().toISOString().split('T')[0],
@@ -40,6 +42,11 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <div className={styles.container}>
         <h3 className={styles.title}>Track Time</h3>
+        {hasPendingTracks && (
+          <div className={styles.offlineNotice}>
+            You have time tracks pending sync. They will be uploaded when you're back online.
+          </div>
+        )}
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="date" className={styles.label}>Date</label>

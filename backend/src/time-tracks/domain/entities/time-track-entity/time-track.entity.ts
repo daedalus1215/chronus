@@ -12,9 +12,6 @@ export class TimeTrack {
   @Column()
   noteId: number;
 
-  @Column('json', { nullable: true })
-  noteReference?: NoteReference;
-
   @Column({ type: 'date' })
   date: Date;
 

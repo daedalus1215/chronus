@@ -8,7 +8,7 @@ type NoteListViewProps = {
 }
 
 export const NoteListView:React.FC<NoteListViewProps> = ({ userId }) => {
-  const { notes, isLoading, error } = useNotes(userId);
+  const { notes, isLoading, error, hasPendingChanges } = useNotes(userId);
 
   if (isLoading) {
     return <div className={styles.noteListLoading}>Loading notes...</div>;
@@ -31,6 +31,11 @@ export const NoteListView:React.FC<NoteListViewProps> = ({ userId }) => {
         </button>
       </div>
       <div className={styles.noteListContent}>
+        {hasPendingChanges && (
+          <div className={styles.offlineNotice}>
+            You have pending changes that will sync when you're back online.
+          </div>
+        )}
         {notes.map((note, index) => (
           <NoteItem key={index} note={note} />
         ))}
