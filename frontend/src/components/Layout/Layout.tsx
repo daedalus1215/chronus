@@ -1,5 +1,4 @@
 import React from 'react';
-import { Header } from './Header/Header';
 import { useAuth } from '../../auth/useAuth';
 import styles from './Layout.module.css';
 
@@ -12,7 +11,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className={styles.layout}>
-      {isAuthenticated && <Header />}
+      {isAuthenticated }
       <main className={`${styles.content} ${!isAuthenticated ? styles.noHeader : ''}`}>
         {children}
       </main>

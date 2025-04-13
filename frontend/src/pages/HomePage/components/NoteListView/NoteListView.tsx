@@ -25,10 +25,10 @@ export const NoteListView:React.FC<NoteListViewProps> = ({ userId }) => {
   return (
     <div className={styles.noteList}>
       <div className={styles.noteListHeader}>
-        <h2 className={styles.noteListTitle}>Recent</h2>
-        <button className={styles.sortButton}>
+        {/* <h2 className={styles.noteListTitle}>Recent</h2> */}
+        {/* <button className={styles.sortButton}>
           Default ↓
-        </button>
+        </button> */}
       </div>
       <div className={styles.noteListContent}>
         {hasPendingChanges && (

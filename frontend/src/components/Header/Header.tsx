@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../auth/useAuth';
+import { useAuth } from '../../auth/useAuth';
 import { Sidebar } from './Sidebar/Sidebar';
 import styles from './Header.module.css';
-import { Logo } from '../../Logo/Logo';
+import { Logo } from '../Logo/Logo';
 
 export const Header: React.FC = () => {
   const { logout } = useAuth();

@@ -48,11 +48,11 @@ export const NotePage: React.FC = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <button 
+      {/* <button 
         onClick={() => navigate(-1)}
         className={styles.backButton}>
         ← Back
-      </button>
+      </button> */}
       <NoteEditor 
         note={note}
         onSave={handleSave}

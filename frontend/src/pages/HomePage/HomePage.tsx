@@ -4,6 +4,7 @@ import { NoteListView } from './components/NoteListView/NoteListView';
 import { useCreateNote } from './hooks/useCreateNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import styles from './HomePage.module.css';
+import { Header } from '../../components/Header/Header';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className={styles.homePage}>
+      <Header />
       <main className={styles.main}>
         <NoteListView userId={user.id} />
       </main>

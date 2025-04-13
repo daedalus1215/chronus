@@ -1,21 +1,21 @@
 .editor {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 1rem;
   background-color: #111;
-  border-radius: 12px;
+  border-radius: 0;
   position: relative;
-  height: calc(100vh - 200px); /* Account for padding and header */
+  box-sizing: border-box;
 }
 
 .titleInput {
   width: 100%;
   padding: 0.5rem 0;
-  font-size: 2rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: #fff;
   background: transparent;
@@ -23,6 +23,7 @@
   border-bottom: 2px solid #222;
   outline: none;
   transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
 }
 
 .titleInput:focus {
@@ -36,10 +37,10 @@
 .descriptionInput {
   width: 100%;
   flex: 1;
-  min-height: 200px;
-  padding: 1rem;
-  font-size: 1rem;
-  line-height: 1.6;
+  min-height: 150px;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
   color: #d1d5db;
   background-color: #1a1a1a;
   border: 1px solid #222;
@@ -48,6 +49,8 @@
   outline: none;
   transition: all 0.2s ease-in-out;
   overflow-y: auto;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .descriptionInput:focus {
@@ -61,8 +64,8 @@
 
 .saveButton {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: 1rem;
+  right: 1rem;
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -73,6 +76,7 @@
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  z-index: 10;
 }
 
 .saveButton:hover {
@@ -90,4 +94,28 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+/* Media queries for better mobile support */
+@media (max-width: 768px) {
+  .editor {
+    padding: 0.75rem;
+    height: calc(100vh - 80px);
+  }
+
+  .titleInput {
+    font-size: 1rem;
+    padding: 0.4rem 0;
+  }
+
+  .descriptionInput {
+    font-size: 0.8125rem;
+    padding: 0.5rem;
+    line-height: 1.35;
+  }
+
+  .saveButton {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.75rem;
+  }
 } 

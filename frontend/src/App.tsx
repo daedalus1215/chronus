@@ -6,7 +6,6 @@ import { LoginPage } from './pages/LoginPage/LoginPage';
 import { RegisterPage } from './pages/RegisterPage/RegisterPage';
 import { LandingPage } from './pages/LandingPage/LandingPage';
 import { NotePage } from './pages/NotePage/NotePage';
-import { Header } from './components/Layout/Header/Header';
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -14,7 +13,6 @@ function AppRoutes() {
   if (isAuthenticated) {
     return (
       <>
-        <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/notes/:id" element={<NotePage />} />
