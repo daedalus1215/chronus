@@ -6,6 +6,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   console.log(`NODE_ENV: ${process.env.NODE_ENV}`); // Temporary log
 
+  // Set global prefix for all routes
+  app.setGlobalPrefix('api');
+
   // Enable CORS
   app.enableCors({
     origin: true, // Allow all origins in development. For production, specify your frontend URL
