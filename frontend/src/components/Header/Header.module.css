@@ -62,4 +62,16 @@
 
 .signOutButton:hover {
   background-color: rgba(99, 102, 241, 0.2);
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.username {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
 } 

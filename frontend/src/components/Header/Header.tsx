@@ -6,7 +6,7 @@ import styles from './Header.module.css';
 import { Logo } from '../Logo/Logo';
 
 export const Header: React.FC = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -19,6 +19,8 @@ export const Header: React.FC = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  console.log(user);
+
   return (
     <>
       <header className={styles.header}>
@@ -27,12 +29,15 @@ export const Header: React.FC = () => {
             <Logo />
             <span className={styles.name}>Chronus</span>
           </button>
-          <button 
-            onClick={handleSignOut} 
-            className={styles.signOutButton}
-          >
-            Sign Out
-          </button>
+          <div className={styles.rightSection}>
+            <span className={styles.username}>{user?.username}</span>
+            <button 
+              onClick={handleSignOut} 
+              className={styles.signOutButton}
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </header>
 

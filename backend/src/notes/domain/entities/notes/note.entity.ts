@@ -12,7 +12,7 @@ import {
 } from "typeorm";
 import { Memo } from "./memo.entity";
 import { Tag } from "../tag/tag.entity";
-import { BaseEntity } from "src/shared-kernel/domain/entities/base.entity";
+import { BaseEntity } from "../../../../shared-kernel/domain/entities/base.entity";
 // import { Checklist } from "./checklist/checklist.entity";
 // import { Tag } from "../tag/tag.entity";
 

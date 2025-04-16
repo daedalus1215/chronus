@@ -1,6 +1,6 @@
 import { Entity, Column, OneToOne } from "typeorm";
 import { Note } from "./note.entity";
-import { BaseEntity } from "src/shared-kernel/domain/entities/base.entity";
+import { BaseEntity } from "../../../../shared-kernel/domain/entities/base.entity";
 
 @Entity("memos")
 export class Memo extends BaseEntity {
