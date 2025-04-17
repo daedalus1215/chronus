@@ -69,3 +69,5 @@ e2e/.env
 e2e/*.sw?
 e2e/.env.development
 node_modules
+
+frontend/vite.env.config.ts

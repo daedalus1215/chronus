@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import { resolve } from 'path'
+import { env } from './vite.env.config'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -74,11 +75,11 @@ export default defineConfig({
   ],
   base: '/',
   server: {
-    host: '0.0.0.0',
-    port: parseInt(process.env.VITE_PORT || '5173'),
+    host: env.VITE_HOST,
+    port: parseInt(env.VITE_PORT),
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:3000',
+        target: env.VITE_API_URL,
         changeOrigin: true
       }
     }
@@ -92,12 +93,12 @@ export default defineConfig({
     outDir: 'dist'
   },
   preview: {
-    allowedHosts: ['chronus.cc-an.com'], // or 'chronus.cc-an.com' if that's what you're sticking with
-    host: '0.0.0.0',
-    port: parseInt(process.env.VITE_PORT || '5173'),
+    allowedHosts: [env.VITE_ALLOWED_HOSTS], // or 'chronus.cc-an.com' if that's what you're sticking with
+    host: env.VITE_HOST,
+    port: parseInt(env.VITE_PORT),
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:3000',
+        target: env.VITE_API_URL,
         changeOrigin: true
       }
     }

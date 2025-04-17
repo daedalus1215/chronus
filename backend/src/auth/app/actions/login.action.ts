@@ -8,7 +8,6 @@ export class LoginAction {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: { username: string; password: string }) {
-    console.log(loginDto);
     const user = await this.authService.validateUser(loginDto.username, loginDto.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
