@@ -3,15 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { NoteActionsGrid } from './NoteActionGrid/NoteActionGrid';
 import { DateTimePicker } from './DateTimePicker/DateTimePicker';
 import { TimeTrackingForm, TimeTrackingData } from './TimeTrackingForm/TimeTrackingForm';
+import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
 import styles from './NoteItem.module.css';
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
+import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
 
 interface Note {
   id: number;
   name: string;
   userId: string;
   isMemo: boolean;
-  scheduledFor?: string;
   createdAt?: string;
 }
 
@@ -24,7 +25,9 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
-  const { createTimeTrack, isCreating, error } = useCreateTimeTrack();
+  const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
+  const { createTimeTrack, isCreating } = useCreateTimeTrack();
+  const { timeTracks, isLoading, error } = useNoteTimeTracks(note.id, isTimeTrackListOpen);
 
   const handleClick = () => {
     navigate(`/notes/${note.id}`);
@@ -68,8 +71,13 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   };
 
   const handleTimeTracking = () => {
-    setIsActionsOpen(false); // Close the actions menu
-    setIsTimeTrackingOpen(true); // Open the time tracking form
+    setIsActionsOpen(false);
+    setIsTimeTrackingOpen(true);
+  };
+
+  const handleViewTimeEntries = () => {
+    setIsActionsOpen(false);
+    setIsTimeTrackListOpen(true);
   };
 
   const handleTimeTrackingSubmit = async (data: TimeTrackingData) => {
@@ -125,7 +133,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
         onDuplicate={handleDuplicate}
         onDelete={handleDelete}
         onTimeTracking={handleTimeTracking}
-        //@TODO: Implement these later
+        onViewTimeEntries={handleViewTimeEntries}
         onPin={handleTimeTracking}
         onArchive={handleTimeTracking}
         onStar={handleTimeTracking}
@@ -139,7 +147,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
         isOpen={isDatePickerOpen}
         onClose={() => setIsDatePickerOpen(false)}
         onSelect={handleDateTimeSelected}
-        initialDate={note.scheduledFor ? new Date(note.scheduledFor) : new Date()}
+        initialDate={new Date()}
       />
 
       <TimeTrackingForm
@@ -147,10 +155,20 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
         onClose={() => setIsTimeTrackingOpen(false)}
         onSubmit={handleTimeTrackingSubmit}
         isSubmitting={isCreating}
+        hasPendingTracks={false}
+      />
+
+      <TimeTrackListView
+        isOpen={isTimeTrackListOpen}
+        onClose={() => setIsTimeTrackListOpen(false)}
+        timeTracks={timeTracks || []}
+        isLoading={isLoading}
+        // error={error}
       />
     </>
   );
-}
+};
+
 function updateNoteSchedule(id: number, dateTime: Date) {
   console.log(id, dateTime);
   throw new Error('Function not implemented.');

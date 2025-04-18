@@ -11,7 +11,8 @@ import {
   FileUploadOutlined,
   LockOutlined,
   EditOutlined,
-  LabelOutlined
+  LabelOutlined,
+  AccessTimeOutlined
 } from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
 
@@ -19,6 +20,7 @@ type NoteActionsProps = {
   isOpen: boolean;
   onClose: () => void;
   onTimeTracking: () => void;
+  onViewTimeEntries: () => void;
   onDelete: () => void;
   onShare: () => void;
   onDuplicate: () => void;
@@ -35,6 +37,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   isOpen,
   onClose,
   onTimeTracking,
+  onViewTimeEntries,
   onDelete,
   onShare,
   onDuplicate,
@@ -55,6 +58,13 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         >
           <TimerOutlined className={styles.icon} />
           <span className={styles.label}>Time Entry</span>
+        </button>
+        <button 
+          onClick={onViewTimeEntries}
+          className={styles.actionButton}
+        >
+          <AccessTimeOutlined className={styles.icon} />
+          <span className={styles.label}>View Times</span>
         </button>
         <button 
           onClick={onEdit} 

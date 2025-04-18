@@ -1,8 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { NoteReference } from './note-reference.vo';
+import { BaseEntity } from 'src/shared-kernel/domain/entities/base.entity';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class TimeTrack {
+export class TimeTrack extends BaseEntity{
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -20,13 +20,4 @@ export class TimeTrack {
 
   @Column()
   durationMinutes: number;
-
-  @Column({ nullable: true })
-  note?: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 } 

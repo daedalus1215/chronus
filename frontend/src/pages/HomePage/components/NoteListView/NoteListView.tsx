@@ -7,8 +7,8 @@ type NoteListViewProps = {
   userId: string;
 }
 
-export const NoteListView:React.FC<NoteListViewProps> = ({ userId }) => {
-  const { notes, isLoading, error, hasPendingChanges } = useNotes(userId);
+export const NoteListView:React.FC<NoteListViewProps> = () => {
+  const { notes, isLoading, error, hasPendingChanges } = useNotes();
 
   if (isLoading) {
     return <div className={styles.noteListLoading}>Loading notes...</div>;

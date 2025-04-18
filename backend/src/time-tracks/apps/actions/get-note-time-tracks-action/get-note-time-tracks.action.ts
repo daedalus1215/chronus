@@ -1,30 +1,29 @@
-import { Post, Body, Param, ParseIntPipe, Controller, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { TimeTrackService } from '../../../domain/services/time-track.service';
-import { CreateTimeTrackSwagger } from './create-time-track.swagger';
 import { ProtectedAction } from '../../decorators/protected-action.decorator';
 import { AuthUser, GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CreateTimeTrackDto } from '../../dtos/requests/create-time-track.dto';
+import { GetNoteTimeTracksSwagger } from './get-note-time-tracks.swagger';
 
-@Controller(`time-tracks`)
+@Controller('time-tracks')
 @UseGuards(JwtAuthGuard)
 @ApiTags('Time Tracks')
 @ApiBearerAuth()
-export class CreateTimeTrackAction {
+export class GetNoteTimeTracksAction {
   constructor(
     private readonly timeTrackService: TimeTrackService
   ) {}
 
-  @Post()
-  @ProtectedAction(CreateTimeTrackSwagger)
+  @Get('note/:noteId')
+  @ProtectedAction(GetNoteTimeTracksSwagger)
   async apply(
-    @Body() dto: CreateTimeTrackDto,
+    @Param('noteId', ParseIntPipe) noteId: number,
     @GetAuthUser() user: AuthUser
   ) {
-    return this.timeTrackService.createTimeTrack({
-      ...dto,
-      user
+    return this.timeTrackService.getNoteTimeTracks({
+      noteId,
+      user: user
     });
   }
 } 

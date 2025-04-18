@@ -12,7 +12,7 @@ export class CreateTimeTrackTransactionScript {
     await this.validateTimeEntry(command);
     return await this.timeTrackRepository.create({
       ...command,
-      userId: command.user.id,
+      userId: command.user.userId,
       date: new Date(command.date)
     });
   }
@@ -31,7 +31,7 @@ export class CreateTimeTrackTransactionScript {
 
     // Check for overlapping time entries
     const existingEntries = await this.timeTrackRepository.findOverlappingEntries({
-      userId: command.user.id,
+      userId: command.user.userId,
       date: new Date(command.date),
       startTime: command.startTime,
       durationMinutes: command.durationMinutes
@@ -43,7 +43,7 @@ export class CreateTimeTrackTransactionScript {
 
     // Check daily limit
     const dailyTotal = await this.timeTrackRepository.getDailyTotal(
-      command.user.id,
+      command.user.userId,
       new Date(command.date)
     );
 
