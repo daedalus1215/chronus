@@ -13,6 +13,7 @@ interface Note {
   name: string;
   userId: string;
   isMemo: boolean;
+  scheduledFor?: string;
   createdAt?: string;
 }
 
@@ -147,7 +148,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
         isOpen={isDatePickerOpen}
         onClose={() => setIsDatePickerOpen(false)}
         onSelect={handleDateTimeSelected}
-        initialDate={new Date()}
+        initialDate={note.scheduledFor ? new Date(note.scheduledFor) : new Date()}
       />
 
       <TimeTrackingForm
