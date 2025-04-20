@@ -75,7 +75,6 @@ export class NoteMemoTagRepository {
                 .update(Note)
                 .set({ 
                     updatedAt: () => 'CURRENT_TIMESTAMP',
-                    'updated_at': () => 'CURRENT_TIMESTAMP'
                 })
                 .where('id = :id', { id })
                 .execute();
