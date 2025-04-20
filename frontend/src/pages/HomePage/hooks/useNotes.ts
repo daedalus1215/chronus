@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../../../api/axios.interceptor';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 type NoteResponse = {
   notes: {name: string, id: number}[];
@@ -14,15 +15,21 @@ export const useNotes = () => {
   const [hasPendingChanges] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState<number>(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const fetchNotes = useCallback(async (cursor: number = 0) => {
+  const fetchNotes = useCallback(async (cursor: number = 0, query: string = '') => {
     try {
       setIsLoading(true);
       setError(null);
-      console.log('Fetching notes with cursor:', cursor);
+      console.log('Fetching notes with cursor:', cursor, 'and query:', query);
 
       const response = await api.get<NoteResponse>('/notes/names', {
-        params: { cursor, limit: 20 }
+        params: { 
+          cursor, 
+          limit: 20,
+          query 
+        }
       });
       
       console.log('Response:', { 
@@ -48,16 +55,26 @@ export const useNotes = () => {
     }
   }, []);
 
+  const searchNotes = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  const clearSearch = useCallback(() => {
+    setSearchQuery('');
+    fetchNotes(0);
+  }, [fetchNotes]);
+
   const loadMore = useCallback(() => {
     console.log('loadMore called:', { hasMore, isLoading, nextCursor });
     if (hasMore && !isLoading) {
-      fetchNotes(nextCursor);
+      fetchNotes(nextCursor, searchQuery);
     }
-  }, [hasMore, isLoading, nextCursor, fetchNotes]);
+  }, [hasMore, isLoading, nextCursor, fetchNotes, searchQuery]);
 
+  // Single effect for both initial load and search
   useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
+    fetchNotes(0, debouncedSearchQuery);
+  }, [fetchNotes, debouncedSearchQuery]);
 
   return {
     notes,
@@ -65,7 +82,10 @@ export const useNotes = () => {
     error,
     hasPendingChanges,
     hasMore,
-    refreshNotes: () => fetchNotes(0),
+    refreshNotes: () => fetchNotes(0, searchQuery),
     loadMore,
+    searchNotes,
+    clearSearch,
+    searchQuery
   };
 }; 

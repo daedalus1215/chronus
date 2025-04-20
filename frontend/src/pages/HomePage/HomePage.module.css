@@ -14,6 +14,8 @@
   padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
+  position:fixed;
+  top: 64px;
 }
 
 /* Floating action button for new note */

@@ -19,9 +19,10 @@ export class GetNoteNamesByUserIdAction {
   async apply(
     @GetAuthUser('userId') userId: string,
     @Query('cursor') cursor: number = 0,
-    @Query('limit') limit: number = 20
+    @Query('limit') limit: number = 20,
+    @Query('query') query?: string
   ): Promise<GetNoteNamesResponse> {
-    const notes = await this.noteRepository.getNoteNamesByUserId(userId, cursor, limit);
+    const notes = await this.noteRepository.getNoteNamesByUserId(userId, cursor, limit, query);
     const hasMore = notes.length === limit;
     
     const nextCursor = cursor + limit + 1;

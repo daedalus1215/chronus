@@ -48,13 +48,20 @@ export class NoteMemoTagRepository {
     async getNoteNamesByUserId(
         userId: string,
         cursor: number,
-        limit = 20
+        limit = 20,
+        query?: string
     ): Promise<{name:string, id:number}[]> {
-        return this.repository
+        const qb = this.repository
             .createQueryBuilder("note")
             .select("note.name", "name")
             .addSelect("note.id", "id")
-            .where("note.user_id = :userId", { userId })
+            .where("note.user_id = :userId", { userId });
+
+        if (query) {
+            qb.andWhere("LOWER(note.name) LIKE LOWER(:query)", { query: `%${query}%` });
+        }
+
+        return qb
             .orderBy("note.updated_at", "DESC")
             .skip(cursor)
             .take(limit)
