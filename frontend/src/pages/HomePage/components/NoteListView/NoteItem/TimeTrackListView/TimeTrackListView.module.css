@@ -71,4 +71,18 @@
   font-size: 0.875rem;
   padding-top: 0.25rem;
   border-top: 1px solid #262626;
+}
+
+.totalTimeContainer {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #1a1a1a;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.totalTime {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #6366f1;
 } 

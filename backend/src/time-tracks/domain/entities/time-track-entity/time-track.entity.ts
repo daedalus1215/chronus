@@ -6,18 +6,18 @@ export class TimeTrack extends BaseEntity{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ name: 'user_id' })
   userId: string;
 
-  @Column()
+  @Column({ name: 'note_id' })
   noteId: number;
 
   @Column({ type: 'date' })
   date: Date;
 
-  @Column({ type: 'time' })
+  @Column({ name: 'start_time', type: 'time' })
   startTime: string;
 
-  @Column()
+  @Column({ name: 'duration_minutes' })
   durationMinutes: number;
 } 

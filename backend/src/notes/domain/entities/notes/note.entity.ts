@@ -36,7 +36,7 @@ export class Note extends BaseEntity {
   @Column({ name: "user_id" })
   userId: string;
 
-  @Column({ name: "date", nullable: true })
+  @Column({ name: "archived_date", nullable: true })
   archived_date: Date;
 
 

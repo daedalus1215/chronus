@@ -13,9 +13,6 @@ export class UpdateNoteDto {
   @IsOptional()
   description?: string;
 
-  @ApiProperty({ description: 'Array of tag names', required: false, type: [String] })
-  @IsArray()
-  @IsString({ each: true })
   @IsOptional()
-  tags?: string[];
+  tags?: {id:string, name:string, description:string}[];
 }

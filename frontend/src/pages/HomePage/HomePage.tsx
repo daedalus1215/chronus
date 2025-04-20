@@ -29,7 +29,7 @@ export const HomePage: React.FC = () => {
     <div className={styles.homePage}>
       <Header />
       <main className={styles.main}>
-        <NoteListView userId={user.id} />
+        <NoteListView />
       </main>
       <button 
         className={styles.fab} 

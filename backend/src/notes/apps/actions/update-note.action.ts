@@ -20,6 +20,7 @@ export class UpdateNoteAction {
     @Param('id') id: string,
     @Body() updateNoteDto: UpdateNoteDto
   ): Promise<NoteResponseDto> {
+    console.log(updateNoteDto);
     return await this.updateNoteTransactionScript.apply(parseInt(id, 10), updateNoteDto);
   }
 } 

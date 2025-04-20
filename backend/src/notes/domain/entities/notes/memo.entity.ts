@@ -4,7 +4,7 @@ import { BaseEntity } from "../../../../shared-kernel/domain/entities/base.entit
 
 @Entity("memos")
 export class Memo extends BaseEntity {
-  @Column("text", { default: "" })
+  @Column({ name: 'description', type: 'text', default: '' })
   description: string;
 
   @OneToOne(() => Note, (note) => note.id, { onDelete: "CASCADE" })

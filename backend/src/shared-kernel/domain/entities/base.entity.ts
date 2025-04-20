@@ -5,9 +5,9 @@ export class BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @CreateDateColumn({ type: 'text' })  // Use 'text' for SQLite compatibility
+  @CreateDateColumn({ name: 'created_at', type: 'text' })  // Use 'text' for SQLite compatibility
   createdAt: string;
 
-  @UpdateDateColumn({ type: 'text' })  // Use 'text' for SQLite compatibility
+  @UpdateDateColumn({ name: 'updated_at', type: 'text' })  // Use 'text' for SQLite compatibility
   updatedAt: string;
 }

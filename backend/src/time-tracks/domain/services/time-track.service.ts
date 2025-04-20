@@ -5,7 +5,7 @@ import { CreateTimeTrackCommand } from '../transaction-scripts/create-time-track
 import { GetNoteTimeTracksTransactionScript } from '../transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.transaction.script';
 import { GetNoteTimeTracksCommand } from '../transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.command';
 import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
-
+import { GetTimeTracksTotalByNoteIdTransactionScript } from '../transaction-scripts/get-time-tracks-total-by-note-id-TS/get-time-tracks-total-by-note-id.transaction.script';
 type ValidateTimeTrackCreationCommand = {
   noteId: number;
   user: AuthUser;
@@ -15,8 +15,9 @@ type ValidateTimeTrackCreationCommand = {
 export class TimeTrackService {
   constructor(
     private readonly createTimeTrackTS: CreateTimeTrackTransactionScript,
-    private readonly getNoteTimeTracksTS: GetNoteTimeTracksTransactionScript,
+    private readonly getNoteTimeTracksTotalByNoteId: GetNoteTimeTracksTransactionScript,
     private readonly noteAggregator: NoteAggregator,
+    private readonly getTimeTracksTotalByNoteIdTS: GetTimeTracksTotalByNoteIdTransactionScript
   ) {}
 
   async createTimeTrack(command: CreateTimeTrackCommand) {
@@ -35,6 +36,11 @@ export class TimeTrackService {
 
   async getNoteTimeTracks(command: GetNoteTimeTracksCommand) {
     await this.validateTimeTrackCreation(command);
-    return this.getNoteTimeTracksTS.apply(command);
+    return this.getNoteTimeTracksTotalByNoteId.apply(command);
+  }
+
+  async getNoteTimeTracksTotal(command: GetNoteTimeTracksCommand) {
+    await this.validateTimeTrackCreation(command);
+    return this.getTimeTracksTotalByNoteIdTS.apply(command);
   }
 }

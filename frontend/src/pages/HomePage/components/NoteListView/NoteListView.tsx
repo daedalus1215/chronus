@@ -3,11 +3,8 @@ import { useNotes } from '../../hooks/useNotes';
 import { NoteItem } from './NoteItem/NoteItem';
 import styles from './NoteListView.module.css';
 
-type NoteListViewProps = {
-  userId: string;
-}
-
-export const NoteListView:React.FC<NoteListViewProps> = () => {
+export const NoteListView:React.FC = () => {
+  //@TODO: We probably can do this on the page level. No need for it to be so low level.
   const { notes, isLoading, error, hasPendingChanges } = useNotes();
 
   if (isLoading) {

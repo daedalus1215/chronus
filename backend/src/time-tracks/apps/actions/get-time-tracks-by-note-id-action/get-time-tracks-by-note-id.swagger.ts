@@ -1,7 +1,7 @@
 import { ProtectedActionOptions } from 'src/time-tracks/apps/decorators/protected-action.decorator';
 import { TimeTrack } from '../../../domain/entities/time-track-entity/time-track.entity';
 
-export const GetNoteTimeTracksSwagger: ProtectedActionOptions = {
+export const GetTimeTracksByNoteIdSwagger: ProtectedActionOptions = {
   tag: 'Time Tracks',
   summary: 'Get all time track entries for a specific note',
   additionalResponses: [

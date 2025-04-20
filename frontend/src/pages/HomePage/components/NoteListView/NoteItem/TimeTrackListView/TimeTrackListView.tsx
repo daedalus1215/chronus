@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
+import { getTimeTracksTotalByNoteId } from '../../../../../../api/time-tracks';
 import styles from './TimeTrackListView.module.css';
 
 type TimeTrack = {
@@ -16,6 +17,7 @@ type TimeTrackListProps = {
   timeTracks: TimeTrack[];
   isLoading: boolean;
   error?: string;
+  noteId: number;
 };
 
 export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
@@ -23,8 +25,32 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
   onClose,
   timeTracks,
   isLoading,
-  error
+  error,
+  noteId
 }) => {
+  const [totalTime, setTotalTime] = useState<number | null>(null);
+  const [isLoadingTotal, setIsLoadingTotal] = useState(false);
+  const [totalError, setTotalError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTotalTime = async () => {
+      if (!isOpen) return;
+      
+      setIsLoadingTotal(true);
+      setTotalError(null);
+      try {
+        const total = await getTimeTracksTotalByNoteId(noteId);
+        setTotalTime(total);
+      } catch (err) {
+        setTotalError('Failed to load total time');
+      } finally {
+        setIsLoadingTotal(false);
+      }
+    };
+
+    fetchTotalTime();
+  }, [isOpen, noteId]);
+
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -61,6 +87,17 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <div className={styles.container}>
         <h3 className={styles.title}>Time Entries</h3>
+        <div className={styles.totalTimeContainer}>
+          {isLoadingTotal ? (
+            <div className={styles.loading}>Loading total time...</div>
+          ) : totalError ? (
+            <div className={styles.error}>{totalError}</div>
+          ) : totalTime !== null ? (
+            <div className={styles.totalTime}>
+              Total Time: {formatDuration(totalTime)}
+            </div>
+          ) : null}
+        </div>
         {timeTracks.length === 0 ? (
           <div className={styles.empty}>No time entries found</div>
         ) : (

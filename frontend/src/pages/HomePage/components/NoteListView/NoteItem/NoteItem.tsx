@@ -165,6 +165,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
         timeTracks={timeTracks || []}
         isLoading={isLoading}
         // error={error}
+        noteId={note.id}
       />
     </>
   );

@@ -50,7 +50,8 @@ export class NoteMemoTagRepository {
           .createQueryBuilder("note")
           .select("note.name", "name")
           .addSelect("note.id", "id")
-          .where("note.userId = :userId", { userId })
+          .where("note.user_id = :userId", { userId })
+          .orderBy("note.updated_at", "DESC")
           .getRawMany();
     
         return notes.map((note) => ({name:note.name, id:note.id}));
