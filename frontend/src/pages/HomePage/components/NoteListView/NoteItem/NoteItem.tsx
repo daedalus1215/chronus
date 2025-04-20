@@ -6,6 +6,7 @@ import { TimeTrackingForm, TimeTrackingData } from './TimeTrackingForm/TimeTrack
 import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
+import api from '../../../../../api/axios.interceptor';
 import styles from './NoteItem.module.css';
 
 interface Note {
@@ -33,9 +34,22 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
     navigate(`/notes/${note.id}`);
   };
 
-  const handleMoreClick = (e: React.MouseEvent) => {
+  const handleMoreClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsActionsOpen(true);
+    try {
+      console.log('Updating timestamp for note:', note.id);
+      const response = await api.patch(`/notes/${note.id}/timestamp`);
+      console.log('Update response:', response);
+      setIsActionsOpen(true);
+    } catch (error) {
+      console.error('Failed to update note timestamp:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+      }
+      // Still open the actions menu even if the timestamp update fails
+      setIsActionsOpen(true);
+    }
   };
 
   const handleShare = () => {

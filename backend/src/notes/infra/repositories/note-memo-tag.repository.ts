@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Note } from '../../domain/entities/notes/note.entity';
 import { Tag } from '../../domain/entities/tag/tag.entity';
 import { Memo } from '../../domain/entities/notes/memo.entity';
@@ -66,5 +66,27 @@ export class NoteMemoTagRepository {
             .skip(cursor)
             .take(limit)
             .getRawMany();
+    }
+
+    async updateNoteTimestamp(id: number): Promise<UpdateResult> {
+        try {
+            const result = await this.repository
+                .createQueryBuilder('note')
+                .update(Note)
+                .set({ 
+                    updatedAt: () => 'CURRENT_TIMESTAMP',
+                    'updated_at': () => 'CURRENT_TIMESTAMP'
+                })
+                .where('id = :id', { id })
+                .execute();
+
+            if (result.affected === 0) {
+                throw new Error('Note not found');
+            }
+            return result;
+        } catch (error) {
+            console.error('Error in updateNoteTimestamp:', error);
+            throw error;
+        }
     }
 } 
