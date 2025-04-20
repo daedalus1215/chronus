@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.0.2",
+    "@mui/styled-engine": "^7.0.2",
     "axios": "^1.8.3",
     "date-fns": "^4.1.0",
     "dexie": "^4.0.11",

@@ -45,15 +45,19 @@ export class NoteMemoTagRepository {
         return this.tagRepository.remove(tag);
     }
 
-    async getNoteNamesByUserId(userId: string): Promise<{name:string, id:number}[]> {
-        const notes = await this.repository
-          .createQueryBuilder("note")
-          .select("note.name", "name")
-          .addSelect("note.id", "id")
-          .where("note.user_id = :userId", { userId })
-          .orderBy("note.updated_at", "DESC")
-          .getRawMany();
-    
-        return notes.map((note) => ({name:note.name, id:note.id}));
+    async getNoteNamesByUserId(
+        userId: string,
+        cursor: number,
+        limit = 20
+    ): Promise<{name:string, id:number}[]> {
+        return this.repository
+            .createQueryBuilder("note")
+            .select("note.name", "name")
+            .addSelect("note.id", "id")
+            .where("note.user_id = :userId", { userId })
+            .orderBy("note.updated_at", "DESC")
+            .skip(cursor)
+            .take(limit)
+            .getRawMany();
     }
 } 

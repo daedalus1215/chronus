@@ -1,13 +1,55 @@
-import React from 'react';
-import { useNotes } from '../../hooks/useNotes';
-import { NoteItem } from './NoteItem/NoteItem';
-import styles from './NoteListView.module.css';
+import React, { useCallback, useRef } from "react";
+import { useNotes } from "../../hooks/useNotes";
+import { NoteItem } from "./NoteItem/NoteItem";
+import styles from "./NoteListView.module.css";
 
-export const NoteListView:React.FC = () => {
-  //@TODO: We probably can do this on the page level. No need for it to be so low level.
-  const { notes, isLoading, error, hasPendingChanges } = useNotes();
+const LoadingSpinner: React.FC = () => (
+  <div className={styles.loadingSpinner}>Loading...</div>
+);
 
-  if (isLoading) {
+const NoMoreNotes: React.FC = () => (
+  <div className={styles.noMoreNotes}>No more notes to load</div>
+);
+
+export const NoteListView: React.FC = () => {
+  const { 
+    notes, 
+    isLoading, 
+    error, 
+    hasMore, 
+    loadMore,
+    hasPendingChanges 
+  } = useNotes();
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current || isLoading || !hasMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const threshold = 100; // pixels from bottom to trigger load
+
+    // Check if we're near the bottom
+    if (scrollHeight - scrollTop - clientHeight < threshold) {
+      console.log('Loading more...'); // Debug log
+      loadMore();
+    }
+  }, [isLoading, hasMore, loadMore]);
+
+  // Add scroll event listener
+  React.useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const scrollHandler = () => {
+      requestAnimationFrame(handleScroll);
+    };
+
+    scrollContainer.addEventListener('scroll', scrollHandler);
+    return () => scrollContainer.removeEventListener('scroll', scrollHandler);
+  }, [handleScroll]);
+
+  if (isLoading && notes.length === 0) {
     return <div className={styles.noteListLoading}>Loading notes...</div>;
   }
 
@@ -33,10 +75,18 @@ export const NoteListView:React.FC = () => {
             You have pending changes that will sync when you're back online.
           </div>
         )}
-        {notes.map((note, index) => (
-          <NoteItem key={index} note={note} />
-        ))}
+
+        <div 
+          ref={scrollContainerRef}
+          className={styles.noteListScrollContainer}
+        >
+          {notes.map((note) => (
+            <NoteItem key={note.id} note={note} />
+          ))}
+          {isLoading && <LoadingSpinner />}
+          {!hasMore && <NoMoreNotes />}
+        </div>
       </div>
     </div>
   );
-}
+};

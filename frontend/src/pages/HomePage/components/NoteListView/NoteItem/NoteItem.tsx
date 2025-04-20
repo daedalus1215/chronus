@@ -4,16 +4,15 @@ import { NoteActionsGrid } from './NoteActionGrid/NoteActionGrid';
 import { DateTimePicker } from './DateTimePicker/DateTimePicker';
 import { TimeTrackingForm, TimeTrackingData } from './TimeTrackingForm/TimeTrackingForm';
 import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
-import styles from './NoteItem.module.css';
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
+import styles from './NoteItem.module.css';
 
 interface Note {
   id: number;
   name: string;
   userId: string;
   isMemo: boolean;
-  scheduledFor?: string;
   createdAt?: string;
 }
 
@@ -148,7 +147,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
         isOpen={isDatePickerOpen}
         onClose={() => setIsDatePickerOpen(false)}
         onSelect={handleDateTimeSelected}
-        initialDate={note.scheduledFor ? new Date(note.scheduledFor) : new Date()}
+        initialDate={new Date()}
       />
 
       <TimeTrackingForm
