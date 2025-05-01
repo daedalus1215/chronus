@@ -3,6 +3,7 @@
   background-color: #000;
   color: #fff;
   padding-top: 1rem;
+  
 }
 
 .homeHeader {
@@ -16,6 +17,7 @@
   margin: 0 auto;
   position:fixed;
   top: 64px;
+  width: 100%;
 }
 
 /* Floating action button for new note */
