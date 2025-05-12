@@ -13,8 +13,7 @@ import {
 import { Memo } from "./memo.entity";
 import { Tag } from "../tag/tag.entity";
 import { BaseEntity } from "../../../../shared-kernel/domain/entities/base.entity";
-// import { Checklist } from "./checklist/checklist.entity";
-// import { Tag } from "../tag/tag.entity";
+import { Checklist } from "./checklist/checklist.entity";
 
 @Entity("notes")
 export class Note extends BaseEntity {
@@ -26,9 +25,9 @@ export class Note extends BaseEntity {
   @JoinColumn({name: "memo_id"})
   memo: Memo | null;
 
-  // @OneToOne(() => Checklist, { nullable: true })
-  // @JoinColumn({ name: "checklist_id" })
-  // checklist: Checklist | null;
+  @OneToOne(() => Checklist, { nullable: true })
+  @JoinColumn({ name: "checklist_id" })
+  checklist: Checklist | null;
 
   @Column()
   name: string;

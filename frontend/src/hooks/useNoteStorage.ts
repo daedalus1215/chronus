@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { IndexedDBStorage } from '../infrastructure/storage/indexed-db.storage';
 import { RemoteStorageAdapter } from '../adapters/remote-storage.adapter';
 import { useSyncService } from '../core/services/sync.service';
 import { WithSyncMetadata } from '../core/ports/storage.port';
@@ -19,11 +18,6 @@ export type Note = {
 };
 
 export const useNoteStorage = (userId: string) => {
-  const localStore = useMemo(
-    () => new IndexedDBStorage<Note>('chronus-db', 'notes'),
-    []
-  );
-
   const remoteStore = useMemo(
     () =>
       new RemoteStorageAdapter<Note>({
@@ -36,14 +30,8 @@ export const useNoteStorage = (userId: string) => {
     []
   );
 
-  const syncService = useSyncService<Note>({
-    localStore,
-    remoteStore,
-    entityName: 'notes'
-  });
-
-  const createNote = async (note: Omit<Note, 'id' | 'userId'>): Promise<WithSyncMetadata<Note>> => {
-    return syncService.create({
+  const createNote = async (note: Omit<Note, 'id' | 'userId'>): Promise<Note> => {
+    return remoteStore.create({
       ...note,
       userId
     });
@@ -52,12 +40,11 @@ export const useNoteStorage = (userId: string) => {
   const updateNote = async (
     id: number,
     note: Partial<Omit<Note, 'id' | 'userId'>>
-  ): Promise<WithSyncMetadata<Note>> => {
-    return syncService.update(id, note);
+  ): Promise<Note> => {
+    return remoteStore.update(id, note);
   };
 
   return {
-    ...syncService,
     createNote,
     updateNote
   };

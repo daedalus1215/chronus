@@ -13,6 +13,7 @@ export class AuthService {
 
     async validateUser(username: string, password: string): Promise<Omit<User, 'password'> | null> {
         const user = await this.usersService.findByUsername(username);
+        console.log(user);
         if (user && await bcrypt.compare(password, user.password)) {
             // If the user is found and the password matches, return the user object without the password
             const { password: _, ...result } = user;

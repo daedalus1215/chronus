@@ -5,6 +5,10 @@
   color: #fff;
 }
 
+.logo {
+  margin-top: 4rem;
+}
+
 .content {
   max-width: 1200px;
   width: 100%;

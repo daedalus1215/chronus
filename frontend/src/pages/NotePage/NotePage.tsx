@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useNote } from './hooks/useNote';
 import { NoteEditor } from './components/NoteEditor/NoteEditor';
 import styles from './NotePage.module.css';
+import { CheckList } from './components/CheckList/CheckList';
 
 export const NotePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -53,10 +54,13 @@ export const NotePage: React.FC = () => {
         className={styles.backButton}>
         ← Back
       </button> */}
-      <NoteEditor 
+
+      
+      {/* <NoteEditor 
         note={note}
         onSave={handleSave}
-      />
+      /> */}
+      <CheckList />
     </div>
   );
 };                      

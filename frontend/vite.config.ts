@@ -39,37 +39,7 @@ export default defineConfig({
         navigateFallbackAllowlist: [/^\/(?!api\/).*$/],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: true,
-        runtimeCaching: [
-          {
-            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              networkTimeoutSeconds: 10,
-              cacheableResponse: {
-                statuses: [0, 200]
-              },
-              backgroundSync: {
-                name: 'api-queue',
-                options: {
-                  maxRetentionTime: 24 * 60 // Retry for max of 24 hours (specified in minutes)
-                }
-              }
-            }
-          },
-          {
-            urlPattern: /^https:\/\/fonts\./i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'font-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              }
-            }
-          }
-        ]
+        skipWaiting: true
       }
     })
   ],

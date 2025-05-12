@@ -11,6 +11,8 @@ import { Memo } from './notes/domain/entities/notes/memo.entity';
 import { TagNote } from './notes/domain/entities/tag/tag-note.entity';
 import { TimeTracksModule } from './time-tracks/time-tracks.module';
 import { TimeTrack } from './time-tracks/domain/entities/time-track-entity/time-track.entity';
+import { Checklist } from './notes/domain/entities/notes/checklist/checklist.entity';
+import { ChecklistItem } from './notes/domain/entities/notes/checklist/checklistitem.entity';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { TimeTrack } from './time-tracks/domain/entities/time-track-entity/time-
       useFactory: async (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get<string>('DATABASE'),
-        entities: [User, Note, Tag, Memo, TagNote, TimeTrack],
+        entities: [User, Note, Tag, Memo, TagNote, TimeTrack, Checklist, ChecklistItem],
         synchronize: false,
       }),
       inject: [ConfigService],

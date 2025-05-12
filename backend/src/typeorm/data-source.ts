@@ -5,12 +5,14 @@ import { Memo } from 'src/notes/domain/entities/notes/memo.entity';
 import { Tag } from 'src/notes/domain/entities/tag/tag.entity';
 import { TagNote } from 'src/notes/domain/entities/tag/tag-note.entity';
 import { TimeTrack } from 'src/time-tracks/domain/entities/time-track-entity/time-track.entity';
+import { Checklist } from 'src/notes/domain/entities/notes/checklist/checklist.entity';
+import { ChecklistItem } from 'src/notes/domain/entities/notes/checklist/checklistitem.entity';
 import * as path from 'path';
 
 const AppDataSource = new DataSource({
     type: 'sqlite',
     database: path.join(__dirname, '../../db.sqlite'),
-    entities: [User, Note, Memo, Tag, TagNote, TimeTrack],
+    entities: [User, Note, Memo, Tag, TagNote, TimeTrack, Checklist, ChecklistItem],
     migrations: ['src/typeorm/migrations/*.ts'],
     synchronize: false,
     logging: true

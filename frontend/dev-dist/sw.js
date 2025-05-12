@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-35cb2692'], (function (workbox) { 'use strict';
+define(['./workbox-54d0af47'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
@@ -82,29 +82,11 @@ define(['./workbox-35cb2692'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.apltf6tdqd8"
+    "revision": "0.mngl773b3og"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(({
-    url
-  }) => url.pathname.startsWith("/api"), new workbox.NetworkFirst({
-    "cacheName": "api-cache",
-    "networkTimeoutSeconds": 10,
-    plugins: [new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    }), new workbox.BackgroundSyncPlugin("api-queue", {
-      maxRetentionTime: 1440
-    })]
-  }), 'GET');
-  workbox.registerRoute(/^https:\/\/fonts\./i, new workbox.CacheFirst({
-    "cacheName": "font-cache",
-    plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 10,
-      maxAgeSeconds: 31536000
-    })]
-  }), 'GET');
 
 }));

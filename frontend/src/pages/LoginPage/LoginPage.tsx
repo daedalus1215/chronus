@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Login } from './components/Login';
 import { useAuth } from '../../auth/useAuth';
-import { Logo } from '../../components/Logo/Logo';
 import styles from './LoginPage.module.css';
 
 export const LoginPage:React.FC = () => {
@@ -32,10 +31,6 @@ export const LoginPage:React.FC = () => {
 
   return (
     <div className={styles.loginPage}>
-      <h1 className={styles.title}>
-        <Logo height={100} />
-        Sign in to Chronus
-      </h1>
       <Login onLogin={handleLogin} />
     </div>
   );

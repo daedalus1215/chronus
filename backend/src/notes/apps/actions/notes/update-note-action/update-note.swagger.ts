@@ -1,4 +1,4 @@
-import { NoteResponseDto } from '../../dtos/responses/note.response.dto';
+import { NoteResponseDto } from '../../../dtos/responses/note.response.dto';
 import { ProtectedActionOptions } from 'src/time-tracks/apps/decorators/protected-action.decorator';
 
 export const UpdateNoteSwagger: ProtectedActionOptions = {
