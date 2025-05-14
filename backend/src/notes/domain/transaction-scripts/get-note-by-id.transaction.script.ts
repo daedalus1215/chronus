@@ -6,9 +6,8 @@ import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto
 export class GetNoteByIdTransactionScript {
   constructor(private readonly noteTagRepository: NoteMemoTagRepository) {}
 
-  async apply(id: number): Promise<NoteResponseDto> {
-    const note = await this.noteTagRepository.findById(id);
-    
+  async apply(id: number, userId: string): Promise<NoteResponseDto> {
+    const note = await this.noteTagRepository.findById(id, userId);
     if (!note) {
       throw new NotFoundException(`Note with ID ${id} not found`);
     }

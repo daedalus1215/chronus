@@ -1,7 +1,5 @@
 import { useMemo } from 'react';
 import { RemoteStorageAdapter } from '../adapters/remote-storage.adapter';
-import { useSyncService } from '../core/services/sync.service';
-import { WithSyncMetadata } from '../core/ports/storage.port';
 
 export type Note = {
   id?: number;

@@ -27,14 +27,6 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
 
   return (
     <div className={styles.editor}>
-      <input
-        type="text"
-        value={content.title}
-        onChange={handleTitleChange}
-        className={styles.titleInput}
-        placeholder="Note title"
-        aria-label="Note title"
-      />
       <textarea
         id="note-description"
         value={content.description}

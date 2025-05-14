@@ -21,16 +21,13 @@ export class CreateNoteTransactionScript {
     const note = new Note();
     note.name = name;
     note.userId = userId;
-
     if (isMemo) {
       const memo = new Memo();
       memo.description = "";
       const savedMemo = await this.memoRepository.save(memo);
       note.memo = savedMemo;
-    } else {
-      throw Error("Checklist not implemented yet");
     }
 
-    return this.noteTagRepository.save(note);
+     return await this.noteTagRepository.save(note);
   }
 }

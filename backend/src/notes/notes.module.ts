@@ -15,17 +15,25 @@ import { UpdateNoteTransactionScript } from "./domain/transaction-scripts/update
 import { NoteDtoToEntityConverter } from "./domain/transaction-scripts/update-note-TS/note-dto-to-entity.converter";
 import { NoteAggregator } from './domain/aggregators/note.aggregator';
 import { UpdateNoteTimestampAction } from './apps/actions/update-note-timestamp.action';
-import { Checklist } from "./domain/entities/notes/checklist/checklist.entity";
-import { ChecklistItem } from "./domain/entities/notes/checklist/checklistitem.entity";
+import { CheckItem } from "./domain/entities/notes/check-item.entity";
+import { CreateCheckItemAction } from './apps/actions/notes/create-check-item-action/create-check-item.action';
+import { CreateCheckItemTransactionScript } from './domain/transaction-scripts/create-check-item.transaction.script';
+import { GetCheckItemAction } from './apps/actions/notes/get-check-item-action/get-check-item.action';
+import { GetCheckItemTransactionScript } from './domain/transaction-scripts/get-check-item.transaction.script';
+import { ToggleCheckItemAction } from './apps/actions/notes/toggle-check-item/toggle-check-item.action';
+import { ToggleCheckItemTransactionScript } from './domain/transaction-scripts/toggle-check-item.transaction.script';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Note, Memo, Tag, TagNote, Checklist, ChecklistItem])],
+  imports: [TypeOrmModule.forFeature([Note, Memo, Tag, TagNote, CheckItem])],
   controllers: [
     GetNoteNamesByUserIdAction,
     CreateNoteAction,
     GetNoteByIdAction,
     UpdateNoteAction,
-    UpdateNoteTimestampAction
+    UpdateNoteTimestampAction,
+    CreateCheckItemAction,
+    GetCheckItemAction,
+    ToggleCheckItemAction,
   ],
   providers: [
     NoteDtoToEntityConverter,
@@ -34,6 +42,9 @@ import { ChecklistItem } from "./domain/entities/notes/checklist/checklistitem.e
     UpdateNoteTransactionScript,
     NoteMemoTagRepository,
     NoteAggregator,
+    CreateCheckItemTransactionScript,
+    GetCheckItemTransactionScript,
+    ToggleCheckItemTransactionScript,
   ],
   exports: [
     NoteMemoTagRepository,

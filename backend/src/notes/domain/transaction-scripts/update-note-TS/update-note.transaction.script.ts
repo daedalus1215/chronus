@@ -11,8 +11,8 @@ export class UpdateNoteTransactionScript {
     private readonly noteDtoToEntityConverter: NoteDtoToEntityConverter
   ) {}
 
-  async apply(id: number, updateNoteDto: UpdateNoteDto): Promise<NoteResponseDto> {
-    const note = await this.noteRepository.findById(id);
+  async apply(id: number, updateNoteDto: UpdateNoteDto, userId: string): Promise<NoteResponseDto> {
+    const note = await this.noteRepository.findById(id, userId);
 
     if (!note) {
       throw new NotFoundException("Note not found");

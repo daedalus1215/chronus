@@ -16,12 +16,16 @@ export class NoteMemoTagRepository {
         private readonly memoRepository: Repository<Memo>
     ) {}
 
-    async findById(id: number): Promise<Note | null> {
+    async findById(id: number, userId: string): Promise<Note | null> {
         return this.repository
             .createQueryBuilder('note')
+            .addSelect("CASE WHEN note.memo_id IS NOT NULL THEN 1 ELSE 0 END", "isMemo")
             .leftJoinAndSelect('note.memo', 'memo')
             .leftJoinAndSelect('note.tags', 'tags')
+            .leftJoinAndSelect('note.checkItems', 'checkItems')
             .where('note.id = :id', { id })
+            .andWhere('note.archived_date IS NULL')
+            .andWhere('note.user_id = :userId', { userId })
             .getOne();
     }
 
@@ -50,18 +54,19 @@ export class NoteMemoTagRepository {
         cursor: number,
         limit = 20,
         query?: string
-    ): Promise<{name:string, id:number}[]> {
+    ): Promise<{name:string, id:number, isMemo:number}[]> {
         const qb = this.repository
             .createQueryBuilder("note")
             .select("note.name", "name")
             .addSelect("note.id", "id")
+            .addSelect("CASE WHEN note.memo_id IS NOT NULL THEN 1 ELSE 0 END", "isMemo")
             .where("note.user_id = :userId", { userId });
 
         if (query) {
             qb.andWhere("LOWER(note.name) LIKE LOWER(:query)", { query: `%${query}%` });
         }
 
-        return qb
+        return await qb
             .orderBy("note.updated_at", "DESC")
             .skip(cursor)
             .take(limit)

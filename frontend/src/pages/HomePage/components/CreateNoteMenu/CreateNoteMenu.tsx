@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './CreateNoteMenu.module.css';
+import { NOTE_TYPES } from '../../../../constant';
 
 type CreateNoteMenuProps = {
-  onSelect: (type: 'memo' | 'checklist') => void;
+  onSelect: (type: keyof typeof NOTE_TYPES) => void;
   onClose: () => void;
 };
 
@@ -24,7 +25,7 @@ export const CreateNoteMenu: React.FC<CreateNoteMenuProps> = ({ onSelect, onClos
     <div className={styles.menuContainer} ref={menuRef}>
       <button 
         className={styles.menuButton}
-        onClick={() => onSelect('memo')}
+        onClick={() => onSelect(NOTE_TYPES.MEMO)}
       >
         <span className={styles.icon}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -37,7 +38,7 @@ export const CreateNoteMenu: React.FC<CreateNoteMenuProps> = ({ onSelect, onClos
       <div className={styles.menuDivider} />
       <button 
         className={styles.menuButton}
-        onClick={() => onSelect('checklist')}
+        onClick={() => onSelect(NOTE_TYPES.CHECKLIST)}
       >
         <span className={styles.icon}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

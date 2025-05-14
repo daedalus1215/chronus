@@ -18,6 +18,6 @@ export class TagNote extends BaseEntity {
   @JoinColumn({ name: "notes_id" })
   notes: Note;
 
-  @Column("date")
-  archived_date: Date;
+  @Column({ name: "archived_date" })
+  archivedDate: Date;
 }

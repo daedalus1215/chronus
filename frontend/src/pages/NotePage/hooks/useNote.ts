@@ -1,19 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../../api/axios.interceptor';
-
-export type Note = {
-  id: number;
-  name: string;
-  description?: string;
-  userId: string;
-  isMemo: boolean;
-  createdAt: string;
-  updatedAt: string;
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-};
+import { Note } from '../api/responses';
 
 export const useNote = (noteId: number) => {
   const [note, setNote] = useState<Note | null>(null);

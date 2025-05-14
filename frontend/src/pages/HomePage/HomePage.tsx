@@ -5,6 +5,7 @@ import { useCreateNote } from './hooks/useCreateNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import styles from './HomePage.module.css';
 import { Header } from '../../components/Header/Header';
+import { NOTE_TYPES } from '../../constant';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -15,7 +16,7 @@ export const HomePage: React.FC = () => {
     return null; // This shouldn't happen due to ProtectedRoute, but TypeScript needs it
   }
 
-  const handleCreateNote = async (type: 'memo' | 'checklist') => {
+  const handleCreateNote = async (type: keyof typeof NOTE_TYPES) => {
     try {
       await createNote(type);
       setShowMenu(false);

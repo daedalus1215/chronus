@@ -18,6 +18,20 @@
     z-index: 2;
 }
 
+.titleInput {
+    width: 100%;
+    padding: 0.5rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #222;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+  }
+  
 .pageWrapper {
     min-height: 100vh;
     background: var(--background);
@@ -181,4 +195,21 @@
     font-weight: 600;
     font-size: 16px;
     cursor: pointer;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--muted-foreground);
+}
+
+.error {
+    color: var(--destructive);
+    text-align: center;
+    padding: 1rem;
+    background: var(--destructive-background);
+    border-radius: 8px;
+    margin: 1rem 0;
 }

@@ -1,9 +1,9 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useNote } from './hooks/useNote';
-import { NoteEditor } from './components/NoteEditor/NoteEditor';
-import styles from './NotePage.module.css';
-import { CheckList } from './components/CheckList/CheckList';
+import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useNote } from "./hooks/useNote";
+import { NoteEditor } from "./components/NoteEditor/NoteEditor";
+import styles from "./NotePage.module.css";
+import { CheckListView } from "./components/CheckListView/CheckListView";
 
 export const NotePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,11 +24,8 @@ export const NotePage: React.FC = () => {
     return (
       <div className={styles.errorContainer}>
         <h2>Error loading note</h2>
-        <p>{error || 'Note not found'}</p>
-        <button 
-          onClick={() => navigate(-1)}
-          className={styles.backButton}
-        >
+        <p>{error || "Note not found"}</p>
+        <button onClick={() => navigate(-1)} className={styles.backButton}>
           Go back
         </button>
       </div>
@@ -40,27 +37,35 @@ export const NotePage: React.FC = () => {
     try {
       await updateNote(updatedNote);
     } catch (err) {
-      console.error('Failed to save note:', err);
-      // You might want to show an error toast here
+      console.error("Failed to save note:", err);
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      await handleSave({ name: e.target.value });
+    } catch (err) {
+      console.error("Failed to update title:", err);
+    }
+  };
+
   return (
     <div className={styles.pageContainer}>
-      {/* <button 
-        onClick={() => navigate(-1)}
-        className={styles.backButton}>
-        ← Back
-      </button> */}
-
-      
-      {/* <NoteEditor 
-        note={note}
-        onSave={handleSave}
-      /> */}
-      <CheckList />
+      <input
+        type="text"
+        value={note.name}
+        onChange={handleTitleChange}
+        className={styles.titleInput}
+        placeholder="Note title"
+        aria-label="Note title"
+      />
+      {note.isMemo ? (
+        <NoteEditor note={note} onSave={handleSave} />
+      ) : (
+        <CheckListView note={note} />
+      )}
     </div>
   );
-};                      
+};

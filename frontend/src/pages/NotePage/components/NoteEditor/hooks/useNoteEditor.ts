@@ -10,7 +10,6 @@ type Note = {
 }
 
 type NoteContent = {
-  title: string;
   description: string;
 }
 
@@ -21,20 +20,18 @@ type UseNoteEditorProps = {
 
 type UseNoteEditorReturn = {
   content: NoteContent;
-  handleTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEditorReturn => {
   const [content, setContent] = React.useState<NoteContent>({
-    title: note.name,
     description: note.description || ''
   }); 
   const timeoutRef = React.useRef<number>();
   const contentRef = React.useRef(content);
 
   // Update contentRef when content changes
-  React.useEffect(( ) => {
+  React.useEffect(() => {
     contentRef.current = content;
   }, [content]);
 
@@ -42,7 +39,6 @@ export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEdit
     const currentContent = contentRef.current;
     onSave({
       ...note,
-      name: currentContent.title,
       description: currentContent.description
     });
   }, [note, onSave]);
@@ -58,10 +54,6 @@ export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEdit
     setContent(prev => ({ ...prev, ...updates }));
     debouncedSave();
   }, [debouncedSave]);
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleContentChange({ title: e.target.value });
-  };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     handleContentChange({ description: e.target.value });
@@ -87,7 +79,6 @@ export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEdit
 
   return {
     content,
-    handleTitleChange,
     handleDescriptionChange,
   };
 }; 
