@@ -12,53 +12,28 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.noteTitle {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0 0 1rem;
+.titleInput {
+  width: 100%;
+  /* padding: 0.5rem 0; */
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
   color: #fff;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #222;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+  /* margin: 1rem; */
 }
 
-.noteMetadata {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: #9ca3af;
-  font-size: 0.875rem;
+.titleInput:focus {
+  border-bottom-color: #6366f1;
 }
 
-.noteDate {
-  color: #6b7280;
-}
-
-.tagList {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.tag {
-  padding: 0.25rem 0.75rem;
-  background-color: rgba(99, 102, 241, 0.1);
-  color: #6366f1;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.noteLoading,
-.noteError {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  background-color: #111;
-  border-radius: 12px;
-}
-
-.noteError {
-  color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.1);
+.titleInput::placeholder {
+  color: #4b5563;
 }
 
 .pageContainer {

@@ -17,7 +17,7 @@ export class CreateCheckItemTransactionScript {
     private readonly noteRepository: Repository<Note>
   ) {}
 
-  async apply(createCheckItemDto: CreateCheckItemDto & { authUser: AuthUser}): Promise<Note> {
+  async apply(createCheckItemDto: CreateCheckItemDto & { authUser: AuthUser, noteId: number}): Promise<Note> {
     const { name, noteId, authUser } = createCheckItemDto;
 
     //@TODO: Creating coupling between note validation and check-item TS. This note could come from a NoteAggregator, and this could be orchestrated in a CheckItemService. 

@@ -47,17 +47,17 @@ describe('UpdateNoteTransactionScript', () => {
         const existingNote = createMockNote({ id: noteId });
         const updateDto = createMockUpdateNoteDto();
         const updatedNote = { ...existingNote, name: updateDto.name };
-
+        const userId = 'user1';
         mockRepository.findById.mockResolvedValue(existingNote);
         mockConverter.apply.mockReturnValue(updatedNote);
         mockRepository.save.mockResolvedValue(updatedNote);
 
         // Act
-        const result = await target.apply(noteId, updateDto);
+        const result = await target.apply(noteId, updateDto, userId);
 
         // Assert
         expect(result).toBeInstanceOf(NoteResponseDto);
-        expect(mockRepository.findById).toHaveBeenCalledWith(noteId);
+        expect(mockRepository.findById).toHaveBeenCalledWith(noteId, userId);
         expect(mockConverter.apply).toHaveBeenCalledWith(updateDto, existingNote);
         expect(mockRepository.save).toHaveBeenCalledWith(updatedNote);
       });
@@ -68,15 +68,16 @@ describe('UpdateNoteTransactionScript', () => {
         // Arrange
         const noteId = 999;
         const updateDto = createMockUpdateNoteDto();
-        
+        const userId = 'user1';
+
         mockRepository.findById.mockResolvedValue(null);
 
         // Act & Assert
-        await expect(target.apply(noteId, updateDto))
+        await expect(target.apply(noteId, updateDto, userId))
           .rejects
           .toThrow(NotFoundException);
 
-        expect(mockRepository.findById).toHaveBeenCalledWith(noteId);
+        expect(mockRepository.findById).toHaveBeenCalledWith(noteId, userId);
         expect(mockConverter.apply).not.toHaveBeenCalled();
         expect(mockRepository.save).not.toHaveBeenCalled();
       });
@@ -88,11 +89,12 @@ describe('UpdateNoteTransactionScript', () => {
         const noteId = 1;
         const updateDto = createMockUpdateNoteDto();
         const dbError = new Error('Database error');
-        
+        const userId = 'user1';
+
         mockRepository.findById.mockRejectedValue(dbError);
 
         // Act & Assert
-        await expect(target.apply(noteId, updateDto))
+        await expect(target.apply(noteId, updateDto, userId))
           .rejects
           .toThrow(dbError);
 

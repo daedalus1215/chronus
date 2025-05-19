@@ -4,12 +4,13 @@ import { useNote } from "./hooks/useNote";
 import { NoteEditor } from "./components/NoteEditor/NoteEditor";
 import styles from "./NotePage.module.css";
 import { CheckListView } from "./components/CheckListView/CheckListView";
+import { useTitle } from "./hooks/useTitle";
 
 export const NotePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { note, isLoading, error, updateNote } = useNote(Number(id));
-  const [isSaving, setIsSaving] = React.useState(false);
+  const { title, setTitle, loading: titleLoading, error: titleError } = useTitle(note);
 
   if (isLoading) {
     return (
@@ -33,21 +34,10 @@ export const NotePage: React.FC = () => {
   }
 
   const handleSave = async (updatedNote: Partial<typeof note>) => {
-    setIsSaving(true);
     try {
       await updateNote(updatedNote);
     } catch (err) {
       console.error("Failed to save note:", err);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      await handleSave({ name: e.target.value });
-    } catch (err) {
-      console.error("Failed to update title:", err);
     }
   };
 
@@ -55,12 +45,16 @@ export const NotePage: React.FC = () => {
     <div className={styles.pageContainer}>
       <input
         type="text"
-        value={note.name}
-        onChange={handleTitleChange}
+        value={title}
+        onChange={e => setTitle(e.target.value)}
         className={styles.titleInput}
         placeholder="Note title"
         aria-label="Note title"
+        disabled={titleLoading}
       />
+      {titleError && (
+        <div style={{ color: '#ef4444', marginTop: 4, fontSize: '0.95em' }}>{titleError}</div>
+      )}
       {note.isMemo ? (
         <NoteEditor note={note} onSave={handleSave} />
       ) : (

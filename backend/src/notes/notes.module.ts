@@ -22,6 +22,8 @@ import { GetCheckItemAction } from './apps/actions/notes/get-check-item-action/g
 import { GetCheckItemTransactionScript } from './domain/transaction-scripts/get-check-item.transaction.script';
 import { ToggleCheckItemAction } from './apps/actions/notes/toggle-check-item/toggle-check-item.action';
 import { ToggleCheckItemTransactionScript } from './domain/transaction-scripts/toggle-check-item.transaction.script';
+import { UpdateNoteTitleAction } from "./apps/actions/notes/update-note-title-action/update-note-title.action";
+import { UpdateNoteTitleTransactionScript } from "./domain/transaction-scripts/update-note-TS/update-note-title.transaction.script";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo, Tag, TagNote, CheckItem])],
@@ -34,6 +36,7 @@ import { ToggleCheckItemTransactionScript } from './domain/transaction-scripts/t
     CreateCheckItemAction,
     GetCheckItemAction,
     ToggleCheckItemAction,
+    UpdateNoteTitleAction
   ],
   providers: [
     NoteDtoToEntityConverter,
@@ -45,6 +48,7 @@ import { ToggleCheckItemTransactionScript } from './domain/transaction-scripts/t
     CreateCheckItemTransactionScript,
     GetCheckItemTransactionScript,
     ToggleCheckItemTransactionScript,
+    UpdateNoteTitleTransactionScript
   ],
   exports: [
     NoteMemoTagRepository,

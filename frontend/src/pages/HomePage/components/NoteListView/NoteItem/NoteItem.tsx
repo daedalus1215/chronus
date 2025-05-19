@@ -115,7 +115,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   return (
     <>
       <div 
-        className={`${styles.noteListItem} ${note.isMemo ? styles.memo : styles.note}`}
+        className={`${styles.noteListItem}`}
         onClick={handleClick}
         role="button"
         tabIndex={0}
@@ -128,7 +128,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
         <div className={styles.noteInfo}>
           <span className={styles.noteName}>{note.name}</span>
           <span className={styles.noteType}>
-            {note.isMemo ? 'Memo' : 'Note'}
+            {note.isMemo ? 'Memo' : 'List'}
           </span>
         </div>
         <button 
