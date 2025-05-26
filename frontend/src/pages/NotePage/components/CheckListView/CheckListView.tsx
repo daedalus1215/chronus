@@ -1,33 +1,28 @@
-import React, { useState } from 'react';
-import { useCheckItems } from '../../hooks/useCheckItems';
-import styles from './CheckListView.module.css';
-import { Note } from '../../api/responses';
+import React, { useState } from "react";
+import { useCheckItems } from "../../hooks/useCheckItems";
+import styles from "./CheckListView.module.css";
+import { Note } from "../../api/responses";
+import { Button } from "../../../../components/ui/button";
 
 type CheckListViewProps = {
   note: Note;
-}
+};
 
-export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
-  const [newItem, setNewItem] = useState('');
-  const { 
-    noteState, 
-    error, 
-    addItem, 
-    toggleItem, 
-    deleteItem, 
-    updateItem 
-  } = useCheckItems(note);
+export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
+  const [newItem, setNewItem] = useState("");
+  const { noteState, error, addItem, toggleItem, deleteItem, updateItem } =
+    useCheckItems(note);
 
   //@TODO: Let's clean up all these chatty handlers
-  
+
   const handleAdd = async () => {
     if (!newItem.trim()) return;
     try {
       await addItem(newItem.trim());
-      setNewItem('');
+      setNewItem("");
     } catch (err) {
       // You might want to show an error toast here
-      console.error('Failed to add item:', err);
+      console.error("Failed to add item:", err);
     }
   };
 
@@ -35,7 +30,7 @@ export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
     try {
       await toggleItem(id, noteState);
     } catch (err) {
-      console.error('Failed to toggle item:', err);
+      console.error("Failed to toggle item:", err);
     }
   };
 
@@ -43,7 +38,7 @@ export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
     try {
       await deleteItem(id);
     } catch (err) {
-      console.error('Failed to delete item:', err);
+      console.error("Failed to delete item:", err);
     }
   };
 
@@ -51,7 +46,7 @@ export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
     try {
       await updateItem(id, name);
     } catch (err) {
-      console.error('Failed to update item:', err);
+      console.error("Failed to update item:", err);
     }
   };
 
@@ -68,18 +63,22 @@ export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
             type="text"
             placeholder="+ Add Task"
             value={newItem}
-            onChange={e => setNewItem(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter') handleAdd();
-          }}
-        />
-        <button className={styles.addButton} onClick={handleAdd}>Add</button>
-      </div>
+            onChange={(e) => setNewItem(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleAdd();
+            }}
+          />
+          <Button className={styles.addButton} onClick={handleAdd}>
+            Add
+          </Button>
+        </div>
         <ul className={styles.list}>
-          {noteState.checkItems?.map(item => (
+          {noteState.checkItems?.map((item) => (
             <li
               key={item.id}
-              className={`${styles.listItem} ${item.doneDate ? styles.listItemChecked : ''}`}
+              className={`${styles.listItem} ${
+                item.doneDate ? styles.listItemChecked : ""
+              }`}
             >
               <input
                 type="checkbox"
@@ -90,8 +89,10 @@ export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
               <input
                 type="text"
                 value={item.name}
-                onChange={e => handleEdit(item.id, e.target.value)}
-                className={`${styles.itemInput} ${item.doneDate ? styles.itemInputChecked : ''}`}
+                onChange={(e) => handleEdit(item.id, e.target.value)}
+                className={`${styles.itemInput} ${
+                  item.doneDate ? styles.itemInputChecked : ""
+                }`}
               />
               <button
                 onClick={() => handleDelete(item.id)}
@@ -106,4 +107,4 @@ export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
       </div>
     </div>
   );
-};  
+};

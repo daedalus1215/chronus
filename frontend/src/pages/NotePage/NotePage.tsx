@@ -42,7 +42,7 @@ export const NotePage: React.FC = () => {
   };
 
   return (
-    <div className={styles.pageContainer}>
+    <>
       <input
         type="text"
         value={title}
@@ -60,6 +60,6 @@ export const NotePage: React.FC = () => {
       ) : (
         <CheckListView note={note} />
       )}
-    </div>
+    </>
   );
 };

@@ -23,19 +23,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear }
     }
   };
 
-  // Close search when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isOpen && !inputRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-        onClear();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClear]);
-
   return (
     <div className={`${styles.searchContainer} ${isOpen ? styles.open : ''}`}>
       <button 

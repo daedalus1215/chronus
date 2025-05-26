@@ -44,6 +44,11 @@ export default defineConfig({
     })
   ],
   base: '/',
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
   server: {
     host: env.VITE_HOST,
     port: parseInt(env.VITE_PORT),
@@ -63,7 +68,7 @@ export default defineConfig({
     outDir: 'dist'
   },
   preview: {
-    allowedHosts: [env.VITE_ALLOWED_HOSTS], // or 'chronus.cc-an.com' if that's what you're sticking with
+    allowedHosts: [env.VITE_ALLOWED_HOSTS],
     host: env.VITE_HOST,
     port: parseInt(env.VITE_PORT),
     proxy: {

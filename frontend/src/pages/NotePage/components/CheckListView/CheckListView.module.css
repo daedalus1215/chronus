@@ -1,36 +1,4 @@
-.fab {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--primary);
-    color: #fff;
-    font-size: 24px;
-    border: none;
-    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
-    font-size: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 2;
-}
 
-.titleInput {
-    width: 100%;
-    padding: 0.5rem 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #fff;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid #222;
-    outline: none;
-    transition: all 0.2s ease-in-out;
-    box-sizing: border-box;
-  }
   
 .pageWrapper {
     min-height: 100vh;
@@ -78,17 +46,6 @@
     opacity: 1;
 }
 
-.addButton {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: none;
-    background: var(--background);
-    color: #fff;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    width: 200px;
-}
 
 .list {
     list-style: none;
@@ -147,80 +104,30 @@
     transition: background 0.2s;
 }
 
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.32);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 10;
-}
-
-.modalContent {
-    background: #fff;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    width: 100%;
-    max-width: 400px;
-    padding: 24px;
-    box-shadow: 0 -2px 16px rgba(0,0,0,0.12);
-    margin-bottom: 0;
-}
-
-.modalTitle {
-    margin: 0;
-    margin-bottom: 16px;
-}
-
-.modalInput {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-    margin-bottom: 16px;
-    outline: none;
-}
-
-.buttonGroup {
-    display: flex;
-    gap: 8px;
-}
-
 .addButton {
     flex: 1;
     padding: 10px 0;
     border-radius: 8px;
     border: none;
-    background: #1976d2;
-    color: #fff;
+    background:  var(--primary);
+    color: var(--primary-foreground);
     font-weight: 600;
     font-size: 16px;
-    cursor: pointer;
 }
 
-.cancelButton {
-    flex: 1;
-    padding: 10px 0;
-    border-radius: 8px;
-    border: none;
-    background: #eee;
-    color: #333;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
+.addButton:hover {
+    background: hsl(var(--accent-foreground));
+    color: var(--primary-foreground);
 }
 
-.loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 200px;
-    color: var(--muted-foreground);
+.addButton:active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.addButton:focus {
+    background: var(--primary);
+    color: var(--primary-foreground);
 }
 
 .error {

@@ -1,13 +1,13 @@
 .notePage {
-  background-color: #000;
-  color: #fff;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .noteHeader {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #111;
+  background-color: var(--background);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -18,10 +18,10 @@
   padding: 1rem;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--foreground);
   background: transparent;
   border: none;
-  border-bottom: 2px solid #222;
+  border-bottom: 2px solid var(--border);
   outline: none;
   transition: all 0.2s ease-in-out;
   box-sizing: border-box;
@@ -29,21 +29,11 @@
 }
 
 .titleInput:focus {
-  border-bottom-color: #6366f1;
+  border-bottom-color: var(--primary);
 }
 
 .titleInput::placeholder {
-  color: #4b5563;
-}
-
-.pageContainer {
-  /* padding: 2rem; */
-  max-width: 1200px;
-  height: calc(100vh - 100px);
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  color: var(--muted-foreground);
 }
 
 .loadingContainer {
@@ -53,15 +43,15 @@
   justify-content: center;
   gap: 1rem;
   height: 50vh;
-  color: #9ca3af;
+  color: var(--muted-foreground);
 }
 
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #222;
+  border: 3px solid var(--border);
   border-radius: 50%;
-  border-top-color: #6366f1;
+  border-top-color: var(--primary);
   animation: spin 1s linear infinite;
 }
 
@@ -74,9 +64,9 @@
 .errorContainer {
   text-align: center;
   padding: 2rem;
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: var(--destructive);
   border-radius: 12px;
-  color: #ef4444;
+  color: var(--destructive);
 }
 
 .errorContainer h2 {
@@ -87,25 +77,25 @@
 
 .errorContainer p {
   margin-bottom: 1.5rem;
-  color: #f87171;
+  color: var(--destructive);
 }
 
 .backButton {
   align-self: flex-start;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--muted-foreground);
   background-color: transparent;
-  border: 1px solid #222;
+  border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
 
 .backButton:hover {
-  color: #fff;
-  background-color: #222;
-  border-color: #374151;
+  color: var(--foreground);
+  background-color: var(--background);
+  border-color: var(--border);
 }
 
 .backButton:active {
