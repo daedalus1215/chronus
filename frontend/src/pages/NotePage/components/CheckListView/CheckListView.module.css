@@ -54,8 +54,14 @@
     flex-direction: column;
 }
 
+.addItemContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .addInput {
-    width: 100%;
+    width: 80%;
     padding: 16px 18px;
     border: none;
     border-bottom: 1px solid var(--border);
@@ -70,6 +76,18 @@
 .addInput::placeholder {
     color: var(--muted-foreground);
     opacity: 1;
+}
+
+.addButton {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    background: var(--background);
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    width: 200px;
 }
 
 .list {

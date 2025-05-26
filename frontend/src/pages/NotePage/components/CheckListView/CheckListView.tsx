@@ -24,7 +24,7 @@ export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
     if (!newItem.trim()) return;
     try {
       await addItem(newItem.trim());
-      // setNewItem('');
+      setNewItem('');
     } catch (err) {
       // You might want to show an error toast here
       console.error('Failed to add item:', err);
@@ -62,16 +62,19 @@ export const CheckListView:React.FC<CheckListViewProps> = ({note}) => {
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.container}>
-        <input
-          className={styles.addInput}
-          type="text"
-          placeholder="+ Add Task"
-          value={newItem}
-          onChange={e => setNewItem(e.target.value)}
+        <div className={styles.addItemContainer}>
+          <input
+            className={styles.addInput}
+            type="text"
+            placeholder="+ Add Task"
+            value={newItem}
+            onChange={e => setNewItem(e.target.value)}
           onKeyDown={e => {
             if (e.key === 'Enter') handleAdd();
           }}
         />
+        <button className={styles.addButton} onClick={handleAdd}>Add</button>
+      </div>
         <ul className={styles.list}>
           {noteState.checkItems?.map(item => (
             <li
