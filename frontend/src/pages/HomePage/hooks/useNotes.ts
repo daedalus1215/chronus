@@ -22,7 +22,6 @@ export const useNotes = () => {
     try {
       setIsLoading(true);
       setError(null);
-      console.log('Fetching notes with cursor:', cursor, 'and query:', query);
 
       const response = await api.get<NoteResponse>('/notes/names', {
         params: { 
@@ -30,12 +29,6 @@ export const useNotes = () => {
           limit: 20,
           query 
         }
-      });
-      
-      console.log('Response:', { 
-        notesCount: response.data.notes.length,
-        hasMore: response.data.hasMore,
-        nextCursor: response.data.nextCursor 
       });
       
       if (cursor > 0) {
@@ -65,7 +58,6 @@ export const useNotes = () => {
   }, [fetchNotes]);
 
   const loadMore = useCallback(() => {
-    console.log('loadMore called:', { hasMore, isLoading, nextCursor });
     if (hasMore && !isLoading) {
       fetchNotes(nextCursor, searchQuery);
     }

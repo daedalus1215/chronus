@@ -26,10 +26,8 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuthProvider = () => {
   const [user, setUser] = useState<User | null>(() => {
-    console.log('Initializing auth state...');
     const token = localStorage.getItem('jwt_token');
     if (!token) {
-      console.log('No stored credentials found');
       return null;
     }
     try {
@@ -38,10 +36,8 @@ export const useAuthProvider = () => {
         id: decoded.sub,
         username: decoded.username
       };
-      console.log('Found stored user:', user);
       return user;
     } catch (error) {
-      console.error('Failed to parse stored token:', error);
       localStorage.removeItem('jwt_token');
       return null;
     }
@@ -51,13 +47,11 @@ export const useAuthProvider = () => {
 
   const login = useCallback(async (username: string, password: string): Promise<boolean> => {
     try {
-      console.log('Making login request...');
       const response = await api.post<{ access_token: string }>('/auth/login', {
         username,
         password,
       });
 
-      console.log('Login response:', response.data);
       const { access_token } = response.data;
       
       // Decode the JWT to get user information
@@ -69,7 +63,6 @@ export const useAuthProvider = () => {
 
       localStorage.setItem('jwt_token', access_token);
       setUser(userData);
-      console.log('User state updated:', userData);
       return true;
     } catch (error) {
       console.error('Login failed:', error);
@@ -78,22 +71,18 @@ export const useAuthProvider = () => {
   }, []);
 
   const logout = useCallback(() => {
-    console.log('Logging out...');
     localStorage.removeItem('jwt_token');
     setUser(null);
   }, []);
 
   const register = useCallback(async (username: string, password: string): Promise<boolean> => {
     try {
-      console.log('Making registration request...');
       await api.post('/users/register', {
         username,
         password,
       });
-      console.log('Registration successful');
       return true;
     } catch (error) {
-      console.error('Registration failed:', error);
       return false;
     }
   }, []);

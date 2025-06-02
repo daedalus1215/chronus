@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../api/axios.interceptor';
 import { Note } from '../api/responses';
+import { fetchNoteById } from '../api/requests';
 
 export const useNote = (noteId: number) => {
   const [note, setNote] = useState<Note | null>(null);
@@ -12,8 +13,8 @@ export const useNote = (noteId: number) => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await api.get<Note>(`/notes/detail/${noteId}`);
-        setNote(response.data);
+        const data = await fetchNoteById(noteId);
+        setNote(data);
       } catch (err) {
         console.error('Error fetching note:', err);
         setError('Failed to fetch note');

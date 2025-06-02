@@ -23,10 +23,7 @@ type UseCheckListReturn = {
 }
 
 export const useCheckItems = (note: Note): UseCheckListReturn => {
-  console.log('note3', note);
     const [noteState, setNoteState] = useState<Note>(note);
-
-  console.log('noteState1', noteState);
 
   const [error, setError] = useState<string | null>(null);
 

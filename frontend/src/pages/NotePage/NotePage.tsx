@@ -52,6 +52,7 @@ export const NotePage: React.FC = () => {
         aria-label="Note title"
         disabled={titleLoading}
       />
+      //@TODO Move this inline color out into modular css
       {titleError && (
         <div style={{ color: '#ef4444', marginTop: 4, fontSize: '0.95em' }}>{titleError}</div>
       )}

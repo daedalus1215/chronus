@@ -58,7 +58,7 @@ export const useTitle = (note: Note | null): UseTitleReturn => {
       } finally {
         setLoading(false);
       }
-    }, 600);
+    }, 1200);
   }, [note]);
 
   React.useEffect(() => {

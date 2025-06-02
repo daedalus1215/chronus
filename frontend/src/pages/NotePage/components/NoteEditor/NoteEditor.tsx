@@ -20,7 +20,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
   note, 
   onSave
 }) => {
-  const { content, handleTitleChange, handleDescriptionChange } = useNoteEditor({
+  const { content, handleDescriptionChange } = useNoteEditor({
     note,
     onSave
   });

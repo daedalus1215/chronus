@@ -35,7 +35,6 @@ export const NoteListView: React.FC = () => {
 
     // Check if we're near the bottom
     if (scrollHeight - scrollTop - clientHeight < threshold) {
-      console.log('Loading more...'); // Debug log
       loadMore();
     }
   }, [isLoading, hasMore, loadMore]);

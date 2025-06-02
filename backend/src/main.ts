@@ -4,19 +4,16 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  console.log(`NODE_ENV: ${process.env.NODE_ENV}`); // Temporary log
 
-  // Set global prefix for all routes
   app.setGlobalPrefix('api');
 
-  // Enable CORS
+  // @TODO: Add origin to the allowed origins
   app.enableCors({
-    origin: true, // Allow all origins in development. For production, specify your frontend URL
+    origin: true, 
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
-  // Enable global validation
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strip properties that do not have any decorators
     forbidNonWhitelisted: true, // Throw an error if non-whitelisted properties are present

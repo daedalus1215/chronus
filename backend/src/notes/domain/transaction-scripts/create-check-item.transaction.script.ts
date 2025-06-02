@@ -31,7 +31,12 @@ export class CreateCheckItemTransactionScript {
     checkItem.name = name;
     checkItem.note = note;
     await this.checkItemRepository.save(checkItem)
-    const checkItems = await this.checkItemRepository.findBy({ note: { id: noteId } })  
-    return {...note, checkItems: checkItems}
+    const checkItems = await this.checkItemRepository.findBy({ note: { id: noteId } })
+    
+    //@TODO: This is used in two spots now
+    const nonArchivedCheckItems = checkItems.filter(checkItem => checkItem.doneDate  == null).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const archivedCheckItems = checkItems.filter(checkItem => checkItem.doneDate !== null).sort((a, b) => new Date(a.doneDate).getTime() - new Date(b.archiveDate).getTime());
+      
+    return {...note, checkItems: [...nonArchivedCheckItems, ...archivedCheckItems]}
   }
 } 
