@@ -14,6 +14,7 @@ export const useNote = (noteId: number) => {
         setIsLoading(true);
         setError(null);
         const data = await fetchNoteById(noteId);
+        await api.patch(`/notes/${noteId}/timestamp`);
         setNote(data);
       } catch (err) {
         console.error('Error fetching note:', err);
