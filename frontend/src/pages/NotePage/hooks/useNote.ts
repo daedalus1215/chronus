@@ -4,7 +4,15 @@ import { Note } from '../api/responses';
 import { fetchNoteById } from '../api/requests';
 
 export const useNote = (noteId: number) => {
-  const [note, setNote] = useState<Note | null>(null);
+  const [note, setNote] = useState<Note>({
+    id: 0,
+    name: "",
+    userId: "",
+    isMemo: false,
+    createdAt: "",
+    updatedAt: "",
+    tags: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

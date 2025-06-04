@@ -1,0 +1,40 @@
+.errorContainer {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--destructive);
+    border-radius: 12px;
+    color: var(--destructive);
+  }
+  
+  .errorContainer h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  .errorContainer p {
+    margin-bottom: 1.5rem;
+    color: var(--destructive);
+  }
+  
+  .backButton {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    background-color: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .backButton:hover {
+    color: var(--foreground);
+    background-color: var(--background);
+    border-color: var(--border);
+  }
+  
+  .backButton:active {
+    transform: translateY(1px);
+  } 

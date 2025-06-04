@@ -1,20 +1,5 @@
-.notePage {
-  background-color: var(--background);
-  color: var(--foreground);
-}
-
-.noteHeader {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: var(--background);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
 .titleInput {
   width: 100%;
-  /* padding: 0.5rem 0; */
   padding: 1rem;
   font-size: 1.2rem;
   font-weight: 600;
@@ -25,7 +10,6 @@
   outline: none;
   transition: all 0.2s ease-in-out;
   box-sizing: border-box;
-  /* margin: 1rem; */
 }
 
 .titleInput:focus {
@@ -36,6 +20,7 @@
   color: var(--muted-foreground);
 }
 
+/* @TODO: Move this into a loading component */
 .loadingContainer {
   display: flex;
   flex-direction: column;
@@ -61,43 +46,8 @@
   }
 }
 
-.errorContainer {
-  text-align: center;
-  padding: 2rem;
-  background-color: var(--destructive);
-  border-radius: 12px;
+.titleError {
   color: var(--destructive);
+  margin-top: 4px;
+  font-size: 0.95em;
 }
-
-.errorContainer h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.errorContainer p {
-  margin-bottom: 1.5rem;
-  color: var(--destructive);
-}
-
-.backButton {
-  align-self: flex-start;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
-  background-color: transparent;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.backButton:hover {
-  color: var(--foreground);
-  background-color: var(--background);
-  border-color: var(--border);
-}
-
-.backButton:active {
-  transform: translateY(1px);
-} 
