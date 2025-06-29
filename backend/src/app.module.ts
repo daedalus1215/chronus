@@ -23,7 +23,7 @@ import { CheckItem } from './notes/domain/entities/notes/check-item.entity';
       useFactory: async (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get<string>('DATABASE'),
-        entities: [User, Note, Tag, Memo, TagNote, TimeTrack, CheckItem],
+				entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: false,
       }),
       inject: [ConfigService],

@@ -6,6 +6,8 @@ import { LoginPage } from './pages/LoginPage/LoginPage';
 import { RegisterPage } from './pages/RegisterPage/RegisterPage';
 import { LandingPage } from './pages/LandingPage/LandingPage';
 import { NotePage } from './pages/NotePage/NotePage';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { muiTheme } from './theme';
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -15,6 +17,8 @@ function AppRoutes() {
       <>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/memos" element={<HomePage />} />
+          <Route path="/checklists" element={<HomePage />} />
           <Route path="/notes/:id" element={<NotePage />} />
           {/* Redirect authenticated users trying to access auth pages */}
           <Route path="/login" element={<Navigate to="/" replace />} />
@@ -40,9 +44,12 @@ function AppRoutes() {
 export function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
+      <ThemeProvider theme={muiTheme}>
+        <CssBaseline />
+        <Router>
+          <AppRoutes />
+        </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

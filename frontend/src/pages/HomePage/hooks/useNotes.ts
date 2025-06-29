@@ -3,13 +3,13 @@ import api from '../../../api/axios.interceptor';
 import { useDebounce } from '../../../hooks/useDebounce';
 
 type NoteResponse = {
-  notes: {name: string, id: number}[];
+  notes: {name: string, id: number, isMemo: number}[];
   hasMore: boolean;
   nextCursor: number;
 }
 
-export const useNotes = () => {
-  const [notes, setNotes] = useState<{name: string, id: number}[]>([]);
+export const useNotes = (type?: 'memo' | 'checkList') => {
+  const [notes, setNotes] = useState<{name: string, id: number, isMemo: number}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasPendingChanges] = useState(false);
@@ -27,7 +27,8 @@ export const useNotes = () => {
         params: { 
           cursor, 
           limit: 20,
-          query 
+          query,
+          type
         }
       });
       
@@ -46,7 +47,7 @@ export const useNotes = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [type]);
 
   const searchNotes = useCallback((query: string) => {
     setSearchQuery(query);

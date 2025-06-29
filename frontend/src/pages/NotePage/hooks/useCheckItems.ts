@@ -7,11 +7,6 @@ type NoteContent = {
     checkItems: CheckItem[];
 }
 
-type UseCheckListProps = {
-    note: Note,
-    onSave: (note: Partial<Note>) => void;
-}
-
 type UseCheckListReturn = {
     noteState: Note;
     setNoteState: (note: NoteContent) => void;
@@ -56,7 +51,8 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
   const deleteItem = async (id: number) => {
     try {
       await api.delete(`/notes/check-items/${id}`);
-      setNoteState(prev => prev.filter(item => item.id !== id));
+      setNoteState({...note, checkItems: note.checkItems?.filter(item => item.id !== id)});
+      return note;
     } catch (err) {
       console.error('Error deleting check item:', err);
       throw err;
@@ -66,9 +62,7 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
   const updateItem = async (id: number, name: string) => {
     try {
       const response = await api.patch(`/notes/check-items/${id}`, { name });
-      setNoteState(prev => 
-        prev.map(item => item.id === id ? response.data : item)
-      );
+      setNoteState({...note, checkItems: note.checkItems?.map(item => item.id === id ? response.data : item)});
       return response.data;
     } catch (err) {
       console.error('Error updating check item:', err);

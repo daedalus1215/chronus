@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
-import styles from './DateTimePicker.module.css';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 type DateTimePickerProps = {
   isOpen: boolean;
@@ -24,34 +27,36 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <div className={styles.container}>
-        <h3 className={styles.title}>Schedule Note</h3>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>Schedule Note</Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
             type="datetime-local"
             value={selectedDate.toISOString().slice(0, 16)}
             onChange={(e) => setSelectedDate(new Date(e.target.value))}
-            className={styles.input}
+            fullWidth
+            sx={{ mb: 3 }}
+            InputLabelProps={{ shrink: true }}
           />
-          <div className={styles.actions}>
-            <button
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+            <Button
               type="button"
               onClick={onClose}
-              className={styles.button}
-              data-variant="secondary"
+              variant="outlined"
+              color="secondary"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className={styles.button}
-              data-variant="primary"
+              variant="contained"
+              color="primary"
             >
               Set Schedule
-            </button>
-          </div>
+            </Button>
+          </Box>
         </form>
-      </div>
+      </Box>
     </BottomSheet>
   );
 }; 

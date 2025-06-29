@@ -44,15 +44,6 @@ export const useCreateTimeTrack = () => {
     try {
       setIsCreating(true);
       setError(null);
-
-      if (!isOnline) {
-        // Store locally if offline
-        await timeTrackDB.addPendingTimeTrack(data);
-        setHasPendingTracks(true);
-        return null; // Indicate offline storage
-      }
-
-      // If online, create normally
       const response = await createTimeTrack(data);
       return response;
     } catch (err) {

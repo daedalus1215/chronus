@@ -12,7 +12,11 @@ const NoMoreNotes: React.FC = () => (
   <div className={styles.noMoreNotes}>No more notes to load</div>
 );
 
-export const NoteListView: React.FC = () => {
+type NoteListViewProps = {
+  type?: 'memo' | 'checkList';
+};
+
+export const NoteListView: React.FC<NoteListViewProps> = ({ type }) => {
   const { 
     notes, 
     isLoading, 
@@ -23,7 +27,7 @@ export const NoteListView: React.FC = () => {
     searchNotes,
     clearSearch,
     searchQuery
-  } = useNotes();
+  } = useNotes(type);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -60,14 +64,13 @@ export const NoteListView: React.FC = () => {
     return <div className={styles.noteListError}>{error}</div>;
   }
 
-
-
   return (
     <div className={styles.noteList}>
         <SearchBar 
           value={searchQuery}
           onChange={searchNotes}
           onClear={clearSearch}
+          type={type}
         />
       <div className={styles.noteListContent}>
         {hasPendingChanges && (
@@ -81,7 +84,7 @@ export const NoteListView: React.FC = () => {
           className={styles.noteListScrollContainer}
         >
           {notes.map((note) => (
-            <NoteItem key={note.id} note={note} />
+            <NoteItem key={note.id} note={{ ...note, userId: '', isMemo: !!note.isMemo }} />
           ))}
           {isLoading && <LoadingSpinner />}
           {!hasMore && <NoMoreNotes />}

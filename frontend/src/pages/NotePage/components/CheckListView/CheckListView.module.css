@@ -1,8 +1,6 @@
-
-  
 .pageWrapper {
     min-height: 100vh;
-    background: var(--background);
+    background: var(--color-bg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,10 +11,9 @@
 .container {
     width: 100%;
     max-width: 400px;
-    background: var(--card);
+    background: var(--color-bg-paper);
     border-radius: 16px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-    padding: 0 0 16px 0;
     min-height: 60vh;
     display: flex;
     flex-direction: column;
@@ -26,6 +23,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
 }
 
 .addInput {
@@ -45,7 +43,6 @@
     color: var(--muted-foreground);
     opacity: 1;
 }
-
 
 .list {
     list-style: none;

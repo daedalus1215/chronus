@@ -6,19 +6,24 @@ import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import styles from './HomePage.module.css';
 import { Header } from '../../components/Header/Header';
 import { NOTE_TYPES } from '../../constant';
+import { useLocation } from 'react-router-dom';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { createNote, isCreating } = useCreateNote();
   const [showMenu, setShowMenu] = React.useState(false);
+  const location = useLocation();
+  let noteType: 'memo' | 'checkList' | undefined;
+  if (location.pathname === '/memos') noteType = 'memo';
+  if (location.pathname === '/checklists') noteType = 'checkList';
 
   if (!user) {
     return null; // This shouldn't happen due to ProtectedRoute, but TypeScript needs it
   }
 
-  const handleCreateNote = async (type: keyof typeof NOTE_TYPES) => {
+  const handleCreateNote = async (noteTypeParam: keyof typeof NOTE_TYPES) => {
     try {
-      await createNote(type);
+      await createNote(noteTypeParam);
       setShowMenu(false);
     } catch {
       // Error is already handled in the hook
@@ -30,7 +35,7 @@ export const HomePage: React.FC = () => {
     <div className={styles.homePage}>
       <Header />
       <main className={styles.main}>
-        <NoteListView />
+        <NoteListView type={noteType} />
       </main>
       <button 
         className={styles.fab} 
