@@ -15,8 +15,4 @@ export class AddTagToNoteDto {
   @IsString()
   @IsOptional()
   tagName?: string;
-
-  @ApiProperty({ description: 'The user ID' })
-  @IsString()
-  userId: string;
 } 

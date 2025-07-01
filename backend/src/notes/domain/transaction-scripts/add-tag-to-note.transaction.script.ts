@@ -8,7 +8,7 @@ import { Tag } from "../entities/tag/tag.entity";
 export class AddTagToNoteTransactionScript {
   constructor(private readonly noteRepository: NoteMemoTagRepository) {}
 
-  async apply(dto: AddTagToNoteDto): Promise<NoteResponseDto> {
+  async apply(dto: AddTagToNoteDto & { userId: string }): Promise<NoteResponseDto> {
     const { noteId, userId } = dto;
     const note = await this.noteRepository.addTagToNote(
       noteId,
@@ -22,7 +22,7 @@ export class AddTagToNoteTransactionScript {
     tagId,
     tagName,
     userId,
-  }: AddTagToNoteDto): Promise<Tag | null> {
+  }: AddTagToNoteDto & { userId: string }): Promise<Tag | null> {
     if (tagId) {
       return await this.noteRepository.tagRepository.findOne({
         where: { id: tagId, userId },

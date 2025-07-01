@@ -12,12 +12,13 @@ import styles from "./NotePage.module.css";
 import { useNoteTags } from './hooks/useNoteTags';
 import { BottomSheet } from '../../components/BottomSheet/BottomSheet';
 import { useState } from 'react';
+import { AddTagForm } from './components/AddTagForm/AddTagForm';
 
 export const NotePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { note, isLoading, error, updateNote } = useNote(Number(id));
   const { title, setTitle, loading: titleLoading, error: titleError } = useTitle(note);
-  const { tags, loading: tagsLoading, error: tagsError } = useNoteTags(Number(id));
+  const { tags, loading: tagsLoading, error: tagsError, refetch } = useNoteTags(Number(id));
   const [isAddTagOpen, setAddTagOpen] = useState(false);
 
   if (isLoading) {
@@ -68,8 +69,12 @@ export const NotePage: React.FC = () => {
       </Box>
       {/* Add Tag BottomSheet */}
       <BottomSheet isOpen={isAddTagOpen} onClose={() => setAddTagOpen(false)}>
-        {/* AddTagForm goes here */}
-        <div className="p-4">Add Tag Form (to be implemented)</div>
+        <AddTagForm
+          noteId={Number(id)}
+          tags={tags}
+          onTagAdded={refetch}
+          onClose={() => setAddTagOpen(false)}
+        />
       </BottomSheet>
       {error && <Alert severity="error" sx={{ mb: 2 }}>Error loading note</Alert>}
       <TextField
