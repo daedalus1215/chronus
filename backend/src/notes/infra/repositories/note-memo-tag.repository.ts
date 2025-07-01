@@ -11,7 +11,7 @@ export class NoteMemoTagRepository {
         @InjectRepository(Note)
         private readonly repository: Repository<Note>,
         @InjectRepository(Tag)
-        private readonly tagRepository: Repository<Tag>,
+        public readonly tagRepository: Repository<Tag>,
         @InjectRepository(Memo)
         private readonly memoRepository: Repository<Memo>
     ) {}
@@ -36,8 +36,8 @@ export class NoteMemoTagRepository {
         return this.repository.save(note);
     }
 
-    async findTagByName(name: string): Promise<Tag | null> {
-        return this.tagRepository.findOne({ where: { name } });
+    async findTagByName(name: string, userId: string): Promise<Tag | null> {
+        return this.tagRepository.findOne({ where: { name, userId } });
     }
 
     async createTag(tagData: Partial<Tag>): Promise<Tag> {
@@ -103,5 +103,19 @@ export class NoteMemoTagRepository {
 
     async deleteNoteById(id: number, userId: string): Promise<void> {
         await this.repository.delete({ id, userId });
+    }
+
+    async addTagToNote(noteId: number, tag: Tag, userId: string): Promise<Note> {
+        const note = await this.findById(noteId, userId);
+        if (!note) throw new Error('Note not found');
+        if (!note.tags) note.tags = [];
+        if (!note.tags.find(t => t.id === tag.id)) {
+            note.tags.push(tag);
+        }
+        return this.save(note);
+    }
+
+    async getTagsByUserId(userId: string): Promise<Tag[]> {
+        return this.tagRepository.find({ where: { userId } });
     }
 } 

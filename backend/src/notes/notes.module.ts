@@ -23,10 +23,14 @@ import { GetCheckItemTransactionScript } from './domain/transaction-scripts/get-
 import { ToggleCheckItemAction } from './apps/actions/notes/toggle-check-item/toggle-check-item.action';
 import { ToggleCheckItemTransactionScript } from './domain/transaction-scripts/toggle-check-item.transaction.script';
 import { UpdateNoteTitleAction } from "./apps/actions/notes/update-note-title-action/update-note-title.action";
-import { UpdateNoteTitleTransactionScript } from "./domain/transaction-scripts/update-note-TS/update-note-title.transaction.script";
+import { UpdateNoteTitleTransactionScript } from "./domain/transaction-scripts/update-note-title.transaction.script";
 import { DeleteNoteAction } from './apps/actions/notes/delete-note.action';
 import { DeleteCheckItemAction } from './apps/actions/notes/delete-check-item.action';
 import { DeleteCheckItemTransactionScript } from './domain/transaction-scripts/delete-check-item.transaction.script';
+import { AddTagToNoteAction } from './apps/actions/notes/add-tag-to-note-action/add-tag-to-note.action';
+import { AddTagToNoteTransactionScript } from './domain/transaction-scripts/add-tag-to-note.transaction.script';
+import { GetTagsByUserIdAction } from './apps/actions/notes/get-tags-by-user-id-action/get-tags-by-user-id.action';
+import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/get-tags-by-user-id.transaction.script';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo, Tag, TagNote, CheckItem])],
@@ -41,7 +45,9 @@ import { DeleteCheckItemTransactionScript } from './domain/transaction-scripts/d
     ToggleCheckItemAction,
     UpdateNoteTitleAction,
     DeleteNoteAction,
-    DeleteCheckItemAction
+    DeleteCheckItemAction,
+    AddTagToNoteAction,
+    GetTagsByUserIdAction
   ],
   providers: [
     NoteDtoToEntityConverter,
@@ -54,7 +60,9 @@ import { DeleteCheckItemTransactionScript } from './domain/transaction-scripts/d
     GetCheckItemTransactionScript,
     ToggleCheckItemTransactionScript,
     UpdateNoteTitleTransactionScript,
-    DeleteCheckItemTransactionScript
+    DeleteCheckItemTransactionScript,
+    AddTagToNoteTransactionScript,
+    GetTagsByUserIdTransactionScript
   ],
   exports: [
     NoteMemoTagRepository,

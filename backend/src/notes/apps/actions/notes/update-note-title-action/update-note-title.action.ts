@@ -1,5 +1,5 @@
 import { Controller, Patch, Param, Body } from '@nestjs/common';
-import { UpdateNoteTitleTransactionScript } from '../../../../domain/transaction-scripts/update-note-TS/update-note-title.transaction.script';
+import { UpdateNoteTitleTransactionScript } from '../../../../domain/transaction-scripts/update-note-title.transaction.script';
 import { UpdateNoteTitleDto } from '../../../dtos/requests/update-note-title.dto';
 import { NoteResponseDto } from '../../../dtos/responses/note.response.dto';
 import { ProtectedAction } from 'src/time-tracks/apps/decorators/protected-action.decorator';
