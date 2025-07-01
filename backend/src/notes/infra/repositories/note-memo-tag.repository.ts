@@ -118,4 +118,13 @@ export class NoteMemoTagRepository {
     async getTagsByUserId(userId: string): Promise<Tag[]> {
         return this.tagRepository.find({ where: { userId } });
     }
+
+    async findTagsByNoteId(noteId: number, userId: string): Promise<Tag[]> {
+        const note = await this.repository.findOne({
+            where: { id: noteId, userId },
+            relations: ['tags'],
+        });
+        if (!note) return [];
+        return note.tags || [];
+    }
 } 

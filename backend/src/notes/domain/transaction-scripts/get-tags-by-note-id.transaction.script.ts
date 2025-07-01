@@ -1,0 +1,16 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
+import { TagResponseDto } from 'src/notes/apps/dtos/responses/tag.response.dto';
+
+@Injectable()
+export class GetTagsByNoteIdTransactionScript {
+  constructor(private readonly noteRepository: NoteMemoTagRepository) {}
+
+  async apply(noteId: number, userId: string): Promise<TagResponseDto[]> {
+    const tags = await this.noteRepository.findTagsByNoteId(noteId, userId);
+    if (!tags.length) {
+      throw new NotFoundException('No tags found for this note or note not found');
+    }
+    return tags.map(tag => new TagResponseDto(tag));
+  }
+} 

@@ -9,11 +9,16 @@ import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import styles from "./NotePage.module.css";
+import { useNoteTags } from './hooks/useNoteTags';
+import { BottomSheet } from '../../components/BottomSheet/BottomSheet';
+import { useState } from 'react';
 
 export const NotePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { note, isLoading, error, updateNote } = useNote(Number(id));
   const { title, setTitle, loading: titleLoading, error: titleError } = useTitle(note);
+  const { tags, loading: tagsLoading, error: tagsError } = useNoteTags(Number(id));
+  const [isAddTagOpen, setAddTagOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -34,6 +39,38 @@ export const NotePage: React.FC = () => {
 
   return (
     <Box>
+      {/* Tag List */}
+      <Box className="flex items-center gap-2 overflow-x-auto py-2 mb-2">
+        <button
+          className="flex items-center px-3 py-1 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          aria-label="Add tag"
+          onClick={() => setAddTagOpen(true)}
+          tabIndex={0}
+        >
+          <span className="mr-1 text-lg font-bold">+</span> Add Tag
+        </button>
+        {tagsLoading ? (
+          <span className="text-gray-400 ml-2">Loading tags...</span>
+        ) : tagsError ? (
+          <span className="text-red-500 ml-2">Error loading tags</span>
+        ) : (
+          tags.map((tag: { id: string; name: string }) => (
+            <span
+              key={tag.id}
+              className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-medium whitespace-nowrap"
+              tabIndex={0}
+              aria-label={`Tag: ${tag.name}`}
+            >
+              {tag.name}
+            </span>
+          ))
+        )}
+      </Box>
+      {/* Add Tag BottomSheet */}
+      <BottomSheet isOpen={isAddTagOpen} onClose={() => setAddTagOpen(false)}>
+        {/* AddTagForm goes here */}
+        <div className="p-4">Add Tag Form (to be implemented)</div>
+      </BottomSheet>
       {error && <Alert severity="error" sx={{ mb: 2 }}>Error loading note</Alert>}
       <TextField
         value={title}

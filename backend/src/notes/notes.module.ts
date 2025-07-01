@@ -31,6 +31,8 @@ import { AddTagToNoteAction } from './apps/actions/notes/add-tag-to-note-action/
 import { AddTagToNoteTransactionScript } from './domain/transaction-scripts/add-tag-to-note.transaction.script';
 import { GetTagsByUserIdAction } from './apps/actions/notes/get-tags-by-user-id-action/get-tags-by-user-id.action';
 import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/get-tags-by-user-id.transaction.script';
+import { GetTagsByNoteIdAction } from './apps/actions/notes/get-tags-by-note-id-action/get-tags-by-note-id.action';
+import { GetTagsByNoteIdTransactionScript } from './domain/transaction-scripts/get-tags-by-note-id.transaction.script';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo, Tag, TagNote, CheckItem])],
@@ -47,7 +49,8 @@ import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/g
     DeleteNoteAction,
     DeleteCheckItemAction,
     AddTagToNoteAction,
-    GetTagsByUserIdAction
+    GetTagsByUserIdAction,
+    GetTagsByNoteIdAction,
   ],
   providers: [
     NoteDtoToEntityConverter,
@@ -62,7 +65,8 @@ import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/g
     UpdateNoteTitleTransactionScript,
     DeleteCheckItemTransactionScript,
     AddTagToNoteTransactionScript,
-    GetTagsByUserIdTransactionScript
+    GetTagsByUserIdTransactionScript,
+    GetTagsByNoteIdTransactionScript,
   ],
   exports: [
     NoteMemoTagRepository,
