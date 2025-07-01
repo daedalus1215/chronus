@@ -1,4 +1,5 @@
 import { ProtectedActionOptions } from 'src/time-tracks/apps/decorators/protected-action.decorator';
+import { ApiQuery } from '@nestjs/swagger';
 
 type NoteNameResponse = {
   id: number;
@@ -15,4 +16,26 @@ export const GetNoteNamesByUserIdSwagger: ProtectedActionOptions = {
       type: Array<NoteNameResponse>
     }
   ]
-}; 
+};
+
+export const GetNoteNamesByUserIdApiQueries = [
+  ApiQuery({
+    name: 'type',
+    required: false,
+    description: "Filter by note type: 'memo' for memos, 'checkList' for checklists, or omit for all.",
+    enum: ['memo', 'checkList'],
+    type: String
+  }),
+  ApiQuery({
+    name: 'query',
+    required: false,
+    description: 'Search by note name',
+    type: String
+  }),
+  ApiQuery({
+    name: 'tagId',
+    required: false,
+    description: 'Filter notes by tag ID',
+    type: String
+  })
+]; 

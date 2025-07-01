@@ -11,7 +11,7 @@ export class NoteMemoTagRepository {
         @InjectRepository(Note)
         private readonly repository: Repository<Note>,
         @InjectRepository(Tag)
-        private readonly tagRepository: Repository<Tag>,
+        public readonly tagRepository: Repository<Tag>,
         @InjectRepository(Memo)
         private readonly memoRepository: Repository<Memo>
     ) {}
@@ -36,8 +36,8 @@ export class NoteMemoTagRepository {
         return this.repository.save(note);
     }
 
-    async findTagByName(name: string): Promise<Tag | null> {
-        return this.tagRepository.findOne({ where: { name } });
+    async findTagByName(name: string, userId: string): Promise<Tag | null> {
+        return this.tagRepository.findOne({ where: { name, userId } });
     }
 
     async createTag(tagData: Partial<Tag>): Promise<Tag> {
@@ -49,12 +49,14 @@ export class NoteMemoTagRepository {
         return this.tagRepository.remove(tag);
     }
 
+    //@TODO: Abstract into a query builder that is passed in to move conditionals out of this repository
     async getNoteNamesByUserId(
         userId: string,
         cursor: number,
         limit = 20,
         query?: string,
-        type?: 'memo' | 'checkList'
+        type?: 'memo' | 'checkList',
+        tagId?: string
     ): Promise<{name:string, id:number, isMemo:number}[]> {
         const qb = this.repository
             .createQueryBuilder("note")
@@ -73,6 +75,12 @@ export class NoteMemoTagRepository {
             qb.andWhere('note.memo_id IS NULL');
         }
 
+        if (tagId) {
+            qb.innerJoin('note_tags', 'tn', 'tn.note_id = note.id')
+              .andWhere('tn.tag_id = :tagId', { tagId });
+        }
+
+        console.log('qb', qb.getQueryAndParameters());
         return await qb
             .orderBy("note.updated_at", "DESC")
             .skip(cursor)
@@ -103,5 +111,28 @@ export class NoteMemoTagRepository {
 
     async deleteNoteById(id: number, userId: string): Promise<void> {
         await this.repository.delete({ id, userId });
+    }
+
+    async addTagToNote(noteId: number, tag: Tag, userId: string): Promise<Note> {
+        const note = await this.findById(noteId, userId);
+        if (!note) throw new Error('Note not found');
+        if (!note.tags) note.tags = [];
+        if (!note.tags.find(t => t.id === tag.id)) {
+            note.tags.push(tag);
+        }
+        return this.save(note);
+    }
+
+    async getTagsByUserId(userId: string): Promise<Tag[]> {
+        return this.tagRepository.find({ where: { userId } });
+    }
+
+    async findTagsByNoteId(noteId: number, userId: string): Promise<Tag[]> {
+        const note = await this.repository.findOne({
+            where: { id: noteId, userId },
+            relations: ['tags'],
+        });
+        if (!note) return [];
+        return note.tags || [];
     }
 } 

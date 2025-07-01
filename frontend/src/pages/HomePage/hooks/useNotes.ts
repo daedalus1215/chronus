@@ -1,14 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../../../api/axios.interceptor';
 import { useDebounce } from '../../../hooks/useDebounce';
+import { Note } from '../../../api/dtos/note';
 
-type NoteResponse = {
-  notes: {name: string, id: number, isMemo: number}[];
-  hasMore: boolean;
-  nextCursor: number;
-}
-
-export const useNotes = (type?: 'memo' | 'checkList') => {
+export const useNotes = (type?: 'memo' | 'checkList', tagId?: string) => {
   const [notes, setNotes] = useState<{name: string, id: number, isMemo: number}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,12 +18,13 @@ export const useNotes = (type?: 'memo' | 'checkList') => {
       setIsLoading(true);
       setError(null);
 
-      const response = await api.get<NoteResponse>('/notes/names', {
+      const response = await api.get<Note>('/notes/names', {
         params: { 
           cursor, 
           limit: 20,
           query,
-          type
+          type,
+          tagId
         }
       });
       
@@ -47,7 +43,7 @@ export const useNotes = (type?: 'memo' | 'checkList') => {
     } finally {
       setIsLoading(false);
     }
-  }, [type]);
+  }, [type, tagId]);
 
   const searchNotes = useCallback((query: string) => {
     setSearchQuery(query);

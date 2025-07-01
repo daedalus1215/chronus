@@ -1,5 +1,6 @@
 import { CheckItem } from 'src/notes/domain/entities/notes/check-item.entity';
 
+//@TODO We need to remove constructor conversion and move towards a separate class that does the conversion. 
 export class CheckItemResponseDto {
   id: number;
   name: string;

@@ -14,9 +14,10 @@ const NoMoreNotes: React.FC = () => (
 
 type NoteListViewProps = {
   type?: 'memo' | 'checkList';
+  tagId?: string;
 };
 
-export const NoteListView: React.FC<NoteListViewProps> = ({ type }) => {
+export const NoteListView: React.FC<NoteListViewProps> = ({ type, tagId }) => {
   const { 
     notes, 
     isLoading, 
@@ -27,7 +28,7 @@ export const NoteListView: React.FC<NoteListViewProps> = ({ type }) => {
     searchNotes,
     clearSearch,
     searchQuery
-  } = useNotes(type);
+  } = useNotes(type, tagId);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 

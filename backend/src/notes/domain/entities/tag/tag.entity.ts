@@ -15,7 +15,6 @@ export class Tag {
   @Column({name: 'user_id'})
   userId: string;
 
-
   @ManyToMany(() => Note, (note) => note.tags)
   notes: Note[];
 }

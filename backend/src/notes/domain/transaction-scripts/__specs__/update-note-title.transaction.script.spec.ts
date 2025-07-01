@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { UpdateNoteTitleTransactionScript } from '../update-note-title.transaction.script';
+import { UpdateNoteTitleTransactionScript } from '../../update-note-title.transaction.script';
 import { NoteMemoTagRepository } from '../../../../infra/repositories/note-memo-tag.repository';
 import { NotFoundException } from '@nestjs/common';
 import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
