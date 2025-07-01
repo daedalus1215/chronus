@@ -3,10 +3,10 @@ import { useAuth } from '../../auth/useAuth';
 import { NoteListView } from './components/NoteListView/NoteListView';
 import { useCreateNote } from './hooks/useCreateNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
-import styles from './HomePage.module.css';
 import { Header } from '../../components/Header/Header';
 import { NOTE_TYPES } from '../../constant';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
+import styles from './HomePage.module.css';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -16,9 +16,10 @@ export const HomePage: React.FC = () => {
   let noteType: 'memo' | 'checkList' | undefined;
   if (location.pathname === '/memos') noteType = 'memo';
   if (location.pathname === '/checklists') noteType = 'checkList';
+  const { tagId } = useParams<{ tagId: string }>();
 
   if (!user) {
-    return null; // This shouldn't happen due to ProtectedRoute, but TypeScript needs it
+    return null;
   }
 
   const handleCreateNote = async (noteTypeParam: keyof typeof NOTE_TYPES) => {
@@ -27,7 +28,6 @@ export const HomePage: React.FC = () => {
       setShowMenu(false);
     } catch {
       // Error is already handled in the hook
-      // You might want to show a toast here
     }
   };
 
@@ -35,7 +35,7 @@ export const HomePage: React.FC = () => {
     <div className={styles.homePage}>
       <Header />
       <main className={styles.main}>
-        <NoteListView type={noteType} />
+        <NoteListView type={noteType} tagId={tagId} />
       </main>
       <button 
         className={styles.fab} 

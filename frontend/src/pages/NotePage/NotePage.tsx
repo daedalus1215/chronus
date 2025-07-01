@@ -13,12 +13,14 @@ import { useNoteTags } from './hooks/useNoteTags';
 import { BottomSheet } from '../../components/BottomSheet/BottomSheet';
 import { useState } from 'react';
 import { AddTagForm } from './components/AddTagForm/AddTagForm';
+import { useAllTags } from './hooks/useAllTags';
 
 export const NotePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { note, isLoading, error, updateNote } = useNote(Number(id));
   const { title, setTitle, loading: titleLoading, error: titleError } = useTitle(note);
   const { tags, loading: tagsLoading, error: tagsError, refetch } = useNoteTags(Number(id));
+  const { data: allTags, isLoading: allTagsLoading, error: allTagsError } = useAllTags();
   const [isAddTagOpen, setAddTagOpen] = useState(false);
 
   if (isLoading) {
@@ -37,6 +39,13 @@ export const NotePage: React.FC = () => {
       console.error("Failed to save note:", err);
     }
   };
+
+  // Compute tags that are not already on the note
+  const availableTags = allTags
+    ? allTags.filter(
+        (tag: { id: string }) => !tags.some((noteTag: { id: string }) => noteTag.id === tag.id)
+      )
+    : [];
 
   return (
     <Box>
@@ -69,12 +78,18 @@ export const NotePage: React.FC = () => {
       </Box>
       {/* Add Tag BottomSheet */}
       <BottomSheet isOpen={isAddTagOpen} onClose={() => setAddTagOpen(false)}>
-        <AddTagForm
-          noteId={Number(id)}
-          tags={tags}
-          onTagAdded={refetch}
-          onClose={() => setAddTagOpen(false)}
-        />
+        {allTagsLoading ? (
+          <span className="text-gray-400 ml-2">Loading all tags...</span>
+        ) : allTagsError ? (
+          <span className="text-red-500 ml-2">Error loading all tags</span>
+        ) : (
+          <AddTagForm
+            noteId={Number(id)}
+            tags={availableTags}
+            onTagAdded={refetch}
+            onClose={() => setAddTagOpen(false)}
+          />
+        )}
       </BottomSheet>
       {error && <Alert severity="error" sx={{ mb: 2 }}>Error loading note</Alert>}
       <TextField

@@ -8,6 +8,7 @@ import { LandingPage } from './pages/LandingPage/LandingPage';
 import { NotePage } from './pages/NotePage/NotePage';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { muiTheme } from './theme';
+import { TagPage } from './pages/TagPage/TagPage';
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -19,6 +20,8 @@ function AppRoutes() {
           <Route path="/" element={<HomePage />} />
           <Route path="/memos" element={<HomePage />} />
           <Route path="/checklists" element={<HomePage />} />
+          <Route path="/tag-notes/:tagId" element={<HomePage />} />
+          <Route path="/tags" element={<TagPage />} />
           <Route path="/notes/:id" element={<NotePage />} />
           {/* Redirect authenticated users trying to access auth pages */}
           <Route path="/login" element={<Navigate to="/" replace />} />

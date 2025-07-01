@@ -67,6 +67,34 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
     }
   };
 
+  const handleAddExistingTag = async (tagId: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await api.patch(`/notes/${noteId}/add-tag`, { tagId, noteId });
+      onTagAdded();
+    } catch (err: unknown) {
+      let message = "Failed to add tag. Please try again.";
+      if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object" &&
+        "message" in err.response.data &&
+        typeof (err.response.data as { message?: unknown }).message === "string"
+      ) {
+        message = (err.response.data as { message: string }).message;
+      }
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <form
       className="flex flex-col h-[90vh] max-h-[90vh]"
@@ -118,10 +146,15 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
               <ListItem key={tag.id} disablePadding>
                 <Chip
                   label={tag.name}
-                  className="mr-2 mb-2"
+                  className="mr-2 mb-2 cursor-pointer"
                   color="primary"
                   tabIndex={0}
-                  aria-label={`Tag: ${tag.name}`}
+                  aria-label={`Add tag: ${tag.name}`}
+                  onClick={() => handleAddExistingTag(tag.id)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') handleAddExistingTag(tag.id);
+                  }}
+                  disabled={isLoading}
                 />
               </ListItem>
             ))

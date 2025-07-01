@@ -49,12 +49,14 @@ export class NoteMemoTagRepository {
         return this.tagRepository.remove(tag);
     }
 
+    //@TODO: Abstract into a query builder that is passed in to move conditionals out of this repository
     async getNoteNamesByUserId(
         userId: string,
         cursor: number,
         limit = 20,
         query?: string,
-        type?: 'memo' | 'checkList'
+        type?: 'memo' | 'checkList',
+        tagId?: string
     ): Promise<{name:string, id:number, isMemo:number}[]> {
         const qb = this.repository
             .createQueryBuilder("note")
@@ -73,6 +75,12 @@ export class NoteMemoTagRepository {
             qb.andWhere('note.memo_id IS NULL');
         }
 
+        if (tagId) {
+            qb.innerJoin('note_tags', 'tn', 'tn.note_id = note.id')
+              .andWhere('tn.tag_id = :tagId', { tagId });
+        }
+
+        console.log('qb', qb.getQueryAndParameters());
         return await qb
             .orderBy("note.updated_at", "DESC")
             .skip(cursor)
