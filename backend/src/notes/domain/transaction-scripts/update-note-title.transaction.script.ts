@@ -15,6 +15,11 @@ export class UpdateNoteTitleTransactionScript {
       throw new NotFoundException('Note not found');
     }
     note.name = updateNoteTitleDto.name;
-    return new NoteResponseDto(await this.noteRepository.save(note));
+    const updatedNote = await this.noteRepository.save(note);
+    return {
+      ...updatedNote,
+      checkItems: updatedNote.checkItems,
+      isMemo: updatedNote.memo !== null,
+    };
   }
 } 

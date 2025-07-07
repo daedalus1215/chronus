@@ -12,6 +12,7 @@ export class DeleteCheckItemTransactionScript {
   ) {}
 
   async apply(id: number, authUser: AuthUser): Promise<void> {
+    //@TODO: Move this into a repository
 
     const checkItem = await this.checkItemRepository
       .createQueryBuilder('checkItem')

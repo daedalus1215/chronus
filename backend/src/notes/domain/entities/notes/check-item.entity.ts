@@ -13,10 +13,10 @@ export class CheckItem extends BaseEntity {
   name: string;
 
   @Column({ name: "done_date", nullable: true })
-  doneDate: Date;
+  doneDate: Date | null;
 
   @Column({ name: "archived_date", nullable: true })
-  archiveDate: Date;
+  archiveDate: Date | null;
 
   @ManyToOne(() => Note, (note) => note.checkItems, { onDelete: "CASCADE" })
   @JoinColumn({ name: "note_id" }) 
