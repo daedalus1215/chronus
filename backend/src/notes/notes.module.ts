@@ -1,41 +1,49 @@
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { Note } from "./domain/entities/notes/note.entity";
-import { Tag } from "./domain/entities/tag/tag.entity";
-import { TagNote } from "./domain/entities/tag/tag-note.entity";
-import { GetNoteNamesByUserIdAction } from "./apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.action";
 import { Memo } from "./domain/entities/notes/memo.entity";
+import { CheckItem } from "./domain/entities/notes/check-item.entity";
+import { NoteMemoTagRepository } from "./infra/repositories/note-memo-tag.repository";
+import { GetNoteNamesByUserIdAction } from "./apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.action";
 import { CreateNoteAction } from "./apps/actions/notes/create-note-action/create-note.action";
 import { CreateNoteTransactionScript } from "./domain/transaction-scripts/create-note.transaction.script";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { Module } from "@nestjs/common";
-import { NoteMemoTagRepository } from "./infra/repositories/note-memo-tag.repository";
-import { GetNoteByIdAction } from './apps/actions/notes/get-note-by-id-action/get-note-by-id.action';
-import { GetNoteByIdTransactionScript } from './domain/transaction-scripts/get-note-by-id.transaction.script';
+import { GetNoteByIdAction } from "./apps/actions/notes/get-note-by-id-action/get-note-by-id.action";
+import { GetNoteByIdTransactionScript } from "./domain/transaction-scripts/get-note-by-id.transaction.script";
 import { UpdateNoteAction } from "./apps/actions/notes/update-note-action/update-note.action";
 import { UpdateNoteTransactionScript } from "./domain/transaction-scripts/update-note-TS/update-note.transaction.script";
 import { NoteDtoToEntityConverter } from "./domain/transaction-scripts/update-note-TS/note-dto-to-entity.converter";
-import { NoteAggregator } from './domain/aggregators/note.aggregator';
-import { UpdateNoteTimestampAction } from './apps/actions/update-note-timestamp.action';
-import { CheckItem } from "./domain/entities/notes/check-item.entity";
-import { CreateCheckItemAction } from './apps/actions/notes/create-check-item-action/create-check-item.action';
-import { CreateCheckItemTransactionScript } from './domain/transaction-scripts/create-check-item.transaction.script';
-import { GetCheckItemAction } from './apps/actions/notes/get-check-item-action/get-check-item.action';
-import { GetCheckItemTransactionScript } from './domain/transaction-scripts/get-check-item.transaction.script';
-import { ToggleCheckItemAction } from './apps/actions/notes/toggle-check-item/toggle-check-item.action';
-import { ToggleCheckItemTransactionScript } from './domain/transaction-scripts/toggle-check-item.transaction.script';
+import { NoteAggregator } from "./domain/aggregators/note.aggregator";
+import { UpdateNoteTimestampAction } from "./apps/actions/update-note-timestamp.action";
+import { CreateCheckItemAction } from "./apps/actions/notes/create-check-item-action/create-check-item.action";
+import { CreateCheckItemTransactionScript } from "./domain/transaction-scripts/create-check-item.transaction.script";
+import { GetCheckItemAction } from "./apps/actions/notes/get-check-item-action/get-check-item.action";
+import { GetCheckItemTransactionScript } from "./domain/transaction-scripts/get-check-item.transaction.script";
+import { ToggleCheckItemAction } from "./apps/actions/notes/toggle-check-item/toggle-check-item.action";
+import { ToggleCheckItemTransactionScript } from "./domain/transaction-scripts/toggle-check-item.transaction.script";
 import { UpdateNoteTitleAction } from "./apps/actions/notes/update-note-title-action/update-note-title.action";
 import { UpdateNoteTitleTransactionScript } from "./domain/transaction-scripts/update-note-title.transaction.script";
-import { DeleteNoteAction } from './apps/actions/notes/delete-note.action';
-import { DeleteCheckItemAction } from './apps/actions/notes/delete-check-item.action';
-import { DeleteCheckItemTransactionScript } from './domain/transaction-scripts/delete-check-item.transaction.script';
-import { AddTagToNoteAction } from './apps/actions/notes/add-tag-to-note-action/add-tag-to-note.action';
-import { AddTagToNoteTransactionScript } from './domain/transaction-scripts/add-tag-to-note.transaction.script';
-import { GetTagsByUserIdAction } from './apps/actions/notes/get-tags-by-user-id-action/get-tags-by-user-id.action';
-import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/get-tags-by-user-id.transaction.script';
-import { GetTagsByNoteIdAction } from './apps/actions/notes/get-tags-by-note-id-action/get-tags-by-note-id.action';
-import { GetTagsByNoteIdTransactionScript } from './domain/transaction-scripts/get-tags-by-note-id.transaction.script';
+import { DeleteNoteAction } from "./apps/actions/notes/delete-note.action";
+import { DeleteCheckItemAction } from "./apps/actions/notes/delete-check-item.action";
+import { DeleteCheckItemTransactionScript } from "./domain/transaction-scripts/delete-check-item.transaction.script";
 
+/**
+ * Notes module: encapsulates all note-related logic, actions, and persistence.
+ */
 @Module({
-  imports: [TypeOrmModule.forFeature([Note, Memo, Tag, TagNote, CheckItem])],
+  imports: [TypeOrmModule.forFeature([Note, Memo, CheckItem])],
+  providers: [
+    NoteMemoTagRepository,
+    NoteAggregator,
+    CreateNoteTransactionScript,
+    GetNoteByIdTransactionScript,
+    UpdateNoteTransactionScript,
+    CreateCheckItemTransactionScript,
+    GetCheckItemTransactionScript,
+    ToggleCheckItemTransactionScript,
+    UpdateNoteTitleTransactionScript,
+    DeleteCheckItemTransactionScript,
+    NoteDtoToEntityConverter
+  ],
   controllers: [
     GetNoteNamesByUserIdAction,
     CreateNoteAction,
@@ -48,29 +56,7 @@ import { GetTagsByNoteIdTransactionScript } from './domain/transaction-scripts/g
     UpdateNoteTitleAction,
     DeleteNoteAction,
     DeleteCheckItemAction,
-    AddTagToNoteAction,
-    GetTagsByUserIdAction,
-    GetTagsByNoteIdAction,
   ],
-  providers: [
-    NoteDtoToEntityConverter,
-    CreateNoteTransactionScript,
-    GetNoteByIdTransactionScript,
-    UpdateNoteTransactionScript,
-    NoteMemoTagRepository,
-    NoteAggregator,
-    CreateCheckItemTransactionScript,
-    GetCheckItemTransactionScript,
-    ToggleCheckItemTransactionScript,
-    UpdateNoteTitleTransactionScript,
-    DeleteCheckItemTransactionScript,
-    AddTagToNoteTransactionScript,
-    GetTagsByUserIdTransactionScript,
-    GetTagsByNoteIdTransactionScript,
-  ],
-  exports: [
-    NoteMemoTagRepository,
-    NoteAggregator,
-  ]
+  exports: [NoteMemoTagRepository, NoteAggregator],
 })
 export class NotesModule {}

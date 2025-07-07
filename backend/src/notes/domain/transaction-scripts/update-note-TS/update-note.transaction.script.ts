@@ -18,6 +18,11 @@ export class UpdateNoteTransactionScript {
       throw new NotFoundException("Note not found");
     }
 
-    return new NoteResponseDto(await this.noteRepository.save(this.noteDtoToEntityConverter.apply(updateNoteDto, note)));
+    const updatedNote = await this.noteRepository.save(this.noteDtoToEntityConverter.apply(updateNoteDto, note));
+    return {
+      ...updatedNote,
+      checkItems: updatedNote.checkItems,
+      isMemo: updatedNote.memo !== null,
+    };
   }
 }

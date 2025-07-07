@@ -1,10 +1,10 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { GetNoteByIdTransactionScript } from '../../../../domain/transaction-scripts/get-note-by-id.transaction.script';
-import { NoteResponseDto } from '../../../dtos/responses/note.response.dto';
 import { ProtectedAction } from 'src/time-tracks/apps/decorators/protected-action.decorator';
 import { GetNoteByIdSwagger } from './get-note-by-id.swagger';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator'; 
+import { CheckItem } from 'src/notes/domain/entities/notes/check-item.entity';
 
 @Controller('notes')
 export class GetNoteByIdAction {
@@ -17,7 +17,18 @@ export class GetNoteByIdAction {
   async apply(
     @Param('id') id: string,
     @GetAuthUser() authUser: AuthUser
-  ): Promise<NoteResponseDto> {
-    return await this.getNoteByIdTransactionScript.apply(parseInt(id, 10), authUser.userId);
+  ): Promise<{
+    id: number;
+    name: string;
+    description?: string;
+    checkItems: CheckItem[];
+    isMemo: boolean;
+  }> {
+    const note = await this.getNoteByIdTransactionScript.apply(parseInt(id, 10), authUser.userId);
+    return {
+      ...note,
+      description: note.memo?.description || '',
+      isMemo: note.memo !== null,
+    };
   }
 } 

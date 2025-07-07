@@ -4,7 +4,8 @@ import { Note } from '../domain/entities/notes/note.entity';
 import { UpdateNoteDto } from '../apps/dtos/requests/update-note.dto';
 import { Repository } from 'typeorm';
 import { Memo } from '../domain/entities/notes/memo.entity';
-import { Tag } from '../domain/entities/tag/tag.entity';
+//@TODO: Remove this import
+import { Tag } from '../../tags/domain/entities/tag.entity';
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
@@ -20,7 +21,6 @@ export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
   archivedDate: null,
   memo: null,
   checkItems: [],
-  tags: [],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   ...overrides

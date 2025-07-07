@@ -2,8 +2,6 @@ import {
   Controller,
   Put,
   Param,
-  HttpException,
-  HttpStatus,
   Patch,
 } from "@nestjs/common";
 import { NoteMemoTagRepository } from "src/notes/infra/repositories/note-memo-tag.repository";
@@ -21,6 +19,10 @@ export class UpdateNoteTimestampAction {
   constructor(private readonly noteRepository: NoteMemoTagRepository) {}
 
   @Patch(":id/timestamp")
+  @ProtectedAction({
+    summary: "Update note timestamp",
+    tag: "Notes",
+  })
   async apply(
     @Param("id") id: number,
     @GetAuthUser() user: AuthUser
