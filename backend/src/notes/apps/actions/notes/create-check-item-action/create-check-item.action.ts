@@ -20,7 +20,7 @@ export class CreateCheckItemAction {
     @Body() createCheckItemDto: CreateCheckItemDto,
     @Param('noteId', ParseIntPipe) noteId: number,
     @GetAuthUser() authUser: AuthUser
-  ): Promise<{checkItems: CheckItem[]}> {
+  ): Promise<CheckItem[]> {
     return await this.createCheckItemTransactionScript.apply({...createCheckItemDto, authUser, noteId,});
   }
 } 

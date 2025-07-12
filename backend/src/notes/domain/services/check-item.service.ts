@@ -12,8 +12,8 @@ export class CheckItemService {
     private readonly noteAggregator: NoteAggregator
   ) {}
 
-  async createCheckItem(authUser: AuthUser, checkItem: CheckItem): Promise<CheckItem> {
-    const note = await this.noteAggregator.getReference(checkItem.note.id, authUser.userId.toString());
+  async createCheckItem(authUser: AuthUser, checkItem: CheckItem): Promise<CheckItem[]> {
+    const note = await this.noteAggregator.getReference(checkItem.note.id, authUser.userId);
 
     return this.createCheckItemTransactionScript.apply({
       name: checkItem.name,

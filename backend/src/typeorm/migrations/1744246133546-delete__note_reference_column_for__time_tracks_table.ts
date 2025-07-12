@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Delete_timeTrack_noteReferenceColumn1744246133546 implements MigrationInterface {
-    name = 'Delete_timeTrack_noteReferenceColumn1744246133546'
+export class Delete_noteReferenceColumnFor_timeTracksTable1744246133546 implements MigrationInterface {
+    name = 'Delete_noteReferenceColumnFor_timeTracksTable1744246133546'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "temporary_time_track" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "userId" varchar NOT NULL, "noteId" integer NOT NULL, "date" date NOT NULL, "startTime" time NOT NULL, "durationMinutes" integer NOT NULL, "note" varchar, "createdAt" datetime NOT NULL DEFAULT (datetime('now')), "updatedAt" datetime NOT NULL DEFAULT (datetime('now')))`);

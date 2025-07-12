@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Alter_archiveDate_column1745032847558 implements MigrationInterface {
-    name = 'Alter_archiveDate_column1745032847558'
+export class Alter_addArchiveDateColumnTo_notesAndTimeTrackTables1745032847558 implements MigrationInterface {
+    name = 'Alter_addArchiveDateColumnTo_notesAndTimeTrackTables1745032847558'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "temporary_notes" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "createdAt" text NOT NULL DEFAULT (datetime('now')), "updatedAt" text NOT NULL DEFAULT (datetime('now')), "name" varchar NOT NULL, "user_id" varchar NOT NULL, "archived_date" datetime, "memo_id" integer, CONSTRAINT "REL_2d85c0c4df4bdc951cdd0f9465" UNIQUE ("memo_id"), CONSTRAINT "FK_2d85c0c4df4bdc951cdd0f94650" FOREIGN KEY ("memo_id") REFERENCES "memos" ("id") ON DELETE SET NULL ON UPDATE NO ACTION)`);

@@ -17,19 +17,12 @@ export class CreateCheckItemTransactionScript {
     private readonly noteRepository: Repository<Note>
   ) {}
 
-  async apply(createCheckItemDto: CreateCheckItemDto & { authUser: AuthUser, noteId: number}): Promise<{checkItems: CheckItem[]}> {
+  async apply(createCheckItemDto: CreateCheckItemDto & { authUser: AuthUser, noteId: number}): Promise<CheckItem[]> {
     const { name, noteId, authUser } = createCheckItemDto;
-
-    //@TODO: Creating coupling between note validation and check-item TS. This note could come from a NoteAggregator, and this could be orchestrated in a CheckItemService. 
-    //@TODO: CheckItem could be it's own subdomain essentially. But, let's spike this in for now.
-    const note = await this.noteRepository.findOne({ where: { id: noteId, userId: authUser.userId } });
-    if (!note) {
-      throw new NotFoundException("Note not found");
-    }
 
     const checkItem = new CheckItem();
     checkItem.name = name;
-    checkItem.note = note;
+    checkItem.noteId = noteId;
     await this.checkItemRepository.save(checkItem)
     const checkItems = await this.checkItemRepository.findBy({ note: { id: noteId } })
     
@@ -40,6 +33,6 @@ export class CreateCheckItemTransactionScript {
     const archivedCheckItems = checkItems.filter(checkItem => checkItem.doneDate !== null)
     .sort((a, b) => new Date(a.doneDate).getTime() - new Date(b.archiveDate).getTime());
       
-    return {checkItems: [...nonArchivedCheckItems, ...archivedCheckItems]}
+    return [...nonArchivedCheckItems, ...archivedCheckItems]
   }
 } 

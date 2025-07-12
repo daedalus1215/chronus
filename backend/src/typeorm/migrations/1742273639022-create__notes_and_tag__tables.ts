@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Create_notesAndTag_tables21742273639022 implements MigrationInterface {
-    name = 'Create_notesAndTag_tables21742273639022'
+export class Create_notesAndTag_tables1742273639022 implements MigrationInterface {
+    name = 'Create_notesAndTag_tables1742273639022'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "memos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "createdAt" text NOT NULL DEFAULT (datetime('now')), "updatedAt" text NOT NULL DEFAULT (datetime('now')), "description" text NOT NULL DEFAULT (''))`);

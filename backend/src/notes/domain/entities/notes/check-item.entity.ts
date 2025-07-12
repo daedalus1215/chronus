@@ -1,9 +1,4 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
 import { BaseEntity } from "src/shared-kernel/domain/entities/base.entity";
 import { Note } from "./note.entity";
 
@@ -19,6 +14,9 @@ export class CheckItem extends BaseEntity {
   archiveDate: Date | null;
 
   @ManyToOne(() => Note, (note) => note.checkItems, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "note_id" }) 
+  @JoinColumn({ name: "note_id" })
   note: Note;
+
+  @Column()
+  noteId: number;
 }
