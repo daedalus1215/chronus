@@ -15,7 +15,7 @@ export class CreateNoteTransactionScript {
     private memoRepository: Repository<Memo>
   ) {}
 
-  async apply(createNoteDto: CreateNoteDto & {userId:string}): Promise<Note> {
+  async apply(createNoteDto: CreateNoteDto & {userId:number}): Promise<Note> {
     const { name, userId, isMemo } = createNoteDto;
 
     const note = new Note();

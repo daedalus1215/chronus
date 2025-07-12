@@ -18,7 +18,7 @@ export class GetNoteNamesByUserIdAction {
   @Get('names')
   @ProtectedAction(GetNoteNamesByUserIdSwagger)
   async apply(
-    @GetAuthUser('userId') userId: string,
+    @GetAuthUser('userId') userId: number,
     @Query('cursor') cursor: number = 0,
     @Query('limit') limit: number = 20,
     @Query('query') query?: string,

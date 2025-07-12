@@ -18,7 +18,7 @@ export class DeleteNoteAction {
   })
   async apply(
     @Param('id') id: string,
-    @GetAuthUser('userId') userId: string
+    @GetAuthUser('userId') userId: number
   ): Promise<void> {
     const note = await this.noteRepository.findById(Number(id), userId);
     if (!note) throw new NotFoundException('Note not found');

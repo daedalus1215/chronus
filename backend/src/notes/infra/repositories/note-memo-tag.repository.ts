@@ -13,7 +13,7 @@ export class NoteMemoTagRepository {
         private readonly memoRepository: Repository<Memo>
     ) {}
 
-    async findById(id: number, userId: string): Promise<Note | null> {
+    async findById(id: number, userId: number): Promise<Note | null> {
         return this.repository
             .createQueryBuilder('note')
             .addSelect("CASE WHEN note.memo_id IS NOT NULL THEN 1 ELSE 0 END", "isMemo")
@@ -33,7 +33,7 @@ export class NoteMemoTagRepository {
     }
 
     async getNoteNamesByUserId(
-        userId: string,
+        userId: number,
         cursor: number,
         limit = 20,
         query?: string,
@@ -89,7 +89,7 @@ export class NoteMemoTagRepository {
         }
     }
 
-    async deleteNoteById(id: number, userId: string): Promise<void> {
+    async deleteNoteById(id: number, userId: number): Promise<void> {
         await this.repository.delete({ id, userId });
     }
 } 

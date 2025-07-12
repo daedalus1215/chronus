@@ -17,7 +17,7 @@ export const createMock = <T>(overrides: Partial<T> = {}): jest.Mocked<T> =>
 export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
   id: 1,
   name: 'Original Note',
-  userId: 'user123',
+  userId: 1,
   archivedDate: null,
   memo: null,
   checkItems: [],

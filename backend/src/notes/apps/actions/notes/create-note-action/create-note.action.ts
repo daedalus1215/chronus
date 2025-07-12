@@ -15,7 +15,7 @@ export class CreateNoteAction {
   @Post()
   @ProtectedAction(CreateNoteSwagger)
   async apply(
-    @GetAuthUser('userId') userId: string,
+    @GetAuthUser('userId') userId: number,
     @Body() createNoteDto: CreateNoteDto,
   ): Promise<Note> {
     return this.createNoteTransactionScript.apply({

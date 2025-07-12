@@ -6,6 +6,7 @@ import { CreateCheckItemSwagger } from './create-check-item.swagger';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { Note } from 'src/notes/domain/entities/notes/note.entity';
+import { CheckItem } from 'src/notes/domain/entities/notes/check-item.entity';
 
 @Controller('notes')
 export class CreateCheckItemAction {
@@ -19,7 +20,7 @@ export class CreateCheckItemAction {
     @Body() createCheckItemDto: CreateCheckItemDto,
     @Param('noteId', ParseIntPipe) noteId: number,
     @GetAuthUser() authUser: AuthUser
-  ): Promise<Note> {
+  ): Promise<{checkItems: CheckItem[]}> {
     return await this.createCheckItemTransactionScript.apply({...createCheckItemDto, authUser, noteId,});
   }
 } 

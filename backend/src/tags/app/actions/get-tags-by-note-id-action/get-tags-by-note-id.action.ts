@@ -12,10 +12,9 @@ export class GetTagsByNoteIdAction {
   @Get('/note/:id')
   @ProtectedAction(GetTagsByNoteIdSwagger)
   async apply(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @GetAuthUser() user: AuthUser
   ): Promise<TagResponseDto[]> {
-    console.log('getTagsByNoteIdAction', id, user.userId);
     return this.tagService.getTagsByNoteId(Number(id), user.userId);
   }
 } 

@@ -17,7 +17,7 @@ export class CreateCheckItemTransactionScript {
     private readonly noteRepository: Repository<Note>
   ) {}
 
-  async apply(createCheckItemDto: CreateCheckItemDto & { authUser: AuthUser, noteId: number}): Promise<Note> {
+  async apply(createCheckItemDto: CreateCheckItemDto & { authUser: AuthUser, noteId: number}): Promise<{checkItems: CheckItem[]}> {
     const { name, noteId, authUser } = createCheckItemDto;
 
     //@TODO: Creating coupling between note validation and check-item TS. This note could come from a NoteAggregator, and this could be orchestrated in a CheckItemService. 
@@ -34,9 +34,12 @@ export class CreateCheckItemTransactionScript {
     const checkItems = await this.checkItemRepository.findBy({ note: { id: noteId } })
     
     //@TODO: This is used in two spots now
-    const nonArchivedCheckItems = checkItems.filter(checkItem => checkItem.doneDate  == null).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    const archivedCheckItems = checkItems.filter(checkItem => checkItem.doneDate !== null).sort((a, b) => new Date(a.doneDate).getTime() - new Date(b.archiveDate).getTime());
+    const nonArchivedCheckItems = checkItems.filter(checkItem => checkItem.doneDate  == null).
+    sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    const archivedCheckItems = checkItems.filter(checkItem => checkItem.doneDate !== null)
+    .sort((a, b) => new Date(a.doneDate).getTime() - new Date(b.archiveDate).getTime());
       
-    return {...note, checkItems: [...nonArchivedCheckItems, ...archivedCheckItems]}
+    return {checkItems: [...nonArchivedCheckItems, ...archivedCheckItems]}
   }
 } 

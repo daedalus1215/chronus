@@ -29,7 +29,7 @@ export class TimeTrackService {
     await this.noteAggregator.belongsToUser({
       noteId: command.noteId,
       user: {
-        id: parseInt(command.user.userId)
+        id: command.user.userId
       }
     });
   }

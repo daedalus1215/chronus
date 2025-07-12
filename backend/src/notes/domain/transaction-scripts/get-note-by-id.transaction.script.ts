@@ -10,7 +10,7 @@ export class GetNoteByIdTransactionScript {
 
   async apply(
     id: number,
-    userId: string
+    userId: number
   ): Promise<{
     id: number;
     name: string;
