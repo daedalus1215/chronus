@@ -1,0 +1,66 @@
+---
+alwaysApply: true
+---
+    }
+  ]     
+};
+```
+
+### 4. Consistent Naming Conventions
+```typescript
+// Action file
+export class CreateCheckItemAction { }
+
+// Swagger file
+export const CreateCheckItemSwagger: ProtectedActionOptions = { }
+
+// DTO files
+export class CreateCheckItemDto { }
+export class CheckItemResponseDto { }
+```
+
+## Benefits of Separation
+
+### 1. Single Responsibility Principle
+- **Action**: Only handles HTTP concerns
+- **Swagger**: Only handles documentation
+- **Service**: Only handles business orchestration
+
+### 2. Easier Testing
+- **Action tests**: Focus on HTTP behavior
+- **Swagger tests**: Focus on documentation accuracy
+- **Service tests**: Focus on business logic
+
+### 3. Better Maintainability
+- **Changes to HTTP handling**: Only affect action file
+- **Changes to documentation**: Only affect swagger file
+- **Changes to business logic**: Only affect service file
+
+### 4. Clear Dependencies
+- **Action depends on**: Service, DTOs, decorators
+- **Swagger depends on**: DTOs, decorator types
+- **Service depends on**: Transaction scripts, aggregators
+
+## Migration Strategy
+
+### Step 1: Extract Swagger Configuration
+1. Move swagger configuration to separate file
+2. Update imports in action file
+3. Ensure swagger uses DTOs, not entities
+
+### Step 2: Thin Action Layer
+1. Remove business logic from action
+2. Ensure action only handles HTTP concerns
+3. Delegate all business logic to service
+
+### Step 3: Update Documentation
+1. Add comprehensive error responses
+2. Use proper DTOs in swagger
+3. Add meaningful descriptions
+
+### Step 4: Update Tests
+1. Separate action tests from business logic tests
+2. Test HTTP behavior independently
+3. Test documentation separately
+
+This separation ensures each file has a single, well-defined responsibility and makes the codebase more maintainable and testable. 
