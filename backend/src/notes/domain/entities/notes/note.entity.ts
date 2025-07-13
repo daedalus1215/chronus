@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
 import { Memo } from "./memo.entity";
 import { CheckItem } from "src/check-items/domain/entities/check-item.entity";
@@ -39,8 +40,8 @@ export class Note {
   @Column({ name: "user_id" })
   userId: number;
 
-  @Column({ name: "archived_date", nullable: true })
-  archivedDate: Date;
+  @DeleteDateColumn({ name: "archived_at", nullable: true })
+  archivedAt: Date | null;
 
   @OneToMany(() => CheckItem, (checkItem) => checkItem.noteId)
   checkItems: CheckItem[];

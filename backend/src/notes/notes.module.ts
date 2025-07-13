@@ -16,6 +16,9 @@ import { UpdateNoteTimestampAction } from "./apps/actions/update-note-timestamp.
 import { UpdateNoteTitleAction } from "./apps/actions/notes/update-note-title-action/update-note-title.action";
 import { UpdateNoteTitleTransactionScript } from "./domain/transaction-scripts/update-note-title.transaction.script";
 import { DeleteNoteAction } from "./apps/actions/notes/delete-note.action";
+import { ArchiveNoteAction } from "./apps/actions/archive-note/archive-note.action";
+import { ArchiveNoteTransactionScript } from "./domain/transaction-scripts/archive-note/archive-note.transaction.script";
+import { NoteService } from "./domain/services/note.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo])],
@@ -26,7 +29,9 @@ import { DeleteNoteAction } from "./apps/actions/notes/delete-note.action";
     GetNoteByIdTransactionScript,
     UpdateNoteTransactionScript,
     UpdateNoteTitleTransactionScript,
-    NoteDtoToEntityConverter
+    ArchiveNoteTransactionScript,
+    NoteDtoToEntityConverter,
+    NoteService
   ],
   controllers: [
     GetNoteNamesByUserIdAction,
@@ -36,7 +41,8 @@ import { DeleteNoteAction } from "./apps/actions/notes/delete-note.action";
     UpdateNoteTimestampAction,
     UpdateNoteTitleAction,
     DeleteNoteAction,
+    ArchiveNoteAction,
   ],
-  exports: [NoteMemoTagRepository, NoteAggregator],
+  exports: [NoteMemoTagRepository, NoteAggregator, NoteService],
 })
 export class NotesModule {}

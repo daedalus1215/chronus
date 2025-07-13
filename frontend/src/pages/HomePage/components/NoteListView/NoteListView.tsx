@@ -85,7 +85,10 @@ export const NoteListView: React.FC<NoteListViewProps> = ({ type, tagId }) => {
           className={styles.noteListScrollContainer}
         >
           {notes.map((note) => (
-            <NoteItem key={note.id} note={{ ...note, userId: '', isMemo: !!note.isMemo }} />
+            <NoteItem 
+              key={note.id} 
+              note={note} 
+            />
           ))}
           {isLoading && <LoadingSpinner />}
           {!hasMore && <NoMoreNotes />}
