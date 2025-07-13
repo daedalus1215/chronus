@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CheckItem } from '../../domain/entities/check-item.entity';
+import { CheckItem } from '../../../domain/entities/check-item.entity';
+import { CheckItemsHydrator } from './check-items.hydrator';
 
 @Injectable()
 export class CheckItemsRepository {
   constructor(
     @InjectRepository(CheckItem)
-    private readonly checkItemRepository: Repository<CheckItem>
+    private readonly checkItemRepository: Repository<CheckItem>,
+    private readonly hydrator: CheckItemsHydrator
   ) {}
 
   async save(checkItem: CheckItem): Promise<CheckItem> {
@@ -34,7 +36,6 @@ export class CheckItemsRepository {
   }
 
   async findByIdWithNoteValidation(id: number, userId: number): Promise<CheckItem | null> {
-    // Use raw SQL to avoid cross-domain entity relationships
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
       .select('checkItem.*')
@@ -47,21 +48,10 @@ export class CheckItemsRepository {
 
     if (!result) return null;
 
-    // Map raw result back to CheckItem entity
-    const checkItem = new CheckItem();
-    checkItem.id = result.id;
-    checkItem.name = result.name;
-    checkItem.doneDate = result.done_date;
-    checkItem.archiveDate = result.archived_date;
-    checkItem.noteId = result.note_id;
-    checkItem.createdAt = result.created_at;
-    checkItem.updatedAt = result.updated_at;
-
-    return checkItem;
+    return this.hydrator.fromRawResult(result);
   }
 
-  async findByIdWithNoteValidationForUpdate(id: number, userId: number): Promise<CheckItem | null> {
-    // Use raw SQL to avoid cross-domain entity relationships
+  async findByIdWithNoteValidationForUpdate(id: number, noteId: number, userId: number): Promise<CheckItem | null> {
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
       .select('checkItem.*')
@@ -73,16 +63,18 @@ export class CheckItemsRepository {
 
     if (!result) return null;
 
-    // Map raw result back to CheckItem entity
-    const checkItem = new CheckItem();
-    checkItem.id = result.id;
-    checkItem.name = result.name;
-    checkItem.doneDate = result.done_date;
-    checkItem.archiveDate = result.archived_date;
-    checkItem.noteId = result.note_id;
-    checkItem.createdAt = result.created_at;
-    checkItem.updatedAt = result.updated_at;
+    return this.hydrator.fromRawResult(result);
+  }
 
-    return checkItem;
+  async findByNoteIdWithUserValidation(noteId: number, userId: number): Promise<CheckItem[]> {
+    const results = await this.checkItemRepository
+      .createQueryBuilder('checkItem')
+      .select('checkItem.*')
+      .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
+      .where('checkItem.note_id = :noteId', { noteId })
+      .andWhere('note.user_id = :userId', { userId })
+      .getRawMany();
+
+    return this.hydrator.fromRawResults(results);
   }
 } 

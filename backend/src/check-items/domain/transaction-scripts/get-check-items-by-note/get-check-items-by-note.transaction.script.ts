@@ -1,21 +1,21 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, ForbiddenException } from "@nestjs/common";
 import { CheckItem } from "../../entities/check-item.entity";
-import { CreateCheckItemDto } from "../../../apps/dtos/requests/create-check-item.dto";
 import { CheckItemsRepository } from "../../../infra/repositories/check-items/check-items.repository";
 
 @Injectable()
-export class CreateCheckItemTransactionScript {
+export class GetCheckItemsByNoteTransactionScript {
   constructor(
-    private readonly checkItemsRepository: CheckItemsRepository,
+    private readonly checkItemsRepository: CheckItemsRepository
   ) {}
 
-  async apply(
-    dto: CreateCheckItemDto & {
-      noteId: number;
-      userId: number;
+  async apply(noteId: number, userId: number): Promise<CheckItem[]> {
+    const checkItems = await this.checkItemsRepository.findByNoteIdWithUserValidation(noteId, userId);
+
+    if (checkItems.length === 0) {
+      // This could mean either no check items exist, or the user doesn't have access
+      // You might want to verify note access separately
+      throw new ForbiddenException('Access denied to this note');
     }
-  ): Promise<CheckItem[]> {
-    const checkItems = await this.saveCheckItem(dto);
 
     const nonArchivedCheckItemsFilter = (item: CheckItem) =>
       item.doneDate == null;
@@ -32,18 +32,6 @@ export class CreateCheckItemTransactionScript {
         archivedCheckItemsFilter
       ),
     ];
-  }
-
-  private async saveCheckItem({
-    name,
-    noteId,
-    userId,
-  }: CreateCheckItemDto & { noteId: number, userId: number }): Promise<CheckItem[]> {
-    const newCheckItem = new CheckItem();
-    newCheckItem.name = name;
-    newCheckItem.noteId = noteId;
-    await this.checkItemsRepository.save(newCheckItem);
-    return this.checkItemsRepository.findByNoteId(noteId);
   }
 
   private sortCheckItemsByArchiveStatus(

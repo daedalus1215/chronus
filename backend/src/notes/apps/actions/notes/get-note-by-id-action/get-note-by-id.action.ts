@@ -4,7 +4,7 @@ import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-act
 import { GetNoteByIdSwagger } from './get-note-by-id.swagger';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator'; 
-import { CheckItem } from 'src/notes/domain/entities/notes/check-item.entity';
+import { CheckItem } from 'src/check-items/domain/entities/check-item.entity';
 
 @Controller('notes')
 export class GetNoteByIdAction {

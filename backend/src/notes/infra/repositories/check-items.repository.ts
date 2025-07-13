@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CheckItem } from '../../domain/entities/notes/check-item.entity';
+import { CheckItem } from 'src/check-items/domain/entities/check-item.entity';
 
 @Injectable()
 export class CheckItemsRepository {
@@ -16,7 +16,7 @@ export class CheckItemsRepository {
 
   async findByNoteId(noteId: number): Promise<CheckItem[]> {
     return this.checkItemRepository.findBy({
-      note: { id: noteId },
+      noteId,
     });
   }
 }

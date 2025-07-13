@@ -16,6 +16,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useCheckItemsQuery } from '../../hooks/useCheckItems';
 
 type CheckListViewProps = {
   note: Note;
@@ -23,7 +24,8 @@ type CheckListViewProps = {
 
 export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
   const [newItem, setNewItem] = useState("");
-  const { noteState, error, addItem, toggleItem, deleteItem, updateItem } = useCheckItems(note);
+  const { data: checkItems = [], error } = useCheckItemsQuery(note.id);
+  const { addItem, toggleItem, deleteItem, updateItem } = useCheckItems(note);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -42,7 +44,7 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
 
   const handleToggle = async (id: number) => {
     try {
-      await toggleItem(id, noteState);
+      await toggleItem(id, note);
     } catch (err) {
       console.error("Failed to toggle item:", err);
     }
@@ -101,7 +103,7 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
   return (
     <Box className={styles.pageWrapper}>
       <Paper elevation={3} className={styles.container} sx={{ p: 2, mt: 2 }}>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error.message}</Alert>}
         <Box className={styles.addItemContainer} sx={{ mb: 2, gap: 1 }}>
           <TextField
             className={styles.addInput}
@@ -127,7 +129,7 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
           </Button>
         </Box>
         <List className={styles.list}>
-          {noteState.checkItems?.map((item) => (
+          {checkItems?.map((item) => (
             <ListItem
               key={item.id}
               className={styles.listItem}

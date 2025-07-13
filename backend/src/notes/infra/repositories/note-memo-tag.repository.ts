@@ -18,7 +18,6 @@ export class NoteMemoTagRepository {
             .createQueryBuilder('note')
             .addSelect("CASE WHEN note.memo_id IS NOT NULL THEN 1 ELSE 0 END", "isMemo")
             .leftJoinAndSelect('note.memo', 'memo')
-            .leftJoinAndSelect('note.checkItems', 'checkItems')
             .where('note.id = :id', { id })
             .andWhere('note.archived_date IS NULL')
             .andWhere('note.user_id = :userId', { userId })

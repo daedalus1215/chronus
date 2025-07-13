@@ -1,8 +1,22 @@
-import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
-import { BaseEntity } from "src/shared-kernel/domain/entities/base.entity";
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Entity,
+} from "typeorm";
 
 @Entity("check_items")
-export class CheckItem extends BaseEntity {
+export class CheckItem {
+  @PrimaryGeneratedColumn({ type: "integer" })
+  id: number;
+
+  @CreateDateColumn({ name: "created_at", type: "text" })
+  createdAt: string;
+
+  @UpdateDateColumn({ name: "updated_at", type: "text" })
+  updatedAt: string;
+
   @Column()
   name: string;
 
@@ -34,4 +48,4 @@ export class CheckItemResponseDto {
     this.createdAt = checkItem.createdAt;
     this.updatedAt = checkItem.updatedAt;
   }
-} 
+}

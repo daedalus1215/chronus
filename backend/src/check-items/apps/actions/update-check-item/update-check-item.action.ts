@@ -11,13 +11,14 @@ import { CheckItemService } from "src/check-items/domain/services/check-item.ser
 export class UpdateCheckItemAction {
   constructor(private readonly checkItemService: CheckItemService) {}
 
-  @Patch("/items/:id")
+  @Patch("/items/:id/notes/:noteId")
   @ProtectedAction(UpdateCheckItemSwagger)
   async apply(
     @Body() dto: UpdateCheckItemDto,
     @Param("id", ParseIntPipe) id: number,
+    @Param("noteId", ParseIntPipe) noteId: number,
     @GetAuthUser() authUser: AuthUser
   ): Promise<CheckItem> {
-    return await this.checkItemService.updateCheckItem(id, dto, authUser);
+    return await this.checkItemService.updateCheckItem(id, noteId, dto, authUser);
   }
 }

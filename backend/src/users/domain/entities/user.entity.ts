@@ -1,8 +1,15 @@
-import { Entity, Column } from 'typeorm';
-import { BaseEntity } from 'src/shared-kernel/domain/entities/base.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
-export class User extends BaseEntity{
+export class User {
+  @PrimaryGeneratedColumn({ type: "integer" })
+  id: number;
+
+  @CreateDateColumn({ name: "created_at", type: "text" })
+  createdAt: string;
+
+  @UpdateDateColumn({ name: "updated_at", type: "text" })
+  updatedAt: string;  
  
   @Column({ unique: true, length: 20 })
   username: string;

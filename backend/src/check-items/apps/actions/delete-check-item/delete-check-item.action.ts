@@ -9,12 +9,13 @@ import { CheckItemService } from "src/check-items/domain/services/check-item.ser
 export class DeleteCheckItemAction {
   constructor(private readonly checkItemService: CheckItemService) {}
 
-  @Delete("/items/:id")
+  @Delete("/items/:id/notes/:noteId")
   @ProtectedAction(DeleteCheckItemSwagger)
   async apply(
     @Param("id", ParseIntPipe) id: number,
+    @Param("noteId", ParseIntPipe) noteId: number,
     @GetAuthUser() authUser: AuthUser
   ): Promise<void> {
-    return await this.checkItemService.deleteCheckItem(id, authUser);
+    return await this.checkItemService.deleteCheckItem(id, noteId, authUser);
   }
 }

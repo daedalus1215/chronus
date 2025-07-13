@@ -5,10 +5,11 @@ import { GetCheckItemTransactionScript } from "../transaction-scripts/get-check-
 import { ToggleCheckItemTransactionScript } from "../transaction-scripts/toggle-check-item/toggle-check-item.transaction.script";
 import { DeleteCheckItemTransactionScript } from "../transaction-scripts/delete-check-item/delete-check-item.transaction.script";
 import { UpdateCheckItemTransactionScript } from "../transaction-scripts/update-check-item/update-check-item.transaction.script";
-import { NoteAggregator } from "src/notes/domain/aggregators/note.aggregator";
+import { GetCheckItemsByNoteTransactionScript } from "../transaction-scripts/get-check-items-by-note/get-check-items-by-note.transaction.script";
 import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
-import { CreateCheckItemDto } from "src/check-items/apps/actions/create-check-item/create-check-item.dto";
-import { UpdateCheckItemDto } from "src/check-items/apps/dtos/requests/update-check-item.dto";
+import { CreateCheckItemDto } from "../../apps/dtos/requests/create-check-item.dto";
+import { UpdateCheckItemDto } from "../../apps/dtos/requests/update-check-item.dto";
+import { NoteAggregator } from "src/notes/domain/aggregators/note.aggregator";
 
 @Injectable()
 export class CheckItemService {
@@ -18,6 +19,7 @@ export class CheckItemService {
     private readonly toggleCheckItemTransactionScript: ToggleCheckItemTransactionScript,
     private readonly deleteCheckItemTransactionScript: DeleteCheckItemTransactionScript,
     private readonly updateCheckItemTransactionScript: UpdateCheckItemTransactionScript,
+    private readonly getCheckItemsByNoteTransactionScript: GetCheckItemsByNoteTransactionScript,
     private readonly noteAggregator: NoteAggregator
   ) {}
 
@@ -27,6 +29,7 @@ export class CheckItemService {
     return this.createCheckItemTransactionScript.apply({
       name: dto.checkItem.name,
       noteId: note.id,
+      userId: dto.authUser.userId,
     });
   }
   
@@ -34,15 +37,19 @@ export class CheckItemService {
     return await this.getCheckItemTransactionScript.apply(id, authUser);
   }
 
-  async toggleCheckItem(id: number, authUser: AuthUser): Promise<CheckItem> {
-    return await this.toggleCheckItemTransactionScript.apply(id, authUser);
+  async toggleCheckItem(id: number, noteId: number, authUser: AuthUser): Promise<CheckItem> {
+    return await this.toggleCheckItemTransactionScript.apply(id, noteId, authUser);
   }
 
-  async deleteCheckItem(id: number, authUser: AuthUser): Promise<void> {
-    return await this.deleteCheckItemTransactionScript.apply(id, authUser);
+  async deleteCheckItem(id: number, noteId: number, authUser: AuthUser): Promise<void> {
+    return await this.deleteCheckItemTransactionScript.apply(id, noteId, authUser);
   }
 
-  async updateCheckItem(id: number, dto: UpdateCheckItemDto, authUser: AuthUser): Promise<CheckItem> {
-    return await this.updateCheckItemTransactionScript.apply(id, dto, authUser);
+  async updateCheckItem(id: number, noteId: number, dto: UpdateCheckItemDto, authUser: AuthUser): Promise<CheckItem> {
+    return await this.updateCheckItemTransactionScript.apply(id, noteId, dto, authUser);
+  }
+
+  async getCheckItemsByNoteId(noteId: number, authUser: AuthUser): Promise<CheckItem[]> {
+    return await this.getCheckItemsByNoteTransactionScript.apply(noteId, authUser.userId);
   }
 } 

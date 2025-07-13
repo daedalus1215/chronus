@@ -1,8 +1,16 @@
-import { Entity, Column } from "typeorm";
-import { BaseEntity } from "src/shared-kernel/domain/entities/base.entity";
+import { Entity, Column, JoinColumn, UpdateDateColumn, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("check_items")
-export class CheckItem extends BaseEntity {
+export class CheckItem {
+  @PrimaryGeneratedColumn({ type: "integer" })
+  id: number;
+
+  @CreateDateColumn({ name: "created_at", type: "text" })
+  createdAt: string;
+
+  @UpdateDateColumn({ name: "updated_at", type: "text" })
+  updatedAt: string;
+  
   @Column()
   name: string;
 
@@ -13,5 +21,6 @@ export class CheckItem extends BaseEntity {
   archiveDate: Date | null;
 
   @Column({ name: "note_id" })
+  @JoinColumn({ name: "note_id" })
   noteId: number;
 } 
