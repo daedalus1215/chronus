@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
 import { Note } from '../entities/notes/note.entity';
 
@@ -22,7 +22,13 @@ export class NoteAggregator {
 
   async getReference(noteId: number, userId: number): Promise<NoteReference | null> {
     const note = await this.noteRepository.findById(noteId, userId);
-    if (!note) return null;
+    if (!note) {
+      throw new NotFoundException('Note not found');
+    }
+
+    if (note.userId !== userId) {
+      throw new ForbiddenException('Not authorized to access this note');
+    }
 
     return {
       id: note.id,

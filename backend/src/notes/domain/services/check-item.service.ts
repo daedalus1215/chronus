@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { CheckItem } from "../entities/notes/check-item.entity";
-import { CreateCheckItemTransactionScript } from "../transaction-scripts/create-check-item.transaction.script";
+import { CreateCheckItemTransactionScript } from "../transaction-scripts/create-check-item-ts/create-check-item.transaction.script";
 import { NoteAggregator } from "../aggregators/note.aggregator";
 import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
+import { CreateCheckItemDto } from "src/notes/apps/dtos/requests/create-check-item.dto";
 
 @Injectable()
 export class CheckItemService {
@@ -12,13 +13,12 @@ export class CheckItemService {
     private readonly noteAggregator: NoteAggregator
   ) {}
 
-  async createCheckItem(authUser: AuthUser, checkItem: CheckItem): Promise<CheckItem[]> {
-    const note = await this.noteAggregator.getReference(checkItem.note.id, authUser.userId);
+  async createCheckItem(dto: {authUser: AuthUser, checkItem: CreateCheckItemDto, noteId: number}): Promise<CheckItem[]> {
+    const note = await this.noteAggregator.getReference(dto.noteId, dto.authUser.userId);
 
     return this.createCheckItemTransactionScript.apply({
-      name: checkItem.name,
+      name: dto.checkItem.name,
       noteId: note.id,
-      authUser
     });
   }
 

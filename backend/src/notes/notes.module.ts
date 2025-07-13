@@ -15,7 +15,7 @@ import { NoteDtoToEntityConverter } from "./domain/transaction-scripts/update-no
 import { NoteAggregator } from "./domain/aggregators/note.aggregator";
 import { UpdateNoteTimestampAction } from "./apps/actions/update-note-timestamp.action";
 import { CreateCheckItemAction } from "./apps/actions/notes/create-check-item-action/create-check-item.action";
-import { CreateCheckItemTransactionScript } from "./domain/transaction-scripts/create-check-item.transaction.script";
+import { CreateCheckItemTransactionScript } from "./domain/transaction-scripts/create-check-item-ts/create-check-item.transaction.script";
 import { GetCheckItemAction } from "./apps/actions/notes/get-check-item-action/get-check-item.action";
 import { GetCheckItemTransactionScript } from "./domain/transaction-scripts/get-check-item.transaction.script";
 import { ToggleCheckItemAction } from "./apps/actions/notes/toggle-check-item/toggle-check-item.action";
