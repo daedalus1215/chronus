@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Tag } from '../../domain/entities/tag.entity';
 import { TagNote } from '../../../shared-kernel/domain/entities/tag-note.entity';
 
@@ -43,6 +43,6 @@ export class TagRepository {
     const tagNotes = await this.tagNoteRepository.find({ where: { notes: { id: noteId } } });
     const tagIds = tagNotes.map(tn => tn.tagId);
     if (!tagIds.length) return [];
-    return this.tagRepository.findByIds(tagIds);
+    return this.tagRepository.find({ where: { id: In(tagIds) } });
   }
 } 
