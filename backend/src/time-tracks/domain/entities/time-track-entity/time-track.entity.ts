@@ -1,13 +1,18 @@
-import { BaseEntity } from 'src/shared-kernel/domain/entities/base.entity';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 
 @Entity()
-export class TimeTrack extends BaseEntity{
-  @PrimaryGeneratedColumn()
+export class TimeTrack {
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
+  @CreateDateColumn({ name: "created_at", type: "text" })
+  createdAt: string;
+
+  @UpdateDateColumn({ name: "updated_at", type: "text" })
+  updatedAt: string;
+
   @Column({ name: 'user_id' })
-  userId: string;
+  userId: number;
 
   @Column({ name: 'note_id' })
   noteId: number;

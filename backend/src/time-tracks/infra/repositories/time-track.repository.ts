@@ -4,7 +4,7 @@ import { Repository, Between } from 'typeorm';
 import { TimeTrack } from '../../domain/entities/time-track-entity/time-track.entity';
 
 type OverlapCheckParams = {
-  userId: string;
+  userId: number;
   date: Date;
   startTime: string;
   durationMinutes: number;
@@ -22,14 +22,14 @@ export class TimeTrackRepository {
     return this.repository.save(newTimeTrack);
   }
 
-  async findByUserId(userId: string): Promise<TimeTrack[]> {
+  async findByUserId(userId: number): Promise<TimeTrack[]> {
     return this.repository.find({
       where: { userId },
       order: { date: 'DESC', startTime: 'DESC' }
     });
   }
 
-  async findByUserIdAndNoteId(userId: string, noteId: number): Promise<TimeTrack[]> {
+  async findByUserIdAndNoteId(userId: number, noteId: number): Promise<TimeTrack[]> {
     return this.repository.find({
       where: { userId, noteId },
       order: { date: 'DESC', startTime: 'DESC' }
@@ -40,7 +40,7 @@ export class TimeTrackRepository {
     return this.repository.findOne({ where: { id } });
   }
 
-  async getTotalTimeForNote(userId: string, noteId: number): Promise<number> {
+  async getTotalTimeForNote(userId: number, noteId: number): Promise<number> {
     const result = await this.repository
       .createQueryBuilder('timeTrack')
       .select('SUM(timeTrack.durationMinutes)', 'total')
@@ -67,7 +67,7 @@ export class TimeTrackRepository {
       .getMany();
   }
 
-  async getDailyTotal(userId: string, date: Date): Promise<number> {
+  async getDailyTotal(userId: number, date: Date): Promise<number> {
     const result = await this.repository
       .createQueryBuilder('timeTrack')
       .select('SUM(timeTrack.durationMinutes)', 'total')

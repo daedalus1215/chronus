@@ -39,7 +39,7 @@ export class TagRepository {
     return this.tagNoteRepository.save(tagNote);
   }
 
-  async findTagsByNoteId(noteId: number, userId: string): Promise<Tag[]> {
+  async findTagsByNoteId(noteId: number, userId: number): Promise<Tag[]> {
     const tagNotes = await this.tagNoteRepository.find({ where: { notes: { id: noteId } } });
     const tagIds = tagNotes.map(tn => tn.tagId);
     if (!tagIds.length) return [];

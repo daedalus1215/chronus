@@ -4,16 +4,28 @@ import {
   JoinColumn,
   OneToOne,
   OneToMany,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
 import { Memo } from "./memo.entity";
-import { BaseEntity } from "../../../../shared-kernel/domain/entities/base.entity";
-import { CheckItem } from "./check-item.entity";
+import { CheckItem } from "src/check-items/domain/entities/check-item.entity";
 
 /**
  * Note entity decoupled from Tag entity.
  */
 @Entity("notes")
-export class Note extends BaseEntity {
+export class Note {
+  @PrimaryGeneratedColumn({ type: "integer" })
+  id: number;
+
+  @CreateDateColumn({ name: "created_at", type: "text" })
+  createdAt: string;
+
+  @UpdateDateColumn({ name: "updated_at", type: "text" })
+  updatedAt: string;
+  
   @OneToOne(() => Memo, (memo) => memo.id, {
     cascade: true,
     nullable: true,
@@ -26,11 +38,11 @@ export class Note extends BaseEntity {
   name: string;
 
   @Column({ name: "user_id" })
-  userId: string;
+  userId: number;
 
-  @Column({ name: "archived_date", nullable: true })
-  archivedDate: Date;
+  @DeleteDateColumn({ name: "archived_at", nullable: true })
+  archivedAt: Date | null;
 
-  @OneToMany(() => CheckItem, (checkItem) => checkItem.note)
+  @OneToMany(() => CheckItem, (checkItem) => checkItem.noteId)
   checkItems: CheckItem[];
 }

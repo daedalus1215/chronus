@@ -1,4 +1,4 @@
-import { ProtectedActionOptions } from 'src/time-tracks/apps/decorators/protected-action.decorator';
+import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { TimeTrack } from '../../../domain/entities/time-track-entity/time-track.entity';
 
 export const GetTimeTracksByNoteIdSwagger: ProtectedActionOptions = {

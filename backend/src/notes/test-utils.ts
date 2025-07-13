@@ -5,8 +5,8 @@ import { Note } from "./domain/entities/notes/note.entity";
 export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
     id: 1,
     name: 'Original Note',
-    userId: 'user123',
-    archivedDate: null,
+    userId: 1,
+    archivedAt: null,
     memo: null,
     checkItems: [],
     createdAt: new Date().toISOString(),

@@ -83,7 +83,7 @@ describe('NoteDtoToEntityConverter', () => {
         // Arrange
         const originalNote = createMockNote({
           userId: 'testUser',
-          archivedDate: new Date(),
+          archivedAt: new Date(),
           tags: []
         });
         const updateDto = createMockUpdateNoteDto();
@@ -95,7 +95,7 @@ describe('NoteDtoToEntityConverter', () => {
         expect(result.id).toBe(originalNote.id);
         expect(result.userId).toBe(originalNote.userId);
         expect(result.tags).toBe(originalNote.tags);
-        expect(result.archivedDate).toBe(originalNote.archivedDate);
+        expect(result.archivedDate).toBe(originalNote.archivedAt);
         expect(result.createdAt).toBe(originalNote.createdAt);
         expect(result.updatedAt).toBe(originalNote.updatedAt);
       });

@@ -18,7 +18,7 @@ export class TagService {
     return this.addTagToNoteTS.apply(dto);
   }
 
-  getTagsByNoteId(noteId: number, userId: string): Promise<TagResponseDto[]> {
+  getTagsByNoteId(noteId: number, userId: number): Promise<TagResponseDto[]> {
     return this.getTagsByNoteIdTS.apply(noteId, userId);
   }
 

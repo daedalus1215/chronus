@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiQuery } from '@nestjs/swagger';
 import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
-import { ProtectedAction } from 'src/time-tracks/apps/decorators/protected-action.decorator';
+import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { GetNoteNamesByUserIdSwagger, GetNoteNamesByUserIdApiQueries } from './get-note-names-by-userId.swagger';
 
@@ -18,7 +18,7 @@ export class GetNoteNamesByUserIdAction {
   @Get('names')
   @ProtectedAction(GetNoteNamesByUserIdSwagger)
   async apply(
-    @GetAuthUser('userId') userId: string,
+    @GetAuthUser('userId') userId: number,
     @Query('cursor') cursor: number = 0,
     @Query('limit') limit: number = 20,
     @Query('query') query?: string,

@@ -6,6 +6,7 @@ import { TimeTrackingForm, TimeTrackingData } from './TimeTrackingForm/TimeTrack
 import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
+import { useArchiveNote } from '../../../hooks/useArchiveNote';
 import api from '../../../../../api/axios.interceptor';
 import styles from './NoteItem.module.css';
 import Button from '@mui/material/Button';
@@ -25,20 +26,22 @@ interface Note {
 
 interface NoteItemProps {
   note: Note;
-  onDelete?: (id: number) => void; // Optional callback to remove note from list
 }
 
-export const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete }) => {
+export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   const navigate = useNavigate();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
   const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
   const { createTimeTrack, isCreating } = useCreateTimeTrack();
+  const { archiveNote, isArchiving } = useArchiveNote();
   const { timeTracks, isLoading } = useNoteTimeTracks(note.id, isTimeTrackListOpen);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [archiveError, setArchiveError] = useState<string | null>(null);
 
   const handleClick = () => {
     navigate(`/notes/${note.id}`);
@@ -77,6 +80,11 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete }) => {
     setDeleteDialogOpen(true);
   };
 
+  const handleArchive = () => {
+    setIsActionsOpen(false);
+    setArchiveDialogOpen(true);
+  };
+
   const confirmDelete = async () => {
     setIsDeleting(true);
     setDeleteError(null);
@@ -84,11 +92,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete }) => {
       await api.delete(`/notes/${note.id}`);
       setIsDeleting(false);
       setDeleteDialogOpen(false);
-      if (onDelete) {
-        onDelete(note.id);
-      } else {
-        window.location.reload();
-      }
+      window.location.reload();
     } catch (err: unknown) {
       setIsDeleting(false);
       let message = 'Failed to delete note';
@@ -107,6 +111,32 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete }) => {
         message = (err.response.data as { message: string }).message;
       }
       setDeleteError(message);
+    }
+  };
+
+  const confirmArchive = async () => {
+    setArchiveError(null);
+    try {
+      await archiveNote(note.id);
+      setArchiveDialogOpen(false);
+      window.location.reload();
+    } catch (err: unknown) {
+      let message = 'Failed to archive note';
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'message' in err.response.data &&
+        typeof (err.response.data as { message?: unknown }).message === 'string'
+      ) {
+        message = (err.response.data as { message: string }).message;
+      }
+      setArchiveError(message);
     }
   };
 
@@ -169,10 +199,10 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete }) => {
         onShare={handleShare}
         onDuplicate={handleDuplicate}
         onDelete={handleDelete}
+        onArchive={handleArchive}
         onTimeTracking={handleTimeTracking}
         onViewTimeEntries={handleViewTimeEntries}
         onPin={handleTimeTracking}
-        onArchive={handleTimeTracking}
         onStar={handleTimeTracking}
         onExport={handleTimeTracking}
         onLock={handleTimeTracking}
@@ -219,6 +249,26 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete }) => {
           </Button>
           <Button onClick={confirmDelete} color="error" variant="contained" disabled={isDeleting}>
             {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={archiveDialogOpen}
+        onClose={() => setArchiveDialogOpen(false)}
+        aria-labelledby="archive-dialog-title"
+      >
+        <DialogTitle id="archive-dialog-title">Archive Note?</DialogTitle>
+        <DialogContent>
+          Are you sure you want to archive this note? It will be hidden from your main list but can be restored later.
+          {archiveError && <Alert severity="error" sx={{ mt: 2 }}>{archiveError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setArchiveDialogOpen(false)} disabled={isArchiving}>
+            Cancel
+          </Button>
+          <Button onClick={confirmArchive} color="warning" variant="contained" disabled={isArchiving}>
+            {isArchiving ? 'Archiving...' : 'Archive'}
           </Button>
         </DialogActions>
       </Dialog>

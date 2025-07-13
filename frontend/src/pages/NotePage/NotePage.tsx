@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useNote } from "./hooks/useNote";
+import { useNote } from "./hooks/useNote/useNote";
 import { NoteEditor } from "./components/NoteEditor/NoteEditor";
 import { CheckListView } from "./components/CheckListView/CheckListView";
 import { useTitle } from "./hooks/useTitle";

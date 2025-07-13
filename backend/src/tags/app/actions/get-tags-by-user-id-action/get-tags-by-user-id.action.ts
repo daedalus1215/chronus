@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { TagService } from '../../../domain/services/tag.service';
 import { TagResponseDto } from '../../dtos/responses/tag.response.dto';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
-import { ProtectedAction } from 'src/time-tracks/apps/decorators/protected-action.decorator';
+import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetTagsByUserIdSwagger } from './get-tags-by-user-id.swagger';
 
 @Controller('tags')

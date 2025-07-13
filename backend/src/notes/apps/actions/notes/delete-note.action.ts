@@ -1,6 +1,6 @@
-import { Controller, Delete, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Delete, Param, NotFoundException, ParseIntPipe } from '@nestjs/common';
 import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
-import { ProtectedAction } from 'src/time-tracks/apps/decorators/protected-action.decorator';
+import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 
 @Controller('notes')
@@ -17,11 +17,12 @@ export class DeleteNoteAction {
     ]
   })
   async apply(
-    @Param('id') id: string,
-    @GetAuthUser('userId') userId: string
+    @Param('id', ParseIntPipe) id: number,
+    @GetAuthUser('userId') userId: number
   ): Promise<void> {
-    const note = await this.noteRepository.findById(Number(id), userId);
+    //@TODO: Move to a TS, under a service
+    const note = await this.noteRepository.findById(id, userId);
     if (!note) throw new NotFoundException('Note not found');
-    await this.noteRepository.deleteNoteById(Number(id), userId);
+    await this.noteRepository.deleteNoteById(id, userId);
   }
 } 
