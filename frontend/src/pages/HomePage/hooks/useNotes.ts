@@ -11,7 +11,7 @@ export const useNotes = (type?: 'memo' | 'checkList', tagId?: string) => {
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedSearchQuery = useDebounce(searchQuery, 1000);
 
   const fetchNotes = useCallback(async (cursor: number = 0, query: string = '') => {
     try {
