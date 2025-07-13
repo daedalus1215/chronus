@@ -1,11 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { CheckItem } from "../../entities/notes/check-item.entity";
-import { CreateCheckItemDto } from "src/notes/apps/dtos/requests/create-check-item.dto";
+import { CheckItem } from "../../entities/check-item.entity";
+import { CreateCheckItemDto } from "../../../apps/dtos/requests/create-check-item.dto";
 import { CheckItemsRepository } from "../../../infra/repositories/check-items.repository";
 
 @Injectable()
 export class CreateCheckItemTransactionScript {
-  constructor(private readonly checkItemsRepository: CheckItemsRepository) {}
+  constructor(
+    private readonly checkItemsRepository: CheckItemsRepository,
+  ) {}
 
   async apply(
     dto: CreateCheckItemDto & {
@@ -53,4 +55,4 @@ export class CreateCheckItemTransactionScript {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
   }
-}
+} 

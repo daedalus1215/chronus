@@ -24,7 +24,7 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
 
   const addItem = async (name: string) => {
     try {
-      const response = await api.post<CheckItem[]>(`/notes/${note.id}/check-items`, { name });
+      const response = await api.post<CheckItem[]>(`/check-items/notes/${note.id}`, { name });
       setNoteState({...note, checkItems: response.data});
       return response.data;
     } catch (err) {

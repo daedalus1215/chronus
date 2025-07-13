@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotesModule } from './notes/notes.module';
 import { TimeTracksModule } from './time-tracks/time-tracks.module';
 import { TagsModule } from './tags/tags.module';
+import { CheckItemsModule } from "./check-items/check-items.module";
 
 /**
  * Main application module.
@@ -30,7 +31,8 @@ import { TagsModule } from './tags/tags.module';
     AuthModule,
     NotesModule,
     TimeTracksModule,
-    TagsModule
+    TagsModule,
+    CheckItemsModule
   ],
   controllers: [],
   providers: [],
