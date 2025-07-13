@@ -1,5 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
-import { ProtectedAction } from "src/time-tracks/apps/decorators/protected-action.decorator";
+import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-action.decorator";
 import { GetCheckItemSwagger } from "./get-check-item.swagger";
 import { GetAuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
 import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";

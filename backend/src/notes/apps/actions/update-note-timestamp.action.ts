@@ -5,7 +5,7 @@ import {
   Patch,
 } from "@nestjs/common";
 import { NoteMemoTagRepository } from "src/notes/infra/repositories/note-memo-tag.repository";
-import { ProtectedAction } from "src/time-tracks/apps/decorators/protected-action.decorator";
+import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-action.decorator";
 import {
   AuthUser,
   GetAuthUser,

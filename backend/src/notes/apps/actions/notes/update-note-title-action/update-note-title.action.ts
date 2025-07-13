@@ -2,7 +2,7 @@ import { Controller, Patch, Param, Body } from '@nestjs/common';
 import { UpdateNoteTitleTransactionScript } from 'src/notes/domain/transaction-scripts/update-note-title.transaction.script';
 import { UpdateNoteTitleDto } from 'src/notes/apps/dtos/requests/update-note-title.dto';
 import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
-import { ProtectedAction } from 'src/time-tracks/apps/decorators/protected-action.decorator';
+import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { UpdateNoteTitleSwagger } from './update-note-title.swagger';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';

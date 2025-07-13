@@ -1,6 +1,6 @@
 import { Controller, Patch, Body, Param, ParseIntPipe } from "@nestjs/common";
 import { UpdateCheckItemDto } from "../../dtos/requests/update-check-item.dto";
-import { ProtectedAction } from "src/time-tracks/apps/decorators/protected-action.decorator";
+import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-action.decorator";
 import { UpdateCheckItemSwagger } from "./update-check-item.swagger";
 import { GetAuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
 import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";

@@ -1,5 +1,5 @@
 import { Note } from 'src/notes/domain/entities/notes/note.entity';
-import { ProtectedActionOptions } from 'src/time-tracks/apps/decorators/protected-action.decorator';
+import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 
 export const CreateNoteSwagger: ProtectedActionOptions = {
   tag: 'Notes',

@@ -17,9 +17,6 @@ import { UpdateNoteTitleAction } from "./apps/actions/notes/update-note-title-ac
 import { UpdateNoteTitleTransactionScript } from "./domain/transaction-scripts/update-note-title.transaction.script";
 import { DeleteNoteAction } from "./apps/actions/notes/delete-note.action";
 
-/**
- * Notes module: encapsulates all note-related logic, actions, and persistence.
- */
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo])],
   providers: [

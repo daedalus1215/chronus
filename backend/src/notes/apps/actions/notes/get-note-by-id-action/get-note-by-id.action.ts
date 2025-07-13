@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { GetNoteByIdTransactionScript } from '../../../../domain/transaction-scripts/get-note-by-id.transaction.script';
-import { ProtectedAction } from 'src/time-tracks/apps/decorators/protected-action.decorator';
+import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetNoteByIdSwagger } from './get-note-by-id.swagger';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator'; 

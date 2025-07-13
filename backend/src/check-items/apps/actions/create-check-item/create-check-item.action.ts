@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Param, ParseIntPipe } from "@nestjs/common";
 import { CreateCheckItemDto } from "../../dtos/requests/create-check-item.dto";
-import { ProtectedAction } from "src/time-tracks/apps/decorators/protected-action.decorator";
+import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-action.decorator";
 import { CreateCheckItemSwagger } from "./create-check-item.swagger";
 import { GetAuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
 import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
