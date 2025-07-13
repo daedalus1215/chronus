@@ -20,12 +20,12 @@ type UseCheckListReturn = {
 export const useCheckItems = (note: Note): UseCheckListReturn => {
     const [noteState, setNoteState] = useState<Note>(note);
 
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   const addItem = async (name: string) => {
     try {
-      const response = await api.post<Note>(`/notes/${note.id}/check-items`, { name });
-      setNoteState(response.data);
+      const response = await api.post<CheckItem[]>(`/notes/${note.id}/check-items`, { name });
+      setNoteState({...note, checkItems: response.data});
       return response.data;
     } catch (err) {
       console.error('Error adding check item:', err);

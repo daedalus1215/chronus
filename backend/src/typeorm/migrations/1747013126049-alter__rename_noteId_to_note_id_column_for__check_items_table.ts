@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Alter_checkItemsDeleteNoteId_column21747013126049 implements MigrationInterface {
-    name = 'Alter_checkItemsDeleteNoteId_column21747013126049'
+export class Alter_renameNoteIdToNoteIdColumnFor_CheckItemsTable1747013126049 implements MigrationInterface {
+    name = 'Alter_renameNoteIdToNoteIdColumnFor_CheckItemsTable1747013126049'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "temporary_check_items" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" text NOT NULL DEFAULT (datetime('now')), "updated_at" text NOT NULL DEFAULT (datetime('now')), "name" varchar NOT NULL, "done_date" datetime NOT NULL, "archive_date" datetime NOT NULL, "noteId" integer)`);
