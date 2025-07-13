@@ -17,6 +17,6 @@ export class CheckItem extends BaseEntity {
   @JoinColumn({ name: "note_id" })
   note: Note;
 
-  @Column()
+  @Column({ name: "note_id" })
   noteId: number;
 }
