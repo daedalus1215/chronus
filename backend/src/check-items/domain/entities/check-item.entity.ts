@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column } from "typeorm";
 import { BaseEntity } from "src/shared-kernel/domain/entities/base.entity";
 
 @Entity("check_items")

@@ -2,16 +2,11 @@ import { useState } from 'react';
 import api from '../../../api/axios.interceptor';
 import { CheckItem, Note } from '../api/responses';
 
-type NoteContent = {
-    title: string;
-    checkItems: CheckItem[];
-}
-
 type UseCheckListReturn = {
     noteState: Note;
-    setNoteState: (note: NoteContent) => void;
+    setNoteState: (note: Note) => void;
     error: string | null;
-    addItem: (name: string) => Promise<Note>;
+    addItem: (name: string) => Promise<CheckItem[]>;
     toggleItem: (id: number, note:Note) => Promise<Note>;
     deleteItem: (id: number) => Promise<Note>;
     updateItem: (id: number, name: string) => Promise<Note>;
@@ -39,7 +34,7 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
     }
 
     try {
-      const response = await api.patch(`/notes/check-items/${id}/toggle`);
+      const response = await api.patch(`/check-items/items/${id}/toggle`);
       setNoteState({...note, checkItems: note.checkItems.map(item => item.id === id ? response.data : item)});
       return response.data;
     } catch (err) {
@@ -50,7 +45,7 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
 
   const deleteItem = async (id: number) => {
     try {
-      await api.delete(`/notes/check-items/${id}`);
+      await api.delete(`/check-items/items/${id}`);
       setNoteState({...note, checkItems: note.checkItems?.filter(item => item.id !== id)});
       return note;
     } catch (err) {
@@ -61,7 +56,7 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
 
   const updateItem = async (id: number, name: string) => {
     try {
-      const response = await api.patch(`/notes/check-items/${id}`, { name });
+      const response = await api.patch(`/check-items/items/${id}`, { name });
       setNoteState({...note, checkItems: note.checkItems?.map(item => item.id === id ? response.data : item)});
       return response.data;
     } catch (err) {

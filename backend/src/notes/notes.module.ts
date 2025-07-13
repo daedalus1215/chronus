@@ -13,15 +13,9 @@ import { UpdateNoteTransactionScript } from "./domain/transaction-scripts/update
 import { NoteDtoToEntityConverter } from "./domain/transaction-scripts/update-note-TS/note-dto-to-entity.converter";
 import { NoteAggregator } from "./domain/aggregators/note.aggregator";
 import { UpdateNoteTimestampAction } from "./apps/actions/update-note-timestamp.action";
-import { GetCheckItemAction } from "./apps/actions/notes/get-check-item-action/get-check-item.action";
-import { GetCheckItemTransactionScript } from "./domain/transaction-scripts/get-check-item.transaction.script";
-import { ToggleCheckItemAction } from "./apps/actions/notes/toggle-check-item/toggle-check-item.action";
-import { ToggleCheckItemTransactionScript } from "./domain/transaction-scripts/toggle-check-item.transaction.script";
 import { UpdateNoteTitleAction } from "./apps/actions/notes/update-note-title-action/update-note-title.action";
 import { UpdateNoteTitleTransactionScript } from "./domain/transaction-scripts/update-note-title.transaction.script";
 import { DeleteNoteAction } from "./apps/actions/notes/delete-note.action";
-import { DeleteCheckItemAction } from "./apps/actions/notes/delete-check-item.action";
-import { DeleteCheckItemTransactionScript } from "./domain/transaction-scripts/delete-check-item.transaction.script";
 
 /**
  * Notes module: encapsulates all note-related logic, actions, and persistence.
@@ -34,10 +28,7 @@ import { DeleteCheckItemTransactionScript } from "./domain/transaction-scripts/d
     CreateNoteTransactionScript,
     GetNoteByIdTransactionScript,
     UpdateNoteTransactionScript,
-    GetCheckItemTransactionScript,
-    ToggleCheckItemTransactionScript,
     UpdateNoteTitleTransactionScript,
-    DeleteCheckItemTransactionScript,
     NoteDtoToEntityConverter
   ],
   controllers: [
@@ -46,11 +37,8 @@ import { DeleteCheckItemTransactionScript } from "./domain/transaction-scripts/d
     GetNoteByIdAction,
     UpdateNoteAction,
     UpdateNoteTimestampAction,
-    GetCheckItemAction,
-    ToggleCheckItemAction,
     UpdateNoteTitleAction,
     DeleteNoteAction,
-    DeleteCheckItemAction,
   ],
   exports: [NoteMemoTagRepository, NoteAggregator],
 })

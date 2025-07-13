@@ -1,27 +1,21 @@
-import { Controller, Post, Body, Param, ParseIntPipe } from "@nestjs/common";
-import { CreateCheckItemDto } from "../../dtos/requests/create-check-item.dto";
+import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
 import { ProtectedAction } from "src/time-tracks/apps/decorators/protected-action.decorator";
-import { CreateCheckItemSwagger } from "./create-check-item.swagger";
+import { GetCheckItemSwagger } from "./get-check-item.swagger";
 import { GetAuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
 import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
 import { CheckItem } from "src/check-items/domain/entities/check-item.entity";
 import { CheckItemService } from "src/check-items/domain/services/check-item.service";
 
 @Controller("check-items")
-export class CreateCheckItemAction {
+export class GetCheckItemAction {
   constructor(private readonly checkItemService: CheckItemService) {}
 
-  @Post("/notes/:noteId")
-  @ProtectedAction(CreateCheckItemSwagger)
+  @Get("/items/:id")
+  @ProtectedAction(GetCheckItemSwagger)
   async apply(
-    @Body() dto: CreateCheckItemDto,
-    @Param("noteId", ParseIntPipe) noteId: number,
+    @Param("id", ParseIntPipe) id: number,
     @GetAuthUser() authUser: AuthUser
-  ): Promise<CheckItem[]> {
-    return await this.checkItemService.createCheckItem({
-      checkItem: dto,
-      authUser,
-      noteId,
-    });
+  ): Promise<CheckItem> {
+    return await this.checkItemService.getCheckItem(id, authUser);
   }
 } 
