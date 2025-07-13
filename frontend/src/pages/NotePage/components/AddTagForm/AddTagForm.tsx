@@ -8,6 +8,7 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import api from "../../../../api/axios.interceptor";
+import { Stack, Tooltip } from "@mui/material";
 
 export type Tag = { id: string; name: string };
 
@@ -138,28 +139,33 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
       </div>
       {error && <Alert severity="error" className="mb-2">{error}</Alert>}
       <Box className="overflow-y-auto flex-1" aria-label="Tag list">
-        <List>
-          {tags.length === 0 ? (
-            <ListItem className="text-gray-400">No tags yet.</ListItem>
-          ) : (
-            tags.map(tag => (
-              <ListItem key={tag.id} disablePadding>
-                <Chip
-                  label={tag.name}
-                  className="mr-2 mb-2 cursor-pointer"
-                  color="primary"
-                  tabIndex={0}
-                  aria-label={`Add tag: ${tag.name}`}
-                  onClick={() => handleAddExistingTag(tag.id)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') handleAddExistingTag(tag.id);
-                  }}
-                  disabled={isLoading}
-                />
-              </ListItem>
-            ))
-          )}
-        </List>
+        <Stack
+          role="list"
+          direction="row"
+          flexWrap="wrap"
+          spacing={1} // or spacing={2} for more space
+          className="py-2"
+          aria-label="Available tags"
+        >
+          {tags.map(tag => (
+            <Tooltip title={tag.name} key={tag.id}>
+              <Chip
+                role="listitem"
+                label={tag.name}
+                color="primary"
+                variant="outlined"
+                tabIndex={0}
+                aria-label={`Add tag: ${tag.name}`}
+                onClick={() => handleAddExistingTag(tag.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') handleAddExistingTag(tag.id);
+                }}
+                disabled={isLoading}
+                className="cursor-pointer"
+              />
+            </Tooltip>
+          ))}
+        </Stack>
       </Box>
     </form>
   );

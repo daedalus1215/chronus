@@ -1,1 +1,1 @@
-export type Tag = { id: string; name: string };
+export type Tag = { id: number; name: string };

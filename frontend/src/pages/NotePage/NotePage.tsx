@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useNote } from "./hooks/useNote/useNote";
 import { NoteEditor } from "./components/NoteEditor/NoteEditor";
 import { CheckListView } from "./components/CheckListView/CheckListView";
@@ -9,12 +9,12 @@ import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import styles from "./NotePage.module.css";
-import { useNoteTags } from "./hooks/useNoteTags";
+import { Tag, useNoteTags } from "./hooks/useNoteTags";
 import { BottomSheet } from "../../components/BottomSheet/BottomSheet";
 import { useState } from "react";
 import { AddTagForm } from "./components/AddTagForm/AddTagForm";
 import { useAllTags } from "./hooks/useAllTags";
-import { Button, Chip, IconButton } from "@mui/material";
+import { Chip, IconButton } from "@mui/material";
 import { Add, Close } from "@mui/icons-material";
 
 export const NotePage: React.FC = () => {
@@ -29,10 +29,10 @@ export const NotePage: React.FC = () => {
   } = useTitle(note);
   const {
     tags,
-    loading: tagsLoading,
-    error: tagsError,
     refetch,
+    removeTagFromNote,
   } = useNoteTags(Number(id));
+  
   const {
     data: allTags,
     isLoading: allTagsLoading,
@@ -60,8 +60,8 @@ export const NotePage: React.FC = () => {
   // Compute tags that are not already on the note
   const availableTags = allTags
     ? allTags.filter(
-        (tag: { id: string }) =>
-          !tags.some((noteTag: { id: string }) => noteTag.id === tag.id)
+        (tag: { id: number }) =>
+          !tags.some((noteTag: { id: number }) => noteTag.id === tag.id)
       )
     : [];
 
@@ -77,7 +77,7 @@ export const NotePage: React.FC = () => {
           <Add />
         </IconButton>
 
-        {tags && tags.map((tag: { id: string; name: string }) => (
+        {tags && tags.map((tag: Tag) => (
             <Chip
               key={tag.id}
               label={tag.name}
@@ -86,8 +86,12 @@ export const NotePage: React.FC = () => {
               size="small"
               className="whitespace-nowrap"
               onClick={() => navigate(`/tag-notes/${tag.id}`)}
-              onDelete={() => {
-                console.log("delete");
+              onDelete={async () => {
+                try {
+                  await removeTagFromNote({tagId: tag.id, noteId: note.id});
+                } catch (err) {
+                  console.error("Failed to remove tag from note", err);
+                }
               }}
               deleteIcon={<Close />}
             />

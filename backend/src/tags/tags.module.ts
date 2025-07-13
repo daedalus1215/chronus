@@ -10,6 +10,9 @@ import { AddTagToNoteAction } from './app/actions/add-tag-to-note-action/add-tag
 import { GetTagsByNoteIdAction } from './app/actions/get-tags-by-note-id-action/get-tags-by-note-id.action';
 import { GetTagsByUserIdAction } from './app/actions/get-tags-by-user-id-action/get-tags-by-user-id.action';
 import { TagService } from './domain/services/tag.service';
+import { RemoveTagFromNoteAction } from './app/actions/remove-tag-from-note-action/remove-tag-from-note.action';
+import { RemoveTagFromNoteTransactionScript } from './domain/transaction-scripts/remove-tag-from-note/remove-tag-from-note.transaction.script';
+import { TagNoteRepository } from './infra/repositories/tag-note.repository';
 
 /**
  * Tags module: encapsulates all tag-related logic, actions, and persistence.
@@ -18,17 +21,22 @@ import { TagService } from './domain/services/tag.service';
   imports: [TypeOrmModule.forFeature([Tag, TagNote])],
   providers: [
     TagRepository,
+    TagNoteRepository,
     AddTagToNoteTransactionScript,
     GetTagsByNoteIdTransactionScript,
     GetTagsByUserIdTransactionScript,
+    RemoveTagFromNoteTransactionScript,
     TagService,
   ],
   controllers: [
     AddTagToNoteAction,
     GetTagsByNoteIdAction,
     GetTagsByUserIdAction,
+    RemoveTagFromNoteAction,
   ],
-  exports: [TagRepository, 
+  exports: [
+    TagRepository, 
+    TagNoteRepository,
     AddTagToNoteTransactionScript, 
     GetTagsByNoteIdTransactionScript, 
     GetTagsByUserIdTransactionScript, 

@@ -14,15 +14,15 @@ export class TagNote {
   updatedAt: string;
 
   @Column({ name: "tag_id" }) 
-  tagId: string;
+  tagId: number;
 
   @ManyToOne(() => Tag)
   @JoinColumn({ name: "tag_id" })
   tag: Tag;
 
   @Column({ name: "notes_id" })
-  noteId: string;
-
+  noteId: number;
+N
   @ManyToOne(() => Note, (note) => note.id)
   @JoinColumn({ name: "notes_id" })
   notes: Note;
