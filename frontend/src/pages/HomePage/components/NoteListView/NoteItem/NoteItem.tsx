@@ -155,7 +155,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
       await createTimeTrack({
         date: data.date,
         startTime: data.startTime,
-        durationMinutes: data.durationMinutes,
+        durationMinutes: data.durationMinutes === undefined ? 1 : Number(data.durationMinutes),
         noteId: note.id,
         note: data.note
       });

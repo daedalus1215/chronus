@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Stack, Chip } from "@mui/material";
 
 type TimeTrackingFormProps = {
   isOpen: boolean;
@@ -18,7 +19,7 @@ type TimeTrackingFormProps = {
 export type TimeTrackingData = {
   date: string;
   startTime: string;
-  durationMinutes: number;
+  durationMinutes?: number;
   note?: string;
 }
 
@@ -41,6 +42,17 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
     e.preventDefault();
     onSubmit(formData);
   };
+
+  const quickDurations = [
+    { label: "15m", value: 15 },
+    { label: "30m", value: 30 },
+    { label: "45m", value: 45 },
+    { label: "1h", value: 60 },
+    { label: "1h 30m", value: 90 },
+    { label: "2h", value: 120 },
+  ];
+
+  const [customMode, setCustomMode] = useState(false);
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
@@ -70,14 +82,42 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
             fullWidth
             InputLabelProps={{ shrink: true }}
           />
-          <TextField
-            label="Duration (minutes)"
-            type="number"
-            value={formData.durationMinutes}
-            onChange={e => setFormData({ ...formData, durationMinutes: Number(e.target.value) })}
-            fullWidth
-            inputProps={{ step: 15, min: 0 }}
-          />
+          <FormControl fullWidth size="small">
+
+          </FormControl>
+          <Stack direction="row" spacing={1}>
+            {quickDurations.map(opt => (
+              <Chip
+                key={opt.value}
+                label={opt.label}
+                color={formData.durationMinutes === opt.value && !customMode ? "primary" : "default"}
+                onClick={() => {
+                  setCustomMode(false);
+                  setFormData({ ...formData, durationMinutes: opt.value });
+                }}
+                clickable
+              />
+            ))}
+            <Chip
+              label="Custom"
+              color={customMode ? "primary" : "default"}
+              onClick={() => setCustomMode(true)}
+              clickable
+              aria-label="Enter custom duration"
+            />
+          </Stack>
+          {customMode && (
+            <TextField
+              label="Custom duration (minutes)"
+              type="number"
+              value={formData.durationMinutes || ""}
+              onChange={e => setFormData({ ...formData, durationMinutes: e.target.value === '' ? undefined : Number(e.target.value) })}
+              inputProps={{ min: 1, max: 1440, step: 1 }}
+              size="small"
+              fullWidth
+              sx={{ mt: 1 }}
+            />
+          )}
           <TextField
             label="Note (optional)"
             value={formData.note}
