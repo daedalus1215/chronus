@@ -14,7 +14,6 @@ export class DeleteTimeTrackAction {
     @Param('id') id: string,
     @GetAuthUser() authUser: AuthUser
   ): Promise<{ success: boolean }> {
-    console.log('deleteTimeTrackAction', id, authUser.userId);
     await this.deleteTS.apply(Number(id), authUser.userId);
     return { success: true };
   }
