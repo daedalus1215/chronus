@@ -36,7 +36,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
   const { createTimeTrack, isCreating } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
-  const { timeTracks, isLoading } = useNoteTimeTracks(note.id, isTimeTrackListOpen);
+  const { timeTracks, isLoadingTimeTracks, totalTimeData, isLoadingTotal, timeTrackError } = useNoteTimeTracks(note.id, isTimeTrackListOpen);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -50,7 +50,6 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   const handleMoreClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      console.log('Updating timestamp for note:', note.id);
       const response = await api.patch(`/notes/${note.id}/timestamp`);
       console.log('Update response:', response);
       setIsActionsOpen(true);
@@ -155,7 +154,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
       await createTimeTrack({
         date: data.date,
         startTime: data.startTime,
-        durationMinutes: data.durationMinutes,
+        durationMinutes: data.durationMinutes === undefined ? 1 : Number(data.durationMinutes),
         noteId: note.id,
         note: data.note
       });
@@ -228,9 +227,12 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
       <TimeTrackListView
         isOpen={isTimeTrackListOpen}
         onClose={() => setIsTimeTrackListOpen(false)}
-        timeTracks={timeTracks || []}
-        isLoading={isLoading}
         noteId={note.id}
+        timeTracks={timeTracks}
+        isLoadingTimeTracks={isLoadingTimeTracks}
+        error={timeTrackError}
+        totalTimeData={totalTimeData}
+        isLoadingTotal={isLoadingTotal}
       />
 
       <Dialog

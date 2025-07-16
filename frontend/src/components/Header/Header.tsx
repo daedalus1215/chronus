@@ -19,8 +19,6 @@ export const Header: React.FC = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  console.log(user);
-
   return (
     <>
       <header className={styles.header}>

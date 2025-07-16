@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from "@tanstack/react-query";
 import api from '../../../../api/axios.interceptor';
+import { getTimeTracksTotalByNoteId } from "../../../../api/time-tracks";
 
-type TimeTrack = {
+export type TimeTrack = {
   id: number;
   date: string;
   startTime: string;
@@ -9,47 +10,33 @@ type TimeTrack = {
   note?: string;
 };
 
+const fetchNoteTimeTracks = async (noteId: number): Promise<TimeTrack[]> => {
+  const { data } = await api.get<TimeTrack[]>(`/time-tracks/note/${noteId}`);
+  return data ?? [];
+};
+
 export const useNoteTimeTracks = (noteId: number, isOpen: boolean) => {
-  const [timeTracks, setTimeTracks] = useState<TimeTrack[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: timeTracks = [],
+    isLoading:isLoadingTimeTracks,
+    error:timeTracksError,
+  } = useQuery({
+    queryKey: ["timeTracks", noteId],
+    queryFn: () => fetchNoteTimeTracks(noteId),
+    enabled: isOpen,
+  });
 
-  useEffect(() => {
-    let isMounted = true;
+  const {
+    data: totalTimeData = 0,
+    isLoading: isLoadingTotal,
+    error: totalError,
+  } = useQuery({
+    queryKey: ["timeTracksTotal", noteId],
+    queryFn: () => getTimeTracksTotalByNoteId(noteId),
+    enabled: isOpen,
+  });
 
-    const fetchTimeTracks = async () => {
-      if (!isOpen) return;
-      
-      setIsLoading(true);
-      setError(null);
+  const timeTrackError = (timeTracksError || totalError)?.message;
 
-      try {
-        const response = await api.get<TimeTrack[]>(`/time-tracks/note/${noteId}`);
-        if (isMounted) {
-          setTimeTracks(response.data);
-        }
-      } catch (err) {
-        console.error('Error fetching time tracks:', err);
-        if (isMounted) {
-          setError('Failed to load time entries');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchTimeTracks();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [noteId, isOpen]);
-
-  return {
-    timeTracks,
-    isLoading,
-    error
-  };
+  return { timeTracks, isLoadingTimeTracks, timeTrackError, totalTimeData, isLoadingTotal };
 }; 
