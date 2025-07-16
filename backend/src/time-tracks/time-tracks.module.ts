@@ -10,6 +10,8 @@ import { GetTimeTracksTotalByNoteIdAction } from './apps/actions/get-time-tracks
 import { GetTimeTracksTotalByNoteIdTransactionScript } from './domain/transaction-scripts/get-time-tracks-total-by-note-id-TS/get-time-tracks-total-by-note-id.transaction.script';
 import { NotesModule } from '../notes/notes.module';
 import { TimeTrackService } from './domain/services/time-track.service';
+import { DeleteTimeTrackAction } from './apps/actions/delete-time-track-action/delete-time-track.action';
+import { DeleteTimeTrackTransactionScript } from './domain/transaction-scripts/delete-time-track.transaction.script';
 
 @Module({
   imports: [
@@ -21,12 +23,14 @@ import { TimeTrackService } from './domain/services/time-track.service';
     CreateTimeTrackTransactionScript,
     GetNoteTimeTracksTransactionScript,
     GetTimeTracksTotalByNoteIdTransactionScript,
+    DeleteTimeTrackTransactionScript,
     TimeTrackService,
   ],
   controllers: [
     CreateTimeTrackAction,
     GetTimeTracksByNoteIdAction,
-    GetTimeTracksTotalByNoteIdAction
+    GetTimeTracksTotalByNoteIdAction,
+    DeleteTimeTrackAction
   ],
   exports: [TimeTrackRepository]
 })

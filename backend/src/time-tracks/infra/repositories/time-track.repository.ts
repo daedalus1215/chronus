@@ -78,6 +78,11 @@ export class TimeTrackRepository {
     return result?.total || 0;
   }
 
+  async deleteByIdAndUserId(id: number, userId: number): Promise<boolean> {
+    const result = await this.repository.delete({ id, userId });
+    return result.affected > 0;
+  }
+
   private calculateEndTime(startTime: string, durationMinutes: number): string {
     const [hours, minutes] = startTime.split(':').map(Number);
     const totalMinutes = hours * 60 + minutes + durationMinutes;

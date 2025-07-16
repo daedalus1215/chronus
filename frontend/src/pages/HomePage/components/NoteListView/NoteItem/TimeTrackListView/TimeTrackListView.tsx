@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
-import { getTimeTracksTotalByNoteId } from '../../../../../../api/time-tracks';
-import styles from './TimeTrackListView.module.css';
+import React, { useEffect, useState } from "react";
+import { BottomSheet } from "../../../../../../components/BottomSheet/BottomSheet";
+import { deleteTimeTrack, getTimeTracksTotalByNoteId } from "../../../../../../api/time-tracks";
+import styles from "./TimeTrackListView.module.css";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Button, DialogContent, DialogActions, Dialog, IconButton } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 type TimeTrack = {
   id: number;
@@ -26,23 +29,24 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
   timeTracks,
   isLoading,
   error,
-  noteId
+  noteId,
 }) => {
   const [totalTime, setTotalTime] = useState<number | null>(null);
   const [isLoadingTotal, setIsLoadingTotal] = useState(false);
   const [totalError, setTotalError] = useState<string | null>(null);
-
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
   useEffect(() => {
     const fetchTotalTime = async () => {
       if (!isOpen) return;
-      
+
       setIsLoadingTotal(true);
       setTotalError(null);
       try {
         const total = await getTimeTracksTotalByNoteId(noteId);
         setTotalTime(total);
-      } catch (err) {
-        setTotalError('Failed to load total time');
+      } catch {
+        setTotalError("Failed to load total time");
       } finally {
         setIsLoadingTotal(false);
       }
@@ -111,6 +115,16 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
                   <div className={styles.timeTrackDuration}>
                     {formatDuration(track.durationMinutes)}
                   </div>
+                  <IconButton
+                    aria-label="Delete time entry"
+                    size="small"
+                    onClick={() => {
+                      setDeleteTargetId(track.id);
+                      setDeleteDialogOpen(true);
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" color="error" />
+                  </IconButton>
                 </div>
                 <div className={styles.timeTrackTime}>
                   Started at {track.startTime}
@@ -122,7 +136,38 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
             ))}
           </div>
         )}
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          aria-labelledby="delete-time-track-dialog-title"
+        >
+          <DialogTitle id="delete-time-track-dialog-title">
+            Delete Time Entry?
+          </DialogTitle>
+          <DialogContent>
+            Are you sure you want to delete this time entry? This action cannot
+            be undone.
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+            <Button
+              onClick={async () => {
+                if (deleteTargetId != null) {
+                  await deleteTimeTrack(deleteTargetId);
+                  setDeleteDialogOpen(false);
+                  setDeleteTargetId(null);
+                  // Optionally refetch or update state here
+                  window.location.reload(); // Replace with better state update if possible
+                }
+              }}
+              color="error"
+              variant="contained"
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </BottomSheet>
   );
-}; 
+};
