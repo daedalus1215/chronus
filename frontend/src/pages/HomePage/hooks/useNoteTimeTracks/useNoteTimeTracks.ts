@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from '../../../../api/axios.interceptor';
-import { getTimeTracksTotalByNoteId } from "../../../../api/time-tracks";
+import { getTimeTracksTotalByNoteId } from "../../../../api/requests/time-tracks.requests";
 
 export type TimeTrack = {
   id: number;

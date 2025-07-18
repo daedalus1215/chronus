@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BottomSheet } from "../../../../../../components/BottomSheet/BottomSheet";
 import {
   deleteTimeTrack,
-} from "../../../../../../api/time-tracks";
+} from "../../../../../../api/requests/time-tracks.requests";
 import DialogTitle from "@mui/material/DialogTitle";
 import {
   Button,

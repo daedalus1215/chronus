@@ -8,8 +8,8 @@ import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useQuery } from "@tanstack/react-query";
-import { Tag } from "../../../../api/dtos/tag";
-import { fetchTags } from "../../../../api/requests/fetchTags";
+import { Tag } from "../../../../api/dtos/tag.dtos";
+import { fetchTags } from "../../../../api/requests/tags.requests";
 import { useNavigate } from "react-router-dom";
 
 export type TagListViewProps = {

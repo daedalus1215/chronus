@@ -1,17 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../../../api/axios.interceptor';
-import { Note } from '../../../api/dtos/note';
+import { archiveNote as archiveNoteRequest } from '../../../api/requests/notes.requests';
+import { Note } from '../../../api/dtos/note.dtos';
 
 export const useArchiveNote = () => {
   const queryClient = useQueryClient();
 
   const archiveNoteMutation = useMutation({
-    mutationFn: async (noteId: number) => {
-      const response = await api.patch<Note>(`/notes/${noteId}/archive`);
-      return response.data;
+    mutationFn: async (noteId: number): Promise<Note> => {
+      return await archiveNoteRequest(noteId);
     },
     onSuccess: (archivedNote) => {
       // Update the note in cache
+      //@TODO: Circle back to this
       queryClient.setQueryData(['note', archivedNote.id], archivedNote);
       
       // Invalidate the notes list to refresh it

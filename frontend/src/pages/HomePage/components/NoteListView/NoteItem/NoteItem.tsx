@@ -4,10 +4,9 @@ import { NoteActionsGrid } from './NoteActionGrid/NoteActionGrid';
 import { DateTimePicker } from './DateTimePicker/DateTimePicker';
 import { TimeTrackingForm, TimeTrackingData } from './TimeTrackingForm/TimeTrackingForm';
 import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
-import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
-import api from '../../../../../api/axios.interceptor';
+import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
 import styles from './NoteItem.module.css';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -15,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
+import { deleteNote, updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
 
 interface Note {
   id: number;
@@ -50,7 +50,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   const handleMoreClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await api.patch(`/notes/${note.id}/timestamp`);
+      const response = await updateNoteTimestamp(note.id);
       console.log('Update response:', response);
       setIsActionsOpen(true);
     } catch (error) {
@@ -88,7 +88,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
     setIsDeleting(true);
     setDeleteError(null);
     try {
-      await api.delete(`/notes/${note.id}`);
+      await deleteNote(note.id);
       setIsDeleting(false);
       setDeleteDialogOpen(false);
       window.location.reload();
