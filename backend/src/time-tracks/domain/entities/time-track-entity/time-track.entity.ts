@@ -18,7 +18,7 @@ export class TimeTrack {
   noteId: number;
 
   @Column({ type: 'date' })
-  date: Date;
+  date: string;
 
   @Column({ name: 'start_time', type: 'time' })
   startTime: string;

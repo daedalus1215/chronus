@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TimeTrackRepository } from '../../../infra/repositories/time-track.repository';
 import { CreateTimeTrackCommand } from './create-time-track.command';
+import { TimeTrackResponseDto } from '../../../apps/dtos/responses/time-track.response.dto';
 
 @Injectable()
 export class CreateTimeTrackTransactionScript {
@@ -8,10 +9,12 @@ export class CreateTimeTrackTransactionScript {
     private readonly timeTrackRepository: TimeTrackRepository
   ) {}
 
-  async apply(command: CreateTimeTrackCommand) {
-    return await this.timeTrackRepository.create({
+  async apply(command: CreateTimeTrackCommand): Promise<TimeTrackResponseDto> {
+    const timeTrack = await this.timeTrackRepository.create({
       ...command,
-      date: new Date(command.date)
+      date: command.date
     });
+    
+    return new TimeTrackResponseDto(timeTrack);
   }
 } 

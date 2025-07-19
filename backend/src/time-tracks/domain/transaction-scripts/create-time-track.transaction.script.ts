@@ -1,6 +1,7 @@
 import { TimeTrackRepository } from "src/time-tracks/infra/repositories/time-track.repository";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateTimeTrackCommand } from "./create-time-track-TS/create-time-track.command";
+import { TimeTrackResponseDto } from "../../apps/dtos/responses/time-track.response.dto";
 
 @Injectable()
 export class CreateTimeTrackTransactionScript {
@@ -8,19 +9,22 @@ export class CreateTimeTrackTransactionScript {
     private readonly timeTrackRepository: TimeTrackRepository
   ) {}
 
-  async apply(command: CreateTimeTrackCommand) {
+  async apply(command: CreateTimeTrackCommand): Promise<TimeTrackResponseDto> {
     await this.validateTimeEntry(command);
-    return await this.timeTrackRepository.create({
+    const timeTrack = await this.timeTrackRepository.create({
       ...command,
       userId: command.user.userId,
-      date: new Date(command.date)
+      date: command.date
     });
+    
+    return new TimeTrackResponseDto(timeTrack);
   }
 
 
   private async validateTimeEntry(command: CreateTimeTrackCommand) {
     // Validate date is not in the future
-    if (new Date(command.date) > new Date()) {
+    const today = new Date().toISOString().split('T')[0];
+    if (command.date > today) {
       throw new BadRequestException('Cannot create time entries for future dates');
     }
 
@@ -32,7 +36,7 @@ export class CreateTimeTrackTransactionScript {
     // Check for overlapping time entries
     const existingEntries = await this.timeTrackRepository.findOverlappingEntries({
       userId: command.user.userId,
-      date: new Date(command.date),
+      date: command.date,
       startTime: command.startTime,
       durationMinutes: command.durationMinutes
     });
@@ -44,7 +48,7 @@ export class CreateTimeTrackTransactionScript {
     // Check daily limit
     const dailyTotal = await this.timeTrackRepository.getDailyTotal(
       command.user.userId,
-      new Date(command.date)
+      command.date
     );
 
     if (dailyTotal + command.durationMinutes > 24 * 60) {

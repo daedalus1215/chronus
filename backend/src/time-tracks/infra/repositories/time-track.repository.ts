@@ -5,7 +5,7 @@ import { TimeTrack } from '../../domain/entities/time-track-entity/time-track.en
 
 type OverlapCheckParams = {
   userId: number;
-  date: Date;
+  date: string;
   startTime: string;
   durationMinutes: number;
 }
@@ -67,7 +67,7 @@ export class TimeTrackRepository {
       .getMany();
   }
 
-  async getDailyTotal(userId: number, date: Date): Promise<number> {
+  async getDailyTotal(userId: number, date: string): Promise<number> {
     const result = await this.repository
       .createQueryBuilder('timeTrack')
       .select('SUM(timeTrack.durationMinutes)', 'total')
