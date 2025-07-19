@@ -1,5 +1,5 @@
 import api from "../axios.interceptor";
-import { CreateTimeTrackRequest, CreateTimeTrackResponse } from "../dtos/note.dtos";
+import { CreateTimeTrackRequest, CreateTimeTrackResponse, TimeTrackTotalResponseDto } from "../dtos/note.dtos";
 import { NoteTimeTracksResponse } from "../dtos/time-tracks.dtos";
 
 export const getNoteTimeTracks = async (noteId: number): Promise<NoteTimeTracksResponse[]> => {
@@ -7,7 +7,7 @@ export const getNoteTimeTracks = async (noteId: number): Promise<NoteTimeTracksR
   return data;
 };
 
-export const getTimeTracksTotalByNoteId = async (noteId: number) => {
+export const getTimeTracksTotalByNoteId = async (noteId: number): Promise<TimeTrackTotalResponseDto> => {
   const { data } = await api.get(`/time-tracks/note/${noteId}/total`);
   return data;
 };

@@ -36,7 +36,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
   const { createTimeTrack, isCreating } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
-  const { timeTracks, isLoadingTimeTracks, totalTimeData, isLoadingTotal, timeTrackError } = useNoteTimeTracks(note.id, isTimeTrackListOpen);
+  const { timeTracks, isLoadingTimeTracks, totalTimeData, isLoadingTotal, timeTrackError }: ReturnType<typeof useNoteTimeTracks> = useNoteTimeTracks(note.id, isTimeTrackListOpen);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);

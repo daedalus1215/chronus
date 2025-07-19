@@ -34,3 +34,12 @@ export type CreateTimeTrackResponse = {
   createdAt: string;
   updatedAt: string;
 };
+
+
+
+export type TimeTrackTotalResponseDto = {
+  totalMinutes: number;
+  totalDays: number;
+  totalHours: number;
+  totalMinutesRemainder: number;
+};
