@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import api from '../../../../api/axios.interceptor';
-import { getTimeTracksTotalByNoteId } from "../../../../api/time-tracks";
+import { getTimeTracksTotalByNoteId } from "../../../../api/requests/time-tracks.requests";
+import { TimeTrackTotalResponseDto } from "../../../../api/dtos/note.dtos";
 
 export type TimeTrack = {
   id: number;
@@ -15,7 +16,13 @@ const fetchNoteTimeTracks = async (noteId: number): Promise<TimeTrack[]> => {
   return data ?? [];
 };
 
-export const useNoteTimeTracks = (noteId: number, isOpen: boolean) => {
+export const useNoteTimeTracks = (noteId: number, isOpen: boolean): {
+  timeTracks: TimeTrack[];
+  isLoadingTimeTracks: boolean;
+  timeTrackError: string | null;
+  totalTimeData: TimeTrackTotalResponseDto | null;
+  isLoadingTotal: boolean;
+} => {
   const {
     data: timeTracks = [],
     isLoading:isLoadingTimeTracks,
@@ -27,10 +34,10 @@ export const useNoteTimeTracks = (noteId: number, isOpen: boolean) => {
   });
 
   const {
-    data: totalTimeData = 0,
+    data: totalTimeData,
     isLoading: isLoadingTotal,
     error: totalError,
-  } = useQuery({
+  } = useQuery<TimeTrackTotalResponseDto, Error, TimeTrackTotalResponseDto>({
     queryKey: ["timeTracksTotal", noteId],
     queryFn: () => getTimeTracksTotalByNoteId(noteId),
     enabled: isOpen,

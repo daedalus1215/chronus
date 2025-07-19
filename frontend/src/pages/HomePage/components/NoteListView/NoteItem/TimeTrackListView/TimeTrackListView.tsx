@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BottomSheet } from "../../../../../../components/BottomSheet/BottomSheet";
 import {
   deleteTimeTrack,
-} from "../../../../../../api/time-tracks";
+} from "../../../../../../api/requests/time-tracks.requests";
 import DialogTitle from "@mui/material/DialogTitle";
 import {
   Button,
@@ -15,6 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import styles from "./TimeTrackListView.module.css";
 import { TimeTrack } from "../../../../hooks/useNoteTimeTracks/useNoteTimeTracks";
+import { TimeTrackTotalResponseDto } from "../../../../../../../api/dtos/note.dtos";
 
 
 type TimeTrackListProps = {
@@ -24,7 +25,7 @@ type TimeTrackListProps = {
   timeTracks: TimeTrack[];
   isLoadingTimeTracks: boolean;
   error?: string;
-  totalTimeData: number;
+  totalTimeData: TimeTrackTotalResponseDto | null;
   isLoadingTotal: boolean;
 };
 
@@ -53,9 +54,25 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
   });
 
   const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(minutes / (24 * 60));
+    const hours = Math.floor((minutes % (24 * 60)) / 60);
     const remainingMinutes = minutes % 60;
-    return `${hours}h ${remainingMinutes}m`;
+    
+    if (days > 0) {
+      // For days, show days and hours, omit minutes if 0
+      const parts = [`${days}d`];
+      if (hours > 0) parts.push(`${hours}h`);
+      if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`);
+      return parts.join(' ');
+    } else if (hours > 0) {
+      // For hours, show hours and minutes, omit minutes if 0
+      const parts = [`${hours}h`];
+      if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`);
+      return parts.join(' ');
+    } else {
+      // For minutes only
+      return `${remainingMinutes}m`;
+    }
   };
 
   const formatDate = (dateStr: string) => {
@@ -93,9 +110,9 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
             <div className={styles.loading}>Loading total time...</div>
           ) : error ? (
             <div className={styles.error}>{error}</div>
-          ) : totalTimeData !== null ? (
+          ) : totalTimeData ? (
             <div className={styles.totalTime}>
-              Total Time: {formatDuration(totalTimeData)}
+              Total Time: {formatDuration(totalTimeData.totalMinutes)}
             </div>
           ) : null}
         </div>

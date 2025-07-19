@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import api from '../../../api/axios.interceptor';
 import { useDebounce } from '../../../hooks/useDebounce';
-import { Note } from '../../../api/dtos/note';
+import { getNamesOfNotes } from '../../../api/requests/notes.requests';
+import { NOTE_TYPES } from '../../../constant';
 
-export const useNotes = (type?: 'memo' | 'checkList', tagId?: string) => {
+export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
   const [notes, setNotes] = useState<{name: string, id: number, isMemo: number}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,24 +18,17 @@ export const useNotes = (type?: 'memo' | 'checkList', tagId?: string) => {
       setIsLoading(true);
       setError(null);
 
-      const response = await api.get<Note>('/notes/names', {
-        params: { 
-          cursor, 
-          limit: 20,
-          query,
-          type,
-          tagId
-        }
-      });
+      const response = await getNamesOfNotes(cursor, 20, query, type, tagId);
+      
       
       if (cursor > 0) {
-        setNotes(prev => [...prev, ...response.data.notes]);
+        setNotes(prev => [...prev, ...response.notes]);
       } else {
-        setNotes(response.data.notes);
+        setNotes(response.notes);
       }
       
-      setHasMore(response.data.hasMore);
-      setNextCursor(response.data.nextCursor);
+      setHasMore(response.hasMore);
+      setNextCursor(response.nextCursor);
       
     } catch (err) {
       console.error('Error fetching notes:', err);

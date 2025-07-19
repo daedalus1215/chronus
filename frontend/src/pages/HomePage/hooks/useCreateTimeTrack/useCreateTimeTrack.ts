@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { createTimeTrack } from './createTimeTrack/createTimeTrack';
-import type { CreateTimeTrackRequest } from './createTimeTrack/types/createTimeTrackRequest';
+import { createTimeTrack } from '../../../../api/requests/time-tracks.requests';
+import type { CreateTimeTrackRequest } from '../../../../api/dtos/note.dtos';
 import { timeTrackDB } from '../../../../services/indexedDB/timeTrackDB';
 import { useOnlineStatus } from '../../../../hooks/useOnlineStatus';
 

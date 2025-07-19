@@ -1,14 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../api/axios.interceptor';
 import { NOTE_TYPES } from '../../../constant';
+import { createNote as createNoteRequest } from '../../../api/requests/notes.requests';
 
-type Note = {
-  id: number;
-  name: string;
-  userId: string;
-  isMemo: boolean;
-}
+
 
 export const useCreateNote = () => {
   const navigate = useNavigate();
@@ -20,15 +15,9 @@ export const useCreateNote = () => {
       setIsCreating(true);
       setError(null);
 
-      const response = await api.post<Note>(
-        '/notes',
-        {
-          name: type === NOTE_TYPES.MEMO ? 'Memo' : 'Checklist',
-          isMemo: type === NOTE_TYPES.MEMO
-        }
-      );
+      const response = await createNoteRequest(type);
 
-      navigate(`/notes/${response.data.id}`);
+      navigate(`/notes/${response.id}`);
     } catch (err) {
       console.error('Error creating note:', err);
       setError('Failed to create note');
