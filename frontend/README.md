@@ -12,3 +12,5 @@ export const env = {
     VITE_ALLOWED_HOSTS: '{fqdn}'
 }
 ```
+
+Can remove `.sample` from `vite.env.config.ts.sample` and that should be able to run locally, against backend service on port 3000.
