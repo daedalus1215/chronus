@@ -9,6 +9,7 @@ import { NotePage } from './pages/NotePage/NotePage';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { muiTheme } from './theme';
 import { TagPage } from './pages/TagPage/TagPage';
+import { ActivityPage } from './pages/ActivityPage/ActivityPage';
 import { ROUTES, ROUTE_PATTERNS } from './constants/routes';
 
 function AppRoutes() {
@@ -23,6 +24,7 @@ function AppRoutes() {
           <Route path={ROUTES.CHECKLISTS} element={<HomePage />} />
           <Route path={ROUTE_PATTERNS.TAG_NOTES} element={<HomePage />} />
           <Route path={ROUTES.TAGS} element={<TagPage />} />
+          <Route path={ROUTES.ACTIVITY} element={<ActivityPage />} />
           <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
           {/* Redirect authenticated users trying to access auth pages */}
           <Route path={ROUTES.LOGIN} element={<Navigate to={ROUTES.HOME} replace />} />

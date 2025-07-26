@@ -9,6 +9,7 @@ export const ROUTES = {
   MEMOS: '/memos',
   CHECKLISTS: '/checklists',
   TAGS: '/tags',
+  ACTIVITY: '/activity',
   TAG_NOTES: (tagId: string | number) => `/tag-notes/${tagId}`,
   NOTE: (noteId: string | number) => `/notes/${noteId}`,
 } as const;

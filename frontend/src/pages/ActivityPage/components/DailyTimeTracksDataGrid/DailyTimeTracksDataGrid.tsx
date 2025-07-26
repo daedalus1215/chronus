@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getDailyTimeTracksAggregation } from '../../../../api/requests/time-tracks.requests';
 import { TimeTrackAggregationResponse } from '../../../../api/dtos/time-tracks.dtos';
 import { ROUTES } from '../../../../constants/routes';
-import styles from './DailyTimeTracks.module.css';
+import styles from './DailyTimeTracksDataGrid.module.css';
 
 const formatTime = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
@@ -26,41 +26,72 @@ const formatDate = (dateString: string): string => {
   });
 };
 
-export const DailyTimeTracks: React.FC = () => {
-  const [timeTracks, setTimeTracks] = useState<TimeTrackAggregationResponse[]>([]);
-  const [loading, setLoading] = useState(false);
+type Props = {
+  selectedDate?: string;
+  onDateChange?: (date: string) => void;
+  data?: TimeTrackAggregationResponse[];
+  loading?: boolean;
+};
+
+export const DailyTimeTracksDataGrid: React.FC<Props> = ({ 
+  selectedDate: externalSelectedDate,
+  onDateChange,
+  data: externalData,
+  loading: externalLoading 
+}) => {
+  const [internalData, setInternalData] = useState<TimeTrackAggregationResponse[]>([]);
+  const [internalLoading, setInternalLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
+  const [internalSelectedDate, setInternalSelectedDate] = useState<string>(() => {
     const today = new Date();
     return today.toISOString().split('T')[0];
   });
   const navigate = useNavigate();
 
+  // Use external data if provided, otherwise use internal state
+  const timeTracks = externalData || internalData;
+  const loading = externalLoading || internalLoading;
+  const selectedDate = externalSelectedDate || internalSelectedDate;
+
   const fetchTimeTracks = async (date?: string) => {
-    setLoading(true);
+    if (externalData) return; // Don't fetch if external data is provided
+    
+    setInternalLoading(true);
     setError(null);
     try {
       const data = await getDailyTimeTracksAggregation(date);
-      setTimeTracks(data);
+      setInternalData(data);
     } catch (err) {
       setError('Failed to load time tracks');
       console.error('Error fetching time tracks:', err);
     } finally {
-      setLoading(false);
+      setInternalLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTimeTracks(selectedDate);
-  }, [selectedDate]);
+    if (!externalData) {
+      fetchTimeTracks(selectedDate);
+    }
+  }, [selectedDate, externalData]);
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
+    const newDate = event.target.value;
+    if (onDateChange) {
+      onDateChange(newDate);
+    } else {
+      setInternalSelectedDate(newDate);
+    }
   };
 
   const handleTodayClick = () => {
     const today = new Date();
-    setSelectedDate(today.toISOString().split('T')[0]);
+    const todayDate = today.toISOString().split('T')[0];
+    if (onDateChange) {
+      onDateChange(todayDate);
+    } else {
+      setInternalSelectedDate(todayDate);
+    }
   };
 
   const handleRowClick = (params: GridRowParams) => {
@@ -103,30 +134,34 @@ export const DailyTimeTracks: React.FC = () => {
     mostRecentDate: track.mostRecentDate,
   }));
 
+  const shouldShowControls = !externalSelectedDate && !onDateChange;
+
   return (
     <Paper className={styles.container}>
       <Box className={styles.header}>
         <Typography variant="h5" component="h2" sx={{ fontWeight: 600 }}>
           Daily Time Tracks
         </Typography>
-        <Box className={styles.dateControls}>
-          <TextField
-            type="date"
-            value={selectedDate}
-            onChange={handleDateChange}
-            size="small"
-            InputLabelProps={{ shrink: true }}
-            sx={{ minWidth: 150 }}
-          />
-          <Button
-            variant="contained"
-            onClick={handleTodayClick}
-            size="small"
-            sx={{ minWidth: 70 }}
-          >
-            Today
-          </Button>
-        </Box>
+        {shouldShowControls && (
+          <Box className={styles.dateControls}>
+            <TextField
+              type="date"
+              value={selectedDate}
+              onChange={handleDateChange}
+              size="small"
+              InputLabelProps={{ shrink: true }}
+              sx={{ minWidth: 150 }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleTodayClick}
+              size="small"
+              sx={{ minWidth: 70 }}
+            >
+              Today
+            </Button>
+          </Box>
+        )}
       </Box>
       
       {error ? (
@@ -159,7 +194,7 @@ export const DailyTimeTracks: React.FC = () => {
                 cursor: 'pointer',
               },
               '& .MuiDataGrid-row:hover': {
-                backgroundColor: '#f9fafb',
+                backgroundColor: 'rgba(99, 102, 241, 0.08)', // Primary color with 8% opacity
               },
             }}
             slots={{

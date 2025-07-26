@@ -20,6 +20,7 @@ const navItems = [
   { label: 'Memos', path: '/memos' },
   { label: 'CheckLists', path: '/checklists' },
   { label: 'Tags', path: '/tags' },
+  { label: 'Activity', path: '/activity' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {

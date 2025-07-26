@@ -1,0 +1,44 @@
+.activityPage {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.main {
+  padding: 80px 1rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.gridContainer {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+  grid-template-areas: 
+    "radar"
+    "datagrid";
+}
+
+/* Large screens: side by side layout */
+@media (min-width: 1200px) {
+  .gridContainer {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "radar datagrid";
+    align-items: start;
+  }
+}
+
+/* Extra large screens: more space for data grid */
+@media (min-width: 1600px) {
+  .gridContainer {
+    grid-template-columns: 2fr 3fr;
+  }
+}
+
+.radarSection {
+  grid-area: radar;
+}
+
+.dataGridSection {
+  grid-area: datagrid;
+} 

@@ -1,7 +1,8 @@
 import React from 'react';
+import { Fab, CircularProgress } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { useAuth } from '../../auth/useAuth';
 import { NoteListView } from './components/NoteListView/NoteListView';
-import { DailyTimeTracks } from './components/DailyTimeTracks/DailyTimeTracks';
 import { useCreateNote } from './hooks/useCreateNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import { Header } from '../../components/Header/Header';
@@ -36,17 +37,21 @@ export const HomePage: React.FC = () => {
     <div className={styles.homePage}>
       <Header />
       <main className={styles.main}>
-        <DailyTimeTracks />
         <NoteListView type={noteType} tagId={tagId} />
       </main>
-      <button 
-        className={styles.fab} 
+      <Fab 
+        color="primary"
         aria-label="Create new note"
         onClick={() => setShowMenu(true)}
         disabled={isCreating}
+        sx={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+        }}
       >
-        {isCreating ? '...' : '+'}
-      </button>
+        {isCreating ? <CircularProgress size={24} color="inherit" /> : <AddIcon />}
+      </Fab>
       {showMenu && (
         <CreateNoteMenu
           onSelect={handleCreateNote}
