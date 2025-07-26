@@ -19,6 +19,7 @@ import { DeleteNoteAction } from "./apps/actions/notes/delete-note.action";
 import { ArchiveNoteAction } from "./apps/actions/archive-note/archive-note.action";
 import { ArchiveNoteTransactionScript } from "./domain/transaction-scripts/archive-note/archive-note.transaction.script";
 import { NoteService } from "./domain/services/note.service";
+import { GetNoteNamesByIdsTransactionScript } from "./domain/transaction-scripts/get-note-names-by-ids.transaction.script";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo])],
@@ -31,7 +32,8 @@ import { NoteService } from "./domain/services/note.service";
     UpdateNoteTitleTransactionScript,
     ArchiveNoteTransactionScript,
     NoteDtoToEntityConverter,
-    NoteService
+    NoteService,
+    GetNoteNamesByIdsTransactionScript
   ],
   controllers: [
     GetNoteNamesByUserIdAction,

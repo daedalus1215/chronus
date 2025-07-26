@@ -90,4 +90,18 @@ export class NoteMemoTagRepository {
     async deleteNoteById(id: number, userId: number): Promise<void> {
         await this.repository.delete({ id, userId });
     }
+
+    async getNoteNamesByIds(noteIds: number[], userId: number): Promise<{id: number, name: string}[]> {
+        if (noteIds.length === 0) {
+            return [];
+        }
+
+        return await this.repository
+            .createQueryBuilder("note")
+            .select("note.id", "id")
+            .addSelect("note.name", "name")
+            .where("note.id IN (:...noteIds)", { noteIds })
+            .andWhere("note.user_id = :userId", { userId })
+            .getRawMany();
+    }
 } 
