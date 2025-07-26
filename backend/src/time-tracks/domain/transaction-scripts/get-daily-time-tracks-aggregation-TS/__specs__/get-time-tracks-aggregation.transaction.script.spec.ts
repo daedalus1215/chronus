@@ -1,40 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GetTimeTracksAggregationTransactionScript } from '../get-time-tracks-aggregation.transaction.script';
+import { GetDailyTimeTracksAggregationTransactionScript } from '../get-daily-time-tracks-aggregation.transaction.script';
 import { TimeTrackRepository } from '../../../../infra/repositories/time-track.repository';
-import { NoteAggregator } from '../../../../../notes/domain/aggregators/note.aggregator';
-import { TimeTrackAggregationResponseDto } from '../../../../apps/dtos/responses/time-track-aggregation.response.dto';
 
-describe('GetTimeTracksAggregationTransactionScript', () => {
-  let target: GetTimeTracksAggregationTransactionScript;
+describe('GetDailyTimeTracksAggregationTransactionScript', () => {
+  let target: GetDailyTimeTracksAggregationTransactionScript;
   let timeTrackRepository: jest.Mocked<TimeTrackRepository>;
-  let noteAggregator: jest.Mocked<NoteAggregator>;
 
   const mockTimeTrackRepository = {
-    getTimeTracksAggregation: jest.fn(),
-  };
-
-  const mockNoteAggregator = {
-    getReference: jest.fn(),
+    getDailyTimeTracksAggregation: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        GetTimeTracksAggregationTransactionScript,
+        GetDailyTimeTracksAggregationTransactionScript,
         {
           provide: TimeTrackRepository,
           useValue: mockTimeTrackRepository,
         },
-        {
-          provide: NoteAggregator,
-          useValue: mockNoteAggregator,
-        },
       ],
     }).compile();
 
-    target = module.get<GetTimeTracksAggregationTransactionScript>(GetTimeTracksAggregationTransactionScript);
+    target = module.get<GetDailyTimeTracksAggregationTransactionScript>(GetDailyTimeTracksAggregationTransactionScript);
     timeTrackRepository = module.get(TimeTrackRepository);
-    noteAggregator = module.get(NoteAggregator);
   });
 
   afterEach(() => {
@@ -64,31 +52,18 @@ describe('GetTimeTracksAggregationTransactionScript', () => {
       },
     ];
 
-    const mockNoteReferences = [
-      { id: 1, name: 'Note 1', userId: 1 },
-      { id: 2, name: 'Note 2', userId: 1 },
-    ];
-
-    it('should return aggregated time tracks with note titles', async () => {
-      timeTrackRepository.getTimeTracksAggregation.mockResolvedValue(mockAggregations);
-      noteAggregator.getReference
-        .mockResolvedValueOnce(mockNoteReferences[0])
-        .mockResolvedValueOnce(mockNoteReferences[1]);
+    it('should return aggregated time tracks without note titles', async () => {
+      timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue(mockAggregations);
 
       const result = await target.apply(mockCommand);
 
-      expect(timeTrackRepository.getTimeTracksAggregation).toHaveBeenCalledWith(1, '2024-01-15');
-      expect(noteAggregator.getReference).toHaveBeenCalledWith(1, 1);
-      expect(noteAggregator.getReference).toHaveBeenCalledWith(2, 1);
+      expect(timeTrackRepository.getDailyTimeTracksAggregation).toHaveBeenCalledWith(1, '2024-01-15');
 
       expect(result).toHaveLength(2);
-      expect(result[0]).toBeInstanceOf(TimeTrackAggregationResponseDto);
       expect(result[0].noteId).toBe(1);
-      expect(result[0].noteTitle).toBe('Note 1');
       expect(result[0].totalTimeMinutes).toBe(120);
       expect(result[0].dailyTimeMinutes).toBe(60);
       expect(result[1].noteId).toBe(2);
-      expect(result[1].noteTitle).toBe('Note 2');
       expect(result[1].totalTimeMinutes).toBe(90);
       expect(result[1].dailyTimeMinutes).toBe(30);
     });
@@ -97,11 +72,11 @@ describe('GetTimeTracksAggregationTransactionScript', () => {
       const commandWithoutDate = { user: { userId: 1, username: 'testuser' } };
       const today = new Date().toISOString().split('T')[0];
       
-      timeTrackRepository.getTimeTracksAggregation.mockResolvedValue([]);
+      timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue([]);
 
       await target.apply(commandWithoutDate);
 
-      expect(timeTrackRepository.getTimeTracksAggregation).toHaveBeenCalledWith(1, today);
+      expect(timeTrackRepository.getDailyTimeTracksAggregation).toHaveBeenCalledWith(1, today);
     });
 
     it('should sort results by most recent date and time', async () => {
@@ -129,11 +104,7 @@ describe('GetTimeTracksAggregationTransactionScript', () => {
         },
       ];
 
-      timeTrackRepository.getTimeTracksAggregation.mockResolvedValue(mockAggregationsWithDifferentDates);
-      noteAggregator.getReference
-        .mockResolvedValueOnce({ id: 1, name: 'Note 1', userId: 1 })
-        .mockResolvedValueOnce({ id: 2, name: 'Note 2', userId: 1 })
-        .mockResolvedValueOnce({ id: 3, name: 'Note 3', userId: 1 });
+      timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue(mockAggregationsWithDifferentDates);
 
       const result = await target.apply(mockCommand);
 
@@ -144,12 +115,12 @@ describe('GetTimeTracksAggregationTransactionScript', () => {
     });
 
     it('should return empty array when no aggregations found', async () => {
-      timeTrackRepository.getTimeTracksAggregation.mockResolvedValue([]);
+      timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue([]);
 
       const result = await target.apply(mockCommand);
 
       expect(result).toEqual([]);
-      expect(timeTrackRepository.getTimeTracksAggregation).toHaveBeenCalledWith(1, '2024-01-15');
+      expect(timeTrackRepository.getDailyTimeTracksAggregation).toHaveBeenCalledWith(1, '2024-01-15');
     });
   });
 }); 

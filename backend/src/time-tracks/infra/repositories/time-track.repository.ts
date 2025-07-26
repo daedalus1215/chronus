@@ -67,7 +67,7 @@ export class TimeTrackRepository {
     return result.affected > 0;
   }
 
-  async getTimeTracksAggregation(userId: number, date: string): Promise<Array<{
+  async getDailyTimeTracksAggregation(userId: number, date: string): Promise<Array<{
     noteId: number;
     totalTimeMinutes: number;
     dailyTimeMinutes: number;

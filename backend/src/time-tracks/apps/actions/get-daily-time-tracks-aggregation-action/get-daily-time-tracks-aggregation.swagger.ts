@@ -1,7 +1,7 @@
 import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { TimeTrackAggregationResponseDto } from '../../dtos/responses/time-track-aggregation.response.dto';
 
-export const GetTimeTracksAggregationSwagger: ProtectedActionOptions = {
+export const GetDailyTimeTracksAggregationSwagger: ProtectedActionOptions = {
   tag: 'Time Tracks',
   summary: 'Get aggregated time tracks grouped by note ID for a specific date',
   additionalResponses: [

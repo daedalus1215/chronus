@@ -6,8 +6,8 @@ import { GetNoteTimeTracksTransactionScript } from '../../transaction-scripts/ge
 import { GetNoteTimeTracksCommand } from '../../transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.command';
 import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
 import { GetTimeTracksTotalByNoteIdTransactionScript } from '../../transaction-scripts/get-time-tracks-total-by-note-id-TS/get-time-tracks-total-by-note-id.transaction.script';
-import { GetTimeTracksAggregationTransactionScript } from '../../transaction-scripts/get-time-tracks-aggregation-TS/get-time-tracks-aggregation.transaction.script';
-import { GetTimeTracksAggregationCommand } from '../../transaction-scripts/get-time-tracks-aggregation-TS/get-time-tracks-aggregation.command';
+import { GetDailyTimeTracksAggregationTransactionScript } from '../../transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.transaction.script';
+import { GetDailyTimeTracksAggregationCommand } from '../../transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.command';
 import { TimeTrackWithNoteNamesConverter } from './converter/time-track-with-note-names.converter';
 
 //@TODO: Move this to a command object
@@ -23,7 +23,7 @@ export class TimeTrackService {
     private readonly getNoteTimeTracksTotalByNoteId: GetNoteTimeTracksTransactionScript,
     private readonly noteAggregator: NoteAggregator,
     private readonly getTimeTracksTotalByNoteIdTS: GetTimeTracksTotalByNoteIdTransactionScript,
-    private readonly getTimeTracksAggregationTS: GetTimeTracksAggregationTransactionScript,
+    private readonly getDailyTimeTracksAggregationTS: GetDailyTimeTracksAggregationTransactionScript,
     private readonly timeTrackWithNoteNamesConverter: TimeTrackWithNoteNamesConverter
   ) {}
 
@@ -51,10 +51,10 @@ export class TimeTrackService {
     return this.getTimeTracksTotalByNoteIdTS.apply(command);
   }
 
-  async getTimeTracksAggregation(command: GetTimeTracksAggregationCommand) {
-    const trackTimeTracks = await this.getTimeTracksAggregationTS.apply(command);
+  async getDailyTimeTracksAggregation(command: GetDailyTimeTracksAggregationCommand) {
+    const trackTimeTracks = await this.getDailyTimeTracksAggregationTS.apply(command);
     const noteNames = await this.noteAggregator.getNoteNamesByIds(trackTimeTracks.map(track => track.noteId), command.user.userId);
-    
+
     return this.timeTrackWithNoteNamesConverter.apply(trackTimeTracks, noteNames);
   }
 } 
