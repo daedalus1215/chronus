@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
-import styles from "./NotePage.module.css";
+import { Header } from "../../components/Header/Header";
 import { Tag, useNoteTags } from "./hooks/useNoteTags";
 import { BottomSheet } from "../../components/BottomSheet/BottomSheet";
 import { useState } from "react";
@@ -16,6 +16,7 @@ import { AddTagForm } from "./components/AddTagForm/AddTagForm";
 import { useAllTags } from "./hooks/useAllTags";
 import { Chip, IconButton } from "@mui/material";
 import { Add, Close } from "@mui/icons-material";
+import styles from "./NotePage.module.css";
 
 export const NotePage: React.FC = () => {
   const navigate = useNavigate();
@@ -57,7 +58,6 @@ export const NotePage: React.FC = () => {
     }
   };
 
-  // Compute tags that are not already on the note
   const availableTags = allTags
     ? allTags.filter(
         (tag: { id: number }) =>
@@ -66,8 +66,10 @@ export const NotePage: React.FC = () => {
     : [];
 
   return (
+    <>
+      <Header />
+      <main className={styles.main}>
     <Box>
-      {/* Tag List */}
       <Box className="flex items-center gap-2 overflow-x-auto py-2 mb-2">
         <IconButton
           onClick={() => setAddTagOpen(true)}
@@ -97,7 +99,7 @@ export const NotePage: React.FC = () => {
             />
           ))}
       </Box>
-      {/* Add Tag BottomSheet */}
+
       <BottomSheet isOpen={isAddTagOpen} onClose={() => setAddTagOpen(false)}>
         {allTagsLoading ? (
           <span className="text-gray-400 ml-2">Loading all tags...</span>
@@ -147,5 +149,7 @@ export const NotePage: React.FC = () => {
         <CheckListView note={note} />
       )}
     </Box>
+      </main>
+    </>
   );
 };

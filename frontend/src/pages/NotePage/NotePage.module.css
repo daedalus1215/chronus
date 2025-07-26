@@ -1,3 +1,20 @@
+.page {
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  padding-top: 1rem;
+  
+}
+
+.main {
+  padding: 1rem;
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  position:fixed;
+  top: 64px;
+  width: 100%;
+}
+
 .titleInput {
   width: 100%;
   padding: 1rem;
