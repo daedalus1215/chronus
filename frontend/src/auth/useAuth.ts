@@ -38,6 +38,7 @@ export const useAuthProvider = () => {
       };
       return user;
     } catch (error) {
+      console.error('Failed to parse token:', error);
       localStorage.removeItem('jwt_token');
       return null;
     }
