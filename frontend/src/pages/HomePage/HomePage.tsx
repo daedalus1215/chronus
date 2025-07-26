@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../auth/useAuth';
 import { NoteListView } from './components/NoteListView/NoteListView';
+import { DailyTimeTracks } from './components/DailyTimeTracks/DailyTimeTracks';
 import { useCreateNote } from './hooks/useCreateNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import { Header } from '../../components/Header/Header';
@@ -35,6 +36,7 @@ export const HomePage: React.FC = () => {
     <div className={styles.homePage}>
       <Header />
       <main className={styles.main}>
+        <DailyTimeTracks />
         <NoteListView type={noteType} tagId={tagId} />
       </main>
       <button 
