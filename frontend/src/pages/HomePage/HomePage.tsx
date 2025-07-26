@@ -1,4 +1,6 @@
 import React from 'react';
+import { Fab, CircularProgress } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { useAuth } from '../../auth/useAuth';
 import { NoteListView } from './components/NoteListView/NoteListView';
 import { useCreateNote } from './hooks/useCreateNote';
@@ -37,14 +39,19 @@ export const HomePage: React.FC = () => {
       <main className={styles.main}>
         <NoteListView type={noteType} tagId={tagId} />
       </main>
-      <button 
-        className={styles.fab} 
+      <Fab 
+        color="primary"
         aria-label="Create new note"
         onClick={() => setShowMenu(true)}
         disabled={isCreating}
+        sx={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+        }}
       >
-        {isCreating ? '...' : '+'}
-      </button>
+        {isCreating ? <CircularProgress size={24} color="inherit" /> : <AddIcon />}
+      </Fab>
       {showMenu && (
         <CreateNoteMenu
           onSelect={handleCreateNote}

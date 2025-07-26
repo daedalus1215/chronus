@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
 import { Note } from '../entities/notes/note.entity';
+import { GetNoteNamesByIdsTransactionScript } from '../transaction-scripts/get-note-names-by-ids.transaction.script';
 
 type NoteReference = {
   id: number;
@@ -12,7 +13,8 @@ type NoteReference = {
 @Injectable()
 export class NoteAggregator {
   constructor(
-    private readonly noteRepository: NoteMemoTagRepository
+    private readonly noteRepository: NoteMemoTagRepository,
+    private readonly getNoteNamesByIdsTS: GetNoteNamesByIdsTransactionScript
   ) {}
 
   async exists(noteId: number, userId: number): Promise<boolean> {
@@ -51,5 +53,9 @@ export class NoteAggregator {
   async isArchived(noteId: number, userId: number): Promise<boolean> {
     const note = await this.noteRepository.findById(noteId, userId);
     return note?.archivedAt !== null;
+  }
+
+  async getNoteNamesByIds(noteIds: number[], userId: number): Promise<{id: number, name: string}[]> {
+    return await this.getNoteNamesByIdsTS.apply(noteIds, userId);
   }
 } 
