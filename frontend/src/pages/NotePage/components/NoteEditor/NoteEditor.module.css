@@ -10,7 +10,7 @@
   border-radius: 0;
   position: relative;
   box-sizing: border-box;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 180px);
 }
 .descriptionInput {
   width: 100%;
