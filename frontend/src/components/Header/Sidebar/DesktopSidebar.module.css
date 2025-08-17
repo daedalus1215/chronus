@@ -8,7 +8,9 @@
   width: 180px;
   overflow-y: hidden;
   scrollbar-width: none;
-  scroll-behavior: smooth;
+  scroll-behavior: none;
+  top: 64px;
+  height: calc(100vh - 16px);
 }
 
 .header {

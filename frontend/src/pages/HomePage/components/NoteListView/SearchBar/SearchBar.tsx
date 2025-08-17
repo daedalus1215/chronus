@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import styles from './SearchBar.module.css';
 import { Input } from '@mui/material';
-import { useIsMobile } from '../../../../../hooks/useIsMobile';
 
 type SearchBarProps = {
   value: string;
@@ -12,14 +11,13 @@ type SearchBarProps = {
 
 export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, type }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const isMobile = useIsMobile();
 
   let placeholder = 'Search notes...';
   if (type === 'MEMO') placeholder = 'Search memos...';
   if (type === 'CHECKLIST') placeholder = 'Search checklists...';
 
   return (
-    <div className={`${styles.searchContainer} ${isMobile ? styles.searchContainerMobile : ''}`}>
+    <div className={styles.searchContainer}>
       
         <Input
           ref={inputRef}
@@ -28,7 +26,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, 
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`${styles.searchInput} ${isMobile ? styles.searchInputMobile : ''}`}
+          className={styles.searchInput}
         />
         {value && (
           <button 

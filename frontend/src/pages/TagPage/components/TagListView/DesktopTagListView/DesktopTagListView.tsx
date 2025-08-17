@@ -1,75 +1,112 @@
-import React from "react";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { useQuery } from "@tanstack/react-query";
+import React, { useCallback, useRef } from "react";
+import { useQuery }  from "@tanstack/react-query";
 import { Tag } from "../../../../../api/dtos/tag.dtos";
 import { fetchTags } from "../../../../../api/requests/tags.requests";
 import { useNavigate } from "react-router-dom";
+import { TagItem } from "../TagItem/TagItem";
+import { SearchBar } from "../SearchBar/SearchBar";
+import styles from "./DesktopTagListView.module.css";
+
+const LoadingSpinner: React.FC = () => (
+  <div className={styles.loadingSpinner}>Loading...</div>
+);
+
+const NoMoreTags: React.FC = () => (
+  <div className={styles.noMoreTags}>No more tags to load</div>
+);
 
 export type TagListViewProps = {
   isLoading?: boolean;
   error?: string | null;
-  onTagClick?: (tag: Tag) => void;
+  selectedTagId?: number | null;
+  onTagSelect?: (tagId: number) => void;
 };
 
-export const DesktopTagListView: React.FC<TagListViewProps> = () => {
+export const DesktopTagListView: React.FC<TagListViewProps> = ({
+  selectedTagId,
+  onTagSelect
+}) => {
   const navigate = useNavigate();
-  const { data: tags, isLoading: tagsLoading, error: tagsError } = useQuery<Tag[]>({
+  const { data: tags = [], isLoading: tagsLoading, error: tagsError } = useQuery<Tag[]>({
     queryKey: ["tags"],
     queryFn: fetchTags,
   });
 
-  const loading = tagsLoading;
-  const errMsg = tagsError;
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current || tagsLoading) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const threshold = 100; // pixels from bottom to trigger load
+
+    // Check if we're near the bottom
+    if (scrollHeight - scrollTop - clientHeight < threshold) {
+      // TODO: Implement loadMore functionality
+    }
+  }, [tagsLoading]);
+
+  // Add scroll event listener
+  React.useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const scrollHandler = () => {
+      requestAnimationFrame(handleScroll);
+    };
+
+    scrollContainer.addEventListener('scroll', scrollHandler);
+    return () => scrollContainer.removeEventListener('scroll', scrollHandler);
+  }, [handleScroll]);
+
+  const filteredTags = React.useMemo(() => {
+    if (!tags) return [];
+    return tags.filter(tag => 
+      tag.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [tags, searchQuery]);
+
+  const handleTagClick = (tagId: number) => {
+    if (onTagSelect) {
+      onTagSelect(tagId);
+    } else {
+      navigate(`/tag-notes/${tagId}`);
+    }
+  };
+
+  if (tagsLoading && (!tags || tags.length === 0)) {
+    return <div className={styles.tagListLoading}>Loading tags...</div>;
+  }
+
+  if (tagsError) {
+    return <div className={styles.tagListError}>{String(tagsError)}</div>;
+  }
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
-      {loading && (
-        <Box display="flex" justifyContent="center" alignItems="center" py={4}>
-          <CircularProgress size={28} />
-        </Box>
-      )}
-      {!loading && !errMsg && tags?.length === 0 && (
-        <Typography color="text.secondary" align="center" py={4}>
-          No tags
-        </Typography>
-      )}
-      <Box sx={{ overflowY: 'auto', flex: 1 }}>
-        <List>
-          {tags && tags.map(tag => (
-            <ListItem key={tag.id} disablePadding>
-              <ListItemButton
-                onClick={() => navigate(`/tag-notes/${tag.id}`)}
-                tabIndex={0}
-                role="button"
-                aria-label={`Tag: ${tag.name}`}
-                sx={{
-                  borderRadius: 2,
-                  mb: 1,
-                  boxShadow: 1,
-                  bgcolor: 'background.paper',
-                  '&:hover': { bgcolor: 'primary.50' },
-                  '&:focus': { outline: '2px solid', outlineColor: 'primary.main' },
-                }}
-                onKeyDown={e => {
-                  if ((e.key === 'Enter' || e.key === ' ')) {
-                    navigate(`/tag-notes/${tag.id}`);
-                  }
-                }}
-              >
-                <ListItemText
-                  primary={<Typography fontWeight={600} color="text.primary">{tag.name}</Typography>}
-                />
-              </ListItemButton>
-            </ListItem>
+    <div className={styles.tagList}>
+      <SearchBar 
+        value={searchQuery}
+        onChange={setSearchQuery}
+        onClear={() => setSearchQuery("")}
+      />
+      <div className={styles.tagListContent}>
+        <div 
+          ref={scrollContainerRef}
+          className={styles.tagListScrollContainer}
+        >
+          {filteredTags.map((tag) => (
+            <TagItem 
+              key={tag.id} 
+              tag={tag}
+              onClick={() => handleTagClick(tag.id)}
+              isSelected={selectedTagId === tag.id}
+            />
           ))}
-        </List>
-      </Box>
-    </Box>
+          {tagsLoading && <LoadingSpinner />}
+          {!tagsLoading && filteredTags.length === 0 && <NoMoreTags />}
+        </div>
+      </div>
+    </div>
   );
-}; 
+};
