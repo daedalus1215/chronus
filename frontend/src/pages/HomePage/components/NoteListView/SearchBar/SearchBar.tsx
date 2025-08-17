@@ -1,47 +1,28 @@
-import React, { useState, useRef } from 'react';
-import { Search as SearchIcon } from '@mui/icons-material';
+import React, { useRef } from 'react';
 import styles from './SearchBar.module.css';
+import { Input } from '@mui/material';
 
 type SearchBarProps = {
   value: string;
   onChange: (value: string) => void;
   onClear: () => void;
-  type?: 'memo' | 'checkList';
+  type?: 'MEMO' | 'CHECKLIST';
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, type }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      // Focus the input when opening
-      setTimeout(() => inputRef.current?.focus(), 0);
-    } else {
-      // Clear search when closing
-      onClear();
-    }
-  };
-
   let placeholder = 'Search notes...';
-  if (type === 'memo') placeholder = 'Search memos...';
-  if (type === 'checkList') placeholder = 'Search checklists...';
+  if (type === 'MEMO') placeholder = 'Search memos...';
+  if (type === 'CHECKLIST') placeholder = 'Search checklists...';
 
   return (
-    <div className={`${styles.searchContainer} ${isOpen ? styles.open : ''}`}>
-      <button 
-        onClick={handleToggle}
-        className={styles.searchButton}
-        aria-label={isOpen ? "Close search" : "Open search"}
-      >
-        <SearchIcon className={styles.searchIcon} />
-      </button>
+    <div className={styles.searchContainer}>
       
-      <div className={`${styles.searchInputContainer} ${isOpen ? styles.open : ''}`}>
-        <input
+        <Input
           ref={inputRef}
           type="text"
+          name="search"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -57,6 +38,5 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, 
           </button>
         )}
       </div>
-    </div>
   );
 }; 

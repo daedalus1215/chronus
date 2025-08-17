@@ -1,14 +1,12 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useNote } from "./hooks/useNote/useNote";
-import { NoteEditor } from "./components/NoteEditor/NoteEditor";
 import { CheckListView } from "./components/CheckListView/CheckListView";
 import { useTitle } from "./hooks/useTitle";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
-import { Header } from "../../components/Header/Header";
 import { Tag, useNoteTags } from "./hooks/useNoteTags";
 import { BottomSheet } from "../../components/BottomSheet/BottomSheet";
 import { useState } from "react";
@@ -16,10 +14,14 @@ import { AddTagForm } from "./components/AddTagForm/AddTagForm";
 import { useAllTags } from "./hooks/useAllTags";
 import { Chip, IconButton } from "@mui/material";
 import { Add, Close } from "@mui/icons-material";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { DesktopNoteEditor } from "./components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor";
 import styles from "./NotePage.module.css";
+import { MobileNoteEditor } from "./components/NoteEditor/MobileNoteEditor/MobileNoteEditor";
 
 export const NotePage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { id } = useParams<{ id: string }>();
   const { note, isLoading, error, updateNote } = useNote(Number(id));
   const {
@@ -66,8 +68,6 @@ export const NotePage: React.FC = () => {
     : [];
 
   return (
-    <>
-      <Header />
       <main className={styles.main}>
     <Box>
       <Box className="flex items-center gap-2 overflow-x-auto py-2 mb-2">
@@ -144,12 +144,11 @@ export const NotePage: React.FC = () => {
         </Alert>
       )}
       {note?.isMemo ? (
-        <NoteEditor note={note} onSave={handleSave} />
+        isMobile ? <MobileNoteEditor note={note} onSave={handleSave} /> : <DesktopNoteEditor note={note} onSave={handleSave} />
       ) : (
         <CheckListView note={note} />
       )}
     </Box>
       </main>
-    </>
   );
 };

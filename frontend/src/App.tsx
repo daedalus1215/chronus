@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import { useAuth } from './auth/useAuth';
+import { SidebarProvider } from './contexts/SidebarContext';
 import { HomePage } from './pages/HomePage/HomePage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { RegisterPage } from './pages/RegisterPage/RegisterPage';
@@ -19,16 +20,34 @@ function AppRoutes() {
     return (
       <>
         <Routes>
-          <Route path={ROUTES.HOME} element={<HomePage />} />
-          <Route path={ROUTES.MEMOS} element={<HomePage />} />
-          <Route path={ROUTES.CHECKLISTS} element={<HomePage />} />
-          <Route path={ROUTE_PATTERNS.TAG_NOTES} element={<HomePage />} />
+          {/* Home route with optional note */}
+          <Route path={ROUTES.HOME} element={<HomePage />}>
+            <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
+          </Route>
+
+          {/* Memos route with optional note */}
+          <Route path={ROUTES.MEMOS} element={<HomePage />}>
+            <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
+          </Route>
+
+          {/* Checklists route with optional note */}
+          <Route path={ROUTES.CHECKLISTS} element={<HomePage />}>
+            <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
+          </Route>
+
+          {/* Tag notes route with optional note */}
+          <Route path={ROUTE_PATTERNS.TAG_NOTES} element={<HomePage />}>
+            <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
+          </Route>
+
+          {/* Other routes */}
           <Route path={ROUTES.TAGS} element={<TagPage />} />
           <Route path={ROUTES.ACTIVITY} element={<ActivityPage />} />
-          <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
+
           {/* Redirect authenticated users trying to access auth pages */}
           <Route path={ROUTES.LOGIN} element={<Navigate to={ROUTES.HOME} replace />} />
           <Route path={ROUTES.REGISTER} element={<Navigate to={ROUTES.HOME} replace />} />
+          
           {/* Catch all other routes and redirect to home */}
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
@@ -53,7 +72,9 @@ export function App() {
       <ThemeProvider theme={muiTheme}>
         <CssBaseline />
         <Router>
-          <AppRoutes />
+          <SidebarProvider>
+            <AppRoutes />
+          </SidebarProvider>
         </Router>
       </ThemeProvider>
     </AuthProvider>

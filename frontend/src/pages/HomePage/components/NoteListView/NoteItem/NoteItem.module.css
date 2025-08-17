@@ -4,8 +4,7 @@
   align-items: center;
   padding: 1rem;
   background-color: #111;
-  margin-bottom:16px;
-  border-radius: 8px;
+  margin-bottom:2px;
   border-left: 4px solid transparent;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
@@ -18,6 +17,15 @@
   background-color: #1a1a1a;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.noteListItem.selected {
+  background-color: #1a1a1a;
+  border-left-color: #6366f1;
+}
+
+.noteListItem.selected:hover {
+  background-color: #222;
 }
 
 .noteListItem:active {

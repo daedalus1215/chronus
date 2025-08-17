@@ -1,6 +1,6 @@
 import React from 'react';
-import { useNoteEditor } from './hooks/useNoteEditor';
-import styles from './NoteEditor.module.css';
+import { useNoteEditor } from '../hooks/useNoteEditor';
+import styles from './MobileNoteEditor.module.css';
 
 type Note = {
   id: number;
@@ -16,7 +16,7 @@ type NoteEditorProps = {
   onSave: (note: Partial<Note>) => void;
 }
 
-export const NoteEditor: React.FC<NoteEditorProps> = ({ 
+export const MobileNoteEditor: React.FC<NoteEditorProps> = ({ 
   note, 
   onSave
 }) => {

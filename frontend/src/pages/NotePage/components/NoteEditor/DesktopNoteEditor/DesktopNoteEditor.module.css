@@ -1,0 +1,69 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 1rem;
+  background-color: var(--background);
+  border-radius: 0;
+  position: relative;
+  box-sizing: border-box;
+  height: calc(100vh - 180px);
+  width: calc(100vw - 530px);
+}
+.descriptionInput {
+  width: 100%;
+  flex: 1;
+  min-height: 150px;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--foreground);
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  resize: none;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  overflow-y: auto;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.descriptionInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.descriptionInput::placeholder {
+  color: var(--muted-foreground);
+}
+
+textarea {
+  scrollbar-width: none;
+}
+
+/* Media queries for better mobile support */
+@media (max-width: 768px) {
+  .editor {
+    padding: 0.75rem;
+  }
+
+  .titleInput {
+    font-size: 1rem;
+    padding: 0.4rem 0;
+  }
+
+  .descriptionInput {
+    font-size: 0.8125rem;
+    padding: 0.5rem;
+    line-height: 1.35;
+  }
+
+  .saveButton {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.75rem;
+  }
+} 

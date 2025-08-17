@@ -1,27 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuth';
 import { Sidebar } from './Sidebar/Sidebar';
-import styles from './Header.module.css';
 import { Logo } from '../Logo/Logo';
+import { useSidebar } from '../../contexts/SidebarContext';
+import styles from './Header.module.css';
 
 export const Header: React.FC = () => {
   const { logout, user } = useAuth();
+  const { isOpen, setIsOpen, isMobile } = useSidebar();
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+                                          
   const handleSignOut = () => {
     logout();
     navigate('/login');
   };
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsOpen(!isOpen);
   };
 
   return (
     <>
-      <header className={styles.header}>
+      <header className={`${styles.header} ${isMobile ? styles.mobile : ''}`}>
         <div className={styles.container}>
           <button onClick={toggleSidebar} className={styles.brand}>
             <Logo />
@@ -40,8 +41,8 @@ export const Header: React.FC = () => {
       </header>
 
       <Sidebar 
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
       />
     </>
   );

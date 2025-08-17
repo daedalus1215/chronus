@@ -7,7 +7,6 @@ import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
-import styles from './NoteItem.module.css';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -15,20 +14,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import { deleteNote, updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
+import styles from './NoteItem.module.css';
 
-interface Note {
-  id: number;
-  name: string;
-  userId: string;
-  isMemo: boolean;
-  createdAt?: string;
-}
+type Note = { name: string; id: number; isMemo: number; }
 
 interface NoteItemProps {
   note: Note;
+  onClick?: () => void;
+  isSelected?: boolean;
 }
 
-export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
+export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected }) => {
   const navigate = useNavigate();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
@@ -44,7 +40,11 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   const [archiveError, setArchiveError] = useState<string | null>(null);
 
   const handleClick = () => {
-    navigate(`/notes/${note.id}`);
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(`/notes/${note.id}`);
+    }
   };
 
   const handleMoreClick = async (e: React.MouseEvent) => {
@@ -167,7 +167,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   return (
     <>
       <div 
-        className={`${styles.noteListItem}`}
+        className={`${styles.noteListItem} ${isSelected ? styles.selected : ''}`}
         onClick={handleClick}
         role="button"
         tabIndex={0}
@@ -230,7 +230,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
         noteId={note.id}
         timeTracks={timeTracks}
         isLoadingTimeTracks={isLoadingTimeTracks}
-        error={timeTrackError}
+        error={timeTrackError || undefined}
         totalTimeData={totalTimeData}
         isLoadingTotal={isLoadingTotal}
       />
@@ -277,4 +277,3 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
     </>
   );
 };
-

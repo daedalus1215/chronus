@@ -1,8 +1,8 @@
 import React, { useCallback, useRef } from "react";
-import { useNotes } from "../../hooks/useNotes";
-import { NoteItem } from "./NoteItem/NoteItem";
-import { SearchBar } from "./SearchBar/SearchBar";
-import styles from "./NoteListView.module.css";
+import { useNotes } from "../../../hooks/useNotes";
+import { NoteItem } from "../NoteItem/NoteItem";
+import { SearchBar } from "../SearchBar/SearchBar";
+import styles from "./DesktopNoteListView.module.css";
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -13,11 +13,18 @@ const NoMoreNotes: React.FC = () => (
 );
 
 type NoteListViewProps = {
-  type?: 'memo' | 'checkList';
+  type?: 'MEMO' | 'CHECKLIST';
   tagId?: string;
+  onNoteSelect?: (noteId: number) => void;
+  selectedNoteId?: number | null;
 };
 
-export const NoteListView: React.FC<NoteListViewProps> = ({ type, tagId }) => {
+export const DesktopNoteListView: React.FC<NoteListViewProps> = ({ 
+  type, 
+  tagId,
+  onNoteSelect,
+  selectedNoteId 
+}) => {
   const { 
     notes, 
     isLoading, 
@@ -57,6 +64,10 @@ export const NoteListView: React.FC<NoteListViewProps> = ({ type, tagId }) => {
     return () => scrollContainer.removeEventListener('scroll', scrollHandler);
   }, [handleScroll]);
 
+  const handleNoteClick = (noteId: number) => {
+    onNoteSelect?.(noteId);
+  };
+
   if (isLoading && notes.length === 0) {
     return <div className={styles.noteListLoading}>Loading notes...</div>;
   }
@@ -67,12 +78,12 @@ export const NoteListView: React.FC<NoteListViewProps> = ({ type, tagId }) => {
 
   return (
     <div className={styles.noteList}>
-        <SearchBar 
-          value={searchQuery}
-          onChange={searchNotes}
-          onClear={clearSearch}
-          type={type}
-        />
+      <SearchBar 
+        value={searchQuery}
+        onChange={searchNotes}
+        onClear={clearSearch}
+        type={type}
+      />
       <div className={styles.noteListContent}>
         {hasPendingChanges && (
           <div className={styles.offlineNotice}>
@@ -87,7 +98,9 @@ export const NoteListView: React.FC<NoteListViewProps> = ({ type, tagId }) => {
           {notes.map((note) => (
             <NoteItem 
               key={note.id} 
-              note={note} 
+              note={note}
+              onClick={() => handleNoteClick(note.id)}
+              isSelected={selectedNoteId === note.id}
             />
           ))}
           {isLoading && <LoadingSpinner />}

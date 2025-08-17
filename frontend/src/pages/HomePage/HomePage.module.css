@@ -3,7 +3,6 @@
   background-color: var(--color-bg);
   color: var(--color-text);
   padding-top: 1rem;
-  
 }
 
 .main {
@@ -15,4 +14,10 @@
   width: 100%;
 }
 
+.mainDesktop {
+  left: 182px;
+  width: 400px;
+  padding: 0;
+  top: 50px
+}
  
