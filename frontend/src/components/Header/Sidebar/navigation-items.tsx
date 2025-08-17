@@ -12,12 +12,12 @@ export const navigationItems = [
   },
   { 
     label: 'Memos',
-    path: '/memos',
+    path: '/memo',
     icon: NoteIcon
   },
   { 
     label: 'CheckLists',
-    path: '/checklists',
+    path: '/checklist',
     icon: ChecklistIcon
   },
   { 

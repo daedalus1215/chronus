@@ -35,7 +35,7 @@ export class NoteMemoTagRepository {
         cursor: number,
         limit = 20,
         query?: string,
-        type?: 'memo' | 'checkList',
+        type?: 'memo' | 'checklist',
         tagId?: string
     ): Promise<{name:string, id:number, isMemo:number}[]> {
         const qb = this.repository
@@ -49,9 +49,10 @@ export class NoteMemoTagRepository {
             qb.andWhere("LOWER(note.name) LIKE LOWER(:query)", { query: `%${query}%` });
         }
 
+        console.log('type', type);
         if (type === 'memo') {
             qb.andWhere('note.memo_id IS NOT NULL');
-        } else if (type === 'checkList') {
+        } else if (type === 'checklist') {
             qb.andWhere('note.memo_id IS NULL');
         }
 

@@ -1,4 +1,4 @@
 export const NOTE_TYPES = {
-    MEMO: 'MEMO',
-    CHECKLIST: 'CHECKLIST'
+    MEMO: 'memo',
+    CHECKLIST: 'checklist'
 } as const;

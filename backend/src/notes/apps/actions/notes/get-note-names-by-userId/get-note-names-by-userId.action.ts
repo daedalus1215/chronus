@@ -1,9 +1,8 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiQuery } from '@nestjs/swagger';
 import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
-import { GetNoteNamesByUserIdSwagger, GetNoteNamesByUserIdApiQueries } from './get-note-names-by-userId.swagger';
+import { GetNoteNamesByUserIdSwagger } from './get-note-names-by-userId.swagger';
 
 type GetNoteNamesResponse = {
   notes: {name: string, id: number, isMemo: number}[];
@@ -22,7 +21,7 @@ export class GetNoteNamesByUserIdAction {
     @Query('cursor') cursor: number = 0,
     @Query('limit') limit: number = 20,
     @Query('query') query?: string,
-    @Query('type') type?: 'memo' | 'checkList',
+    @Query('type') type?: 'memo' | 'checklist',
     @Query('tagId') tagId?: string
   ): Promise<GetNoteNamesResponse> {
     const notes = await this.noteRepository.getNoteNamesByUserId(userId, cursor, limit, query, type, tagId);
