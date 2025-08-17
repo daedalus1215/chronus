@@ -3,6 +3,7 @@ import { useNotes } from "../../../hooks/useNotes";
 import { NoteItem } from "../NoteItem/NoteItem";
 import { SearchBar } from "../SearchBar/SearchBar";
 import styles from "./MobileNoteListView.module.css";
+import { NOTE_TYPES } from "../../../../../constant";
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -13,7 +14,7 @@ const NoMoreNotes: React.FC = () => (
 );
 
 type NoteListViewProps = {
-  type?: 'MEMO' | 'CHECKLIST';
+  type?: keyof typeof NOTE_TYPES;
   tagId?: string;
 };
 

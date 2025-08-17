@@ -25,9 +25,7 @@ export const HomePage: React.FC = () => {
     routeNoteId ? Number(routeNoteId) : null
   );
   
-  let noteType: 'MEMO' | 'CHECKLIST' | undefined;
-  if (location.pathname.startsWith(ROUTES.MEMOS)) noteType = 'MEMO';
-  if (location.pathname.startsWith(ROUTES.CHECKLISTS)) noteType = 'CHECKLIST';
+  const noteType = location.pathname.split('/')[1];
   const { tagId } = useParams<{ tagId: string }>();
 
   // Update selectedNoteId when route changes

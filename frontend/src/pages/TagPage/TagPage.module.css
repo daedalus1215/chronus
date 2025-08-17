@@ -18,3 +18,11 @@
   top: 64px;
   width: 100%;
 } 
+
+.mainDesktop {
+  left: 182px;
+  width: 400px;
+  padding: 0;
+  top: 50px
+}
+ 

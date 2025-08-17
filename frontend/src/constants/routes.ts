@@ -6,8 +6,8 @@ export const ROUTES = {
 
   // Protected routes
   HOME: '/',
-  MEMOS: '/memos',
-  CHECKLISTS: '/checklists',
+  MEMOS: '/memo',
+  CHECKLISTS: '/checklist',
   TAGS: '/tags',
   ACTIVITY: '/activity',
   TAG_NOTES: (tagId: string | number) => `/tag-notes/${tagId}`,

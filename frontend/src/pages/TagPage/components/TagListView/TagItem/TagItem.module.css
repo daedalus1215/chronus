@@ -1,0 +1,58 @@
+.tagListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--background-paper);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tagListItem:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.tagListItem.selected {
+  background-color: var(--primary-color-light);
+  border: 1px solid var(--primary-color);
+}
+
+.tagInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tagName {
+  font-weight: 600;
+  color: var(--text-color-primary);
+}
+
+.tagCount {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary);
+}
+
+.moreButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-color-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.moreButton:hover {
+  background-color: var(--hover-color);
+}
+
+.moreButton:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
