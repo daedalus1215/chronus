@@ -26,7 +26,6 @@ export const HomePage: React.FC = () => {
   );
   
   const noteType = location.pathname.split('/')[1];
-  console.log('noteType', noteType);
   const { tagId } = useParams<{ tagId: string }>();
 
   // Update selectedNoteId when route changes

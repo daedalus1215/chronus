@@ -4,12 +4,11 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import CircularProgress from "@mui/material/CircularProgress";
-import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useQuery } from "@tanstack/react-query";
-import { Tag } from "../../../../api/dtos/tag.dtos";
-import { fetchTags } from "../../../../api/requests/tags.requests";
+import { Tag } from "../../../../../api/dtos/tag.dtos";
+import { fetchTags } from "../../../../../api/requests/tags.requests";
 import { useNavigate } from "react-router-dom";
 
 export type TagListViewProps = {
@@ -18,7 +17,7 @@ export type TagListViewProps = {
   onTagClick?: (tag: Tag) => void;
 };
 
-export const TagListView: React.FC<TagListViewProps> = () => {
+export const DesktopTagListView: React.FC<TagListViewProps> = () => {
   const navigate = useNavigate();
   const { data: tags, isLoading: tagsLoading, error: tagsError } = useQuery<Tag[]>({
     queryKey: ["tags"],
