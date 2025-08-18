@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useCheckItems } from "../../hooks/useCheckItems";
-import styles from "./CheckListView.module.css";
 import { Note } from "../../api/responses";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -17,12 +16,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useCheckItemsQuery } from '../../hooks/useCheckItems';
+import { useIsMobile } from "../../../../hooks/useIsMobile";
+import styles from "./CheckListView.module.css";
 
 type CheckListViewProps = {
   note: Note;
 };
 
 export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
+  const isMobile = useIsMobile();
   const [newItem, setNewItem] = useState("");
   const { data: checkItems = [], error } = useCheckItemsQuery(note.id);
   const { addItem, toggleItem, deleteItem, updateItem } = useCheckItems(note);
@@ -101,12 +103,11 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
   };
 
   return (
-    <Box className={styles.pageWrapper}>
-      <Paper elevation={3} className={styles.container} sx={{ p: 2, mt: 2 }}>
+    <Box className={`${styles.pageWrapper} ${isMobile ? styles.mobile : ''}`}>
+      <Paper elevation={3} className={`${styles.container} ${isMobile ? styles.mobile : ''}`} sx={{ p: 2, mt: 2 }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error.message}</Alert>}
         <Box className={styles.addItemContainer} sx={{ mb: 2, gap: 1 }}>
           <TextField
-            className={styles.addInput}
             variant="standard"
             fullWidth
             placeholder="+ Add Task"
@@ -119,7 +120,6 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
             sx={{ flex: 1, mr: 1 }}
           />
           <Button
-            className={styles.addButton}
             variant="contained"
             color="primary"
             onClick={handleAdd}
@@ -130,7 +130,7 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
         </Box>
         <List className={styles.list}>
           {checkItems?.map((item) => (
-            <ListItem
+                                      <ListItem
               key={item.id}
               className={styles.listItem}
               sx={{
@@ -138,34 +138,57 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
                 borderBottom: '1px solid var(--border)',
                 py: 0.5,
                 px: 0,
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 1,
               }}
-              secondaryAction={
-                <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteClick(item.id)}>
-                  <DeleteIcon color="error" />
-                </IconButton>
-              }
               disablePadding
             >
-              <Checkbox
-                checked={!!item.doneDate}
-                onChange={() => handleToggle(item.id)}
-                sx={{ mr: 1 }}
-                color="primary"
-              />
-              <TextField
-                value={item.name}
-                onChange={(e) => handleEdit(item.id, e.target.value)}
-                variant="standard"
-                fullWidth
-                InputProps={{
-                  disableUnderline: true,
-                  style: {
-                    textDecoration: item.doneDate ? 'line-through' : undefined,
-                    color: item.doneDate ? 'var(--color-text-secondary)' : 'var(--color-text)',
-                  },
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', flex: 1, pr: 6 }}>
+                <Checkbox
+                  checked={!!item.doneDate}
+                  onChange={() => handleToggle(item.id)}
+                  sx={{ mt: 0.5 }}
+                  color="primary"
+                />
+                <TextField
+                  value={item.name}
+                  onChange={(e) => handleEdit(item.id, e.target.value)}
+                  variant="standard"
+                  fullWidth
+                  InputProps={{
+                    disableUnderline: true,
+                    multiline: true,
+                    style: {
+                      textDecoration: item.doneDate ? 'line-through' : undefined,
+                      color: item.doneDate ? 'var(--color-text-secondary)' : 'var(--color-text)',
+                      wordBreak: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                    },
+                  }}
+                  sx={{ 
+                    flex: 1, 
+                    background: 'transparent',
+                    '& .MuiInputBase-root': {
+                      padding: '4px 0',
+                    }
+                  }}
+                />
+              </Box>
+              <IconButton 
+                edge="end" 
+                aria-label="delete" 
+                onClick={() => handleDeleteClick(item.id)}
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)'
                 }}
-                sx={{ flex: 1, background: 'transparent' }}
-              />
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
             </ListItem>
           ))}
         </List>

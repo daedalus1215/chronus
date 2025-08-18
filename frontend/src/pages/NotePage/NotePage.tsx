@@ -16,8 +16,8 @@ import { Chip, IconButton } from "@mui/material";
 import { Add, Close } from "@mui/icons-material";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { DesktopNoteEditor } from "./components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor";
-import styles from "./NotePage.module.css";
 import { MobileNoteEditor } from "./components/NoteEditor/MobileNoteEditor/MobileNoteEditor";
+import styles from "./NotePage.module.css";
 
 export const NotePage: React.FC = () => {
   const navigate = useNavigate();
@@ -144,7 +144,8 @@ export const NotePage: React.FC = () => {
         </Alert>
       )}
       {note?.isMemo ? (
-        isMobile ? <MobileNoteEditor note={note} onSave={handleSave} /> : <DesktopNoteEditor note={note} onSave={handleSave} />
+        isMobile ? <MobileNoteEditor note={note} onSave={handleSave} /> 
+        : <DesktopNoteEditor note={note} onSave={handleSave} />
       ) : (
         <CheckListView note={note} />
       )}
