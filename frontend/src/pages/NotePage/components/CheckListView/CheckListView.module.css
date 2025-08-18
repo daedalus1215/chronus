@@ -1,22 +1,38 @@
 .pageWrapper {
-    min-height: 100vh;
-    background: var(--color-bg);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 40px;
+    gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 1rem;
+    background-color: var(--background);
+    border-radius: 0;
+    position: relative;
+    box-sizing: border-box;
+    height: calc(100vh - 180px);
+    width: calc(100vw - 530px);
+}
+
+.pageWrapper.mobile {
+    width: 100%;
 }
 
 .container {
-    width: 100%;
-    max-width: 400px;
+    width: calc(100vw - 530px);
     background: var(--color-bg-paper);
     border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
     min-height: 60vh;
-    display: flex;
+    display: flex;  
     flex-direction: column;
+    height: calc(100vh - 180px);
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.container.mobile {
+    width: 100%;
 }
 
 .addItemContainer {
@@ -24,107 +40,6 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-}
-
-.addInput {
-    width: 80%;
-    padding: 16px 18px;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    background: transparent;
-    color: var(--foreground);
-    font-size: 16px;
-    border-radius: 16px 16px 0 0;
-    outline: none;
-    margin-bottom: 4px;
-}
-
-.addInput::placeholder {
-    color: var(--muted-foreground);
-    opacity: 1;
-}
-
-.list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.listItem {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    padding: 0 16px;
-    height: 48px;
-    background: transparent;
-    transition: background 0.2s;
-}
-
-.listItem:last-child {
-    border-bottom: none;
-}
-
-.listItemChecked {
-    background: oklch(0.18 0.01 285.885 / 0.5);
-}
-
-.checkbox {
-    margin-right: 12px;
-    accent-color: var(--primary);
-    width: 18px;
-    height: 18px;
-}
-
-.itemInput {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-size: 16px;
-    color: var(--foreground);
-    outline: none;
-}
-
-.itemInputChecked {
-    text-decoration: line-through;
-    color: var(--muted-foreground);
-}
-
-.deleteButton {
-    margin-left: 8px;
-    background: none;
-    border: none;
-    color: var(--destructive);
-    font-size: 18px;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.addButton {
-    flex: 1;
-    padding: 10px 0;
-    border-radius: 8px;
-    border: none;
-    background:  var(--primary);
-    color: var(--primary-foreground);
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.addButton:hover {
-    background: hsl(var(--accent-foreground));
-    color: var(--primary-foreground);
-}
-
-.addButton:active {
-    background: var(--primary);
-    color: var(--primary-foreground);
-}
-
-.addButton:focus {
-    background: var(--primary);
-    color: var(--primary-foreground);
 }
 
 .error {
