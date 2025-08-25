@@ -2,17 +2,18 @@ import React from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
 import {
   TimerOutlined,
-  ShareOutlined,
+  RecordVoiceOverOutlined,
   ContentCopyOutlined,
   PushPinOutlined,
   ArchiveOutlined,
   DeleteOutlineOutlined,
   StarBorderOutlined,
   FileUploadOutlined,
-  LockOutlined,
+  HeadphonesOutlined,
   EditOutlined,
   LabelOutlined,
-  AccessTimeOutlined
+  AccessTimeOutlined,
+  LockOutlined
 } from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
 
@@ -26,11 +27,13 @@ type NoteActionsProps = {
   onDuplicate: () => void;
   onPin: () => void;
   onArchive: () => void;
+  onTextToSpeech: () => void;
   onStar: () => void;
   onExport: () => void;
   onLock: () => void;
   onEdit: () => void;
   onLabel: () => void;
+  onDownloadAudio: () => void;
 }
 
 export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
@@ -40,6 +43,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onViewTimeEntries,
   onDelete,
   onShare,
+  onDownloadAudio,
   onDuplicate,
   onPin,
   onArchive,
@@ -47,6 +51,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onExport,
   onLock,
   onEdit,
+  onTextToSpeech,
   onLabel
 }) => {
   return (
@@ -74,18 +79,18 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
           <span className={styles.label}>Edit</span>
         </button>
         <button 
-          onClick={onShare} 
+          onClick={onTextToSpeech} 
           className={styles.actionButton}
         >
-          <ShareOutlined className={styles.icon} />
-          <span className={styles.label}>Share</span>
+          <RecordVoiceOverOutlined className={styles.icon} />
+          <span className={styles.label}>To Speech</span>
         </button>
         <button 
-          onClick={onDuplicate} 
+          onClick={onDownloadAudio} 
           className={styles.actionButton}
         >
-          <ContentCopyOutlined className={styles.icon} />
-          <span className={styles.label}>Copy</span>
+          <HeadphonesOutlined className={styles.icon} />
+          <span className={styles.label}>Download</span>
         </button>
         <button 
           onClick={onPin} 

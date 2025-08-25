@@ -8,6 +8,7 @@ import { TimeTracksModule } from "./time-tracks/time-tracks.module";
 import { TagsModule } from "./tags/tags.module";
 import { CheckItemsModule } from "./check-items/check-items.module";
 import * as Joi from "joi";
+import { AudioModule } from "./audio/audio.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import * as Joi from "joi";
         COOKIE_KEY: Joi.string().required(),
         NODE_ENV: Joi.string().required(),
         JWT_EXPIRES_IN: Joi.string().required(),
+        HERMES_API_URL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
@@ -34,12 +36,12 @@ import * as Joi from "joi";
       inject: [ConfigService],
     }),
     UsersModule,
-    
     AuthModule,
     NotesModule,
     TimeTracksModule,
     TagsModule,
     CheckItemsModule,
+    AudioModule,
   ],
   controllers: [],
   providers: [],

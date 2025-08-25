@@ -5,7 +5,7 @@ import { DateTimePicker } from './DateTimePicker/DateTimePicker';
 import { TimeTrackingForm, TimeTrackingData } from './TimeTrackingForm/TimeTrackingForm';
 import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
-import { useArchiveNote } from '../../../hooks/useArchiveNote';
+import { useAudioActions } from '../../../hooks/useAudioActions/useAudioActions';
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -15,6 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import { deleteNote, updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
 import styles from './NoteItem.module.css';
+import { useArchiveNote } from '../../../hooks/useArchiveNote';
 
 type Note = { name: string; id: number; isMemo: number; }
 
@@ -33,6 +34,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
   const { createTimeTrack, isCreating } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
   const { timeTracks, isLoadingTimeTracks, totalTimeData, isLoadingTotal, timeTrackError }: ReturnType<typeof useNoteTimeTracks> = useNoteTimeTracks(note.id, isTimeTrackListOpen);
+  const { handleTextToSpeech, handleDownloadAudio, isConverting, isDownloading, error: audioError, assetId } = useAudioActions(note.id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -203,10 +205,11 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
         onViewTimeEntries={handleViewTimeEntries}
         onPin={handleTimeTracking}
         onStar={handleTimeTracking}
-        onExport={handleTimeTracking}
-        onLock={handleTimeTracking}
+        onTextToSpeech={handleTextToSpeech}
+        onDownloadAudio={handleDownloadAudio}
         onEdit={handleTimeTracking}
         onLabel={handleTimeTracking}
+        onExport={handleTimeTracking}
       />
 
       <DateTimePicker
