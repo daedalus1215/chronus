@@ -22,6 +22,14 @@ export class NoteAggregator {
     return !!note;
   }
 
+  async getMemoById(noteId: number, userId: number): Promise<Note | null> {
+    const note = await this.noteRepository.findMemoById(noteId, userId);
+      if (!note) {
+      throw new Error('Memo not found');
+    }
+    return note;
+  }
+
   async getReference(noteId: number, userId: number): Promise<NoteReference | null> {
     const note = await this.noteRepository.findById(noteId, userId);
     if (!note) {

@@ -23,6 +23,18 @@ export class NoteMemoTagRepository {
             .getOne();
     }
 
+
+    async findMemoById(id: number, userId: number): Promise<Note | null> {
+        return this.repository
+            .createQueryBuilder('note')
+            .addSelect("1", "isMemo")
+            .leftJoinAndSelect('note.memo', 'memo')
+            .where('note.id = :id', { id })
+            .andWhere('note.user_id = :userId', { userId })
+            .andWhere('note.memo_id IS NOT NULL')
+            .getOne();
+    }
+
     async save(note: Note): Promise<Note> {
         if (note.memo) {
             note.memo = await this.memoRepository.save(note.memo);

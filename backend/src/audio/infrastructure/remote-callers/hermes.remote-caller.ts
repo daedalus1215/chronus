@@ -42,7 +42,7 @@ export class HermesRemoteCaller {
       .trim();
   }
 
-  async convertTextToSpeech(request: TextToSpeechRequestDto & { userId: number }): Promise<TextToSpeechResponseDto> {
+  async convertTextToSpeech(request: TextToSpeechRequestDto & { userId: number, text: string }): Promise<TextToSpeechResponseDto> {
     const url = `${this.hermesApiUrl}text-to-speech`;
     this.logger.debug(`Making request to Hermes API: ${url}`);
     try {

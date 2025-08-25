@@ -11,7 +11,7 @@ import { GetAuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
 export class DownloadAudioAction {
   constructor(private readonly audioService: AudioService) {}
 
-  @Get("download/:userId/:assetId")
+  @Get("download/:assetId")
   @ProtectedAction(DownloadAudioSwagger)
   async execute(
     @GetAuthUser("userId") userId: number,

@@ -10,7 +10,7 @@ export class TextToSpeechTransactionScript {
   constructor(private readonly hermesRemoteCaller: HermesRemoteCaller) {}
 
   async execute(
-    request: TextToSpeechRequestDto & { userId: number }
+    request: TextToSpeechRequestDto & { userId: number, text: string }
   ): Promise<TextToSpeechResponseDto> {
     return this.hermesRemoteCaller.convertTextToSpeech(request);
   }
