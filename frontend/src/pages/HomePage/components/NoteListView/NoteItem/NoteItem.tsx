@@ -210,6 +210,10 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
         onEdit={handleTimeTracking}
         onLabel={handleTimeTracking}
         onExport={handleTimeTracking}
+        onLock={handleTimeTracking}
+        isConverting={isConverting}
+        isDownloading={isDownloading}
+        audioError={audioError}
       />
 
       <DateTimePicker

@@ -32,6 +32,25 @@
   background-color: rgba(239, 68, 68, 0.1);
 }
 
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionButton:disabled:hover {
+  background: none;
+}
+
+.errorMessage {
+  grid-column: 1 / -1;
+  color: #ef4444;
+  text-align: center;
+  padding: 8px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
 .icon {
   font-size: 24px !important; /* Override Material-UI default size */
 }

@@ -13,12 +13,15 @@ import { TagService } from './domain/services/tag.service';
 import { RemoveTagFromNoteAction } from './app/actions/remove-tag-from-note-action/remove-tag-from-note.action';
 import { RemoveTagFromNoteTransactionScript } from './domain/transaction-scripts/remove-tag-from-note/remove-tag-from-note.transaction.script';
 import { TagNoteRepository } from './infra/repositories/tag-note.repository';
+import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-tag-associations.listener';
 
 /**
  * Tags module: encapsulates all tag-related logic, actions, and persistence.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Tag, TagNote])],
+  imports: [
+    TypeOrmModule.forFeature([Tag, TagNote]),
+  ],
   providers: [
     TagRepository,
     TagNoteRepository,
@@ -27,6 +30,7 @@ import { TagNoteRepository } from './infra/repositories/tag-note.repository';
     GetTagsByUserIdTransactionScript,
     RemoveTagFromNoteTransactionScript,
     TagService,
+    DeleteNoteTagAssociationsListener,
   ],
   controllers: [
     AddTagToNoteAction,
@@ -40,7 +44,8 @@ import { TagNoteRepository } from './infra/repositories/tag-note.repository';
     AddTagToNoteTransactionScript, 
     GetTagsByNoteIdTransactionScript, 
     GetTagsByUserIdTransactionScript, 
-    TagService
+    TagService,
+    DeleteNoteTagAssociationsListener,
   ],
 })
 export class TagsModule {} 

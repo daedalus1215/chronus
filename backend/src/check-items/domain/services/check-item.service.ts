@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CheckItem } from "../entities/check-item.entity";
 import { CreateCheckItemTransactionScript } from "../transaction-scripts/create-check-item/create-check-item.transaction.script";
 import { GetCheckItemTransactionScript } from "../transaction-scripts/get-check-item/get-check-item.transaction.script";
@@ -9,7 +10,7 @@ import { GetCheckItemsByNoteTransactionScript } from "../transaction-scripts/get
 import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
 import { CreateCheckItemDto } from "../../apps/dtos/requests/create-check-item.dto";
 import { UpdateCheckItemDto } from "../../apps/dtos/requests/update-check-item.dto";
-import { NoteAggregator } from "src/notes/domain/aggregators/note.aggregator";
+import { VERIFY_NOTE_ACCESS_COMMAND } from "src/shared-kernel/domain/cross-domain-commands/notes/verify-note-access.command";
 
 @Injectable()
 export class CheckItemService {
@@ -20,16 +21,18 @@ export class CheckItemService {
     private readonly deleteCheckItemTransactionScript: DeleteCheckItemTransactionScript,
     private readonly updateCheckItemTransactionScript: UpdateCheckItemTransactionScript,
     private readonly getCheckItemsByNoteTransactionScript: GetCheckItemsByNoteTransactionScript,
-    private readonly noteAggregator: NoteAggregator
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async createCheckItem(dto: {authUser: AuthUser, checkItem: CreateCheckItemDto, noteId: number}): Promise<CheckItem[]> {
-    const note = await this.noteAggregator.getReference(dto.noteId, dto.authUser.userId);
+    await this.eventEmitter.emitAsync(VERIFY_NOTE_ACCESS_COMMAND, {
+      noteId: dto.noteId,
+      userId: dto.authUser.userId,
+    });
 
     return this.createCheckItemTransactionScript.apply({
       name: dto.checkItem.name,
-      noteId: note.id,
-      userId: dto.authUser.userId,
+      noteId: dto.noteId,
     });
   }
   

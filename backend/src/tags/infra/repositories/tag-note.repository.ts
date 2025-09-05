@@ -26,4 +26,8 @@ export class TagNoteRepository {
     await this.repo.delete(tagNote.id);
     return true;
   }
+
+  async deleteByNoteId(noteId: number): Promise<void> {
+    await this.repo.delete({ noteId });
+  }
 }
