@@ -15,13 +15,15 @@ import { DeleteCheckItemTransactionScript } from "./domain/transaction-scripts/d
 import { UpdateCheckItemTransactionScript } from "./domain/transaction-scripts/update-check-item/update-check-item.transaction.script";
 import { GetCheckItemsByNoteTransactionScript } from "./domain/transaction-scripts/get-check-items-by-note/get-check-items-by-note.transaction.script";
 import { CheckItemService } from "./domain/services/check-item.service";
-import { NotesModule } from "../notes/notes.module";
 import { CheckItemsHydrator } from './infra/repositories/check-items/check-items.hydrator';  
+import { CheckItemsAggregator } from "./domain/aggregators/check-items.aggregator";
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { DeleteCheckItemsByNoteListener } from './apps/listeners/delete-check-items-by-note.listener';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([CheckItem]),
-    NotesModule, // Import to access NoteAggregator
+    EventEmitterModule.forRoot(),
   ],
   providers: [
     CheckItemsRepository,
@@ -33,6 +35,8 @@ import { CheckItemsHydrator } from './infra/repositories/check-items/check-items
     UpdateCheckItemTransactionScript,
     GetCheckItemsByNoteTransactionScript,
     CheckItemService,
+    CheckItemsAggregator,
+    DeleteCheckItemsByNoteListener,
   ],
   controllers: [
     CreateCheckItemAction,
@@ -42,6 +46,6 @@ import { CheckItemsHydrator } from './infra/repositories/check-items/check-items
     UpdateCheckItemAction,
     GetCheckItemsByNoteAction,
   ],
-  exports: [CheckItemsRepository, CheckItemService],
+  exports: [CheckItemsRepository, CheckItemService, CheckItemsAggregator],
 })
 export class CheckItemsModule {} 

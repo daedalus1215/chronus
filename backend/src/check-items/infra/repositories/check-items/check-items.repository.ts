@@ -30,6 +30,10 @@ export class CheckItemsRepository {
     await this.checkItemRepository.delete(id);
   }
 
+  async deleteByNoteId(noteId: number): Promise<void> {
+    await this.checkItemRepository.delete({ noteId });
+  }
+
   async update(id: number, updates: Partial<CheckItem>): Promise<CheckItem> {
     await this.checkItemRepository.update(id, updates);
     return this.findById(id);

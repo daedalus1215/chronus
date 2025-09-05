@@ -20,9 +20,11 @@ import { ArchiveNoteAction } from "./apps/actions/archive-note/archive-note.acti
 import { ArchiveNoteTransactionScript } from "./domain/transaction-scripts/archive-note/archive-note.transaction.script";
 import { NoteService } from "./domain/services/note.service";
 import { GetNoteNamesByIdsTransactionScript } from "./domain/transaction-scripts/get-note-names-by-ids.transaction.script";
+import { VerifyNoteAccessListener } from "./apps/listeners/verify-note-access.listener";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Note, Memo])],
+  imports: [TypeOrmModule.forFeature([Note, Memo]), EventEmitterModule.forRoot()],
   providers: [
     NoteMemoTagRepository,
     NoteAggregator,
@@ -33,7 +35,8 @@ import { GetNoteNamesByIdsTransactionScript } from "./domain/transaction-scripts
     ArchiveNoteTransactionScript,
     NoteDtoToEntityConverter,
     NoteService,
-    GetNoteNamesByIdsTransactionScript
+    GetNoteNamesByIdsTransactionScript,
+    VerifyNoteAccessListener,
   ],
   controllers: [
     GetNoteNamesByUserIdAction,

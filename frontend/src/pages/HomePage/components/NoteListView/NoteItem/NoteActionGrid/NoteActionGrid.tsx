@@ -34,6 +34,9 @@ type NoteActionsProps = {
   onEdit: () => void;
   onLabel: () => void;
   onDownloadAudio: () => void;
+  isConverting?: boolean;
+  isDownloading?: boolean;
+  audioError?: string | null;
 }
 
 export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
@@ -52,7 +55,10 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onLock,
   onEdit,
   onTextToSpeech,
-  onLabel
+  onLabel,
+  isConverting = false,
+  isDownloading = false,
+  audioError = null
 }) => {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
@@ -81,17 +87,28 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         <button 
           onClick={onTextToSpeech} 
           className={styles.actionButton}
+          disabled={isConverting || isDownloading}
         >
           <RecordVoiceOverOutlined className={styles.icon} />
-          <span className={styles.label}>To Speech</span>
+          <span className={styles.label}>
+            {isConverting ? 'Converting...' : 'To Speech'}
+          </span>
         </button>
         <button 
           onClick={onDownloadAudio} 
           className={styles.actionButton}
+          disabled={isDownloading || isConverting}
         >
           <HeadphonesOutlined className={styles.icon} />
-          <span className={styles.label}>Download</span>
+          <span className={styles.label}>
+            {isDownloading ? 'Downloading...' : 'Download'}
+          </span>
         </button>
+        {audioError && (
+          <div className={styles.errorMessage}>
+            {audioError}
+          </div>
+        )}
         <button 
           onClick={onPin} 
           className={styles.actionButton}

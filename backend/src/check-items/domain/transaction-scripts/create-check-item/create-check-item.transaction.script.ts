@@ -12,7 +12,6 @@ export class CreateCheckItemTransactionScript {
   async apply(
     dto: CreateCheckItemDto & {
       noteId: number;
-      userId: number;
     }
   ): Promise<CheckItem[]> {
     const checkItems = await this.saveCheckItem(dto);
@@ -37,8 +36,7 @@ export class CreateCheckItemTransactionScript {
   private async saveCheckItem({
     name,
     noteId,
-    userId,
-  }: CreateCheckItemDto & { noteId: number, userId: number }): Promise<CheckItem[]> {
+  }: CreateCheckItemDto & { noteId: number }): Promise<CheckItem[]> {
     const newCheckItem = new CheckItem();
     newCheckItem.name = name;
     newCheckItem.noteId = noteId;
