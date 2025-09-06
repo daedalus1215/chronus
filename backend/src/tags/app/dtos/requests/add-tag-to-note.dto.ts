@@ -9,7 +9,7 @@ export class AddTagToNoteDto {
   @ApiProperty({ description: 'The ID of the tag (optional)' })
   @IsString()
   @IsOptional()
-  tagId?: string;
+  tagId?: number;
 
   @ApiProperty({ description: 'The name of the tag (optional)' })
   @IsString()

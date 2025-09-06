@@ -32,7 +32,7 @@ describe('AddTagToNoteTransactionScript', () => {
   it('should add an existing tag to a note by tagId', async () => {
     const noteId = generateRandomNumbers();
     const userId = generateRandomNumbers();
-    const tagId = 'tag1';
+    const tagId = generateRandomNumbers();
     const tag = { id: tagId, name: 'Tag', userId } as Tag;
     // Arrange
     mockRepository.findTagByIdAndUserId.mockResolvedValue(tag);
@@ -49,7 +49,7 @@ describe('AddTagToNoteTransactionScript', () => {
     const noteId = generateRandomNumbers();
     const userId = generateRandomNumbers();
     const tagName = 'NewTag';
-    const tag = { id: 'tag2', name: tagName, userId } as Tag;
+    const tag = { id: generateRandomNumbers(), name: tagName, userId } as Tag;
     mockRepository.findTagByName.mockResolvedValue(null);
     mockRepository.createTag.mockResolvedValue(tag);
     mockRepository.addTagToNote.mockResolvedValue({} as any);
@@ -66,7 +66,7 @@ describe('AddTagToNoteTransactionScript', () => {
     const noteId = generateRandomNumbers();
     const userId = generateRandomNumbers();
     const tagName = 'ExistingTag';
-    const tag = { id: 'tag3', name: tagName, userId } as Tag;
+    const tag = { id: generateRandomNumbers(), name: tagName, userId } as Tag;
     mockRepository.findTagByName.mockResolvedValue(tag);
     mockRepository.addTagToNote.mockResolvedValue({} as any);
 
@@ -85,7 +85,7 @@ describe('AddTagToNoteTransactionScript', () => {
     mockRepository.findTagByName.mockResolvedValue(null);
     mockRepository.createTag.mockResolvedValue(null);
 
-    const dto: AddTagToNoteDto = { noteId, tagId: 'notfound' };
+    const dto: AddTagToNoteDto = { noteId, tagId: generateRandomNumbers() };
     await expect(target.apply({ ...dto, userId })).rejects.toThrow(NotFoundException);
   });
 }); 

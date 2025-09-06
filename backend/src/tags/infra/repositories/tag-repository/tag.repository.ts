@@ -19,7 +19,7 @@ export class TagRepository {
     return this.tagRepository.findOne({ where: { name, userId } });
   }
 
-  async findTagByIdAndUserId(id: string, userId: number): Promise<Tag | null> {
+  async findTagByIdAndUserId(id: number, userId: number): Promise<Tag | null> {
     return this.tagRepository.findOne({ where: { id, userId } });
   }
 
@@ -48,7 +48,7 @@ export class TagRepository {
       .then(tagsByUserIdHydrator);
   }
 
-  async addTagToNote(noteId: number, tagId: string): Promise<TagNote> {
+  async addTagToNote(noteId: number, tagId: number): Promise<TagNote> {
     const tagNote = this.tagNoteRepository.create({ notes: { id: noteId }, tag: { id: tagId } });
     return this.tagNoteRepository.save(tagNote);
   }

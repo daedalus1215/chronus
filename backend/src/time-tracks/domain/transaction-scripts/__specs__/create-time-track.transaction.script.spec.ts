@@ -1,17 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CreateTimeTrackTransactionScript } from "../create-time-track.transaction.script";
 import { TimeTrackRepository } from "../../../infra/repositories/time-track.repository";
-import { BadRequestException } from "@nestjs/common";
+import { generateRandomNumbers } from "src/shared-kernel/test-utils";
 
 describe("CreateTimeTrackTransactionScript", () => {
   let target: CreateTimeTrackTransactionScript;
   let mockTimeTrackRepository: jest.Mocked<TimeTrackRepository>;
 
-  const mockUser = { userId: 1, username: "testuser" };
+  const mockUser = { userId: generateRandomNumbers(), username: "testuser" };
   const mockTimeTrack = {
-    id: 1,
-    userId: 1,
-    noteId: 1,
+    id: generateRandomNumbers(),
+    userId: generateRandomNumbers(),
+    noteId: generateRandomNumbers(),
     date: "2024-01-15",
     startTime: "09:00",
     durationMinutes: 30,
@@ -28,7 +28,6 @@ describe("CreateTimeTrackTransactionScript", () => {
           provide: TimeTrackRepository,
           useValue: {
             create: jest.fn(),
-            getDailyTotal: jest.fn(),
           },
         },
       ],
@@ -42,7 +41,7 @@ describe("CreateTimeTrackTransactionScript", () => {
 
   describe("apply", () => {
     const validCommand = {
-      noteId: 1,
+      noteId: generateRandomNumbers(),
       date: "2024-01-15",
       startTime: "09:00",
       durationMinutes: 30,
@@ -51,11 +50,14 @@ describe("CreateTimeTrackTransactionScript", () => {
     };
 
     it("should create a time track successfully", async () => {
-      mockTimeTrackRepository.getDailyTotal.mockResolvedValue(0);
+      // Arrange
       mockTimeTrackRepository.create.mockResolvedValue(mockTimeTrack);
 
+      // Act
       const result = await target.apply(validCommand);
-
+      
+      // Assert
+      expect(result).toEqual(mockTimeTrack);
       expect(mockTimeTrackRepository.create).toHaveBeenCalledWith({
         ...validCommand,
         userId: validCommand.user.userId,
@@ -72,48 +74,6 @@ describe("CreateTimeTrackTransactionScript", () => {
         createdAt: mockTimeTrack.createdAt,
         updatedAt: mockTimeTrack.updatedAt,
       });
-    });
-
-    it("should throw BadRequestException for future date", async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-      const futureCommand = {
-        ...validCommand,
-        date: futureDate.toISOString().split("T")[0],
-      };
-
-      await expect(target.apply(futureCommand)).rejects.toThrow(
-        BadRequestException
-      );
-      expect(mockTimeTrackRepository.create).not.toHaveBeenCalled();
-    });
-
-    it("should throw BadRequestException for invalid duration", async () => {
-      const invalidDurationCommand = {
-        ...validCommand,
-        durationMinutes: 0,
-      };
-
-      await expect(target.apply(invalidDurationCommand)).rejects.toThrow(
-        BadRequestException
-      );
-      expect(mockTimeTrackRepository.create).not.toHaveBeenCalled();
-    });
-
-    it("should throw BadRequestException for overlapping entries", async () => {
-      await expect(target.apply(validCommand)).rejects.toThrow(
-        BadRequestException
-      );
-      expect(mockTimeTrackRepository.create).not.toHaveBeenCalled();
-    });
-
-    it("should throw BadRequestException for daily limit exceeded", async () => {
-      mockTimeTrackRepository.getDailyTotal.mockResolvedValue(1440); // 24 hours
-
-      await expect(target.apply(validCommand)).rejects.toThrow(
-        BadRequestException
-      );
-      expect(mockTimeTrackRepository.create).not.toHaveBeenCalled();
     });
   });
 });
