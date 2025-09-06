@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { TagService } from '../../../domain/services/tag.service';
 import { TagResponseDto } from '../../dtos/responses/tag.response.dto';
 import { AuthUser, GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
@@ -12,9 +12,9 @@ export class GetTagsByNoteIdAction {
   @Get('/note/:id')
   @ProtectedAction(GetTagsByNoteIdSwagger)
   async apply(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @GetAuthUser() user: AuthUser
   ): Promise<TagResponseDto[]> {
-    return this.tagService.getTagsByNoteId(Number(id), user.userId);
+    return this.tagService.getTagsByNoteId(id);
   }
 } 

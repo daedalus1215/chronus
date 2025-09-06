@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AddTagToNoteTransactionScript } from '../transaction-scripts/add-tag-to-note.transaction.script';
 import { GetTagsByNoteIdTransactionScript } from '../transaction-scripts/get-tags-by-note-id.transaction.script';
-import { GetTagsByUserIdTransactionScript } from '../transaction-scripts/get-tags-by-user-id.transaction.script';
+import { GetTagsByUserIdTransactionScript, TagWithCount } from '../transaction-scripts/get-tags-by-user-id.transaction.script';
 import { AddTagToNoteDto } from '../../app/dtos/requests/add-tag-to-note.dto';
 import { TagResponseDto } from '../../app/dtos/responses/tag.response.dto';
 import { Tag } from '../entities/tag.entity';
@@ -14,15 +14,15 @@ export class TagService {
     private readonly getTagsByUserIdTS: GetTagsByUserIdTransactionScript,
   ) {}
 
-  addTagToNote(dto: AddTagToNoteDto & { userId: string }): Promise<Tag> {
+  addTagToNote(dto: AddTagToNoteDto & { userId: number }): Promise<Tag> {
     return this.addTagToNoteTS.apply(dto);
   }
 
-  getTagsByNoteId(noteId: number, userId: number): Promise<TagResponseDto[]> {
-    return this.getTagsByNoteIdTS.apply(noteId, userId);
+  getTagsByNoteId(noteId: number): Promise<TagResponseDto[]> {
+    return this.getTagsByNoteIdTS.apply(noteId);
   }
 
-  getTagsByUserId(userId: string): Promise<TagResponseDto[]> {
+  getTagsByUserId(userId: number): Promise<TagWithCount[]> {
     return this.getTagsByUserIdTS.apply(userId);
   }
 } 

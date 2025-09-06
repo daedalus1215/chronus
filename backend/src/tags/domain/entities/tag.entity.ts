@@ -15,5 +15,5 @@ export class Tag {
   description: string;
 
   @Column({name: 'user_id'})
-  userId: string;
+  userId: number;
 } 
