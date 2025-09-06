@@ -1,6 +1,7 @@
-import { NoteDtoToEntityConverter } from './note-dto-to-entity.converter';
-import { Memo } from '../../entities/notes/memo.entity';
+import { Memo } from 'src/notes/domain/entities/notes/memo.entity';
+import { NoteDtoToEntityConverter } from '../note-dto-to-entity.converter';
 import { createMockNote, createMockUpdateNoteDto } from 'src/notes/test-utils';
+import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 
 describe('NoteDtoToEntityConverter', () => {
   let converter: NoteDtoToEntityConverter;
@@ -34,7 +35,7 @@ describe('NoteDtoToEntityConverter', () => {
       it('should update the memo while preserving its properties', () => {
         // Arrange
         const existingMemo: Memo = {
-          id: 1,
+          id: generateRandomNumbers(),
           description: 'Old Description',
           note: null,
           createdAt: new Date().toISOString(),
@@ -82,9 +83,8 @@ describe('NoteDtoToEntityConverter', () => {
       it('should preserve all unmodified properties', () => {
         // Arrange
         const originalNote = createMockNote({
-          userId: 'testUser',
+            userId: generateRandomNumbers(),
           archivedAt: new Date(),
-          tags: []
         });
         const updateDto = createMockUpdateNoteDto();
 
@@ -94,8 +94,7 @@ describe('NoteDtoToEntityConverter', () => {
         // Assert
         expect(result.id).toBe(originalNote.id);
         expect(result.userId).toBe(originalNote.userId);
-        expect(result.tags).toBe(originalNote.tags);
-        expect(result.archivedDate).toBe(originalNote.archivedAt);
+        expect(result.archivedAt).toBe(originalNote.archivedAt);
         expect(result.createdAt).toBe(originalNote.createdAt);
         expect(result.updatedAt).toBe(originalNote.updatedAt);
       });

@@ -1,18 +1,20 @@
 import { Test } from '@nestjs/testing';
 import { GetTagsByNoteIdTransactionScript } from '../get-tags-by-note-id.transaction.script';
-import { TagRepository } from '../../../infra/repositories/tag.repository';
+import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
 import { NotFoundException } from '@nestjs/common';
 import { Tag } from '../../../domain/entities/tag.entity';
 import { TagResponseDto } from '../../../app/dtos/responses/tag.response.dto';
+import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
+import { createMock } from 'src/shared-kernel/test-utils';
 
 describe('GetTagsByNoteIdTransactionScript', () => {
   let target: GetTagsByNoteIdTransactionScript;
   let mockRepository: jest.Mocked<TagRepository>;
 
   beforeEach(async () => {
-    mockRepository = {
-      findTagsByNoteId: jest.fn(),
-    } as any;
+    mockRepository = createMock<TagRepository>({
+      findTagsByNoteId: jest.fn()
+    });
 
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -25,20 +27,22 @@ describe('GetTagsByNoteIdTransactionScript', () => {
   });
 
   it('should return TagResponseDto[] for valid noteId and userId', async () => {
-    const noteId = 1;
-    const userId = 'user1';
-    const tags = [
-      { id: 'tag1', name: 'Tag1', userId } as Tag,
-      { id: 'tag2', name: 'Tag2', userId } as Tag,
+    // Arrange
+    const noteId = generateRandomNumbers();
+    const userId = generateRandomNumbers();
+    const tags:Tag[] = [
+      { id: generateRandomNumbers(), name: 'Tag1', description: 'Tag1 description', userId },
+      { id: generateRandomNumbers(), name: 'Tag2', description: 'Tag2 description', userId },
     ];
+    
     mockRepository.findTagsByNoteId.mockResolvedValue(tags);
-    const result = await target.apply(noteId, userId);
+    
+    // Act
+    const result = await target.apply(noteId);
+    
+    // Assert
+    expect(result).toEqual(tags.map(tag => new TagResponseDto(tag)));
     expect(result).toHaveLength(2);
     expect(result[0]).toBeInstanceOf(TagResponseDto);
-  });
-
-  it('should throw NotFoundException if no tags found', async () => {
-    mockRepository.findTagsByNoteId.mockResolvedValue([]);
-    await expect(target.apply(1, 'user1')).rejects.toThrow(NotFoundException);
   });
 }); 

@@ -13,7 +13,7 @@ export class CreateTagAction {
   @ProtectedAction(CreateTagSwagger)
   async createTag(
     @Body() createTagDto: CreateTagDto,
-    @GetAuthUser("userId") userId: string
+    @GetAuthUser("userId") userId: number
   ) {
     return this.createTagTS.apply({ ...createTagDto, userId });
   }

@@ -1,10 +1,11 @@
 import { Test } from '@nestjs/testing';
 import { AddTagToNoteTransactionScript } from '../add-tag-to-note.transaction.script';
-import { TagRepository } from '../../../infra/repositories/tag.repository';
+import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
 import { NotFoundException } from '@nestjs/common';
 import { Tag } from '../../../domain/entities/tag.entity';
 import { AddTagToNoteDto } from '../../../app/dtos/requests/add-tag-to-note.dto';
 import { NoteResponseDto } from '../../../../notes/apps/dtos/responses/note.response.dto';
+import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 
 describe('AddTagToNoteTransactionScript', () => {
   let target: AddTagToNoteTransactionScript;
@@ -29,10 +30,11 @@ describe('AddTagToNoteTransactionScript', () => {
   });
 
   it('should add an existing tag to a note by tagId', async () => {
-    const noteId = 1;
-    const userId = 'user1';
-    const tagId = 'tag1';
+    const noteId = generateRandomNumbers();
+    const userId = generateRandomNumbers();
+    const tagId = generateRandomNumbers();
     const tag = { id: tagId, name: 'Tag', userId } as Tag;
+    // Arrange
     mockRepository.findTagByIdAndUserId.mockResolvedValue(tag);
     mockRepository.addTagToNote.mockResolvedValue({} as any);
 
@@ -44,10 +46,10 @@ describe('AddTagToNoteTransactionScript', () => {
   });
 
   it('should add a tag by name, creating it if not found', async () => {
-    const noteId = 1;
-    const userId = 'user1';
+    const noteId = generateRandomNumbers();
+    const userId = generateRandomNumbers();
     const tagName = 'NewTag';
-    const tag = { id: 'tag2', name: tagName, userId } as Tag;
+    const tag = { id: generateRandomNumbers(), name: tagName, userId } as Tag;
     mockRepository.findTagByName.mockResolvedValue(null);
     mockRepository.createTag.mockResolvedValue(tag);
     mockRepository.addTagToNote.mockResolvedValue({} as any);
@@ -61,10 +63,10 @@ describe('AddTagToNoteTransactionScript', () => {
   });
 
   it('should add a tag by name if it exists', async () => {
-    const noteId = 1;
-    const userId = 'user1';
+    const noteId = generateRandomNumbers();
+    const userId = generateRandomNumbers();
     const tagName = 'ExistingTag';
-    const tag = { id: 'tag3', name: tagName, userId } as Tag;
+    const tag = { id: generateRandomNumbers(), name: tagName, userId } as Tag;
     mockRepository.findTagByName.mockResolvedValue(tag);
     mockRepository.addTagToNote.mockResolvedValue({} as any);
 
@@ -77,13 +79,13 @@ describe('AddTagToNoteTransactionScript', () => {
   });
 
   it('should throw NotFoundException if tag cannot be found or created', async () => {
-    const noteId = 1;
-    const userId = 'user1';
+    const noteId = generateRandomNumbers();
+    const userId = generateRandomNumbers();
     mockRepository.findTagByIdAndUserId.mockResolvedValue(null);
     mockRepository.findTagByName.mockResolvedValue(null);
     mockRepository.createTag.mockResolvedValue(null);
 
-    const dto: AddTagToNoteDto = { noteId, tagId: 'notfound' };
+    const dto: AddTagToNoteDto = { noteId, tagId: generateRandomNumbers() };
     await expect(target.apply({ ...dto, userId })).rejects.toThrow(NotFoundException);
   });
 }); 

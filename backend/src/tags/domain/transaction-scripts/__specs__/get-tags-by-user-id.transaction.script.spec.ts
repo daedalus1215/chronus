@@ -1,17 +1,18 @@
-import { Test } from '@nestjs/testing';
-import { GetTagsByUserIdTransactionScript } from '../get-tags-by-user-id.transaction.script';
-import { TagRepository } from '../../../infra/repositories/tag.repository';
-import { Tag } from '../../../domain/entities/tag.entity';
-import { TagResponseDto } from '../../../app/dtos/responses/tag.response.dto';
+import { Test } from "@nestjs/testing";
+import {
+  GetTagsByUserIdTransactionScript,
+  TagWithCount,
+} from "../get-tags-by-user-id.transaction.script";
+import { TagRepository } from "../../../infra/repositories/tag-repository/tag.repository";
+import { TagResponseDto } from "../../../app/dtos/responses/tag.response.dto";
+import { createTagRepositoryMock } from "src/tags/test-utils";
 
-describe('GetTagsByUserIdTransactionScript', () => {
+describe("GetTagsByUserIdTransactionScript", () => {
   let target: GetTagsByUserIdTransactionScript;
   let mockRepository: jest.Mocked<TagRepository>;
 
   beforeEach(async () => {
-    mockRepository = {
-      getTagsByUserId: jest.fn(),
-    } as any;
+    mockRepository = createTagRepositoryMock();
 
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -23,15 +24,28 @@ describe('GetTagsByUserIdTransactionScript', () => {
     target = moduleRef.get(GetTagsByUserIdTransactionScript);
   });
 
-  it('should return TagResponseDto[] for valid userId', async () => {
-    const userId = 'user1';
-    const tags = [
-      { id: 'tag1', name: 'Tag1', userId } as Tag,
-      { id: 'tag2', name: 'Tag2', userId } as Tag,
+  it("should return TagResponseDto[] for valid userId", async () => {
+    // Arrange
+    const userId = 1;
+    const tags: TagWithCount[] = [
+      {
+        id: "1",
+        name: "Tag1",
+        noteCount: 1,
+      },
+      {
+        id: "2",
+        name: "Tag2",
+        noteCount: 2,
+      },
     ];
+
     mockRepository.getTagsByUserId.mockResolvedValue(tags);
+    
+    // Act
     const result = await target.apply(userId);
-    expect(result).toHaveLength(2);
-    expect(result[0]).toBeInstanceOf(TagResponseDto);
+
+    // Assert
+    expect(result).toEqual(tags);
   });
-}); 
+});

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Tag } from '../../../domain/entities/tag.entity';
+import { Tag } from 'src/tags/domain/entities/tag.entity';
 
 export class TagResponseDto {
   @ApiProperty({ description: 'The ID of the tag' })
-  id: string;
+  id: number;
 
   @ApiProperty({ description: 'The name of the tag' })
   name: string;

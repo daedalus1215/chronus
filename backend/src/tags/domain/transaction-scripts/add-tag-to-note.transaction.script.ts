@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { TagRepository } from "../../infra/repositories/tag.repository";
+import { TagRepository } from "../../infra/repositories/tag-repository/tag.repository";
 import { AddTagToNoteDto } from "../../app/dtos/requests/add-tag-to-note.dto";
 import { Tag } from "../../domain/entities/tag.entity";
 
@@ -10,14 +10,14 @@ import { Tag } from "../../domain/entities/tag.entity";
 export class AddTagToNoteTransactionScript {
   constructor(private readonly tagRepository: TagRepository) {}
 
-  async apply(dto: AddTagToNoteDto & { userId: string }): Promise<Tag> {
+  async apply(dto: AddTagToNoteDto & { userId: number }): Promise<Tag> {
     const { noteId, userId } = dto;
     const tag = await this.fetchTagByIdOrName(dto, userId);
     await this.tagRepository.addTagToNote(noteId, tag.id);
     return tag;
   }
 
-  private async fetchTagByIdOrName(dto: AddTagToNoteDto, userId: string): Promise<Tag> {
+  private async fetchTagByIdOrName(dto: AddTagToNoteDto, userId: number): Promise<Tag> {
     if (dto.tagId) {
       const tag = await this.tagRepository.findTagByIdAndUserId(dto.tagId, userId);
       if (tag) return tag;

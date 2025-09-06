@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { TagRepository } from '../../infra/repositories/tag.repository';
-import { TagResponseDto } from '../../app/dtos/responses/tag.response.dto';
+import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
 
-/**
- * Transaction script to get tags by user ID.
- */
+export type TagWithCount ={ 
+  id: string;
+  name: string;
+  noteCount: number
+};
+
 @Injectable()
 export class GetTagsByUserIdTransactionScript {
   constructor(private readonly tagRepository: TagRepository) {}
 
-  async apply(userId: string): Promise<TagResponseDto[]> {
-    const tags = await this.tagRepository.getTagsByUserId(userId);
-    return tags.map(tag => new TagResponseDto(tag));
+  async apply(userId: number): Promise<TagWithCount[]> {
+    return await this.tagRepository.getTagsByUserId(userId);
   }
 } 

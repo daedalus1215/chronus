@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateTagDto {
   @IsString()
@@ -7,6 +7,6 @@ export class CreateTagDto {
   @IsString()
   description?: string;
 
-  @IsString()
-  userId: string;
+  @IsNumber()
+  userId: number;
 }
