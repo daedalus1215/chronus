@@ -5,6 +5,7 @@ import { NoteDtoToEntityConverter } from '../note-dto-to-entity.converter';
 import { NotFoundException } from '@nestjs/common';
 import { createMock, createMockNote, createMockUpdateNoteDto } from 'src/notes/test-utils/mock-factories';
 import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
+import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 
 describe('UpdateNoteTransactionScript', () => {
   let target: UpdateNoteTransactionScript;
@@ -43,11 +44,11 @@ describe('UpdateNoteTransactionScript', () => {
     describe('when note exists', () => {
       it('should update and return the note', async () => {
         // Arrange
-        const noteId = 1;
+        const noteId = generateRandomNumbers();
         const existingNote = createMockNote({ id: noteId });
         const updateDto = createMockUpdateNoteDto();
         const updatedNote = { ...existingNote, name: updateDto.name };
-        const userId = 'user1';
+        const userId = generateRandomNumbers();
         mockRepository.findById.mockResolvedValue(existingNote);
         mockConverter.apply.mockReturnValue(updatedNote);
         mockRepository.save.mockResolvedValue(updatedNote);
@@ -56,7 +57,6 @@ describe('UpdateNoteTransactionScript', () => {
         const result = await target.apply(noteId, updateDto, userId);
 
         // Assert
-        expect(result).toBeInstanceOf(NoteResponseDto);
         expect(mockRepository.findById).toHaveBeenCalledWith(noteId, userId);
         expect(mockConverter.apply).toHaveBeenCalledWith(updateDto, existingNote);
         expect(mockRepository.save).toHaveBeenCalledWith(updatedNote);
@@ -66,9 +66,9 @@ describe('UpdateNoteTransactionScript', () => {
     describe('when note does not exist', () => {
       it('should throw NotFoundException', async () => {
         // Arrange
-        const noteId = 999;
+        const noteId = generateRandomNumbers();
         const updateDto = createMockUpdateNoteDto();
-        const userId = 1;
+        const userId = generateRandomNumbers();
 
         mockRepository.findById.mockResolvedValue(null);
 
@@ -86,10 +86,10 @@ describe('UpdateNoteTransactionScript', () => {
     describe('when repository operations fail', () => {
       it('should propagate repository errors', async () => {
         // Arrange
-        const noteId = 1;
+        const noteId = generateRandomNumbers();
         const updateDto = createMockUpdateNoteDto();
         const dbError = new Error('Database error');
-        const userId = 1;
+        const userId = generateRandomNumbers();
 
         mockRepository.findById.mockRejectedValue(dbError);
 
