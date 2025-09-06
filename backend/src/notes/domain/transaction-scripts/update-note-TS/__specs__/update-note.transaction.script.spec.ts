@@ -68,7 +68,7 @@ describe('UpdateNoteTransactionScript', () => {
         // Arrange
         const noteId = 999;
         const updateDto = createMockUpdateNoteDto();
-        const userId = 'user1';
+        const userId = 1;
 
         mockRepository.findById.mockResolvedValue(null);
 
@@ -89,7 +89,7 @@ describe('UpdateNoteTransactionScript', () => {
         const noteId = 1;
         const updateDto = createMockUpdateNoteDto();
         const dbError = new Error('Database error');
-        const userId = 'user1';
+        const userId = 1;
 
         mockRepository.findById.mockRejectedValue(dbError);
 

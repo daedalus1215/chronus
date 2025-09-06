@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tag } from './domain/entities/tag.entity';
 import { TagNote } from '../shared-kernel/domain/entities/tag-note.entity';
-import { TagRepository } from './infra/repositories/tag.repository';
+import { TagRepository } from './infra/repositories/tag-repository/tag.repository';
 import { AddTagToNoteTransactionScript } from './domain/transaction-scripts/add-tag-to-note.transaction.script';
 import { GetTagsByNoteIdTransactionScript } from './domain/transaction-scripts/get-tags-by-note-id.transaction.script';
 import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/get-tags-by-user-id.transaction.script';
