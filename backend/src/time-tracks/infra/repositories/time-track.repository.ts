@@ -117,40 +117,41 @@ export class TimeTrackRepository {
     weekStartDate: string;
     weekEndDate: string;
   } | null> {
+    // Get the start and end of the current week
     const today = new Date();
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+    startOfWeek.setDate(today.getDate() - 6);
     startOfWeek.setHours(0, 0, 0, 0);
-
+    
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
+    endOfWeek.setDate(today.getDate());
     endOfWeek.setHours(23, 59, 59, 999);
-
+  
     const result = await this.repository
-      .createQueryBuilder("timeTrack")
+      .createQueryBuilder('time_track')
       .select([
-        "timeTrack.noteId as 'noteId'",
-        "SUM(timeTrack.durationMinutes) as 'totalTimeMinutes'",
-        "MIN(timeTrack.date) as 'weekStartDate'",
-        "MAX(timeTrack.date) as 'weekEndDate'",
+        "time_track.noteId as 'noteId'",
+        "SUM(time_track.durationMinutes) as 'totalTimeMinutes'",
+        "MIN(time_track.date) as 'weekStartDate'",
+        "MAX(time_track.date) as 'weekEndDate'"
       ])
-      .where("timeTrack.userId = :userId", { userId })
-      .andWhere("timeTrack.date BETWEEN :startDate AND :endDate", {
-        startDate: startOfWeek.toISOString().split("T")[0],
-        endDate: endOfWeek.toISOString().split("T")[0],
+      .where("time_track.userId = :userId", { userId })
+      .andWhere('time_track.date BETWEEN :startDate AND :endDate', {
+        startDate: startOfWeek.toISOString().split('T')[0],
+        endDate: endOfWeek.toISOString().split('T')[0]
       })
-      .groupBy("timeTrack.noteId")
-      .orderBy("totalTimeMinutes", "DESC")
+      .groupBy('time_track.noteId')
+      .orderBy('totalTimeMinutes', 'DESC')
       .limit(1)
       .getRawOne();
-
+  
     if (!result) return null;
-
+  
     return {
       noteId: parseInt(result.noteId),
       totalTimeMinutes: parseInt(result.totalTimeMinutes),
       weekStartDate: result.weekStartDate,
-      weekEndDate: result.weekEndDate,
+      weekEndDate: result.weekEndDate
     };
   }
 }

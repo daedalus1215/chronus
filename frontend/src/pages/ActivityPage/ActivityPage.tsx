@@ -72,7 +72,7 @@ export const ActivityPage: React.FC = () => {
 
           <Paper className={styles.card}>
             <Typography variant="h6">Most Active Note</Typography>
-            <Typography variant="h3">{loading ? '...' : mostActiveNote?.totalTimeMinutes || 0}'</Typography>
+            <Typography variant="h3">{loading ? '...' : mostActiveNote?.totalTimeMinutes || 0} mins</Typography>
             <Typography variant="subtitle2">{mostActiveNote?.noteName || 'No activity this week'}</Typography>
           </Paper>
 

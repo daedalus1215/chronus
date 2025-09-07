@@ -10,6 +10,9 @@ import { GetDailyTimeTracksAggregationTransactionScript } from '../../transactio
 import { GetDailyTimeTracksAggregationCommand } from '../../transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.command';
 import { TimeTrackWithNoteNamesConverter } from './converter/time-track-with-note-names.converter';
 import { GetWeeklyMostActiveNoteTransactionScript } from '../../transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script';
+import { WeeklyMostActiveNoteResponseDto } from '../../../apps/dtos/responses/weekly-most-active-note.response.dto';
+import { GET_NOTE_DETAILS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/notes/get-note-details.command';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 //@TODO: Move this to a command object
 type ValidateTimeTrackCreationCommand = {
@@ -26,7 +29,8 @@ export class TimeTrackService {
     private readonly getTimeTracksTotalByNoteIdTS: GetTimeTracksTotalByNoteIdTransactionScript,
     private readonly getDailyTimeTracksAggregationTS: GetDailyTimeTracksAggregationTransactionScript,
     private readonly timeTrackWithNoteNamesConverter: TimeTrackWithNoteNamesConverter,
-    private readonly getWeeklyMostActiveNoteTS: GetWeeklyMostActiveNoteTransactionScript
+    private readonly getWeeklyMostActiveNoteTS: GetWeeklyMostActiveNoteTransactionScript,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async createTimeTrack(command: CreateTimeTrackCommand) {
@@ -56,12 +60,18 @@ export class TimeTrackService {
   async getDailyTimeTracksAggregation(command: GetDailyTimeTracksAggregationCommand) {
     const trackTimeTracks = await this.getDailyTimeTracksAggregationTS.apply(command);
     const noteNames = await this.noteAggregator.getNoteNamesByIds(trackTimeTracks.map(track => track.noteId), command.user.userId);
-
     return this.timeTrackWithNoteNamesConverter.apply(trackTimeTracks, noteNames);
   }
 
   async getWeeklyMostActiveNote(userId: number) {
-    console.log('userId', userId);
-    return await this.getWeeklyMostActiveNoteTS.apply(userId);
+    const result = await this.getWeeklyMostActiveNoteTS.apply(userId);
+    console.log('result', result);
+        const note = await this.eventEmitter.emitAsync(GET_NOTE_DETAILS_COMMAND, {
+          noteId: result.noteId,
+          userId,
+        });
+
+        console.log('note', note);
+    return {...result, noteName: note[0].name};
   }
 } 

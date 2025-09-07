@@ -15,7 +15,6 @@
   box-sizing: border-box;
 }
 
-/* Top Cards Container */
 .cardsContainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -34,7 +33,6 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 }
 
-/* Graph Section */
 .graphSection {
   background-color: var(--color-card-bg, #1e1e1e) !important;
   color: var(--color-card-text, #ffffff) !important;
@@ -43,7 +41,6 @@
   min-height: 400px;
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
   .main {
     margin-left: 0;
@@ -60,7 +57,7 @@
   }
 }
 
-/* Dark theme variables */
+/* @TODO: move to global styles */  
 :root {
   --color-bg: #121212;
   --color-card-bg: #1e1e1e;
