@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RadarChart } from '@mui/x-charts/RadarChart';
-import { Box, Typography, TextField, Button, Paper } from '@mui/material';
+import { Box, Typography, TextField, Paper } from '@mui/material';
 import { getDailyTimeTracksAggregation } from '../../../../api/requests/time-tracks.requests';
 import { TimeTrackAggregationResponse } from '../../../../api/dtos/time-tracks.dtos';
 import styles from './DailyTimeTracksRadar.module.css';
@@ -64,16 +64,6 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
     }
   };
 
-  const handleTodayClick = () => {
-    const today = new Date();
-    const todayDate = today.toISOString().split('T')[0];
-    if (onDateChange) {
-      onDateChange(todayDate);
-    } else {
-      setInternalSelectedDate(todayDate);
-    }
-  };
-
   // Prepare radar chart data
   const prepareRadarData = () => {
     if (!timeTracks.length) return { series: [], metrics: [], maxValue: 0 };
@@ -113,9 +103,6 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
   return (
     <Paper className={styles.container}>
       <Box className={styles.header}>
-        <Typography variant="h5" component="h2" sx={{ fontWeight: 600 }}>
-          Daily Time Activity Overview
-        </Typography>
         {shouldShowControls && (
           <Box className={styles.dateControls}>
             <TextField
@@ -126,14 +113,6 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
               InputLabelProps={{ shrink: true }}
               sx={{ minWidth: 150 }}
             />
-            <Button
-              variant="contained"
-              onClick={handleTodayClick}
-              size="small"
-              sx={{ minWidth: 70 }}
-            >
-              Today
-            </Button>
           </Box>
         )}
       </Box>
@@ -155,7 +134,6 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
       ) : (
         <Box className={styles.chartContainer}>
           <RadarChart
-            height={400}
             series={series}
             radar={{
               max: maxValue || 60, // Default to 60 minutes if no max calculated
@@ -175,11 +153,6 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
               }
             }}
           />
-          <Box className={styles.legend}>
-            <Typography variant="caption" color="textSecondary">
-              Each spoke represents a note, distance from center shows daily time spent (in minutes).
-            </Typography>
-          </Box>
         </Box>
       )}
     </Paper>

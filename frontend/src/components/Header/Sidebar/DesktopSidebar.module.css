@@ -5,7 +5,8 @@
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
   overflow-y: hidden;
   scrollbar-width: none;
   scroll-behavior: none;

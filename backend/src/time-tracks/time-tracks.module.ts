@@ -15,6 +15,8 @@ import { TimeTrackWithNoteNamesConverter } from './domain/services/time-track-se
 import { DeleteTimeTrackAction } from './apps/actions/delete-time-track-action/delete-time-track.action';
 import { DeleteTimeTrackTransactionScript } from './domain/transaction-scripts/delete-time-track.transaction.script';
 import { GetDailyTimeTracksAction } from './apps/actions/get-daily-time-tracks-aggregation-action/get-daily-time-tracks-aggregation.action';
+import { GetWeeklyMostActiveNoteAction } from './apps/actions/get-weekly-most-active-note-action/get-weekly-most-active-note.action';
+import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script';
 
 @Module({
   imports: [
@@ -30,13 +32,15 @@ import { GetDailyTimeTracksAction } from './apps/actions/get-daily-time-tracks-a
     DeleteTimeTrackTransactionScript,
     TimeTrackService,
     TimeTrackWithNoteNamesConverter,
+    GetWeeklyMostActiveNoteTransactionScript,
   ],
   controllers: [
     CreateTimeTrackAction,
     GetTimeTracksByNoteIdAction,
     GetTimeTracksTotalByNoteIdAction,
     GetDailyTimeTracksAction,
-    DeleteTimeTrackAction
+    DeleteTimeTrackAction,
+    GetWeeklyMostActiveNoteAction
   ],
   exports: [TimeTrackRepository]
 })

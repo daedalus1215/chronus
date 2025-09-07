@@ -22,6 +22,7 @@ import { NoteService } from "./domain/services/note.service";
 import { GetNoteNamesByIdsTransactionScript } from "./domain/transaction-scripts/get-note-names-by-ids.transaction.script";
 import { VerifyNoteAccessListener } from "./apps/listeners/verify-note-access.listener";
 import { EventEmitterModule } from "@nestjs/event-emitter";
+import { GetNoteDetailsListener } from "./apps/listeners/get-note-details.listener";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Note, Memo]), EventEmitterModule.forRoot()],
@@ -37,6 +38,7 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
     NoteService,
     GetNoteNamesByIdsTransactionScript,
     VerifyNoteAccessListener,
+    GetNoteDetailsListener,
   ],
   controllers: [
     GetNoteNamesByUserIdAction,
