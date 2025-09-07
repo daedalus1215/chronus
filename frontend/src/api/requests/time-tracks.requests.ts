@@ -1,6 +1,7 @@
 import api from "../axios.interceptor";
 import { CreateTimeTrackRequest, CreateTimeTrackResponse, TimeTrackTotalResponseDto } from "../dtos/note.dtos";
 import { NoteTimeTracksResponse, TimeTrackAggregationResponse } from "../dtos/time-tracks.dtos";
+import { WeeklyMostActiveNoteResponseDto } from "../dtos/weekly-most-active-note.dtos";
 
 export const getNoteTimeTracks = async (noteId: number): Promise<NoteTimeTracksResponse[]> => {
   const { data } = await api.get(`/time-tracks/note/${noteId}`);
@@ -26,3 +27,8 @@ export const getDailyTimeTracksAggregation = async (date?: string): Promise<Time
   const { data } = await api.get('/time-tracks/daily', { params });
   return data;
 }; 
+
+export const getWeeklyMostActiveNote = async (): Promise<WeeklyMostActiveNoteResponseDto> => {
+    const response = await api.get<WeeklyMostActiveNoteResponseDto>('/time-tracks/weekly-most-active');
+    return response.data;
+  };

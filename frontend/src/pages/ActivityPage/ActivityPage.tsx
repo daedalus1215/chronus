@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../../components/Header/Header';
 import { DailyTimeTracksDataGrid } from './components/DailyTimeTracksDataGrid/DailyTimeTracksDataGrid';
 import { DailyTimeTracksRadar } from './components/DailyTimeTracksRadar/DailyTimeTracksRadar';
-import { getDailyTimeTracksAggregation } from '../../api/requests/time-tracks.requests';
+import { getDailyTimeTracksAggregation, getWeeklyMostActiveNote } from '../../api/requests/time-tracks.requests';
 import { TimeTrackAggregationResponse } from '../../api/dtos/time-tracks.dtos';
 import styles from './ActivityPage.module.css';
 import { Paper, Typography } from '@mui/material';
+import { WeeklyMostActiveNoteResponseDto } from '../../api/dtos/weekly-most-active-note.dtos';
 
 export const ActivityPage: React.FC = () => {
   const [timeTracks, setTimeTracks] = useState<TimeTrackAggregationResponse[]>([]);
+  const [mostActiveNote, setMostActiveNote] = useState<WeeklyMostActiveNoteResponseDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -28,8 +30,23 @@ export const ActivityPage: React.FC = () => {
     }
   };
 
+  const fetchMostActiveNote = async () => {
+    try {
+      const data = await getWeeklyMostActiveNote();
+      setMostActiveNote(data);
+    } catch (err) {
+      console.error('Error fetching most active note:', err);
+      setMostActiveNote(null);
+    }
+  };
+
   useEffect(() => {
     fetchTimeTracks(selectedDate);
+  }, [selectedDate]);
+
+  useEffect(() => {
+    fetchTimeTracks(selectedDate);
+    fetchMostActiveNote();
   }, [selectedDate]);
 
   const handleDateChange = (date: string) => {
@@ -53,11 +70,10 @@ export const ActivityPage: React.FC = () => {
             />
           </Paper>
 
-          {/* Issues Completed Card - Placeholder */}
           <Paper className={styles.card}>
-            <Typography variant="h6">Issues Completed</Typography>
-            <Typography variant="h3">49%</Typography>
-            <Typography variant="subtitle2">Weekly Scope</Typography>
+            <Typography variant="h6">Most Active Note</Typography>
+            <Typography variant="h3">{loading ? '...' : mostActiveNote?.totalTimeMinutes || 0}'</Typography>
+            <Typography variant="subtitle2">{mostActiveNote?.noteName || 'No activity this week'}</Typography>
           </Paper>
 
           {/* Minutes Lost Card - Placeholder */}

@@ -9,6 +9,7 @@ import { GetTimeTracksTotalByNoteIdTransactionScript } from '../../transaction-s
 import { GetDailyTimeTracksAggregationTransactionScript } from '../../transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.transaction.script';
 import { GetDailyTimeTracksAggregationCommand } from '../../transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.command';
 import { TimeTrackWithNoteNamesConverter } from './converter/time-track-with-note-names.converter';
+import { GetWeeklyMostActiveNoteTransactionScript } from '../../transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script';
 
 //@TODO: Move this to a command object
 type ValidateTimeTrackCreationCommand = {
@@ -24,7 +25,8 @@ export class TimeTrackService {
     private readonly noteAggregator: NoteAggregator,
     private readonly getTimeTracksTotalByNoteIdTS: GetTimeTracksTotalByNoteIdTransactionScript,
     private readonly getDailyTimeTracksAggregationTS: GetDailyTimeTracksAggregationTransactionScript,
-    private readonly timeTrackWithNoteNamesConverter: TimeTrackWithNoteNamesConverter
+    private readonly timeTrackWithNoteNamesConverter: TimeTrackWithNoteNamesConverter,
+    private readonly getWeeklyMostActiveNoteTS: GetWeeklyMostActiveNoteTransactionScript
   ) {}
 
   async createTimeTrack(command: CreateTimeTrackCommand) {
@@ -56,5 +58,10 @@ export class TimeTrackService {
     const noteNames = await this.noteAggregator.getNoteNamesByIds(trackTimeTracks.map(track => track.noteId), command.user.userId);
 
     return this.timeTrackWithNoteNamesConverter.apply(trackTimeTracks, noteNames);
+  }
+
+  async getWeeklyMostActiveNote(userId: number) {
+    console.log('userId', userId);
+    return await this.getWeeklyMostActiveNoteTS.apply(userId);
   }
 } 
