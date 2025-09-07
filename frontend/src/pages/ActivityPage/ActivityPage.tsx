@@ -5,6 +5,7 @@ import { DailyTimeTracksRadar } from './components/DailyTimeTracksRadar/DailyTim
 import { getDailyTimeTracksAggregation } from '../../api/requests/time-tracks.requests';
 import { TimeTrackAggregationResponse } from '../../api/dtos/time-tracks.dtos';
 import styles from './ActivityPage.module.css';
+import { Paper, Typography } from '@mui/material';
 
 export const ActivityPage: React.FC = () => {
   const [timeTracks, setTimeTracks] = useState<TimeTrackAggregationResponse[]>([]);
@@ -39,25 +40,43 @@ export const ActivityPage: React.FC = () => {
     <div className={styles.activityPage}>
       <Header />
       <main className={styles.main}>
-        <div className={styles.gridContainer}>
-          <div className={styles.radarSection}>
-            <DailyTimeTracksRadar 
+        {/* Top Cards Section */}
+        <div className={styles.cardsContainer}>
+          {/* Time Radar Card */}
+          <Paper className={styles.card}>
+          <DailyTimeTracksRadar 
               selectedDate={selectedDate}
               onDateChange={handleDateChange}
               data={timeTracks}
               loading={loading}
               showControls={true}
             />
-          </div>
-          <div className={styles.dataGridSection}>
-            <DailyTimeTracksDataGrid 
-              selectedDate={selectedDate}
-              onDateChange={handleDateChange}
-              data={timeTracks}
-              loading={loading}
-            />
-          </div>
+          </Paper>
+
+          {/* Issues Completed Card - Placeholder */}
+          <Paper className={styles.card}>
+            <Typography variant="h6">Issues Completed</Typography>
+            <Typography variant="h3">49%</Typography>
+            <Typography variant="subtitle2">Weekly Scope</Typography>
+          </Paper>
+
+          {/* Minutes Lost Card - Placeholder */}
+          <Paper className={styles.card}>
+            <Typography variant="h6">Minutes Lost</Typography>
+            <Typography variant="h3">642'</Typography>
+            <Typography variant="subtitle2">In Meetings</Typography>
+          </Paper>
         </div>
+
+        {/* Graph Section */}
+        <Paper className={styles.graphSection}>
+          <DailyTimeTracksDataGrid 
+            selectedDate={selectedDate}
+            onDateChange={handleDateChange}
+            data={timeTracks}
+            loading={loading}
+          />
+        </Paper>
       </main>
     </div>
   );

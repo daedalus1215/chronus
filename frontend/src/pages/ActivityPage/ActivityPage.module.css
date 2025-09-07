@@ -2,67 +2,68 @@
   height: 100vh;
   background-color: var(--color-bg);
   color: var(--color-text);
-  display: flex;
+  display: flex; /* Keep this */
+  overflow: hidden;
 }
 
 .main {
-  padding: 80px 1rem 2rem;
-  width: calc(100vw - 182px);
-  margin: 0 auto;
+  flex: 1;
+  padding: 1.5rem;
+  overflow: auto;
+  margin-top: 60px; /* Header height */
+  width: calc(100vw - 182px); /* Account for sidebar */
+  box-sizing: border-box;
 }
 
-.gridContainer {
-  width: 100%;
+/* Top Cards Container */
+.cardsContainer {
   display: grid;
-  gap: 2rem;
-  grid-template-columns: 1fr;
-  grid-template-areas: 
-    "radar"
-    "datagrid";
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Large screens: side by side layout */
-@media (max-width: 1199px) {
+.card {
+  padding: 1.5rem;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-card-bg, #1e1e1e) !important;
+  color: var(--color-card-text, #ffffff) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Graph Section */
+.graphSection {
+  background-color: var(--color-card-bg, #1e1e1e) !important;
+  color: var(--color-card-text, #ffffff) !important;
+  padding: 1.5rem;
+  border-radius: 8px !important;
+  min-height: 400px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
   .main {
+    margin-left: 0;
     width: 100vw;
   }
-  /* .gridContainer {
-    width: 90vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-  } */
-}
 
-/* Large screens: side by side layout */
-/* @media (min-width: 1200px) { */
-  .gridContainer {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "radar datagrid";
-    align-items: start;
+  .cardsContainer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
-/* } */
 
-/* Extra large screens: more space for data grid */
-@media (min-width: 1600px) {
-  .gridContainer {
-    grid-template-columns: 2fr 3fr;
+  .card {
+    min-height: 150px;
   }
 }
 
-.radarSection {
-  grid-area: radar;
-}
-
-.dataGridSection {
-  grid-area: datagrid;
-}
-
-/* Large screens: side by side layout */
-@media (max-width: 1199px) {
-  .dataGridSection {
-    width: 90vw;
-  }
+/* Dark theme variables */
+:root {
+  --color-bg: #121212;
+  --color-card-bg: #1e1e1e;
+  --color-card-text: #ffffff;
+  --color-text: #ffffff;
 }
