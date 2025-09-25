@@ -17,14 +17,14 @@ export const HomePage: React.FC = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const { createNote, isCreating } = useCreateNote();
-  const [showMenu, setShowMenu] = React.useState(false);  
+  const [showMenu, setShowMenu] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { id: routeNoteId } = useParams<{ id: string }>();
   const [selectedNoteId, setSelectedNoteId] = React.useState<number | null>(
     routeNoteId ? Number(routeNoteId) : null
   );
-  
+
   const noteType = location.pathname.split('/')[1];
   const { tagId } = useParams<{ tagId: string }>();
 
@@ -32,9 +32,9 @@ export const HomePage: React.FC = () => {
   useEffect(() => {
     if (routeNoteId) {
       setSelectedNoteId(Number(routeNoteId));
-    } else if (location.pathname === ROUTES.HOME || 
-               location.pathname === ROUTES.MEMOS || 
-               location.pathname === ROUTES.CHECKLISTS) {
+    } else if (location.pathname === ROUTES.HOME ||
+      location.pathname === ROUTES.MEMOS ||
+      location.pathname === ROUTES.CHECKLISTS) {
       setSelectedNoteId(null);
     }
   }, [routeNoteId, location.pathname]);
@@ -55,7 +55,7 @@ export const HomePage: React.FC = () => {
   const handleNoteSelect = (noteId: number) => {
     const basePath = location.pathname.split('/notes/')[0];
     const targetPath = basePath.endsWith('/') ? basePath : `${basePath}/`;
-    
+
     if (isMobile) {
       navigate(`${targetPath}notes/${noteId}`);
     } else {
@@ -72,20 +72,20 @@ export const HomePage: React.FC = () => {
       <Header />
       <main className={`${styles.main} ${isMobile ? styles.mainMobile : styles.mainDesktop}`}>
         {isMobile ? (
-          <Box sx={{ 
-            height: '100%', 
+          <Box sx={{
+            height: '100%',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column'
           }}>
-            <Box sx={{ 
+            <Box sx={{
               display: isNoteRoute ? 'none' : 'block',
               flex: 1
             }}>
               <MobileNoteListView type={noteType} tagId={tagId} />
             </Box>
             {isNoteRoute && (
-              <Box sx={{ 
+              <Box sx={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
@@ -100,10 +100,10 @@ export const HomePage: React.FC = () => {
           </Box>
         ) : (
           <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-            <Box sx={{borderRight: '1px solid', borderColor: 'divider' }}>
-              <DesktopNoteListView 
-                type={noteType} 
-                tagId={tagId} 
+            <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
+              <DesktopNoteListView
+                type={noteType}
+                tagId={tagId}
                 onNoteSelect={handleNoteSelect}
                 selectedNoteId={selectedNoteId}
               />
@@ -118,7 +118,7 @@ export const HomePage: React.FC = () => {
           </Box>
         )}
       </main>
-      <Fab 
+      {!isNoteRoute && <Fab
         color="primary"
         aria-label="Create new note"
         onClick={() => setShowMenu(true)}
@@ -130,7 +130,7 @@ export const HomePage: React.FC = () => {
         }}
       >
         {isCreating ? <CircularProgress size={24} color="inherit" /> : <AddIcon />}
-      </Fab>
+      </Fab>}
       {showMenu && (
         <CreateNoteMenu
           onSelect={handleCreateNote}

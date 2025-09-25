@@ -3,14 +3,14 @@
   background-color: #000;
   color: #fff;
   padding-top: 1rem;
-  
+
 }
 
 .main {
   padding: 1rem;
   /* max-width: 1200px; */
   margin: 0 auto;
-  position:fixed;
+  position: fixed;
   top: 64px;
   width: 100%;
 }
@@ -67,4 +67,11 @@
   color: var(--destructive);
   margin-top: 4px;
   font-size: 0.95em;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .main {
+    padding: 0rem;
+    width: calc(100vw - 1rem);
+  }
 }
