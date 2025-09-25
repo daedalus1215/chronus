@@ -54,7 +54,7 @@
   .descriptionInput {
     font-size: 0.8125rem;
     padding: 0.5rem;
-    line-height: 1.35;
+    /* line-height: 1.35; */
   }
 
   .saveButton {
@@ -62,3 +62,15 @@
     font-size: 0.75rem;
   }
 } 
+
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .editor {
+    margin: 0px;
+    padding: 0px;
+  }
+  
+  .descriptionInput {
+    max-height: calc(100vh - 200px);
+  }
+}
