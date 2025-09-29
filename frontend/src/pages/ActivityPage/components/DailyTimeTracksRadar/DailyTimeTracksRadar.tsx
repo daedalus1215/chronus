@@ -4,6 +4,7 @@ import { Box, Typography, TextField, Paper } from '@mui/material';
 import { getDailyTimeTracksAggregation } from '../../../../api/requests/time-tracks.requests';
 import { TimeTrackAggregationResponse } from '../../../../api/dtos/time-tracks.dtos';
 import styles from './DailyTimeTracksRadar.module.css';
+import { getCurrentDateString } from '../../../../utils/dateUtils';
 
 type Props = {
   selectedDate?: string;
@@ -24,8 +25,7 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
   const [internalLoading, setInternalLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [internalSelectedDate, setInternalSelectedDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+    return getCurrentDateString();
   });
 
   // Use external data if provided, otherwise fetch internally

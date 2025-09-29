@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, Between } from "typeorm";
+import { Repository } from "typeorm";
 import { TimeTrack } from "../../domain/entities/time-track-entity/time-track.entity";
+import { getWeekDateRange } from "../../../shared-kernel/utils/date.utils";
 
 @Injectable()
 export class TimeTrackRepository {
@@ -117,15 +118,8 @@ export class TimeTrackRepository {
     weekStartDate: string;
     weekEndDate: string;
   } | null> {
-    // Get the start and end of the current week
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - 6);
-    startOfWeek.setHours(0, 0, 0, 0);
-    
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(today.getDate());
-    endOfWeek.setHours(23, 59, 59, 999);
+    // Get the start and end of the current week using local timezone
+    const { weekStartDate, weekEndDate } = getWeekDateRange();
   
     const result = await this.repository
       .createQueryBuilder('time_track')
@@ -137,8 +131,8 @@ export class TimeTrackRepository {
       ])
       .where("time_track.userId = :userId", { userId })
       .andWhere('time_track.date BETWEEN :startDate AND :endDate', {
-        startDate: startOfWeek.toISOString().split('T')[0],
-        endDate: endOfWeek.toISOString().split('T')[0]
+        startDate: weekStartDate,
+        endDate: weekEndDate
       })
       .groupBy('time_track.noteId')
       .orderBy('totalTimeMinutes', 'DESC')

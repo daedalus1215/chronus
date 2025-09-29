@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { Stack, Chip } from "@mui/material";
+import { getCurrentDateString, getCurrentTimeString } from '../../../../../../utils/dateUtils';
 
 type TimeTrackingFormProps = {
   isOpen: boolean;
@@ -32,8 +33,8 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   hasPendingTracks
 }) => {
   const [formData, setFormData] = useState<TimeTrackingData>(initialData || {
-    date: new Date().toISOString().split('T')[0],
-    startTime: new Date().toTimeString().slice(0, 5),
+    date: getCurrentDateString(),
+    startTime: getCurrentTimeString(),
     durationMinutes: 30,
     note: ''
   });

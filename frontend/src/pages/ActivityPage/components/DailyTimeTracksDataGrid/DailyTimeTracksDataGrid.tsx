@@ -6,6 +6,7 @@ import { getDailyTimeTracksAggregation } from '../../../../api/requests/time-tra
 import { TimeTrackAggregationResponse } from '../../../../api/dtos/time-tracks.dtos';
 import { ROUTES } from '../../../../constants/routes';
 import styles from './DailyTimeTracksDataGrid.module.css';
+import { getCurrentDateString } from '../../../../utils/dateUtils';
 
 const formatTime = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
@@ -43,8 +44,7 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
   const [internalLoading, setInternalLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [internalSelectedDate, setInternalSelectedDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+    return getCurrentDateString();
   });
   const navigate = useNavigate();
 
@@ -85,8 +85,7 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
   };
 
   const handleTodayClick = () => {
-    const today = new Date();
-    const todayDate = today.toISOString().split('T')[0];
+    const todayDate = getCurrentDateString();
     if (onDateChange) {
       onDateChange(todayDate);
     } else {
