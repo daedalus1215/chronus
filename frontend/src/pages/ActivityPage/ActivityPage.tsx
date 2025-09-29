@@ -7,14 +7,14 @@ import { TimeTrackAggregationResponse } from '../../api/dtos/time-tracks.dtos';
 import styles from './ActivityPage.module.css';
 import { Paper, Typography } from '@mui/material';
 import { WeeklyMostActiveNoteResponseDto } from '../../api/dtos/weekly-most-active-note.dtos';
+import { getCurrentDateString } from '../../utils/dateUtils';
 
 export const ActivityPage: React.FC = () => {
   const [timeTracks, setTimeTracks] = useState<TimeTrackAggregationResponse[]>([]);
   const [mostActiveNote, setMostActiveNote] = useState<WeeklyMostActiveNoteResponseDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+    return getCurrentDateString();
   });
 
   const fetchTimeTracks = async (date?: string) => {

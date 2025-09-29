@@ -16,6 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import styles from "./TimeTrackListView.module.css";
 import { TimeTrack } from "../../../../hooks/useNoteTimeTracks/useNoteTimeTracks";
 import { TimeTrackTotalResponseDto } from "../../../../../../../api/dtos/note.dtos";
+import { formatDateForDisplay } from "../../../../../../utils/dateUtils";
 
 
 type TimeTrackListProps = {
@@ -76,7 +77,7 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString();
+    return formatDateForDisplay(dateStr);
   };
 
   if (isLoadingTimeTracks) {
