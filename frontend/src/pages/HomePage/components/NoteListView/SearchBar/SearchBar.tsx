@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
+import { InputAdornment, IconButton, TextField } from '@mui/material';
+import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
 import styles from './SearchBar.module.css';
-import { Input } from '@mui/material';
 
 type SearchBarProps = {
   value: string;
@@ -17,26 +18,39 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, 
   if (type === 'CHECKLIST') placeholder = 'Search checklists...';
 
   return (
-    <div className={styles.searchContainer}>
-      
-        <Input
-          ref={inputRef}
-          type="text"
-          name="search"
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className={styles.searchInput}
-        />
-        {value && (
-          <button 
-            onClick={onClear}
-            className={styles.clearButton}
-            aria-label="Clear search"
-          >
-            ×
-          </button>
-        )}
-      </div>
+    <div className={styles.searchBar}>
+      <TextField
+        fullWidth
+        inputRef={inputRef}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon color="action" />
+            </InputAdornment>
+          ),
+          endAdornment: value ? (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="clear search"
+                onClick={onClear}
+                edge="end"
+                size="small"
+              >
+                <ClearIcon />
+              </IconButton>
+            </InputAdornment>
+          ) : null,
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+            backgroundColor: 'background.paper',
+          }
+        }}
+      />
+    </div>
   );
 }; 
