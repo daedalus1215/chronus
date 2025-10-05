@@ -3,6 +3,7 @@ import { useNotes } from "../../../hooks/useNotes";
 import { NoteItem } from "../NoteItem/NoteItem";
 import { SearchBar } from "../SearchBar/SearchBar";
 import styles from "./DesktopNoteListView.module.css";
+import { useResizablePane } from "../../../../../hooks/useResizablePane";
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -38,6 +39,19 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
   } = useNotes(type, tagId);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const listContainerRef = useRef<HTMLDivElement>(null);
+
+  const { size: width, startResizing, handleKeyDown, handleDoubleClick } = useResizablePane({
+    localStorageKey: 'noteListWidthPx',
+    min: 0, // allow thin rail
+    max: 300, // do not expand beyond default width
+    initial: 300,
+    axis: 'x',
+    step: 10,
+    largeStep: 20,
+    snapPoints: [0, 48, 72, 96, 120, 160, 220, 300],
+    snapThreshold: 10
+  });
 
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current || isLoading || !hasMore) return;
@@ -77,13 +91,15 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
   }
 
   return (
-    <div className={styles.noteList}>
-      <SearchBar 
-        value={searchQuery}
-        onChange={searchNotes}
-        onClear={clearSearch}
-        type={type}
-      />
+    <div ref={listContainerRef} className={styles.noteList} style={{ position: 'relative', width: `${width}px`, flex: '0 0 auto' }}>
+      {width >= 120 && (
+        <SearchBar 
+          value={searchQuery}
+          onChange={searchNotes}
+          onClear={clearSearch}
+          type={type}
+        />
+      )}
       <div className={styles.noteListContent}>
         {hasPendingChanges && (
           <div className={styles.offlineNotice}>
@@ -107,6 +123,18 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
           {!hasMore && <NoMoreNotes />}
         </div>
       </div>
+      {/* Resize handle */}
+      <div
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize note list"
+        tabIndex={0}
+        className={styles.resizeHandle}
+        onMouseDown={startResizing}
+        onPointerDown={startResizing}
+        onKeyDown={handleKeyDown}
+        onDoubleClick={handleDoubleClick}
+      />
     </div>
   );
 };

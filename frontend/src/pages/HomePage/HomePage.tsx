@@ -6,6 +6,8 @@ import { DesktopNoteListView } from './components/NoteListView/DesktopNoteListVi
 import { useCreateNote } from './hooks/useCreateNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import { Header } from '../../components/Header/Header';
+import { Paper } from '@mui/material';
+import { DesktopSidebar } from '../../components/Header/Sidebar/DesktopSidebar';
 import { NOTE_TYPES } from '../../constant';
 import { useLocation, useParams, useNavigate, Outlet } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -26,6 +28,8 @@ export const HomePage: React.FC = () => {
   );
 
   const noteType = location.pathname.split('/')[1];
+  const noteTypeParam: 'MEMO' | 'CHECKLIST' | undefined =
+    noteType === 'memos' ? 'MEMO' : noteType === 'checklists' ? 'CHECKLIST' : undefined;
   const { tagId } = useParams<{ tagId: string }>();
 
   // Update selectedNoteId when route changes
@@ -82,7 +86,7 @@ export const HomePage: React.FC = () => {
               display: isNoteRoute ? 'none' : 'block',
               flex: 1
             }}>
-              <MobileNoteListView type={noteType} tagId={tagId} />
+              <MobileNoteListView type={noteTypeParam} tagId={tagId} />
             </Box>
             {isNoteRoute && (
               <Box sx={{
@@ -99,21 +103,41 @@ export const HomePage: React.FC = () => {
             )}
           </Box>
         ) : (
-          <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-            <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
-              <DesktopNoteListView
-                type={noteType}
-                tagId={tagId}
-                onNoteSelect={handleNoteSelect}
-                selectedNoteId={selectedNoteId}
-              />
-            </Box>
-            <Box sx={{ flex: 1, height: '100%' }}>
-              {selectedNoteId && (
-                <Box sx={{ p: 2 }}>
-                  <Outlet />
-                </Box>
-              )}
+          <Box sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}>
+            {/* Sidebar in the same flex row */}
+            <Paper
+              elevation={0}
+              sx={{
+                flex: '0 0 auto',
+                borderRight: '1px solid',
+                borderColor: 'divider',
+                backgroundColor: '#111',
+                height: '100%',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <DesktopSidebar isOpen={true} />
+            </Paper>
+
+            {/* Note list and content */}
+            <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', minWidth: 0 }}>
+              <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
+                <DesktopNoteListView
+                  type={noteTypeParam}
+                  tagId={tagId}
+                  onNoteSelect={handleNoteSelect}
+                  selectedNoteId={selectedNoteId}
+                />
+              </Box>
+              <Box sx={{ flex: 1, height: '100%', minWidth: 0 }}>
+                {selectedNoteId && (
+                  <Box sx={{ p: 2 }}>
+                    <Outlet />
+                  </Box>
+                )}
+              </Box>
             </Box>
           </Box>
         )}

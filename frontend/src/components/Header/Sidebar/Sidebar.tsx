@@ -14,6 +14,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   if (isMobile) {
     return <MobileSidebar isOpen={isOpen} onClose={onClose} />;
   }
-
-  return <DesktopSidebar isOpen={isOpen} />;
+  // Desktop sidebar is rendered inside page layouts (e.g., HomePage) to
+  // participate in the same flex row as the content.
+  return null;
 }; 

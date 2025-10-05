@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  max-width: 100%;
+  max-width: min(1100px, 100%);
   margin: 0;
   padding: 1rem;
   background-color: var(--background);
@@ -11,12 +11,13 @@
   position: relative;
   box-sizing: border-box;
   height: calc(100vh - 180px);
-  width: calc(100vw - 530px);
+  min-width: 0;
+  margin-left: auto; /* keep right edge aligned to window */
 }
 .descriptionInput {
   width: 100%;
   flex: 1;
-  min-height: 150px;
+  min-height: calc(100vh - 200px);
   padding: 0.75rem;
   font-size: 0.875rem;
   line-height: 1.4;
