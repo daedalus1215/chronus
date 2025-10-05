@@ -43,12 +43,12 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
       }}
     >
       {/* Header */}
-      <Box className={styles.header}>
-        <Link to="/" className={styles.brand}>
+      {/* <Box className={styles.header}> */}
+        {/* <Link to="/" className={styles.brand}>
           <img src="/chronus-white.svg" alt="Logo" className={styles.logo} />
           {width >= 120 && (<span className={styles.name}>Chronus</span>)}
-        </Link>
-      </Box>
+        </Link> */}
+      {/* </Box> */}
 
       {/* Navigation Items */}
       <List className={styles.nav}>
