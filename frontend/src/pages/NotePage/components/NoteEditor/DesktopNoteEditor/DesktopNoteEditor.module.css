@@ -3,7 +3,6 @@
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  max-width: min(1100px, 100%);
   margin: 0;
   padding: 1rem;
   background-color: var(--background);

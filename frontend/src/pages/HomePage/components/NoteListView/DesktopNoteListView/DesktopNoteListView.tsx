@@ -43,13 +43,13 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
 
   const { size: width, startResizing, handleKeyDown, handleDoubleClick } = useResizablePane({
     localStorageKey: 'noteListWidthPx',
-    min: 0, // allow thin rail
+    min: 10, // allow thin rail
     max: 300, // do not expand beyond default width
     initial: 300,
     axis: 'x',
     step: 10,
     largeStep: 20,
-    snapPoints: [0, 48, 72, 96, 120, 160, 220, 300],
+    snapPoints: [10, 48, 72, 96, 120, 160, 220, 300],
     snapThreshold: 10
   });
 
