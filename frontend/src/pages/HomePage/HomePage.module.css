@@ -7,17 +7,15 @@
 
 .main {
   padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
   position:fixed;
   top: 64px;
   width: 100%;
+  left: 0;
+  right: 0;
 }
 
 .mainDesktop {
-  left: 182px;
-  width: 400px;
+  width: 100%;
   padding: 0;
-  top: 50px
 }
  

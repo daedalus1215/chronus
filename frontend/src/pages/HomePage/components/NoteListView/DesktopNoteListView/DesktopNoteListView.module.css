@@ -51,3 +51,22 @@
   padding: 1rem;
   color: #666;
 }
+
+.resizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  background: rgba(0, 0, 0, 0.05);
+  z-index: 2;
+  transition: background-color 0.2s ease;
+}
+
+.resizeHandle:hover,
+.resizeHandle:focus {
+
+  background: rgba(255,255,255, 0.06);
+  outline: none;
+}

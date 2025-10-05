@@ -18,7 +18,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
   onSearch,
   onNewNote
 }) => {
-  const sidebarWidth = 280; // Fixed width like in the image
   const [noteListWidth, setNoteListWidth] = useState(300);
 
   return (
@@ -34,8 +33,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
       <Paper
         elevation={0}
         sx={{
-          width: sidebarWidth,
-          flexShrink: 0,
+          flex: '0 0 auto',
           borderRight: '1px solid',
           borderColor: 'divider',
           backgroundColor: '#111',
