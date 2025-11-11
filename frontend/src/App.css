@@ -1,12 +1,4 @@
-:root {
-  --color-primary: #6366f1;
-  --color-secondary: #ffd700;
-  --color-bg: #000;
-  --color-bg-paper: #111;
-  --color-text: #fff;
-  --color-text-secondary: #9ca3af;
-  --border-radius: 8px;
-}
+/* Color variables are now defined in index.css */
 
 #root {
   max-width: 1280px;

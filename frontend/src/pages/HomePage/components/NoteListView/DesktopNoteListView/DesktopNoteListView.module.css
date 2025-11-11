@@ -43,13 +43,13 @@
 .loadingSpinner {
   text-align: center;
   padding: 1rem;
-  color: #666;
+  color: var(--color-text-gray);
 }
 
 .noMoreNotes {
   text-align: center;
   padding: 1rem;
-  color: #666;
+  color: var(--color-text-gray);
 }
 
 .resizeHandle {
@@ -59,7 +59,7 @@
   width: 8px;
   height: 100%;
   cursor: col-resize;
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--color-overlay-dark);
   z-index: 2;
   transition: background-color 0.2s ease;
 }
@@ -67,6 +67,6 @@
 .resizeHandle:hover,
 .resizeHandle:focus {
 
-  background: rgba(255,255,255, 0.06);
+  background: var(--color-overlay-medium);
   outline: none;
 }

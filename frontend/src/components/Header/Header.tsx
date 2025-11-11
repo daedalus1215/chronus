@@ -17,7 +17,7 @@ export const Header: React.FC = () => {
   };
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+    navigate('/');
   };
 
   return (

@@ -6,6 +6,6 @@
   margin:auto;
   align-items: center;
   padding: 2rem;
-  background-color: #000;
-  color: #fff;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }

@@ -5,7 +5,8 @@ import { DesktopTagListView } from "./components/TagListView/DesktopTagListView/
 import styles from "./TagPage.module.css";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, Paper } from "@mui/material";
+import { DesktopSidebar } from "../../components/Header/Sidebar/DesktopSidebar";
 
 export const TagPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -30,25 +31,24 @@ export const TagPage: React.FC = () => {
     <div className={styles.tagPage}>
       <Header />
       <main
-        className={`${styles.main} ${
-          isMobile ? styles.mainMobile : styles.mainDesktop
-        }`}
+        className={`${styles.main} ${isMobile ? styles.mainMobile : styles.mainDesktop
+          }`}
       >
         {isMobile ? (
-          <Box sx={{ 
-            height: '100%', 
+          <Box sx={{
+            height: '100%',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column'
           }}>
-            <Box sx={{ 
+            <Box sx={{
               display: isTagRoute ? 'none' : 'block',
               flex: 1
             }}>
               <MobileTagListView />
             </Box>
             {isTagRoute && (
-              <Box sx={{ 
+              <Box sx={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
@@ -63,8 +63,23 @@ export const TagPage: React.FC = () => {
           </Box>
         ) : (
           <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-            <Box sx={{borderRight: '1px solid', borderColor: 'divider' }}>
-              <DesktopTagListView 
+            <Paper
+              elevation={0}
+              sx={{
+                flex: '0 0 auto',
+                borderRight: '1px solid',
+                borderColor: 'divider',
+                backgroundColor: '#111',
+                height: '100%',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <DesktopSidebar isOpen={true} />
+            </Paper>
+            <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
+              <DesktopTagListView
                 onTagSelect={handleTagSelect}
                 selectedTagId={selectedTagId}
               />

@@ -12,7 +12,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
-  color: #e5e7eb;
+  color: var(--color-text-tertiary);
 }
 
 .list {
@@ -28,16 +28,16 @@
 .error,
 .empty {
   text-align: center;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   padding: 1rem 0;
 }
 
 .error {
-  color: #ef4444;
+  color: var(--color-destructive);
 }
 
 .timeTrackItem {
-  background-color: #1a1a1a;
+  background-color: var(--color-bg-elevated);
   border-radius: 0.5rem;
   padding: 1rem;
   display: flex;
@@ -53,30 +53,30 @@
 
 .timeTrackDate {
   font-weight: 500;
-  color: #e5e7eb;
+  color: var(--color-text-tertiary);
 }
 
 .timeTrackDuration {
-  color: #6366f1;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
 .timeTrackTime {
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
 .timeTrackNote {
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   padding-top: 0.25rem;
-  border-top: 1px solid #262626;
+  border-top: 1px solid var(--color-border-light);
 }
 
 .totalTimeContainer {
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background-color: #1a1a1a;
+  background-color: var(--color-bg-elevated);
   border-radius: 0.5rem;
   text-align: center;
 }
@@ -84,5 +84,5 @@
 .totalTime {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #6366f1;
+  color: var(--color-primary);
 } 

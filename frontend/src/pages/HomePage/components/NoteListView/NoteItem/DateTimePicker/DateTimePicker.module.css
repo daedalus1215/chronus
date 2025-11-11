@@ -5,7 +5,7 @@
 .title {
   margin: 0 0 20px;
   font-size: 1.25rem;
-  color: #fff;
+  color: var(--color-text);
 }
 
 .form {
@@ -17,16 +17,16 @@
 .input {
   width: 100%;
   padding: 12px;
-  background-color: #2d2d2d;
-  border: 1px solid #404040;
+  background-color: var(--color-bg-elevated-4);
+  border: 1px solid var(--color-border-dark);
   border-radius: 8px;
-  color: #fff;
+  color: var(--color-text);
   font-size: 1rem;
 }
 
 .input:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: var(--color-primary);
 }
 
 .actions {
@@ -46,19 +46,19 @@
 }
 
 .button[data-variant="primary"] {
-  background-color: #6366f1;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-text);
 }
 
 .button[data-variant="primary"]:hover {
-  background-color: #4f46e5;
+  background-color: var(--color-primary-dark);
 }
 
 .button[data-variant="secondary"] {
-  background-color: #2d2d2d;
-  color: #fff;
+  background-color: var(--color-bg-elevated-4);
+  color: var(--color-text);
 }
 
 .button[data-variant="secondary"]:hover {
-  background-color: #404040;
+  background-color: var(--color-border-dark);
 } 
