@@ -1,6 +1,6 @@
 .sidebar {
-  background-color: #111;
-  color: #fff;
+  background-color: var(--color-bg-paper);
+  color: var(--color-text);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -13,7 +13,7 @@
 .header {
   padding: 0.5rem 0;
   margin-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--color-overlay-stronger);
 }
 
 .brand {
@@ -33,7 +33,7 @@
 .name {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--color-text);
 }
 
 .nav {
@@ -49,16 +49,16 @@
 }
 
 .navItem:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--color-overlay-stronger) !important;
 }
 
 .navItem.active {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--color-overlay-stronger) !important;
 }
 
 .navIcon {
   min-width: 40px !important;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   opacity: 0.7;
   transition: opacity 0.2s ease-in-out;
 }
@@ -66,7 +66,7 @@
 .navItem:hover .navIcon,
 .navItem.active .navIcon {
   opacity: 1;
-  color: #fff;
+  color: var(--color-text);
 }
 
 .resizeHandle {
@@ -76,13 +76,13 @@
   width: 8px;
   height: 100%;
   cursor: col-resize;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-overlay-light);
   z-index: 2;
   transition: background-color 0.2s ease;
 }
 
 .resizeHandle:hover,
 .resizeHandle:focus {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-overlay-strong);
   outline: none;
 }

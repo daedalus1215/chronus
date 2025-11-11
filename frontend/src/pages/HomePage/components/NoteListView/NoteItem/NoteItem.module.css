@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #111;
+  background-color: var(--color-bg-paper);
   margin-bottom:2px;
   border-left: 4px solid transparent;
   transition: all 0.2s ease-in-out;
@@ -14,28 +14,28 @@
 }
 
 .noteListItem:hover {
-  background-color: #1a1a1a;
+  background-color: var(--color-bg-elevated);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px var(--color-shadow-xl);
 }
 
 .noteListItem.selected {
-  background-color: #1a1a1a;
-  border-left-color: #6366f1;
+  background-color: var(--color-bg-elevated);
+  border-left-color: var(--color-primary);
 }
 
 .noteListItem.selected:hover {
-  background-color: #222;
+  background-color: var(--color-bg-elevated-3);
 }
 
 .noteListItem:active {
   transform: translateY(0px);
-  background-color: #222;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: var(--color-bg-elevated-3);
+  box-shadow: 0 2px 4px var(--color-shadow-lg);
 }
 
 .noteListItem:focus-visible {
-  box-shadow: 0 0 0 2px #6366f1;
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 .noteInfo {
@@ -45,7 +45,7 @@
 }
 
 .noteName {
-  color: #fff;
+  color: var(--color-text);
   font-size: 1rem;
   font-weight: 500;
 }
@@ -54,7 +54,7 @@
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #9ca3af;
+  background-color: var(--color-overlay-stronger);
+  color: var(--color-text-secondary);
   align-self: flex-start;
 }
