@@ -1,19 +1,22 @@
 .tagListItem {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   padding: 1rem;
-  margin-bottom: 0.5rem;
-  background-color: var(--background-paper);
-  border-radius: 8px;
+  background-color: var(--color-bg-paper);
+  margin-bottom:2px;
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease-in-out;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  position: relative;
+  outline: none;
 }
 
 .tagListItem:hover {
+  background-color: var(--color-bg-elevated);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--color-shadow-xl);
 }
 
 .tagListItem.selected {
@@ -28,7 +31,7 @@
 }
 
 .tagName {
-  font-weight: 600;
+  font-size: 1rem;
   color: var(--text-color-primary);
 }
 

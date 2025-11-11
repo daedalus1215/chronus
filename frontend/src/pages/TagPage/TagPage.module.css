@@ -5,22 +5,16 @@
   padding-top: 1rem;
 }
 
-.header {
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
 .main {
   padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  position:fixed;
+  position: fixed;
   top: 64px;
   width: 100%;
-} 
+  left: 0;
+  right: 0;
+}
 
 .mainDesktop {
-  width: 400px;
+  width: 100%;
   padding: 0;
-  top: 50px
 }

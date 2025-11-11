@@ -58,3 +58,23 @@
   color: var(--color-text-secondary);
   align-self: flex-start;
 }
+
+.moreButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-color-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.moreButton:hover {
+  background-color: var(--hover-color);
+}
+
+.moreButton:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
