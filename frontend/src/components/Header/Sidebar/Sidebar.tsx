@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSidebar } from '../../../contexts/SidebarContext';
 import { MobileSidebar } from './MobileSidebar';
-import { DesktopSidebar } from './DesktopSidebar';
 
 type SidebarProps = {
   isOpen: boolean;
