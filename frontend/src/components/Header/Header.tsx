@@ -17,7 +17,7 @@ export const Header: React.FC = () => {
   };
 
   const toggleSidebar = () => {
-    navigate('/');
+    isMobile ? setIsOpen(!isOpen) : navigate('/');
   };
 
   return (
