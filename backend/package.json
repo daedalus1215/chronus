@@ -22,7 +22,10 @@
     "typeorm": "cross-env NODE_ENV=development node --require ts-node/register ./node_modules/typeorm/cli.js",
     "migration:generate": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d ./src/typeorm/data-source.ts",
     "migration:run": "npx ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/typeorm/cli.js migration:run -d ./src/typeorm/data-source.ts",
-    "migration:revert": "npx ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/typeorm/cli.js  migration:revert -d ./src/typeorm/data-source.ts"
+    "migration:revert": "npx ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/typeorm/cli.js  migration:revert -d ./src/typeorm/data-source.ts",
+    "test:architecture": "depcruise --config load-depcruise-config.js src",
+    "depcruise": "depcruise --config load-depcruise-config.js src",
+    "depcruise:html": "depcruise --config load-depcruise-config.js --output-type html src > dependency-graph.html"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
@@ -67,6 +70,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "cross-env": "^7.0.3",
+    "dependency-cruiser": "^17.3.1",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",

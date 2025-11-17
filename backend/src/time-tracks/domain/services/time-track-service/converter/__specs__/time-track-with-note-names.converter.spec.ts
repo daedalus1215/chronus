@@ -1,21 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TimeTrackWithNoteNamesConverter } from '../time-track-with-note-names.converter';
+import { NoteNameReference, TimeTrackWithNoteNamesInput, TimeTrackWithNoteNamesResponder } from '../../../../../apps/actions/get-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
 
 describe('TimeTrackWithNoteNamesConverter', () => {
-  let target: TimeTrackWithNoteNamesConverter;
+  let target: TimeTrackWithNoteNamesResponder;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TimeTrackWithNoteNamesConverter],
+      providers: [TimeTrackWithNoteNamesResponder],
     }).compile();
 
-    target = module.get<TimeTrackWithNoteNamesConverter>(TimeTrackWithNoteNamesConverter);
+    target = module.get<TimeTrackWithNoteNamesResponder>(TimeTrackWithNoteNamesResponder);
   });
 
   describe('apply', () => {
     it('should combine time tracks with note names', () => {
       // Arrange
-      const timeTracks = [
+      const trackTimeTracks = [
         {
           noteId: 1,
           totalTimeMinutes: 120,
@@ -38,7 +38,7 @@ describe('TimeTrackWithNoteNamesConverter', () => {
       ];
 
       // Act
-      const result = target.apply(timeTracks, noteNames);
+      const result = target.apply({ trackTimeTracks, noteNames });
 
       // Assert
       expect(result).toEqual([
@@ -63,7 +63,7 @@ describe('TimeTrackWithNoteNamesConverter', () => {
 
     it('should use "Unknown Note" when note name is not found', () => {
       // Arrange
-      const timeTracks = [
+      const trackTimeTracks = [
         {
           noteId: 1,
           totalTimeMinutes: 120,
@@ -78,7 +78,7 @@ describe('TimeTrackWithNoteNamesConverter', () => {
       ];
 
       // Act
-      const result = target.apply(timeTracks, noteNames);
+      const result = target.apply({ trackTimeTracks, noteNames });
 
       // Assert
       expect(result[0].noteName).toBe('Unknown Note');
@@ -86,11 +86,11 @@ describe('TimeTrackWithNoteNamesConverter', () => {
 
     it('should handle empty time tracks array', () => {
       // Arrange
-      const timeTracks: any[] = [];
+      const trackTimeTracks: TimeTrackWithNoteNamesInput[] = [];
       const noteNames = [{ id: 1, name: 'Note 1' }];
 
       // Act
-      const result = target.apply(timeTracks, noteNames);
+      const result = target.apply({ trackTimeTracks, noteNames });
 
       // Assert
       expect(result).toEqual([]);
@@ -98,7 +98,7 @@ describe('TimeTrackWithNoteNamesConverter', () => {
 
     it('should handle empty note names array', () => {
       // Arrange
-      const timeTracks = [
+      const trackTimeTracks = [
         {
           noteId: 1,
           totalTimeMinutes: 120,
@@ -107,10 +107,10 @@ describe('TimeTrackWithNoteNamesConverter', () => {
           mostRecentDate: '2024-01-01'
         }
       ];
-      const noteNames: any[] = [];
+      const noteNames: NoteNameReference[] = [];
 
       // Act
-      const result = target.apply(timeTracks, noteNames);
+      const result = target.apply({ trackTimeTracks, noteNames });
 
       // Assert
       expect(result[0].noteName).toBe('Unknown Note');
