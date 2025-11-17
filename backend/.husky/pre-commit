@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd "$(dirname -- "$0")/.." || exit
+
+# Run lint-staged on staged files
+npx lint-staged
+
+# Run architecture checks on the entire codebase
+npm run test:architecture

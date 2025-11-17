@@ -11,7 +11,7 @@ import { GetTimeTracksTotalByNoteIdTransactionScript } from './domain/transactio
 import { GetDailyTimeTracksAggregationTransactionScript } from './domain/transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.transaction.script';
 import { NotesModule } from '../notes/notes.module';
 import { TimeTrackService } from './domain/services/time-track-service/time-track.service';
-import { TimeTrackWithNoteNamesConverter } from './domain/services/time-track-service/converter/time-track-with-note-names.converter';
+import { TimeTrackWithNoteNamesResponder } from './apps/actions/get-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
 import { DeleteTimeTrackAction } from './apps/actions/delete-time-track-action/delete-time-track.action';
 import { DeleteTimeTrackTransactionScript } from './domain/transaction-scripts/delete-time-track.transaction.script';
 import { GetDailyTimeTracksAction } from './apps/actions/get-daily-time-tracks-aggregation-action/get-daily-time-tracks-aggregation.action';
@@ -31,7 +31,7 @@ import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-s
     GetDailyTimeTracksAggregationTransactionScript,
     DeleteTimeTrackTransactionScript,
     TimeTrackService,
-    TimeTrackWithNoteNamesConverter,
+    TimeTrackWithNoteNamesResponder,
     GetWeeklyMostActiveNoteTransactionScript,
   ],
   controllers: [

@@ -5,6 +5,7 @@ import { AuthUser, GetAuthUser } from 'src/auth/app/decorators/get-auth-user.dec
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetDailyTimeTracksAggregationSwagger } from './get-daily-time-tracks-aggregation.swagger';
+import { TimeTrackWithNoteNamesResponder } from './time-track-with-note-names.responder';
 
 @Controller('time-tracks')
 @UseGuards(JwtAuthGuard)
@@ -12,8 +13,9 @@ import { GetDailyTimeTracksAggregationSwagger } from './get-daily-time-tracks-ag
 @ApiBearerAuth()
 export class GetDailyTimeTracksAction {
   constructor(
-    private readonly timeTrackService: TimeTrackService
-  ) {}
+    private readonly timeTrackService: TimeTrackService,
+    private readonly timeTrackWithNoteNamesResponder: TimeTrackWithNoteNamesResponder
+  ) { }
 
   @Get('daily')
   @ProtectedAction(GetDailyTimeTracksAggregationSwagger)
@@ -21,9 +23,10 @@ export class GetDailyTimeTracksAction {
     @Query('date') date?: string,
     @GetAuthUser() user?: AuthUser
   ) {
-    return this.timeTrackService.getDailyTimeTracksAggregation({
-      user,
-      date
-    });
+    return await this.timeTrackWithNoteNamesResponder.apply(
+      await this.timeTrackService.getDailyTimeTracksAggregation({
+        user,
+        date
+      }));
   }
 } 
