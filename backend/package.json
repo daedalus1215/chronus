@@ -25,7 +25,8 @@
     "migration:revert": "npx ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/typeorm/cli.js  migration:revert -d ./src/typeorm/data-source.ts",
     "test:architecture": "depcruise --config load-depcruise-config.js src",
     "depcruise": "depcruise --config load-depcruise-config.js src",
-    "depcruise:html": "depcruise --config load-depcruise-config.js --output-type html src > dependency-graph.html"
+    "depcruise:html": "depcruise --config load-depcruise-config.js --output-type html src > dependency-graph.html",
+    "prepare": "cd .. && git config core.hooksPath backend/.husky || true"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
@@ -74,7 +75,9 @@
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^9.1.7",
     "jest": "^29.5.0",
+    "lint-staged": "^16.2.6",
     "prettier": "^3.0.0",
     "source-map-support": "^0.5.21",
     "supertest": "^6.3.3",
@@ -106,5 +109,14 @@
   },
   "overrides": {
     "jwa": "^2.0.0"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }
