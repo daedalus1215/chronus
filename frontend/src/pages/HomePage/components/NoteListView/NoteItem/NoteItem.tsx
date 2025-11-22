@@ -13,6 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import { deleteNote, updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
 import styles from './NoteItem.module.css';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
@@ -31,7 +32,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
   const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
-  const { createTimeTrack, isCreating } = useCreateTimeTrack();
+  const { createTimeTrack, isCreating, error: createTimeTrackError } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
   const { timeTracks, isLoadingTimeTracks, totalTimeData, isLoadingTotal, timeTrackError }: ReturnType<typeof useNoteTimeTracks> = useNoteTimeTracks(note.id, isTimeTrackListOpen);
   const { handleTextToSpeech, handleDownloadAudio, isConverting, isDownloading, error: audioError, assetId } = useAudioActions(note.id);
@@ -40,6 +41,8 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [archiveError, setArchiveError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
 
   const handleClick = () => {
     if (onClick) {
@@ -161,9 +164,17 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
         note: data.note
       });
       setIsTimeTrackingOpen(false);
-    } catch {
-      // Error handling is now done in the hook
+      setToastSeverity('success');
+      setToastMessage('Time track saved successfully');
+    } catch (err) {
+      setToastSeverity('error');
+      const errorMessage = createTimeTrackError || 'Failed to save time track';
+      setToastMessage(errorMessage);
     }
+  };
+
+  const handleCloseToast = () => {
+    setToastMessage(null);
   };
 
   return (
@@ -281,6 +292,22 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={toastMessage !== null}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity={toastSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
