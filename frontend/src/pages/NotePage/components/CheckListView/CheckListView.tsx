@@ -130,7 +130,7 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
         </Box>
         <List className={styles.list}>
           {checkItems?.map((item) => (
-                                      <ListItem
+            <ListItem
               key={item.id}
               className={styles.listItem}
               sx={{
@@ -167,8 +167,8 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
                       whiteSpace: 'pre-wrap',
                     },
                   }}
-                  sx={{ 
-                    flex: 1, 
+                  sx={{
+                    flex: 1,
                     background: 'transparent',
                     '& .MuiInputBase-root': {
                       padding: '4px 0',
@@ -176,9 +176,9 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
                   }}
                 />
               </Box>
-              <IconButton 
-                edge="end" 
-                aria-label="delete" 
+              <IconButton
+                edge="end"
+                aria-label="delete"
                 onClick={() => handleDeleteClick(item.id)}
                 sx={{
                   position: 'absolute',
