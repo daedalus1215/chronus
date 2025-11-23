@@ -137,7 +137,6 @@ export const NotePage: React.FC = () => {
               color: "var(--color-text)",
             },
           }}
-          sx={{ mb: 1 }}
         />
         {titleError && (
           <Alert severity="error" sx={{ mb: 2 }}>

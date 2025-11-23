@@ -1,52 +1,9 @@
 .pageWrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 1rem;
-    background-color: var(--background);
-    border-radius: 0;
-    position: relative;
-    box-sizing: border-box;
-    height: calc(100vh - 180px);
-    width: calc(100vw - 530px);
-}
-
-.pageWrapper.mobile {
     width: 100%;
 }
 
 .container {
-    width: calc(100vw - 530px);
-    background: var(--color-bg-paper);
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
-    min-height: 60vh;
-    display: flex;  
-    flex-direction: column;
-    height: calc(100vh - 180px);
     overflow-y: scroll;
     scrollbar-width: none;
-}
-
-.container.mobile {
     width: 100%;
-}
-
-.addItemContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.error {
-    color: var(--destructive);
-    text-align: center;
-    padding: 1rem;
-    background: var(--destructive-background);
-    border-radius: 8px;
-    margin: 1rem 0;
 }
