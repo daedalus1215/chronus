@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useNote } from "./hooks/useNote/useNote";
-import { CheckListView } from "./components/CheckListView/CheckListView";
 import { useTitle } from "./hooks/useTitle";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -17,6 +16,8 @@ import { Add, Close } from "@mui/icons-material";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { DesktopNoteEditor } from "./components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor";
 import { MobileNoteEditor } from "./components/NoteEditor/MobileNoteEditor/MobileNoteEditor";
+import { DesktopCheckListView } from "./components/CheckListView/DesktopCheckListView/DesktopCheckListView";
+import { MobileCheckListView } from "./components/CheckListView/MobileCheckListView/MobileCheckListView";
 import styles from "./NotePage.module.css";
 
 export const NotePage: React.FC = () => {
@@ -35,7 +36,7 @@ export const NotePage: React.FC = () => {
     refetch,
     removeTagFromNote,
   } = useNoteTags(Number(id));
-  
+
   const {
     data: allTags,
     isLoading: allTagsLoading,
@@ -62,24 +63,24 @@ export const NotePage: React.FC = () => {
 
   const availableTags = allTags
     ? allTags.filter(
-        (tag: { id: number }) =>
-          !tags.some((noteTag: { id: number }) => noteTag.id === tag.id)
-      )
+      (tag: { id: number }) =>
+        !tags.some((noteTag: { id: number }) => noteTag.id === tag.id)
+    )
     : [];
 
   return (
-      <main className={styles.main}>
-    <Box>
-      <Box className="flex items-center gap-2 overflow-x-auto py-2 mb-2">
-        <IconButton
-          onClick={() => setAddTagOpen(true)}
-          color="secondary"
-          size="small"
-        >
-          <Add />
-        </IconButton>
+    <main className={styles.main}>
+      <Box>
+        <Box className="flex items-center gap-2 overflow-x-auto py-2 mb-2">
+          <IconButton
+            onClick={() => setAddTagOpen(true)}
+            color="secondary"
+            size="small"
+          >
+            <Add />
+          </IconButton>
 
-        {tags && tags.map((tag: Tag) => (
+          {tags && tags.map((tag: Tag) => (
             <Chip
               key={tag.id}
               label={tag.name}
@@ -90,7 +91,7 @@ export const NotePage: React.FC = () => {
               onClick={() => navigate(`/tag-notes/${tag.id}`)}
               onDelete={async () => {
                 try {
-                  await removeTagFromNote({tagId: tag.id, noteId: note.id});
+                  await removeTagFromNote({ tagId: tag.id, noteId: note.id });
                 } catch (err) {
                   console.error("Failed to remove tag from note", err);
                 }
@@ -98,58 +99,57 @@ export const NotePage: React.FC = () => {
               deleteIcon={<Close />}
             />
           ))}
-      </Box>
+        </Box>
 
-      <BottomSheet isOpen={isAddTagOpen} onClose={() => setAddTagOpen(false)}>
-        {allTagsLoading ? (
-          <span className="text-gray-400 ml-2">Loading all tags...</span>
-        ) : allTagsError ? (
-          <span className="text-red-500 ml-2">Error loading all tags</span>
-        ) : (
-          <AddTagForm
-            noteId={Number(id)}
-            tags={availableTags}
-            onTagAdded={refetch}
-            onClose={() => setAddTagOpen(false)}
-          />
+        <BottomSheet isOpen={isAddTagOpen} onClose={() => setAddTagOpen(false)}>
+          {allTagsLoading ? (
+            <span className="text-gray-400 ml-2">Loading all tags...</span>
+          ) : allTagsError ? (
+            <span className="text-red-500 ml-2">Error loading all tags</span>
+          ) : (
+            <AddTagForm
+              noteId={Number(id)}
+              tags={availableTags}
+              onTagAdded={refetch}
+              onClose={() => setAddTagOpen(false)}
+            />
+          )}
+        </BottomSheet>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Error loading note
+          </Alert>
         )}
-      </BottomSheet>
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          Error loading note
-        </Alert>
-      )}
-      <TextField
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className={styles.titleInput}
-        placeholder="Note title"
-        aria-label="Note title"
-        disabled={titleLoading}
-        variant="standard"
-        fullWidth
-        InputProps={{
-          disableUnderline: true,
-          style: {
-            fontWeight: 600,
-            fontSize: "1.2rem",
-            color: "var(--color-text)",
-          },
-        }}
-        sx={{ mb: 1 }}
-      />
-      {titleError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {titleError}
-        </Alert>
-      )}
-      {note?.isMemo ? (
-        isMobile ? <MobileNoteEditor note={note} onSave={handleSave} /> 
-        : <DesktopNoteEditor note={note} onSave={handleSave} />
-      ) : (
-        <CheckListView note={note} />
-      )}
-    </Box>
-      </main>
+        <TextField
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className={styles.titleInput}
+          placeholder="Note title"
+          aria-label="Note title"
+          disabled={titleLoading}
+          variant="standard"
+          fullWidth
+          InputProps={{
+            disableUnderline: true,
+            style: {
+              fontWeight: 600,
+              fontSize: "1.2rem",
+              color: "var(--color-text)",
+            },
+          }}
+        />
+        {titleError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {titleError}
+          </Alert>
+        )}
+        {note?.isMemo ? (
+          isMobile ? <MobileNoteEditor note={note} onSave={handleSave} />
+            : <DesktopNoteEditor note={note} onSave={handleSave} />
+        ) : isMobile ? <MobileCheckListView note={note} /> : (
+          <DesktopCheckListView note={note} />
+        )}
+      </Box>
+    </main>
   );
 };

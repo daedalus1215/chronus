@@ -1,0 +1,9 @@
+.pageWrapper {
+    width: 100%;
+}
+
+.container {
+    overflow-y: scroll;
+    scrollbar-width: none;
+    width: 100%;
+}

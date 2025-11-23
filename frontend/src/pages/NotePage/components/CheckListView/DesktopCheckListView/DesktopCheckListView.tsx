@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useCheckItems } from "../../hooks/useCheckItems";
-import { Note } from "../../api/responses";
+import { useCheckItems } from "../../../hooks/useCheckItems";
+import { Note } from "../../../api/responses";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Checkbox from '@mui/material/Checkbox';
@@ -15,17 +15,18 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useCheckItemsQuery } from '../../hooks/useCheckItems';
-import { useIsMobile } from "../../../../hooks/useIsMobile";
-import styles from "./CheckListView.module.css";
+import { useCheckItemsQuery } from '../../../hooks/useCheckItems';
+import { Fab } from "@mui/material";
+import { Add as AddIcon } from '@mui/icons-material';
+import styles from "./DesktopCheckListView.module.css";
 
 type CheckListViewProps = {
   note: Note;
 };
 
-export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
-  const isMobile = useIsMobile();
+export const DesktopCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
   const [newItem, setNewItem] = useState("");
+  const [showMenu, setShowMenu] = React.useState(false);
   const { data: checkItems = [], error } = useCheckItemsQuery(note.id);
   const { addItem, toggleItem, deleteItem, updateItem } = useCheckItems(note);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -102,32 +103,50 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
     }
   };
 
+
+  const handleCreateNote = async () => {
+    try {
+      await handleAdd();
+      setShowMenu(false);
+    } catch {
+      // Error is already handled in the hook
+    }
+  };
+
   return (
-    <Box className={`${styles.pageWrapper} ${isMobile ? styles.mobile : ''}`}>
-      <Paper elevation={3} className={`${styles.container} ${isMobile ? styles.mobile : ''}`} sx={{ p: 2, mt: 2 }}>
+    <Box>
+      <Paper elevation={.7} className={styles.container} sx={{ p: 2, mt: 2 }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error.message}</Alert>}
-        <Box className={styles.addItemContainer} sx={{ mb: 2, gap: 1 }}>
-          <TextField
-            variant="standard"
-            fullWidth
-            placeholder="+ Add Task"
-            value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleAdd();
-            }}
-            InputProps={{ disableUnderline: true }}
-            sx={{ flex: 1, mr: 1 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAdd}
-            sx={{ minWidth: 80 }}
+
+        {showMenu && (
+          <Dialog
+            open={showMenu}
+            onClose={() => setShowMenu(false)}
+            aria-labelledby="create-note-dialog-title"
+            autoFocus
           >
-            Add
-          </Button>
-        </Box>
+            <DialogContent>
+              <TextField
+                label="New Check Item"
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleCreateNote();
+                  }
+                }}
+                fullWidth
+                variant="standard"
+                enterKeyHint="done"
+                autoFocus
+              />
+              <Button onClick={handleCreateNote} variant="contained" color="primary"
+                sx={{ mt: 2, float: 'right' }}
+              >Create</Button>
+            </DialogContent>
+          </Dialog>
+        )}
         <List className={styles.list}>
           {checkItems?.map((item) => (
             <ListItem
@@ -140,16 +159,15 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
                 px: 0,
                 position: 'relative',
                 display: 'flex',
-                alignItems: 'flex-start',
+                alignItems: 'center',
                 gap: 1,
               }}
               disablePadding
             >
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', flex: 1, pr: 6 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, pr: 6 }}>
                 <Checkbox
                   checked={!!item.doneDate}
                   onChange={() => handleToggle(item.id)}
-                  sx={{ mt: 0.5 }}
                   color="primary"
                 />
                 <TextField
@@ -184,6 +202,8 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
                   position: 'absolute',
                   right: 0,
                   top: '50%',
+                  marginRight: '8px',
+                  marginLeft: '8px',
                   transform: 'translateY(-50%)'
                 }}
               >
@@ -212,6 +232,20 @@ export const CheckListView: React.FC<CheckListViewProps> = ({ note }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Fab
+        color="primary"
+        aria-label="Create new note"
+        onClick={() => setShowMenu(true)}
+        // disabled={isCreating}
+        sx={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+        }}
+      >
+        <AddIcon />
+      </Fab>
+
     </Box>
   );
 };
