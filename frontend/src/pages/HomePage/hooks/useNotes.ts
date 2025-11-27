@@ -18,6 +18,7 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
       setIsLoading(true);
       setError(null);
 
+      console.log('type', type);
       const response = await getNamesOfNotes(cursor, 20, query, type, tagId);
       
       
