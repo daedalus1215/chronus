@@ -29,22 +29,15 @@ export const TagForm: React.FC<Props> = ({
     name: '',
     description: ''
   });
-  const formOpenSessionRef = React.useRef<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      // Generate a unique session ID for this form open
-      if (!formOpenSessionRef.current) {
-        formOpenSessionRef.current = `${Date.now()}`;
-      }
-      
       // Initialize or update form data when form opens or initialData becomes available
       if (initialData) {
         setFormData(initialData);
       }
     } else {
       // Reset when form closes
-      formOpenSessionRef.current = null;
       setFormData({
         name: '',
         description: ''
