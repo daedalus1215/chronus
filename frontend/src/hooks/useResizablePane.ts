@@ -41,7 +41,7 @@ export const useResizablePane = (options: UseResizablePaneOptions) => {
     localStorage.setItem(localStorageKey, String(snapped));
     window.removeEventListener('mousemove', handleMouseMove);
     window.removeEventListener('mouseup', stopResizing);
-  }, [handleMouseMove, localStorageKey, size]);
+  }, [handleMouseMove, localStorageKey, size, min, max, snapPoints, snapThreshold]);
 
   const startResizing = React.useCallback((event: React.MouseEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>) => {
     startCoordRef.current = axis === 'x' ? event.clientX : event.clientY;
@@ -62,7 +62,7 @@ export const useResizablePane = (options: UseResizablePaneOptions) => {
     setSize(next);
     localStorage.setItem(localStorageKey, String(next));
     event.preventDefault();
-  }, [axis, largeStep, localStorageKey, max, min, size, step]);
+  }, [axis, largeStep, localStorageKey, max, min, size, step, snapPoints, snapThreshold]);
 
   React.useEffect(() => () => {
     if (isResizingRef.current) {

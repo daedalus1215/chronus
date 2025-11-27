@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../auth/useAuth';
-import { useSidebar } from '../../contexts/SidebarContext';
+import { useSidebar } from '../../hooks/useSidebar';
 import styles from './Layout.module.css';
 
 interface LayoutProps {
