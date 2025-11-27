@@ -32,7 +32,6 @@ export const TagForm: React.FC<Props> = ({
 
   useEffect(() => {
     if (isOpen) {
-      // Initialize or update form data when form opens or initialData becomes available
       if (initialData) {
         setFormData(initialData);
       }
