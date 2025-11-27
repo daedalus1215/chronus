@@ -59,57 +59,73 @@ export const TagForm: React.FC<Props> = ({
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <Box sx={{ p: 2 }}>
-        <Stack spacing={2} component="form" onSubmit={handleSubmit}>
-          <Box>
-            <h3>Edit Tag</h3>
-          </Box>
-          <TextField
-            label="Title"
-            type="text"
-            value={formData.name}
-            onChange={e => setFormData({ ...formData, name: e.target.value })}
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            required
-          />
-          <TextField
-            label="Description"
-            value={formData.description}
-            onChange={e => setFormData({ ...formData, description: e.target.value })}
-            onBlur={(e) => {
-              // Prevent blur from triggering any parent handlers
+      <Stack 
+        spacing={2} 
+        component="form" 
+        onSubmit={handleSubmit}
+        onClick={(e) => {
+          // Prevent clicks inside the form from propagating
+          e.stopPropagation();
+        }}
+        onMouseDown={(e) => {
+          // Prevent mouse down events from propagating
+          e.stopPropagation();
+        }}
+      >
+        <Box>
+          <h3>Edit Tag</h3>
+        </Box>
+        <TextField
+          label="Title"
+          type="text"
+          value={formData.name}
+          onChange={e => setFormData({ ...formData, name: e.target.value })}
+          fullWidth
+          InputLabelProps={{ shrink: true }}
+          required
+        />
+        <TextField
+          label="Description"
+          value={formData.description}
+          onChange={e => setFormData({ ...formData, description: e.target.value })}
+          fullWidth
+          multiline
+          rows={3}
+          InputLabelProps={{ shrink: true }}
+          onClick={(e) => {
+            // Prevent clicks on the text field from propagating
+            e.stopPropagation();
+          }}
+          onMouseDown={(e) => {
+            // Prevent mouse down on the text field from propagating
+            e.stopPropagation();
+          }}
+        />
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            variant="outlined"
+            color="secondary"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={isSubmitting}
+            onClick={(e) => {
               e.stopPropagation();
             }}
-            onFocus={(e) => {
-              // Prevent focus from triggering any parent handlers
-              e.stopPropagation();
-            }}
-            fullWidth
-            multiline
-            rows={3}
-            InputLabelProps={{ shrink: true }}
-          />
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="outlined"
-              color="secondary"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : 'Save'}
-            </Button>
-          </Stack>
+          >
+            {isSubmitting ? 'Saving...' : 'Save'}
+          </Button>
         </Stack>
-      </Box>
+      </Stack>
     </BottomSheet>
   );
 };

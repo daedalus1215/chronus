@@ -15,3 +15,7 @@ export const updateTag = async (tagId: number, data: { name: string; description
     const res = await api.patch(`/tags/${tagId}`, data);
     return res.data;
   };
+
+export const deleteTag = async (tagId: number): Promise<void> => {
+    await api.delete(`/tags/${tagId}`);
+  };

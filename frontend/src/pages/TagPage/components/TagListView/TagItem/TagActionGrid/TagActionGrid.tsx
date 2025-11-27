@@ -24,7 +24,10 @@ export const TagActionGrid: React.FC<Props> = ({
       <div className={styles.actionGrid}>
 
         <button
-          onClick={onEdit}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
           className={styles.actionButton}
         >
           <EditOutlined className={styles.icon} />
@@ -32,7 +35,10 @@ export const TagActionGrid: React.FC<Props> = ({
         </button>
 
         <button
-          onClick={onDelete}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
           className={styles.actionButton}
           data-variant="danger"
         >
