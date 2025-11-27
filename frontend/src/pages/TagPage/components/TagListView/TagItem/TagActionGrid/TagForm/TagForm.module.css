@@ -1,0 +1,118 @@
+.container {
+  padding: 20px;
+}
+
+.title {
+  margin: 0 0 20px;
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--color-bg-elevated-4);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.durationInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.durationButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--color-border-dark);
+  color: var(--color-text);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.durationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.durationInput {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  background-color: var(--color-bg-elevated-4);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--color-bg-elevated-4);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  color: var(--color-text);
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.button[data-variant="primary"] {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.button[data-variant="primary"]:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.button[data-variant="secondary"] {
+  background-color: var(--color-bg-elevated-4);
+  color: var(--color-text);
+}
+
+.button[data-variant="secondary"]:hover {
+  background-color: var(--color-border-dark);
+}

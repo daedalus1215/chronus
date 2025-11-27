@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Tag } from '../../../../../api/dtos/tag.dtos';
+import { TagActionGrid } from './TagActionGrid/TagActionGrid';
 import styles from './TagItem.module.css';
+import { TagForm, FormInitialData } from './TagActionGrid/TagForm/TagForm';
+import { updateTag, fetchTagById } from '../../../../../api/requests/tags.requests';
 
 interface TagItemProps {
   tag: Tag;
@@ -10,6 +14,26 @@ interface TagItemProps {
 
 export const TagItem: React.FC<TagItemProps> = ({ tag, onClick, isSelected }) => {
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const queryClient = useQueryClient();
+  
+  // Fetch full tag data when form opens
+  const { data: fullTag, isLoading: isLoadingTag } = useQuery<Tag>({
+    queryKey: ['tag', tag.id],
+    queryFn: () => fetchTagById(tag.id),
+    enabled: isFormOpen, // Only fetch when form is open
+  });
+
+  const updateTagMutation = useMutation({
+    mutationFn: (data: { name: string; description?: string }) => 
+      updateTag(tag.id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tags'] });
+      queryClient.invalidateQueries({ queryKey: ['tag', tag.id] });
+      setIsFormOpen(false);
+      setIsActionsOpen(false);
+    },
+  });
 
   const handleClick = () => {
     if (onClick) {
@@ -21,6 +45,24 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, onClick, isSelected }) =>
     e.stopPropagation();
     setIsActionsOpen(true);
   };
+
+  const handleEdit = () => {
+    setIsActionsOpen(false);
+    setIsFormOpen(true);
+  };
+
+  const handleFormSubmit = (data: FormInitialData) => {
+    updateTagMutation.mutate({
+      name: data.name,
+      description: data.description,
+    });
+  };
+
+  // Memoize initialData to prevent unnecessary re-renders
+  const formInitialData = useMemo<FormInitialData>(() => ({
+    name: fullTag?.name || tag.name,
+    description: fullTag?.description || tag.description || '',
+  }), [fullTag?.name, fullTag?.description, tag.name, tag.description]);
 
   return (
     <div 
@@ -47,6 +89,20 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, onClick, isSelected }) =>
       >
         ⋮
       </button>
+      <TagActionGrid 
+        isOpen={isActionsOpen}
+        onClose={() => setIsActionsOpen(false)}
+        onEdit={handleEdit}
+        onDelete={() => {}}
+      />
+
+      <TagForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSubmit={handleFormSubmit}
+        initialData={formInitialData}
+        isSubmitting={updateTagMutation.isPending || isLoadingTag}
+      />
     </div>
   );
 };

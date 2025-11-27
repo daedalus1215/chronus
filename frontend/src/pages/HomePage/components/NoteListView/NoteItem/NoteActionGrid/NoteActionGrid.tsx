@@ -3,7 +3,6 @@ import { BottomSheet } from '../../../../../../components/BottomSheet/BottomShee
 import {
   TimerOutlined,
   RecordVoiceOverOutlined,
-  ContentCopyOutlined,
   PushPinOutlined,
   ArchiveOutlined,
   DeleteOutlineOutlined,
@@ -45,9 +44,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onTimeTracking,
   onViewTimeEntries,
   onDelete,
-  onShare,
   onDownloadAudio,
-  onDuplicate,
   onPin,
   onArchive,
   onStar,

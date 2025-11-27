@@ -6,9 +6,12 @@ import { TagRepository } from './infra/repositories/tag-repository/tag.repositor
 import { AddTagToNoteTransactionScript } from './domain/transaction-scripts/add-tag-to-note.transaction.script';
 import { GetTagsByNoteIdTransactionScript } from './domain/transaction-scripts/get-tags-by-note-id.transaction.script';
 import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/get-tags-by-user-id.transaction.script';
+import { UpdateTagTransactionScript } from './domain/transaction-scripts/update-tag.transaction.script';
 import { AddTagToNoteAction } from './app/actions/add-tag-to-note-action/add-tag-to-note.action';
 import { GetTagsByNoteIdAction } from './app/actions/get-tags-by-note-id-action/get-tags-by-note-id.action';
 import { GetTagsByUserIdAction } from './app/actions/get-tags-by-user-id-action/get-tags-by-user-id.action';
+import { GetTagByIdAction } from './app/actions/get-tag-by-id-action/get-tag-by-id.action';
+import { UpdateTagAction } from './app/actions/update-tag-action/update-tag.action';
 import { TagService } from './domain/services/tag.service';
 import { RemoveTagFromNoteAction } from './app/actions/remove-tag-from-note-action/remove-tag-from-note.action';
 import { RemoveTagFromNoteTransactionScript } from './domain/transaction-scripts/remove-tag-from-note/remove-tag-from-note.transaction.script';
@@ -28,6 +31,7 @@ import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-
     AddTagToNoteTransactionScript,
     GetTagsByNoteIdTransactionScript,
     GetTagsByUserIdTransactionScript,
+    UpdateTagTransactionScript,
     RemoveTagFromNoteTransactionScript,
     TagService,
     DeleteNoteTagAssociationsListener,
@@ -36,6 +40,8 @@ import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-
     AddTagToNoteAction,
     GetTagsByNoteIdAction,
     GetTagsByUserIdAction,
+    GetTagByIdAction,
+    UpdateTagAction,
     RemoveTagFromNoteAction,
   ],
   exports: [
