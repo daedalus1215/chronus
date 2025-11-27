@@ -5,15 +5,6 @@
   padding: 16px 8px;
 }
 
-.errorMessage {
-  grid-column: 1 / -1;
-  color: var(--color-destructive);
-  text-align: center;
-  padding: 8px;
-  background-color: var(--color-destructive-light);
-  border-radius: 8px;
-  font-size: 0.875rem;
-}
 
 .icon {
   font-size: 24px !important; /* Override Material-UI default size */

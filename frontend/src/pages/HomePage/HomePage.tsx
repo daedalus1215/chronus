@@ -8,7 +8,7 @@ import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import { Header } from '../../components/Header/Header';
 import { Paper } from '@mui/material';
 import { DesktopSidebar } from '../../components/Header/Sidebar/DesktopSidebar';
-import { NOTE_TYPES } from '../../constant';
+import { NOTE_TYPES, NoteTypes } from '../../constant';
 import { useLocation, useParams, useNavigate, Outlet } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { MobileNoteListView } from './components/NoteListView/MobileNoteListVIew/MobileNoteListView';
@@ -28,8 +28,7 @@ export const HomePage: React.FC = () => {
   );
 
   const noteType = location.pathname.split('/')[1];
-  const noteTypeParam: 'MEMO' | 'CHECKLIST' | undefined =
-    noteType === 'memos' ? 'MEMO' : noteType === 'checklists' ? 'CHECKLIST' : undefined;
+  const noteTypeParam: NoteTypes | undefined = noteType as NoteTypes | undefined;
   const { tagId } = useParams<{ tagId: string }>();
 
   // Update selectedNoteId when route changes

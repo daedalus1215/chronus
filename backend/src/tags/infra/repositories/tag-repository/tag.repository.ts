@@ -28,6 +28,10 @@ export class TagRepository {
     return this.tagRepository.save(tag);
   }
 
+  async updateTag(tag: Tag): Promise<Tag> {
+    return this.tagRepository.save(tag);
+  }
+
   async removeTag(tag: Tag): Promise<Tag> {
     return this.tagRepository.remove(tag);
   }
