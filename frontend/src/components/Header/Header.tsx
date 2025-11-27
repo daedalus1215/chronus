@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuth';
 import { Sidebar } from './Sidebar/Sidebar';
 import { Logo } from '../Logo/Logo';
-import { useSidebar } from '../../contexts/SidebarContext';
+import { useSidebar } from '../../hooks/useSidebar';
 import styles from './Header.module.css';
 
 export const Header: React.FC = () => {
@@ -16,9 +16,7 @@ export const Header: React.FC = () => {
     navigate('/login');
   };
 
-  const toggleSidebar = () => {
-    isMobile ? setIsOpen(!isOpen) : navigate('/');
-  };
+  const toggleSidebar = () => isMobile ? setIsOpen(!isOpen) : navigate('/');
 
   return (
     <>

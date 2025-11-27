@@ -83,7 +83,7 @@ export const useAuthProvider = () => {
         password,
       });
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }, []);

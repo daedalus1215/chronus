@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DataGrid, GridColDef, GridRowsProp, GridRowParams } from '@mui/x-data-grid';
 import { Box, Typography, TextField, Button, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { getDailyTimeTracksAggregation } from '../../../../api/requests/time-tracks.requests';
 import { TimeTrackAggregationResponse } from '../../../../api/dtos/time-tracks.dtos';
 import { ROUTES } from '../../../../constants/routes';
 import styles from './DailyTimeTracksDataGrid.module.css';
 import { getCurrentDateString } from '../../../../utils/dateUtils';
+import { useDailyTimeTracksAggregation } from '../../hooks/useDailyTimeTracksAggregation';
 
 const formatTime = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
@@ -40,40 +40,23 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
   data: externalData,
   loading: externalLoading 
 }) => {
-  const [internalData, setInternalData] = useState<TimeTrackAggregationResponse[]>([]);
-  const [internalLoading, setInternalLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [internalSelectedDate, setInternalSelectedDate] = useState<string>(() => {
     return getCurrentDateString();
   });
   const navigate = useNavigate();
 
-  // Use external data if provided, otherwise use internal state
+  const selectedDate = externalSelectedDate || internalSelectedDate;
+  const shouldFetch = !externalData;
+  
+  const {
+    data: internalData,
+    isLoading: internalLoading,
+    error: internalError,
+  } = useDailyTimeTracksAggregation(selectedDate, shouldFetch);
+
   const timeTracks = externalData || internalData;
   const loading = externalLoading || internalLoading;
-  const selectedDate = externalSelectedDate || internalSelectedDate;
-
-  const fetchTimeTracks = async (date?: string) => {
-    if (externalData) return; // Don't fetch if external data is provided
-    
-    setInternalLoading(true);
-    setError(null);
-    try {
-      const data = await getDailyTimeTracksAggregation(date);
-      setInternalData(data);
-    } catch (err) {
-      setError('Failed to load time tracks');
-      console.error('Error fetching time tracks:', err);
-    } finally {
-      setInternalLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!externalData) {
-      fetchTimeTracks(selectedDate);
-    }
-  }, [selectedDate, externalData]);
+  const error = internalError;
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = event.target.value;
