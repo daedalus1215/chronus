@@ -35,7 +35,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
   const { createTimeTrack, isCreating, error: createTimeTrackError } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
   const { timeTracks, isLoadingTimeTracks, totalTimeData, isLoadingTotal, timeTrackError }: ReturnType<typeof useNoteTimeTracks> = useNoteTimeTracks(note.id, isTimeTrackListOpen);
-  const { handleTextToSpeech, handleDownloadAudio, isConverting, isDownloading, error: audioError, assetId } = useAudioActions(note.id);
+  const { handleTextToSpeech, handleDownloadAudio, isConverting, isDownloading, error: audioError } = useAudioActions(note.id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -55,8 +55,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
   const handleMoreClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = await updateNoteTimestamp(note.id);
-      console.log('Update response:', response);
+      await updateNoteTimestamp(note.id);
       setIsActionsOpen(true);
     } catch (error) {
       console.error('Failed to update note timestamp:', error);
@@ -166,7 +165,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
       setIsTimeTrackingOpen(false);
       setToastSeverity('success');
       setToastMessage('Time track saved successfully');
-    } catch (err) {
+    } catch {
       setToastSeverity('error');
       const errorMessage = createTimeTrackError || 'Failed to save time track';
       setToastMessage(errorMessage);

@@ -11,7 +11,7 @@ type Props = {
   onDateChange?: (date: string) => void;
   data?: TimeTrackAggregationResponse[];
   loading?: boolean;
-  showControls?: boolean; // Override control visibility
+  showControls?: boolean;
 };
 
 export const DailyTimeTracksRadar: React.FC<Props> = ({ 
@@ -28,7 +28,6 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
     return getCurrentDateString();
   });
 
-  // Use external data if provided, otherwise fetch internally
   const timeTracks = externalData || internalData;
   const loading = externalLoading || internalLoading;
   const selectedDate = externalSelectedDate || internalSelectedDate;

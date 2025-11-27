@@ -41,12 +41,9 @@ type UseCheckListReturn = {
 }
 
 export const useCheckItems = (note: Note): UseCheckListReturn => {
-  const queryClient = useQueryClient();{}
+  const queryClient = useQueryClient();
 
-  // Use the query to get check items
   const { data: checkItems = [] } = useCheckItemsQuery(note.id);
-
-  // Update note state with fetched check items
   const noteState = { ...note, checkItems };
 
   const addItemMutation = useMutation({
@@ -55,7 +52,6 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
       return response.data;
     },
     onSuccess: (checkItems) => {
-      // Update both note cache and check items cache
       queryClient.setQueryData(['note', note.id], (oldData: Note | undefined) => {
         if (!oldData) return oldData;
         return { ...oldData, checkItems };
@@ -70,7 +66,6 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
       return response.data;
     },
     onSuccess: (updatedItem, { id }) => {
-      // Update the note cache with the toggled item
       queryClient.setQueryData(['note', note.id], (oldCheckItems: CheckItem[] | undefined) => {
         if (!oldCheckItems) return oldCheckItems;
         return {
@@ -80,7 +75,6 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
           )
         };
       });
-      // Also update the check items cache
       queryClient.setQueryData(checkItemKeys.list(note.id), (oldItems: CheckItem[] | undefined) => {
         if (!oldItems) return oldItems;
         return oldItems.map(item => item.id === id ? updatedItem : item);
@@ -94,7 +88,6 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
       return id;
     },
     onSuccess: (deletedId) => {
-      // Update the note cache by removing the deleted item
       queryClient.setQueryData(['note', note.id], (oldData: Note | undefined) => {
         if (!oldData?.checkItems) return oldData;
         return {
@@ -102,7 +95,6 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
           checkItems: oldData.checkItems.filter(item => item.id !== deletedId)
         };
       });
-      // Also update the check items cache
       queryClient.setQueryData(checkItemKeys.list(note.id), (oldItems: CheckItem[] | undefined) => {
         if (!oldItems) return oldItems;
         return oldItems.filter(item => item.id !== deletedId);
@@ -116,7 +108,6 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
       return response.data;
     },
     onSuccess: (updatedItem, { id }) => {
-      // Update the note cache with the updated item
       queryClient.setQueryData(['note', note.id], (oldData: Note | undefined) => {
         if (!oldData?.checkItems) return oldData;
         return {
@@ -125,8 +116,7 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
             item.id === id ? updatedItem : item
           )
         };
-      });
-      // Also update the check items cache
+      }); 
       queryClient.setQueryData(checkItemKeys.list(note.id), (oldItems: CheckItem[] | undefined) => {
         if (!oldItems) return oldItems;
         return oldItems.map(item => item.id === id ? updatedItem : item);

@@ -18,9 +18,8 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     anchor="bottom"
     open={isOpen}
     onClose={(_event, reason) => {
-      // Only close on escape key - ignore backdrop clicks to prevent accidental closes
       // This prevents the drawer from closing when typing in inputs or when focus changes
-      if (reason === 'escapeKeyDown') {
+      if (reason === 'escapeKeyDown' || reason === 'backdropClick') {
         onClose();
       }
       // Explicitly ignore backdrop clicks and other reasons to prevent issues
@@ -33,27 +32,12 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
           maxHeight: "80vh",
           margin: "10 auto",
         },
-        onClick: (e: React.MouseEvent) => {
-          // Prevent clicks inside the drawer paper from closing it
-          e.stopPropagation();
-        },
-        onTouchStart: (e: React.TouchEvent) => {
-          // Prevent touch events inside drawer from propagating
-          e.stopPropagation();
-        },
       },
     }}
   >
     <Box 
       sx={{ p: 2 }}
-      onClick={(e: React.MouseEvent) => {
-        // Prevent clicks inside content from propagating
-        e.stopPropagation();
-      }}
-      onTouchStart={(e: React.TouchEvent) => {
-        // Prevent touch events inside content from propagating
-        e.stopPropagation();
-      }}
+
     >
       {children}
     </Box>
