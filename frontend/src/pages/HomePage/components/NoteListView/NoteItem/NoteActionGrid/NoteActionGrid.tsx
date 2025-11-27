@@ -15,6 +15,7 @@ import {
   LockOutlined
 } from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
+import { ActionButton } from '@/components/ActionButton/ActionButton';
 
 type NoteActionsProps = {
   isOpen: boolean;
@@ -60,102 +61,64 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <div className={styles.actionGrid}>
-        <button 
-          onClick={onTimeTracking}
-          className={styles.actionButton}
-        >
+
+        <ActionButton label="Time Entry" onClick={onTimeTracking}>
           <TimerOutlined className={styles.icon} />
-          <span className={styles.label}>Time Entry</span>
-        </button>
-        <button 
-          onClick={onViewTimeEntries}
-          className={styles.actionButton}
-        >
+
+        </ActionButton>
+
+        <ActionButton label="View Times" onClick={onViewTimeEntries}>
           <AccessTimeOutlined className={styles.icon} />
-          <span className={styles.label}>View Times</span>
-        </button>
-        <button 
-          onClick={onEdit} 
-          className={styles.actionButton}
-        >
+        </ActionButton>
+
+        <ActionButton label="Edit" onClick={onEdit}>
           <EditOutlined className={styles.icon} />
-          <span className={styles.label}>Edit</span>
-        </button>
-        <button 
-          onClick={onTextToSpeech} 
-          className={styles.actionButton}
-          disabled={isConverting || isDownloading}
-        >
+        </ActionButton>
+
+        <ActionButton label="To Speech" onClick={onTextToSpeech} disabled={isConverting || isDownloading}>
           <RecordVoiceOverOutlined className={styles.icon} />
-          <span className={styles.label}>
-            {isConverting ? 'Converting...' : 'To Speech'}
-          </span>
-        </button>
-        <button 
-          onClick={onDownloadAudio} 
-          className={styles.actionButton}
-          disabled={isDownloading || isConverting}
-        >
+          {isConverting ? 'Converting...' : ''}
+        </ActionButton>
+
+        <ActionButton label="Download" onClick={onDownloadAudio} disabled={isDownloading || isConverting}>
           <HeadphonesOutlined className={styles.icon} />
-          <span className={styles.label}>
-            {isDownloading ? 'Downloading...' : 'Download'}
-          </span>
-        </button>
+          {isDownloading ? 'Downloading...' : ''}
+        </ActionButton>
+
         {audioError && (
           <div className={styles.errorMessage}>
             {audioError}
           </div>
         )}
-        <button 
-          onClick={onPin} 
-          className={styles.actionButton}
-        >
+
+        <ActionButton label="Pin" onClick={onPin}>
           <PushPinOutlined className={styles.icon} />
-          <span className={styles.label}>Pin</span>
-        </button>
-        <button 
-          onClick={onStar} 
-          className={styles.actionButton}
-        >
+        </ActionButton>
+
+        <ActionButton label="Star" onClick={onStar}>
           <StarBorderOutlined className={styles.icon} />
-          <span className={styles.label}>Star</span>
-        </button>
-        <button 
-          onClick={onLabel} 
-          className={styles.actionButton}
-        >
+        </ActionButton>
+
+        <ActionButton label="Label" onClick={onLabel}>
           <LabelOutlined className={styles.icon} />
-          <span className={styles.label}>Label</span>
-        </button>
-        <button 
-          onClick={onArchive} 
-          className={styles.actionButton}
-        >
+        </ActionButton>
+
+        <ActionButton label="Archive" onClick={onArchive}>
           <ArchiveOutlined className={styles.icon} />
-          <span className={styles.label}>Archive</span>
-        </button>
-        <button 
-          onClick={onExport} 
-          className={styles.actionButton}
-        >
+        </ActionButton>
+
+        <ActionButton label="Export" onClick={onExport}>
           <FileUploadOutlined className={styles.icon} />
-          <span className={styles.label}>Export</span>
-        </button>
-        <button 
-          onClick={onLock} 
-          className={styles.actionButton}
-        >
+        </ActionButton>
+
+        <ActionButton label="Lock" onClick={onLock}>
           <LockOutlined className={styles.icon} />
-          <span className={styles.label}>Lock</span>
-        </button>
-        <button 
-          onClick={onDelete} 
-          className={styles.actionButton}
-          data-variant="danger"
-        >
+        </ActionButton>
+
+        <ActionButton label="Delete" onClick={onDelete} danger={true}>
           <DeleteOutlineOutlined className={styles.icon} />
-          <span className={styles.label}>Delete</span>
-        </button>
+        </ActionButton>
+
       </div>
     </BottomSheet>
   );

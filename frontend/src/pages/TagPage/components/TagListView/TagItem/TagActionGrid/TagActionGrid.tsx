@@ -5,6 +5,7 @@ import {
   EditOutlined,
 } from '@mui/icons-material';
 import styles from './TagActionGrid.module.css';
+import { ActionButton } from '@/components/ActionButton/ActionButton';
 
 type Props = {
   isOpen: boolean;
@@ -23,28 +24,13 @@ export const TagActionGrid: React.FC<Props> = ({
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <div className={styles.actionGrid}>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit();
-          }}
-          className={styles.actionButton}
-        >
+        <ActionButton onClick={onEdit} label="Edit" >
           <EditOutlined className={styles.icon} />
-          <span className={styles.label}>Edit</span>
-        </button>
+        </ActionButton>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          className={styles.actionButton}
-          data-variant="danger"
-        >
+        <ActionButton onClick={onDelete} label="Delete" danger={true}>
           <DeleteOutlineOutlined className={styles.icon} />
-          <span className={styles.label}>Delete</span>
-        </button>
+        </ActionButton>
       </div>
     </BottomSheet>
   );
