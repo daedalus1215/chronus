@@ -24,7 +24,7 @@ import { EditCheckItemDialog } from "../EditCheckItemDialog/EditCheckItemDialog"
 import { useAddCheckItemDialog } from "../hooks/useAddCheckItemDialog";
 import { AddCheckItemDialog } from "../components/AddCheckItemDialog/AddCheckItemDialog";
 import { useDeleteCheckItemDialog } from "../hooks/useDeleteCheckItemDialog";
-import { DeleteCheckItemDialog } from "../DeleteCheckItemDialog/DeleteCheckItemDialog";
+import { DeleteCheckItemDialog } from "../components/AddCheckItemDialog/DeleteCheckItemDialog/DeleteCheckItemDialog";
 
 type CheckListViewProps = {
   note: Note;
