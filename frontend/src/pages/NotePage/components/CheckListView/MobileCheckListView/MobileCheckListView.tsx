@@ -1,44 +1,60 @@
-import React, { useState } from "react";
-import { useCheckItems } from "../../../hooks/useCheckItems";
+import React from "react";
+import { useCheckItems } from "../hooks/useCheckItems";
 import { Note } from "../../../api/responses";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import { useCheckItemsQuery } from '../../../hooks/useCheckItems';
+import { useCheckItemsQuery } from '../hooks/useCheckItems';
 import { Fab } from "@mui/material";
 import { Add as AddIcon } from '@mui/icons-material';
 import styles from "./MobileCheckListView.module.css";
+import { useCheckItemEditDialog } from "../hooks/useCheckItemEditDialog";
+import { EditCheckItemDialog } from "../EditCheckItemDialog/EditCheckItemDialog";
+import { useAddCheckItemDialog } from "../hooks/useAddCheckItemDialog";
+import { AddCheckItemDialog } from "../components/AddCheckItemDialog/AddCheckItemDialog";
+import { useDeleteCheckItemDialog } from "../hooks/useDeleteCheckItemDialog";
+import { DeleteCheckItemDialog } from "../DeleteCheckItemDialog/DeleteCheckItemDialog";
 
 type CheckListViewProps = {
   note: Note;
 };
 
 export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
-  const [newItem, setNewItem] = useState("");
-  const [showMenu, setShowMenu] = React.useState(false);
   const { data: checkItems = [], error } = useCheckItemsQuery(note.id);
   const { addItem, toggleItem, deleteItem, updateItem } = useCheckItems(note);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const {
+    isOpen: isAddDialogOpen,
+    value: newItemValue,
+    openDialog: openAddDialog,
+    closeDialog: closeAddDialog,
+    changeValue: changeNewItemValue,
+    saveNew,
+  } = useAddCheckItemDialog();
+  const {
+    isOpen: isEditDialogOpen,
+    editItemValue,
+    openDialog: openEditDialog,
+    closeDialog: closeEditDialog,
+    changeValue: changeEditValue,
+    saveEdit,
+  } = useCheckItemEditDialog();
+  const {
+    isOpen: isDeleteDialogOpen,
+    isDeleting,
+    error: deleteError,
+    openDialog: openDeleteDialog,
+    closeDialog: closeDeleteDialog,
+    confirmDelete,
+  } = useDeleteCheckItemDialog();
 
   const handleAdd = async () => {
-    if (!newItem.trim()) return;
     try {
-      await addItem(newItem.trim());
-      setNewItem("");
+      await addItem(newItemValue.trim());
     } catch (err) {
       // You might want to show an error toast here
       console.error("Failed to add item:", err);
@@ -54,45 +70,19 @@ export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
   };
 
   const handleDeleteClick = (id: number) => {
-    setDeleteTargetId(id);
-    setDeleteDialogOpen(true);
-    setDeleteError(null);
+    openDeleteDialog(id);
   };
 
   const handleDeleteConfirm = async () => {
-    if (deleteTargetId == null) return;
-    setIsDeleting(true);
-    setDeleteError(null);
     try {
-      await deleteItem(deleteTargetId);
-      setIsDeleting(false);
-      setDeleteDialogOpen(false);
-      setDeleteTargetId(null);
-    } catch (err: unknown) {
-      setIsDeleting(false);
-      let message = 'Failed to delete check item';
-      if (
-        err &&
-        typeof err === 'object' &&
-        'response' in err &&
-        err.response &&
-        typeof err.response === 'object' &&
-        'data' in err.response &&
-        err.response.data &&
-        typeof err.response.data === 'object' &&
-        'message' in err.response.data &&
-        typeof (err.response.data as { message?: unknown }).message === 'string'
-      ) {
-        message = (err.response.data as { message: string }).message;
-      }
-      setDeleteError(message);
+      await confirmDelete(deleteItem);
+    } catch (err) {
+      console.error("Failed to delete check item:", err);
     }
   };
 
   const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
-    setDeleteTargetId(null);
-    setDeleteError(null);
+    closeDeleteDialog();
   };
 
   const handleEdit = async (id: number, name: string) => {
@@ -102,50 +92,44 @@ export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
       console.error("Failed to update item:", err);
     }
   };
-
+  const handleSaveEdit = async () => {
+    try {
+      await saveEdit(handleEdit);
+    } catch (err) {
+      console.error("Failed to save edited item:", err);
+    }
+  };
 
   const handleCreateNote = async () => {
     try {
-      await handleAdd();
-      setShowMenu(false);
-    } catch {
-      // Error is already handled in the hook
+      await saveNew(handleAdd);
+    } catch (err) {
+      console.error("Failed to create check item:", err);
     }
   };
 
   return (
     <Box>
-      <Paper elevation={.7} className={styles.container} sx={{ p: 2, mt: 2 }}>
+      <Paper elevation={0.7} className={styles.container} sx={{ p: 2, mt: 2 }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error.message}</Alert>}
 
-        {showMenu && (
-          <Dialog
-            open={showMenu}
-            onClose={() => setShowMenu(false)}
-            aria-labelledby="create-note-dialog-title"
-            autoFocus
-          >
-            <DialogContent>
-              <TextField
-                label="New Check Item"
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleCreateNote();
-                  }
-                }}
-                fullWidth
-                variant="standard"
-                enterKeyHint="done"
-                autoFocus
-              />
-              <Button onClick={handleCreateNote} variant="contained" color="primary"
-                sx={{ mt: 2, float: 'right' }}
-              >Create</Button>
-            </DialogContent>
-          </Dialog>
+        {isAddDialogOpen && (
+          <AddCheckItemDialog
+            isOpen={isAddDialogOpen}
+            value={newItemValue}
+            onChange={changeNewItemValue}
+            onSave={handleCreateNote}
+            onClose={closeAddDialog}
+          />
+        )}
+        {isEditDialogOpen && (
+          <EditCheckItemDialog
+            isOpen={isEditDialogOpen}
+            value={editItemValue}
+            onChange={changeEditValue}
+            onSave={handleSaveEdit}
+            onClose={closeEditDialog}
+          />
         )}
         <List className={styles.list}>
           {checkItems?.map((item) => (
@@ -170,29 +154,36 @@ export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
                   onChange={() => handleToggle(item.id)}
                   color="primary"
                 />
-                <TextField
-                  value={item.name}
-                  onChange={(e) => handleEdit(item.id, e.target.value)}
-                  variant="standard"
-                  fullWidth
-                  InputProps={{
-                    disableUnderline: true,
-                    multiline: true,
-                    style: {
+                <Box
+                  sx={{
+                    flex: 1,
+                    background: 'transparent',
+                    padding: '4px 0',
+                    cursor: 'pointer',
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Edit check item"
+                  onClick={() => openEditDialog(item.id, item.name)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openEditDialog(item.id, item.name);
+                    }
+                  }}
+                >
+                  <span
+                    style={{
                       textDecoration: item.doneDate ? 'line-through' : undefined,
                       color: item.doneDate ? 'var(--color-text-secondary)' : 'var(--color-text)',
                       wordBreak: 'break-word',
                       whiteSpace: 'pre-wrap',
-                    },
-                  }}
-                  sx={{
-                    flex: 1,
-                    background: 'transparent',
-                    '& .MuiInputBase-root': {
-                      padding: '4px 0',
-                    }
-                  }}
-                />
+                      display: 'block',
+                    }}
+                  >
+                    {item.name}
+                  </span>
+                </Box>
               </Box>
               <IconButton
                 edge="end"
@@ -213,29 +204,17 @@ export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
           ))}
         </List>
       </Paper>
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-        aria-labelledby="delete-checkitem-dialog-title"
-      >
-        <DialogTitle id="delete-checkitem-dialog-title">Delete Check Item?</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this check item? This action cannot be undone.
-          {deleteError && <Alert severity="error" sx={{ mt: 2 }}>{deleteError}</Alert>}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteCancel} disabled={isDeleting}>
-            Cancel
-          </Button>
-          <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={isDeleting}>
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteCheckItemDialog
+        isOpen={isDeleteDialogOpen}
+        isDeleting={isDeleting}
+        error={deleteError}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+      />
       <Fab
         color="primary"
         aria-label="Create new note"
-        onClick={() => setShowMenu(true)}
+        onClick={openAddDialog}
         // disabled={isCreating}
         sx={{
           position: 'fixed',
