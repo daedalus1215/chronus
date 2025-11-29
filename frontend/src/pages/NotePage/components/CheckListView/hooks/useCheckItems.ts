@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../../../api/axios.interceptor';
-import { CheckItem, Note } from '../api/responses';
+import api from '../../../../../api/axios.interceptor';
+import { CheckItem, Note } from '../../../api/responses';
 
 export const checkItemKeys = {
   all: ['checkItems'] as const,
@@ -104,7 +104,7 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
 
   const updateItemMutation = useMutation({
     mutationFn: async ({ id, name }: { id: number; name: string }) => {
-      const response = await api.patch<CheckItem>(`/check-items/items/${id}`, { name });
+      const response = await api.patch<CheckItem>(`/check-items/items/${id}/notes/${note.id}`, { name });
       return response.data;
     },
     onSuccess: (updatedItem, { id }) => {
