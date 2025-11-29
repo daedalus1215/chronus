@@ -33,4 +33,4 @@ export function RegisterPage() {
       <Register onRegister={handleRegister} />
     </div>
   );
-} 
+}

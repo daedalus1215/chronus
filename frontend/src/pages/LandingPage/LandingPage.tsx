@@ -15,9 +15,9 @@ export const LandingPage: React.FC = () => {
 
         <div className={styles.actionSection}>
           <h1 className={styles.title}>Chronus</h1>
-          
+
           <div className={styles.buttonGroup}>
-            <button 
+            <button
               onClick={() => navigate('/register')}
               className={styles.createAccountButton}
             >
@@ -36,8 +36,7 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
         </div>
-        
       </div>
     </div>
   );
-}; 
+};

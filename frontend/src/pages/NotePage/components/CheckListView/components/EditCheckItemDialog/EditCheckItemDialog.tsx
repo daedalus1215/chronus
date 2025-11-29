@@ -1,8 +1,8 @@
-import React from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import React from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 type EditCheckItemDialogProps = {
   isOpen: boolean;
@@ -30,9 +30,9 @@ export const EditCheckItemDialog: React.FC<EditCheckItemDialogProps> = ({
         label="Edit Check Item"
         value={value}
         autoComplete="off"
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
+        onChange={e => onChange(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
             e.preventDefault();
             onSave();
           }
@@ -46,12 +46,10 @@ export const EditCheckItemDialog: React.FC<EditCheckItemDialogProps> = ({
         onClick={onSave}
         variant="contained"
         color="primary"
-        sx={{ mt: 2, float: "right" }}
+        sx={{ mt: 2, float: 'right' }}
       >
         Save
       </Button>
     </DialogContent>
   </Dialog>
 );
-
-

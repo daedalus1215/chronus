@@ -17,8 +17,9 @@ export class CheckItemsRepository {
   }
 
   async findByNoteId(noteId: number): Promise<CheckItem[]> {
-    return this.checkItemRepository.findBy({
-      noteId: noteId,
+    return this.checkItemRepository.find({
+      where: { noteId },
+      order: { order: 'ASC' },
     });
   }
 
@@ -77,8 +78,19 @@ export class CheckItemsRepository {
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('checkItem.note_id = :noteId', { noteId })
       .andWhere('note.user_id = :userId', { userId })
+      .orderBy('checkItem.order', 'ASC')
       .getRawMany();
 
     return this.hydrator.fromRawResults(results);
+  }
+
+  async getMaxOrderByNoteId(noteId: number): Promise<number> {
+    const result = await this.checkItemRepository
+      .createQueryBuilder('checkItem')
+      .select('MAX(checkItem.order)', 'maxOrder')
+      .where('checkItem.note_id = :noteId', { noteId })
+      .getRawOne();
+
+    return result?.maxOrder ?? -1;
   }
 } 

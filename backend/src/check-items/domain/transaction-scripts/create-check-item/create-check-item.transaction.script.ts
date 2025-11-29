@@ -16,43 +16,24 @@ export class CreateCheckItemTransactionScript {
   ): Promise<CheckItem[]> {
     const checkItems = await this.saveCheckItem(dto);
 
-    const nonArchivedCheckItemsFilter = (item: CheckItem) =>
-      item.doneDate == null;
-    const archivedCheckItemsFilter = (item: CheckItem) =>
-      item.doneDate !== null;
+    // Items are already ordered by 'order' column from the repository
+    // Separate archived (done) and non-archived items, maintaining order within each group
+    const nonArchivedCheckItems = checkItems.filter(item => item.doneDate == null);
+    const archivedCheckItems = checkItems.filter(item => item.doneDate !== null);
 
-    return [
-      ...this.sortCheckItemsByArchiveStatus(
-        checkItems,
-        nonArchivedCheckItemsFilter
-      ),
-      ...this.sortCheckItemsByArchiveStatus(
-        checkItems,
-        archivedCheckItemsFilter
-      ),
-    ];
+    return [...nonArchivedCheckItems, ...archivedCheckItems];
   }
 
   private async saveCheckItem({
     name,
     noteId,
   }: CreateCheckItemDto & { noteId: number }): Promise<CheckItem[]> {
+    const maxOrder = await this.checkItemsRepository.getMaxOrderByNoteId(noteId);
     const newCheckItem = new CheckItem();
     newCheckItem.name = name;
     newCheckItem.noteId = noteId;
+    newCheckItem.order = maxOrder + 1;
     await this.checkItemsRepository.save(newCheckItem);
     return this.checkItemsRepository.findByNoteId(noteId);
-  }
-
-  private sortCheckItemsByArchiveStatus(
-    checkItems: CheckItem[],
-    doneComparison: (item: CheckItem) => boolean
-  ): CheckItem[] {
-    return checkItems
-      .filter(doneComparison)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
   }
 } 

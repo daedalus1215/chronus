@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '../../components/Header/Header';
 import { DailyTimeTracksDataGrid } from './components/DailyTimeTracksDataGrid/DailyTimeTracksDataGrid';
 import { DailyTimeTracksRadar } from './components/DailyTimeTracksRadar/DailyTimeTracksRadar';
-import { getDailyTimeTracksAggregation, getWeeklyMostActiveNote } from '../../api/requests/time-tracks.requests';
+import {
+  getDailyTimeTracksAggregation,
+  getWeeklyMostActiveNote,
+} from '../../api/requests/time-tracks.requests';
 import { TimeTrackAggregationResponse } from '../../api/dtos/time-tracks.dtos';
 import styles from './ActivityPage.module.css';
 import { Paper, Typography } from '@mui/material';
@@ -10,8 +13,11 @@ import { WeeklyMostActiveNoteResponseDto } from '../../api/dtos/weekly-most-acti
 import { getCurrentDateString } from '../../utils/dateUtils';
 
 export const ActivityPage: React.FC = () => {
-  const [timeTracks, setTimeTracks] = useState<TimeTrackAggregationResponse[]>([]);
-  const [mostActiveNote, setMostActiveNote] = useState<WeeklyMostActiveNoteResponseDto | null>(null);
+  const [timeTracks, setTimeTracks] = useState<TimeTrackAggregationResponse[]>(
+    []
+  );
+  const [mostActiveNote, setMostActiveNote] =
+    useState<WeeklyMostActiveNoteResponseDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     return getCurrentDateString();
@@ -61,7 +67,7 @@ export const ActivityPage: React.FC = () => {
         <div className={styles.cardsContainer}>
           {/* Time Radar Card */}
           <Paper className={styles.card}>
-          <DailyTimeTracksRadar 
+            <DailyTimeTracksRadar
               selectedDate={selectedDate}
               onDateChange={handleDateChange}
               data={timeTracks}
@@ -72,8 +78,12 @@ export const ActivityPage: React.FC = () => {
 
           <Paper className={styles.card}>
             <Typography variant="h6">Most Active Note</Typography>
-            <Typography variant="h3">{loading ? '...' : mostActiveNote?.totalTimeMinutes || 0} mins</Typography>
-            <Typography variant="subtitle2">{mostActiveNote?.noteName || 'No activity this week'}</Typography>
+            <Typography variant="h3">
+              {loading ? '...' : mostActiveNote?.totalTimeMinutes || 0} mins
+            </Typography>
+            <Typography variant="subtitle2">
+              {mostActiveNote?.noteName || 'No activity this week'}
+            </Typography>
           </Paper>
 
           {/* Minutes Lost Card - Placeholder */}
@@ -86,7 +96,7 @@ export const ActivityPage: React.FC = () => {
 
         {/* Graph Section */}
         <Paper className={styles.graphSection}>
-          <DailyTimeTracksDataGrid 
+          <DailyTimeTracksDataGrid
             selectedDate={selectedDate}
             onDateChange={handleDateChange}
             data={timeTracks}
@@ -96,4 +106,4 @@ export const ActivityPage: React.FC = () => {
       </main>
     </div>
   );
-}; 
+};

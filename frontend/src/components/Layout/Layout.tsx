@@ -18,7 +18,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className={styles.layout}>
       {/* <button onClick={toggleDarkMode}>Toggle Dark Mode</button> */}
-      <main 
+      <main
         className={`${styles.content} ${!isAuthenticated ? styles.noHeader : ''}`}
         style={{
           marginLeft: !isMobile && isOpen ? '240px' : '0',
@@ -30,4 +30,4 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
     </div>
   );
-}; 
+};

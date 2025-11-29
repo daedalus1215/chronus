@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/',  // We'll handle the full path in the interceptor
+  baseURL: '/', // We'll handle the full path in the interceptor
   headers: {
     'Content-Type': 'application/json',
   },
@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Request interceptor
 api.interceptors.request.use(
-  (config) => {
+  config => {
     // Add /api prefix to all requests except those that already have it
     if (!config.url?.startsWith('/api')) {
       config.url = `/api${config.url}`;
@@ -21,15 +21,15 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Response interceptor
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     if (error.response) {
       // Handle specific error cases
       switch (error.response.status) {
@@ -50,4 +50,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api; 
+export default api;

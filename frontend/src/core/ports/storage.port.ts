@@ -13,4 +13,4 @@ export type WithSyncMetadata<T> = T & {
   _syncStatus: SyncStatus;
   _lastModified: number;
   _localId?: number;
-}; 
+};

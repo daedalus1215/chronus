@@ -5,7 +5,6 @@
   padding: 16px 8px;
 }
 
-
 .icon {
   font-size: 24px !important; /* Override Material-UI default size */
 }
@@ -21,4 +20,4 @@
   .actionGrid {
     grid-template-columns: repeat(3, 1fr);
   }
-} 
+}

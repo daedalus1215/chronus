@@ -9,20 +9,20 @@ type Note = {
   userId: string;
   isMemo: boolean;
   createdAt?: string;
-}
+};
 
 type NoteEditorProps = {
   note: Note;
   onSave: (note: Partial<Note>) => void;
-}
+};
 
-export const DesktopNoteEditor: React.FC<NoteEditorProps> = ({ 
-  note, 
-  onSave
+export const DesktopNoteEditor: React.FC<NoteEditorProps> = ({
+  note,
+  onSave,
 }) => {
   const { content, handleDescriptionChange } = useNoteEditor({
     note,
-    onSave
+    onSave,
   });
 
   return (
@@ -37,4 +37,4 @@ export const DesktopNoteEditor: React.FC<NoteEditorProps> = ({
       />
     </div>
   );
-}; 
+};

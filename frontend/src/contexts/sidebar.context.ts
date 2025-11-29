@@ -6,5 +6,6 @@ type SidebarContextType = {
   isMobile: boolean;
 };
 
-export const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
-
+export const SidebarContext = createContext<SidebarContextType | undefined>(
+  undefined
+);

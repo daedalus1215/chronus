@@ -32,16 +32,17 @@ export const useUpdateNoteMutation = (noteId: number) => {
   return useMutation({
     mutationFn: async (updatedNote: Partial<Note>) => {
       const { name, description, tags } = updatedNote;
-      const response = await api.patch<Note>(
-        `/notes/detail/${noteId}`,
-        { name, description, tags }
-      );
+      const response = await api.patch<Note>(`/notes/detail/${noteId}`, {
+        name,
+        description,
+        tags,
+      });
       return response.data;
     },
-    onSuccess: (updatedNote) => {
+    onSuccess: updatedNote => {
       queryClient.setQueryData(noteKeys.detail(noteId), updatedNote);
       // Optionally invalidate related queries
       queryClient.invalidateQueries({ queryKey: noteKeys.lists() });
     },
   });
-}; 
+};

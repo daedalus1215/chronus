@@ -1,23 +1,20 @@
-import React, { useState } from "react";
-import { BottomSheet } from "../../../../../../components/BottomSheet/BottomSheet";
-import {
-  deleteTimeTrack,
-} from "../../../../../../api/requests/time-tracks.requests";
-import DialogTitle from "@mui/material/DialogTitle";
+import React, { useState } from 'react';
+import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
+import { deleteTimeTrack } from '../../../../../../api/requests/time-tracks.requests';
+import DialogTitle from '@mui/material/DialogTitle';
 import {
   Button,
   DialogContent,
   DialogActions,
   Dialog,
   IconButton,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import styles from "./TimeTrackListView.module.css";
-import { TimeTrack } from "../../../../hooks/useNoteTimeTracks/useNoteTimeTracks";
-import { TimeTrackTotalResponseDto } from "../../../../../../../api/dtos/note.dtos";
-import { formatDateForDisplay } from "../../../../../../utils/dateUtils";
-
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import styles from './TimeTrackListView.module.css';
+import { TimeTrack } from '../../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
+import { TimeTrackTotalResponseDto } from '../../../../../../../api/dtos/note.dtos';
+import { formatDateForDisplay } from '../../../../../../utils/dateUtils';
 
 type TimeTrackListProps = {
   isOpen: boolean;
@@ -47,7 +44,7 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
   const { mutate: mutateDeleteTimeTrack, isPending: isDeleting } = useMutation({
     mutationFn: (id: number) => deleteTimeTrack(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["timeTracks", noteId] });
+      queryClient.invalidateQueries({ queryKey: ['timeTracks', noteId] });
       setDeleteDialogOpen(false);
       setDeleteTargetId(null);
     },
@@ -58,7 +55,7 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
     const days = Math.floor(minutes / (24 * 60));
     const hours = Math.floor((minutes % (24 * 60)) / 60);
     const remainingMinutes = minutes % 60;
-    
+
     if (days > 0) {
       // For days, show days and hours, omit minutes if 0
       const parts = [`${days}d`];
@@ -121,7 +118,7 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
           <div className={styles.empty}>No time entries found</div>
         ) : (
           <div className={styles.list}>
-            {timeTracks.map((track) => (
+            {timeTracks.map(track => (
               <div key={track.id} className={styles.timeTrackItem}>
                 <div className={styles.timeTrackHeader}>
                   <div className={styles.timeTrackDate}>
@@ -175,7 +172,7 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
               variant="contained"
               disabled={isDeleting}
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogActions>
         </Dialog>

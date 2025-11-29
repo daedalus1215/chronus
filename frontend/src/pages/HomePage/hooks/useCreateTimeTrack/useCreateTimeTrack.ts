@@ -27,7 +27,7 @@ export const useCreateTimeTrack = () => {
 
   const syncPendingTracks = async () => {
     const pendingTracks = await timeTrackDB.getPendingTimeTracks();
-    
+
     for (const track of pendingTracks) {
       try {
         await createTimeTrack(track.data);
@@ -60,6 +60,6 @@ export const useCreateTimeTrack = () => {
     isCreating,
     error,
     hasPendingTracks,
-    syncPendingTracks: isOnline ? syncPendingTracks : undefined
+    syncPendingTracks: isOnline ? syncPendingTracks : undefined,
   };
 };

@@ -14,20 +14,22 @@ type Props = {
   showControls?: boolean;
 };
 
-export const DailyTimeTracksRadar: React.FC<Props> = ({ 
+export const DailyTimeTracksRadar: React.FC<Props> = ({
   selectedDate: externalSelectedDate,
   onDateChange,
   data: externalData,
   loading: externalLoading,
-  showControls = false
+  showControls = false,
 }) => {
-  const [internalSelectedDate, setInternalSelectedDate] = useState<string>(() => {
-    return getCurrentDateString();
-  });
+  const [internalSelectedDate, setInternalSelectedDate] = useState<string>(
+    () => {
+      return getCurrentDateString();
+    }
+  );
 
   const selectedDate = externalSelectedDate || internalSelectedDate;
   const shouldFetch = !externalData;
-  
+
   const {
     data: internalData,
     isLoading: internalLoading,
@@ -60,8 +62,10 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
     if (topNotes.length === 0) return { series: [], metrics: [], maxValue: 0 };
 
     // Note titles become the metrics (axes/spokes)
-    const metrics = topNotes.map(note => 
-      note.noteName.length > 12 ? note.noteName.substring(0, 12) + '...' : note.noteName
+    const metrics = topNotes.map(note =>
+      note.noteName.length > 12
+        ? note.noteName.substring(0, 12) + '...'
+        : note.noteName
     );
 
     // Daily time values become the series data
@@ -72,8 +76,8 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
     const series = [
       {
         label: 'Daily Time (minutes)',
-        data: dailyTimeData
-      }
+        data: dailyTimeData,
+      },
     ];
 
     return { series, metrics, maxValue: Math.ceil(maxDailyTime / 10) * 10 }; // Round up to nearest 10
@@ -81,7 +85,8 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
 
   const { series, metrics, maxValue } = prepareRadarData();
 
-  const shouldShowControls = showControls || (!externalSelectedDate && !onDateChange);
+  const shouldShowControls =
+    showControls || (!externalSelectedDate && !onDateChange);
 
   return (
     <Paper className={styles.container}>
@@ -99,7 +104,7 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
           </Box>
         )}
       </Box>
-      
+
       {error ? (
         <Box className={styles.error}>
           <Typography color="error">{error}</Typography>
@@ -123,21 +128,21 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
               metrics: metrics,
             }}
             slotProps={{
-              tooltip: { 
-                trigger: 'item'
-              }
+              tooltip: {
+                trigger: 'item',
+              },
             }}
             sx={{
               '& .MuiChartsLegend-series': {
                 display: 'flex',
                 flexWrap: 'wrap',
                 justifyContent: 'center',
-                gap: 1
-              }
+                gap: 1,
+              },
             }}
           />
         </Box>
       )}
     </Paper>
   );
-}; 
+};

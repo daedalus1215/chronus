@@ -35,7 +35,10 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
   return (
     <div className={styles.registerContainer}>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <h2 className={styles.title}><Logo height={75} /><span>Register</span></h2>
+        <h2 className={styles.title}>
+          <Logo height={75} />
+          <span>Register</span>
+        </h2>
         {error && <div className={styles.error}>{error}</div>}
         <div className={styles.formGroup}>
           <label htmlFor="username">Username</label>
@@ -43,7 +46,7 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
             type="text"
             id="username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={e => setUsername(e.target.value)}
             required
           />
         </div>
@@ -53,7 +56,7 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
             type="password"
             id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             required
           />
         </div>
@@ -63,15 +66,17 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
             type="password"
             id="confirmPassword"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={e => setConfirmPassword(e.target.value)}
             required
           />
         </div>
-        <button type="submit" className={styles.submitButton}>Register</button>
+        <button type="submit" className={styles.submitButton}>
+          Register
+        </button>
       </form>
       <div className={styles.loginLink}>
         Already have an account? <Link to="/login">Login here</Link>
       </div>
     </div>
   );
-}; 
+};

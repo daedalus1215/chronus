@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Stack } from "@mui/material";
+import { Stack } from '@mui/material';
 import { BottomSheet } from '@components/BottomSheet/BottomSheet';
 
 type Props = {
@@ -11,12 +11,12 @@ type Props = {
   onSubmit: (data: FormInitialData) => void;
   initialData?: FormInitialData;
   isSubmitting?: boolean;
-}
+};
 
 export type FormInitialData = {
   name: string;
   description: string;
-}
+};
 
 export const TagForm: React.FC<Props> = ({
   isOpen,
@@ -27,7 +27,7 @@ export const TagForm: React.FC<Props> = ({
 }) => {
   const [formData, setFormData] = useState<FormInitialData>({
     name: '',
-    description: ''
+    description: '',
   });
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export const TagForm: React.FC<Props> = ({
       // Reset when form closes
       setFormData({
         name: '',
-        description: ''
+        description: '',
       });
     }
   }, [isOpen, initialData]);
@@ -51,15 +51,15 @@ export const TagForm: React.FC<Props> = ({
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <Stack 
-        spacing={2} 
-        component="form" 
+      <Stack
+        spacing={2}
+        component="form"
         onSubmit={handleSubmit}
-        onClick={(e) => {
+        onClick={e => {
           // Prevent clicks inside the form from propagating
           e.stopPropagation();
         }}
-        onMouseDown={(e) => {
+        onMouseDown={e => {
           // Prevent mouse down events from propagating
           e.stopPropagation();
         }}
@@ -79,16 +79,18 @@ export const TagForm: React.FC<Props> = ({
         <TextField
           label="Description"
           value={formData.description}
-          onChange={e => setFormData({ ...formData, description: e.target.value })}
+          onChange={e =>
+            setFormData({ ...formData, description: e.target.value })
+          }
           fullWidth
           multiline
           rows={3}
           InputLabelProps={{ shrink: true }}
-          onClick={(e) => {
+          onClick={e => {
             // Prevent clicks on the text field from propagating
             e.stopPropagation();
           }}
-          onMouseDown={(e) => {
+          onMouseDown={e => {
             // Prevent mouse down on the text field from propagating
             e.stopPropagation();
           }}
@@ -96,7 +98,7 @@ export const TagForm: React.FC<Props> = ({
         <Stack direction="row" spacing={2} justifyContent="flex-end">
           <Button
             type="button"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onClose();
             }}
@@ -110,7 +112,7 @@ export const TagForm: React.FC<Props> = ({
             variant="contained"
             color="primary"
             disabled={isSubmitting}
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
             }}
           >

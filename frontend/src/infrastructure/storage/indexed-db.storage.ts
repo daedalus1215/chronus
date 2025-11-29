@@ -1,14 +1,16 @@
 import Dexie from 'dexie';
 import { StoragePort, WithSyncMetadata } from '../../core/ports/storage.port';
 
-export class IndexedDBStorage<T extends { id?: number }> implements StoragePort<WithSyncMetadata<T>> {
+export class IndexedDBStorage<T extends { id?: number }> implements StoragePort<
+  WithSyncMetadata<T>
+> {
   private db: Dexie;
   private table: Dexie.Table<WithSyncMetadata<T>, number>;
 
   constructor(dbName: string, tableName: string) {
     this.db = new Dexie(dbName);
     this.db.version(1).stores({
-      [tableName]: '++id,_syncStatus,_lastModified'
+      [tableName]: '++id,_syncStatus,_lastModified',
     });
     this.table = this.db.table(tableName);
   }
@@ -17,7 +19,7 @@ export class IndexedDBStorage<T extends { id?: number }> implements StoragePort<
     const itemWithMetadata: WithSyncMetadata<T> = {
       ...item,
       _syncStatus: 'pending',
-      _lastModified: Date.now()
+      _lastModified: Date.now(),
     };
     const id = await this.table.add(itemWithMetadata);
     return { ...itemWithMetadata, id };
@@ -31,7 +33,7 @@ export class IndexedDBStorage<T extends { id?: number }> implements StoragePort<
       ...existing,
       ...item,
       _syncStatus: 'pending',
-      _lastModified: Date.now()
+      _lastModified: Date.now(),
     };
 
     await this.table.update(id, updated);
@@ -50,8 +52,10 @@ export class IndexedDBStorage<T extends { id?: number }> implements StoragePort<
     return this.table.toArray();
   }
 
-  async query(predicate: (item: WithSyncMetadata<T>) => boolean): Promise<WithSyncMetadata<T>[]> {
+  async query(
+    predicate: (item: WithSyncMetadata<T>) => boolean
+  ): Promise<WithSyncMetadata<T>[]> {
     const all = await this.findAll();
     return all.filter(predicate);
   }
-} 
+}

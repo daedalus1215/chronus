@@ -10,13 +10,13 @@ export const Header: React.FC = () => {
   const { logout, user } = useAuth();
   const { isOpen, setIsOpen, isMobile } = useSidebar();
   const navigate = useNavigate();
-                                          
+
   const handleSignOut = () => {
     logout();
     navigate('/login');
   };
 
-  const toggleSidebar = () => isMobile ? setIsOpen(!isOpen) : navigate('/');
+  const toggleSidebar = () => (isMobile ? setIsOpen(!isOpen) : navigate('/'));
 
   return (
     <>
@@ -28,25 +28,14 @@ export const Header: React.FC = () => {
           </button>
           <div className={styles.rightSection}>
             <span className={styles.username}>{user?.username}</span>
-            <button 
-              onClick={handleSignOut} 
-              className={styles.signOutButton}
-            >
+            <button onClick={handleSignOut} className={styles.signOutButton}>
               Sign Out
             </button>
           </div>
         </div>
       </header>
 
-      <Sidebar 
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      />
+      <Sidebar isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );
-} 
-
-
-
-
-
+};

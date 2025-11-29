@@ -9,11 +9,11 @@ export const useArchiveNote = () => {
     mutationFn: async (noteId: number): Promise<Note> => {
       return await archiveNoteRequest(noteId);
     },
-    onSuccess: (archivedNote) => {
+    onSuccess: archivedNote => {
       // Update the note in cache
       //@TODO: Circle back to this
       queryClient.setQueryData(['note', archivedNote.id], archivedNote);
-      
+
       // Invalidate the notes list to refresh it
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
@@ -28,4 +28,4 @@ export const useArchiveNote = () => {
     isArchiving: archiveNoteMutation.isPending,
     error: archiveNoteMutation.error?.message || null,
   };
-}; 
+};

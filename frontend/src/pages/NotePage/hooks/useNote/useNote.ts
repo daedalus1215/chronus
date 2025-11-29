@@ -5,16 +5,16 @@ export const useNote = (noteId: number) => {
   const {
     data: note = {
       id: 0,
-      name: "",
-      userId: "",
+      name: '',
+      userId: '',
       isMemo: false,
-      createdAt: "",
-      updatedAt: "",
+      createdAt: '',
+      updatedAt: '',
       tags: [],
     },
     isLoading,
     error,
-    refetch
+    refetch,
   } = useNoteQuery(noteId);
 
   const updateNoteMutation = useUpdateNoteMutation(noteId);
@@ -24,13 +24,13 @@ export const useNote = (noteId: number) => {
     return updateNoteMutation.mutateAsync(updatedNote);
   };
 
-  return { 
-    note, 
-    isLoading, 
-    error: error?.message || null, 
+  return {
+    note,
+    isLoading,
+    error: error?.message || null,
     updateNote,
     refetch,
     isUpdating: updateNoteMutation.isPending,
-    updateError: updateNoteMutation.error?.message || null
+    updateError: updateNoteMutation.error?.message || null,
   };
-}; 
+};

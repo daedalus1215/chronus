@@ -6,7 +6,9 @@ export type RemoteStorageConfig = {
   headers?: Record<string, string>;
 };
 
-export class RemoteStorageAdapter<T extends { id?: number }> implements StoragePort<T> {
+export class RemoteStorageAdapter<
+  T extends { id?: number },
+> implements StoragePort<T> {
   private config: RemoteStorageConfig;
 
   constructor(config: RemoteStorageConfig) {
@@ -70,4 +72,4 @@ export class RemoteStorageAdapter<T extends { id?: number }> implements StorageP
     const items = await this.findAll();
     return items.filter(predicate);
   }
-} 
+}

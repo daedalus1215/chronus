@@ -58,8 +58,16 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
     { icon: <BarChartIcon />, label: 'View Time', onClick: onViewTimeEntries },
     { icon: <PushPinIcon />, label: 'Pin', onClick: onPin },
     { icon: <StarIcon />, label: 'Star', onClick: onStar },
-    { icon: <RecordVoiceOverIcon />, label: 'Convert to Speech', onClick: onTextToSpeech },
-    { icon: <CloudDownloadIcon />, label: 'Download Audio', onClick: onDownloadAudio },
+    {
+      icon: <RecordVoiceOverIcon />,
+      label: 'Convert to Speech',
+      onClick: onTextToSpeech,
+    },
+    {
+      icon: <CloudDownloadIcon />,
+      label: 'Download Audio',
+      onClick: onDownloadAudio,
+    },
     { icon: <EditIcon />, label: 'Edit', onClick: onEdit },
     { icon: <LabelIcon />, label: 'Label', onClick: onLabel },
   ];

@@ -4,7 +4,9 @@
 cd "$(dirname -- "$0")/.." || exit
 
 # Run lint-staged on staged files
-npx lint-staged
+# npx lint-staged
+
+npm run test
 
 # Run architecture checks on the entire codebase
 npm run test:architecture

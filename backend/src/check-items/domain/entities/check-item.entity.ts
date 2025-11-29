@@ -23,4 +23,7 @@ export class CheckItem {
   @Column({ name: "note_id" })
   @JoinColumn({ name: "note_id" })
   noteId: number;
+
+  @Column({ name: "order", type: "integer", default: 0 })
+  order: number;
 } 

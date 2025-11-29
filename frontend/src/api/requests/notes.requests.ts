@@ -1,6 +1,6 @@
-import { NOTE_TYPES } from "../../constant";
-import api from "../axios.interceptor";
-import { NamesOfNotesResponse, NoteResponse } from "../dtos/note.dtos";
+import { NOTE_TYPES } from '../../constant';
+import api from '../axios.interceptor';
+import { NamesOfNotesResponse, NoteResponse } from '../dtos/note.dtos';
 
 export const updateNoteTimestamp = async (noteId: number): Promise<void> => {
   const response = await api.patch(`/notes/${noteId}/timestamp`);
@@ -19,8 +19,8 @@ export const archiveNote = async (noteId: number): Promise<NoteResponse> => {
 export const createNote = async (
   type: keyof typeof NOTE_TYPES
 ): Promise<NoteResponse> => {
-  const response = await api.post<NoteResponse>("/notes", {
-    name: type === NOTE_TYPES.MEMO ? "Memo" : "Checklist",
+  const response = await api.post<NoteResponse>('/notes', {
+    name: type === NOTE_TYPES.MEMO ? 'Memo' : 'Checklist',
     isMemo: type === NOTE_TYPES.MEMO,
   });
   return response.data;

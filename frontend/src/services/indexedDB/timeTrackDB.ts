@@ -1,7 +1,7 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import { CreateTimeTrackRequest } from '../../pages/HomePage/hooks/useCreateTimeTrack/createTimeTrack/types/createTimeTrackRequest';
 
-//@TODO: Get this out of this `service` folder. 
+//@TODO: Get this out of this `service` folder.
 interface TimeTrackDBSchema extends DBSchema {
   'pending-time-tracks': {
     key: number;
@@ -22,9 +22,9 @@ class TimeTrackDB {
     this.db = openDB<TimeTrackDBSchema>(DB_NAME, 1, {
       upgrade(db) {
         if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { 
-            keyPath: 'id', 
-            autoIncrement: true 
+          db.createObjectStore(STORE_NAME, {
+            keyPath: 'id',
+            autoIncrement: true,
           });
         }
       },
@@ -35,7 +35,7 @@ class TimeTrackDB {
     const db = await this.db;
     return db.add(STORE_NAME, {
       data,
-      createdAt: Date.now()
+      createdAt: Date.now(),
     });
   }
 
@@ -50,4 +50,4 @@ class TimeTrackDB {
   }
 }
 
-export const timeTrackDB = new TimeTrackDB(); 
+export const timeTrackDB = new TimeTrackDB();

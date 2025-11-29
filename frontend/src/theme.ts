@@ -15,4 +15,4 @@ export const muiTheme = createTheme({
     fontFamily: 'Inter, Roboto, Arial, sans-serif',
     fontSize: 16,
   },
-}); 
+});

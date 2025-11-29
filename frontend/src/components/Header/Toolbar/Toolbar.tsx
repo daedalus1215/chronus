@@ -12,12 +12,9 @@ import {
 type ToolbarProps = {
   onSearch?: (query: string) => void;
   onNewNote?: () => void;
-}
+};
 
-export const Toolbar: React.FC<ToolbarProps> = ({
-  onSearch,
-  onNewNote,
-}) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ onSearch, onNewNote }) => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSearch?.(event.target.value);
   };

@@ -17,32 +17,11 @@ export class GetCheckItemsByNoteTransactionScript {
       throw new ForbiddenException('Access denied to this note');
     }
 
-    const nonArchivedCheckItemsFilter = (item: CheckItem) =>
-      item.doneDate == null;
-    const archivedCheckItemsFilter = (item: CheckItem) =>
-      item.doneDate !== null;
+    // Items are already ordered by 'order' column from the repository
+    // Separate archived (done) and non-archived items, maintaining order within each group
+    const nonArchivedCheckItems = checkItems.filter(item => item.doneDate == null);
+    const archivedCheckItems = checkItems.filter(item => item.doneDate !== null);
 
-    return [
-      ...this.sortCheckItemsByArchiveStatus(
-        checkItems,
-        nonArchivedCheckItemsFilter
-      ),
-      ...this.sortCheckItemsByArchiveStatus(
-        checkItems,
-        archivedCheckItemsFilter
-      ),
-    ];
-  }
-
-  private sortCheckItemsByArchiveStatus(
-    checkItems: CheckItem[],
-    doneComparison: (item: CheckItem) => boolean
-  ): CheckItem[] {
-    return checkItems
-      .filter(doneComparison)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+    return [...nonArchivedCheckItems, ...archivedCheckItems];
   }
 } 

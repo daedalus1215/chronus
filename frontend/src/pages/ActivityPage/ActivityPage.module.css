@@ -30,7 +30,9 @@
   background-color: var(--color-card-bg, #1e1e1e) !important;
   color: var(--color-card-text, #ffffff) !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 }
 
 .graphSection {
@@ -57,7 +59,7 @@
   }
 }
 
-/* @TODO: move to global styles */  
+/* @TODO: move to global styles */
 :root {
   --color-bg: #121212;
   --color-card-bg: #1e1e1e;

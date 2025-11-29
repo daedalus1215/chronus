@@ -1,9 +1,9 @@
-import React, { useCallback, useRef } from "react";
-import { useNotes } from "../../../hooks/useNotes";
-import { NoteItem } from "../NoteItem/NoteItem";
-import { SearchBar } from "../SearchBar/SearchBar";
-import styles from "./MobileNoteListView.module.css";
-import { NOTE_TYPES } from "../../../../../constant";
+import React, { useCallback, useRef } from 'react';
+import { useNotes } from '../../../hooks/useNotes';
+import { NoteItem } from '../NoteItem/NoteItem';
+import { SearchBar } from '../SearchBar/SearchBar';
+import styles from './MobileNoteListView.module.css';
+import { NOTE_TYPES } from '../../../../../constant';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -18,17 +18,20 @@ type NoteListViewProps = {
   tagId?: string;
 };
 
-export const MobileNoteListView: React.FC<NoteListViewProps> = ({ type, tagId }) => {
-  const { 
-    notes, 
-    isLoading, 
-    error, 
-    hasMore, 
+export const MobileNoteListView: React.FC<NoteListViewProps> = ({
+  type,
+  tagId,
+}) => {
+  const {
+    notes,
+    isLoading,
+    error,
+    hasMore,
     loadMore,
     hasPendingChanges,
     searchNotes,
     clearSearch,
-    searchQuery
+    searchQuery,
   } = useNotes(type, tagId);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -36,7 +39,8 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({ type, tagId })
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current || isLoading || !hasMore) return;
 
-    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
     const threshold = 100; // pixels from bottom to trigger load
 
     // Check if we're near the bottom
@@ -68,12 +72,12 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({ type, tagId })
 
   return (
     <div className={styles.noteList}>
-        <SearchBar 
-          value={searchQuery}
-          onChange={searchNotes}
-          onClear={clearSearch}
-          type={type}
-        />
+      <SearchBar
+        value={searchQuery}
+        onChange={searchNotes}
+        onClear={clearSearch}
+        type={type}
+      />
       <div className={styles.noteListContent}>
         {hasPendingChanges && (
           <div className={styles.offlineNotice}>
@@ -81,15 +85,12 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({ type, tagId })
           </div>
         )}
 
-        <div 
+        <div
           ref={scrollContainerRef}
           className={styles.noteListScrollContainer}
         >
-          {notes.map((note) => (
-            <NoteItem 
-              key={note.id} 
-              note={note} 
-            />
+          {notes.map(note => (
+            <NoteItem key={note.id} note={note} />
           ))}
           {isLoading && <LoadingSpinner />}
           {!hasMore && <NoMoreNotes />}

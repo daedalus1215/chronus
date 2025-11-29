@@ -10,23 +10,23 @@ type DesktopLayoutProps = {
   noteContent?: React.ReactNode;
   onSearch?: (query: string) => void;
   onNewNote?: () => void;
-}
+};
 
 export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
   noteList,
   noteContent,
   onSearch,
-  onNewNote
+  onNewNote,
 }) => {
   const [noteListWidth, setNoteListWidth] = useState(300);
 
   return (
-    <Box 
-      sx={{ 
-        display: 'flex', 
+    <Box
+      sx={{
+        display: 'flex',
         height: '100vh',
         backgroundColor: '#1a1a1a',
-        color: '#fff'
+        color: '#fff',
       }}
     >
       {/* Navigation Sidebar */}
@@ -40,19 +40,19 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
           height: '100vh',
           overflow: 'hidden',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
         }}
       >
         <DesktopSidebar isOpen={true} />
       </Paper>
 
       {/* Main Content Area */}
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}
       >
         {/* Top Toolbar */}
@@ -87,7 +87,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
               backgroundColor: '#1a1a1a',
               overflow: 'hidden',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
             }}
           >
             {noteContent}

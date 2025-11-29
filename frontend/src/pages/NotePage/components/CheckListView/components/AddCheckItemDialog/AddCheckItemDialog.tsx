@@ -1,8 +1,8 @@
-import React from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import React from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 type AddCheckItemDialogProps = {
   isOpen: boolean;
@@ -30,9 +30,9 @@ export const AddCheckItemDialog: React.FC<AddCheckItemDialogProps> = ({
         label="New Check Item"
         value={value}
         autoComplete="off"
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
+        onChange={e => onChange(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
             e.preventDefault();
             onSave();
           }
@@ -46,12 +46,10 @@ export const AddCheckItemDialog: React.FC<AddCheckItemDialogProps> = ({
         onClick={onSave}
         variant="contained"
         color="primary"
-        sx={{ mt: 2, float: "right" }}
+        sx={{ mt: 2, float: 'right' }}
       >
         Create
       </Button>
     </DialogContent>
   </Dialog>
 );
-
-

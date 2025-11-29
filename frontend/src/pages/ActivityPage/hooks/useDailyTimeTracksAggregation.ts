@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { getDailyTimeTracksAggregation } from "../../../api/requests/time-tracks.requests";
-import { TimeTrackAggregationResponse } from "../../../api/dtos/time-tracks.dtos";
+import { useQuery } from '@tanstack/react-query';
+import { getDailyTimeTracksAggregation } from '../../../api/requests/time-tracks.requests';
+import { TimeTrackAggregationResponse } from '../../../api/dtos/time-tracks.dtos';
 
 export const useDailyTimeTracksAggregation = (
   date?: string,
@@ -15,7 +15,7 @@ export const useDailyTimeTracksAggregation = (
     isLoading,
     error,
   } = useQuery<TimeTrackAggregationResponse[]>({
-    queryKey: ["dailyTimeTracksAggregation", date],
+    queryKey: ['dailyTimeTracksAggregation', date],
     queryFn: () => getDailyTimeTracksAggregation(date),
     enabled,
   });
@@ -26,4 +26,3 @@ export const useDailyTimeTracksAggregation = (
     error: error?.message || null,
   };
 };
-

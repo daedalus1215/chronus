@@ -1,4 +1,4 @@
-import api from "../axios.interceptor";
+import api from '../axios.interceptor';
 
 export const convertTextToSpeech = async (assetId: number) => {
   const response = await api.post(`/audio/text-to-speech`, { assetId });
@@ -7,7 +7,7 @@ export const convertTextToSpeech = async (assetId: number) => {
 
 export const downloadAudio = async (assetId: string) => {
   const response = await api.get(`/audio/download/${assetId}`, {
-    responseType: 'blob'
+    responseType: 'blob',
   });
   return response.data;
 };
