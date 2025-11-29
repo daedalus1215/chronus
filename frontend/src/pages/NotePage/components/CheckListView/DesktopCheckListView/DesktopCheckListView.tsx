@@ -20,11 +20,11 @@ import { Fab } from "@mui/material";
 import { Add as AddIcon } from '@mui/icons-material';
 import styles from "./DesktopCheckListView.module.css";
 import { useCheckItemEditDialog } from "../hooks/useCheckItemEditDialog";
-import { EditCheckItemDialog } from "../EditCheckItemDialog/EditCheckItemDialog";
+import { EditCheckItemDialog } from "../components/EditCheckItemDialog/EditCheckItemDialog";
 import { useAddCheckItemDialog } from "../hooks/useAddCheckItemDialog";
 import { AddCheckItemDialog } from "../components/AddCheckItemDialog/AddCheckItemDialog";
 import { useDeleteCheckItemDialog } from "../hooks/useDeleteCheckItemDialog";
-import { DeleteCheckItemDialog } from "../components/AddCheckItemDialog/DeleteCheckItemDialog/DeleteCheckItemDialog";
+import { DeleteCheckItemDialog } from "../components/DeleteCheckItemDialog/DeleteCheckItemDialog";
 
 type CheckListViewProps = {
   note: Note;
