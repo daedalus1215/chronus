@@ -21,27 +21,24 @@ export class ReorderCheckItemsTransactionScript {
       )
     );
 
-    // Check if all items were found and belong to the user
-    const checkItems: CheckItem[] = [];
-    for (const item of checkItemsResults) {
-      if (item === null) {
-        throw new NotFoundException('One or more check items not found or access denied');
-      }
-      if (item.noteId !== noteId) {
-        throw new ForbiddenException('All check items must belong to the same note');
-      }
-      checkItems.push(item);
+    const hasNullItems = checkItemsResults.some(item => item === null);
+    if (hasNullItems) {
+      throw new NotFoundException('One or more check items not found or access denied');
     }
 
-    // Update order for each item based on its position in the array
-    const updatePromises = checkItems.map((item, index) => {
-      item.order = index;
-      return this.checkItemsRepository.save(item);
+    const hasInvalidNoteId = checkItemsResults.some(item => item!.noteId !== noteId);
+    
+    if (hasInvalidNoteId) {
+      throw new ForbiddenException('All check items must belong to the same note');
+    }
+
+    const updatePromises = checkItemsResults.map((item, index) => {
+      const updatedItem = { ...item, order: index };
+      return this.checkItemsRepository.save(updatedItem);
     });
 
     await Promise.all(updatePromises);
 
-    // Return all check items for the note in the new order
     return this.checkItemsRepository.findByNoteIdWithUserValidation(noteId, userId);
   }
 }
