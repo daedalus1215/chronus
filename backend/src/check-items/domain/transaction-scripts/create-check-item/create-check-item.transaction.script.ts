@@ -16,8 +16,6 @@ export class CreateCheckItemTransactionScript {
   ): Promise<CheckItem[]> {
     const checkItems = await this.saveCheckItem(dto);
 
-    // Items are already ordered by 'order' column from the repository
-    // Separate archived (done) and non-archived items, maintaining order within each group
     const nonArchivedCheckItems = checkItems.filter(item => item.doneDate == null);
     const archivedCheckItems = checkItems.filter(item => item.doneDate !== null);
 
