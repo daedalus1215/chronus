@@ -14,7 +14,6 @@ export class ReorderCheckItemsTransactionScript {
     userId: number,
     dto: ReorderCheckItemsDto
   ): Promise<CheckItem[]> {
-    // Fetch all check items that match the provided IDs and validate they belong to the note and user
     const checkItemsResults = await Promise.all(
       dto.checkItemIds.map(id => 
         this.checkItemsRepository.findByIdWithNoteValidationForUpdate(id, noteId, userId)
