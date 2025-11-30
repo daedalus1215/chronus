@@ -45,20 +45,20 @@
   transition: all 0.2s;
 }
 
-.button[data-variant="primary"] {
+.button[data-variant='primary'] {
   background-color: var(--color-primary);
   color: var(--color-text);
 }
 
-.button[data-variant="primary"]:hover {
+.button[data-variant='primary']:hover {
   background-color: var(--color-primary-dark);
 }
 
-.button[data-variant="secondary"] {
+.button[data-variant='secondary'] {
   background-color: var(--color-bg-elevated-4);
   color: var(--color-text);
 }
 
-.button[data-variant="secondary"]:hover {
+.button[data-variant='secondary']:hover {
   background-color: var(--color-border-dark);
-} 
+}

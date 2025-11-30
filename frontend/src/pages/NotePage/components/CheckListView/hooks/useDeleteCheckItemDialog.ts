@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 type UseDeleteCheckItemDialogReturn = {
   isOpen: boolean;
@@ -40,18 +40,18 @@ export const useDeleteCheckItemDialog = (): UseDeleteCheckItemDialogReturn => {
       closeDialog();
     } catch (err: unknown) {
       setIsDeleting(false);
-      let message = "Failed to delete check item";
+      let message = 'Failed to delete check item';
       if (
         err &&
-        typeof err === "object" &&
-        "response" in err &&
+        typeof err === 'object' &&
+        'response' in err &&
         err.response &&
-        typeof err.response === "object" &&
-        "data" in err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
         err.response.data &&
-        typeof err.response.data === "object" &&
-        "message" in err.response.data &&
-        typeof (err.response.data as { message?: unknown }).message === "string"
+        typeof err.response.data === 'object' &&
+        'message' in err.response.data &&
+        typeof (err.response.data as { message?: unknown }).message === 'string'
       ) {
         message = (err.response.data as { message: string }).message;
       }
@@ -69,5 +69,3 @@ export const useDeleteCheckItemDialog = (): UseDeleteCheckItemDialogReturn => {
     confirmDelete,
   };
 };
-
-

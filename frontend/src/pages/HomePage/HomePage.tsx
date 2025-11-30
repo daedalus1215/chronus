@@ -28,16 +28,20 @@ export const HomePage: React.FC = () => {
   );
 
   const noteType = location.pathname.split('/')[1];
-  const noteTypeParam: NoteTypes | undefined = noteType as NoteTypes | undefined;
+  const noteTypeParam: NoteTypes | undefined = noteType as
+    | NoteTypes
+    | undefined;
   const { tagId } = useParams<{ tagId: string }>();
 
   // Update selectedNoteId when route changes
   useEffect(() => {
     if (routeNoteId) {
       setSelectedNoteId(Number(routeNoteId));
-    } else if (location.pathname === ROUTES.HOME ||
+    } else if (
+      location.pathname === ROUTES.HOME ||
       location.pathname === ROUTES.MEMOS ||
-      location.pathname === ROUTES.CHECKLISTS) {
+      location.pathname === ROUTES.CHECKLISTS
+    ) {
       setSelectedNoteId(null);
     }
   }, [routeNoteId, location.pathname]);
@@ -73,36 +77,46 @@ export const HomePage: React.FC = () => {
   return (
     <div className={styles.homePage}>
       <Header />
-      <main className={`${styles.main} ${isMobile ? styles.mainMobile : styles.mainDesktop}`}>
+      <main
+        className={`${styles.main} ${isMobile ? styles.mainMobile : styles.mainDesktop}`}
+      >
         {isMobile ? (
-          <Box sx={{
-            height: '100%',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <Box sx={{
-              display: isNoteRoute ? 'none' : 'block',
-              flex: 1
-            }}>
+          <Box
+            sx={{
+              height: '100%',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Box
+              sx={{
+                display: isNoteRoute ? 'none' : 'block',
+                flex: 1,
+              }}
+            >
               <MobileNoteListView type={noteTypeParam} tagId={tagId} />
             </Box>
             {isNoteRoute && (
-              <Box sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'background.paper',
-                zIndex: 1
-              }}>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'background.paper',
+                  zIndex: 1,
+                }}
+              >
                 <Outlet />
               </Box>
             )}
           </Box>
         ) : (
-          <Box sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}>
+          <Box
+            sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}
+          >
             {/* Sidebar in the same flex row */}
             <Paper
               elevation={0}
@@ -114,14 +128,16 @@ export const HomePage: React.FC = () => {
                 height: '100%',
                 overflow: 'hidden',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
               }}
             >
               <DesktopSidebar isOpen={true} />
             </Paper>
 
             {/* Note list and content */}
-            <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', minWidth: 0 }}>
+            <Box
+              sx={{ display: 'flex', flex: 1, overflow: 'hidden', minWidth: 0 }}
+            >
               <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
                 <DesktopNoteListView
                   type={noteTypeParam}
@@ -141,19 +157,25 @@ export const HomePage: React.FC = () => {
           </Box>
         )}
       </main>
-      {!isNoteRoute && <Fab
-        color="primary"
-        aria-label="Create new note"
-        onClick={() => setShowMenu(true)}
-        disabled={isCreating}
-        sx={{
-          position: 'fixed',
-          bottom: '2rem',
-          right: '2rem',
-        }}
-      >
-        {isCreating ? <CircularProgress size={24} color="inherit" /> : <AddIcon />}
-      </Fab>}
+      {!isNoteRoute && (
+        <Fab
+          color="primary"
+          aria-label="Create new note"
+          onClick={() => setShowMenu(true)}
+          disabled={isCreating}
+          sx={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+          }}
+        >
+          {isCreating ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            <AddIcon />
+          )}
+        </Fab>
+      )}
       {showMenu && (
         <CreateNoteMenu
           onSelect={handleCreateNote}

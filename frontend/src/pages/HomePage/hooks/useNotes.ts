@@ -4,7 +4,9 @@ import { getNamesOfNotes } from '../../../api/requests/notes.requests';
 import { NOTE_TYPES } from '../../../constant';
 
 export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
-  const [notes, setNotes] = useState<{name: string, id: number, isMemo: number}[]>([]);
+  const [notes, setNotes] = useState<
+    { name: string; id: number; isMemo: number }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasPendingChanges] = useState(false);
@@ -13,30 +15,31 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 1000);
 
-  const fetchNotes = useCallback(async (cursor: number = 0, query: string = '') => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const fetchNotes = useCallback(
+    async (cursor: number = 0, query: string = '') => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      const response = await getNamesOfNotes(cursor, 20, query, type, tagId);
-      
-      
-      if (cursor > 0) {
-        setNotes(prev => [...prev, ...response.notes]);
-      } else {
-        setNotes(response.notes);
+        const response = await getNamesOfNotes(cursor, 20, query, type, tagId);
+
+        if (cursor > 0) {
+          setNotes(prev => [...prev, ...response.notes]);
+        } else {
+          setNotes(response.notes);
+        }
+
+        setHasMore(response.hasMore);
+        setNextCursor(response.nextCursor);
+      } catch (err) {
+        console.error('Error fetching notes:', err);
+        setError('Failed to fetch notes');
+      } finally {
+        setIsLoading(false);
       }
-      
-      setHasMore(response.hasMore);
-      setNextCursor(response.nextCursor);
-      
-    } catch (err) {
-      console.error('Error fetching notes:', err);
-      setError('Failed to fetch notes');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [type, tagId]);
+    },
+    [type, tagId]
+  );
 
   const searchNotes = useCallback((query: string) => {
     setSearchQuery(query);
@@ -68,6 +71,6 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
     loadMore,
     searchNotes,
     clearSearch,
-    searchQuery
+    searchQuery,
   };
-}; 
+};

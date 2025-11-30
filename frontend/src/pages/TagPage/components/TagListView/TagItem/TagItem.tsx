@@ -10,7 +10,11 @@ import { Tag } from '../../../../../api/dtos/tag.dtos';
 import { TagActionGrid } from './TagActionGrid/TagActionGrid';
 import styles from './TagItem.module.css';
 import { TagForm, FormInitialData } from './TagActionGrid/TagForm/TagForm';
-import { updateTag, fetchTagById, deleteTag } from '../../../../../api/requests/tags.requests';
+import {
+  updateTag,
+  fetchTagById,
+  deleteTag,
+} from '../../../../../api/requests/tags.requests';
 
 interface TagItemProps {
   tag: Tag;
@@ -18,14 +22,18 @@ interface TagItemProps {
   isSelected?: boolean;
 }
 
-export const TagItem: React.FC<TagItemProps> = ({ tag, onClick, isSelected }) => {
+export const TagItem: React.FC<TagItemProps> = ({
+  tag,
+  onClick,
+  isSelected,
+}) => {
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const queryClient = useQueryClient();
-  
+
   // Fetch full tag data when form opens
   const { data: fullTag, isLoading: isLoadingTag } = useQuery<Tag>({
     queryKey: ['tag', tag.id],
@@ -34,7 +42,7 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, onClick, isSelected }) =>
   });
 
   const updateTagMutation = useMutation({
-    mutationFn: (data: { name: string; description?: string }) => 
+    mutationFn: (data: { name: string; description?: string }) =>
       updateTag(tag.id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
@@ -103,18 +111,21 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, onClick, isSelected }) =>
   };
 
   // Memoize initialData to prevent unnecessary re-renders
-  const formInitialData = useMemo<FormInitialData>(() => ({
-    name: fullTag?.name || tag.name,
-    description: fullTag?.description || tag.description || '',
-  }), [fullTag?.name, fullTag?.description, tag.name, tag.description]);
+  const formInitialData = useMemo<FormInitialData>(
+    () => ({
+      name: fullTag?.name || tag.name,
+      description: fullTag?.description || tag.description || '',
+    }),
+    [fullTag?.name, fullTag?.description, tag.name, tag.description]
+  );
 
   return (
-    <div 
+    <div
       className={`${styles.tagListItem} ${isSelected ? styles.selected : ''}`}
       onClick={handleClick}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           handleClick();
         }
@@ -122,18 +133,16 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, onClick, isSelected }) =>
     >
       <div className={styles.tagInfo}>
         <span className={styles.tagName}>{tag.name}</span>
-        <span className={styles.tagCount}>
-          {tag.noteCount || 0} notes
-        </span>
+        <span className={styles.tagCount}>{tag.noteCount || 0} notes</span>
       </div>
-      <button 
+      <button
         className={styles.moreButton}
         onClick={handleMoreClick}
         aria-label="More options"
       >
         ⋮
       </button>
-      <TagActionGrid 
+      <TagActionGrid
         isOpen={isActionsOpen}
         onClose={() => setIsActionsOpen(false)}
         onEdit={handleEdit}
@@ -155,14 +164,27 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, onClick, isSelected }) =>
       >
         <DialogTitle id="delete-dialog-title">Delete Tag?</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete this tag? This action cannot be undone.
-          {deleteError && <Alert severity="error" sx={{ mt: 2 }}>{deleteError}</Alert>}
+          Are you sure you want to delete this tag? This action cannot be
+          undone.
+          {deleteError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {deleteError}
+            </Alert>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            disabled={isDeleting}
+          >
             Cancel
           </Button>
-          <Button onClick={confirmDelete} color="error" variant="contained" disabled={isDeleting}>
+          <Button
+            onClick={confirmDelete}
+            color="error"
+            variant="contained"
+            disabled={isDeleting}
+          >
             {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogActions>

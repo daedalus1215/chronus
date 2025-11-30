@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "cross-env NODE_ENV=development nest start",
     "dev": "npm run migration:run && cross-env NODE_ENV=development ts-node -r tsconfig-paths/register src/main.ts",
     "dev:watch": "npm run migration:run && cross-env NODE_ENV=development nest start --watch",
@@ -29,6 +30,9 @@
     "prepare": "cd .. && git config core.hooksPath backend/.husky || true"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@faker-js/faker": "^8.4.1",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^10.4.15",

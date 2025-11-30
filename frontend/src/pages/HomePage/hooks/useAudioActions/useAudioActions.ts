@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { convertTextToSpeech, downloadAudio } from '../../../../api/requests/audio.requests';
+import {
+  convertTextToSpeech,
+  downloadAudio,
+} from '../../../../api/requests/audio.requests';
 
 export const useAudioActions = (assetId: number) => {
   const [isConverting, setIsConverting] = useState(false);
@@ -10,7 +13,7 @@ export const useAudioActions = (assetId: number) => {
     try {
       setIsConverting(true);
       setError(null);
-     await convertTextToSpeech(assetId);
+      await convertTextToSpeech(assetId);
     } catch (err) {
       setError('Failed to convert text to speech');
       console.error('Error converting text to speech:', err);
@@ -29,7 +32,7 @@ export const useAudioActions = (assetId: number) => {
       setIsDownloading(true);
       setError(null);
       const blob = await downloadAudio(assetId);
-      
+
       // Create a download link
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');

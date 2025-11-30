@@ -12,7 +12,7 @@ import {
   EditOutlined,
   LabelOutlined,
   AccessTimeOutlined,
-  LockOutlined
+  LockOutlined,
 } from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
 import { ActionButton } from '@/components/ActionButton/ActionButton';
@@ -37,7 +37,7 @@ type NoteActionsProps = {
   isConverting?: boolean;
   isDownloading?: boolean;
   audioError?: string | null;
-}
+};
 
 export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   isOpen,
@@ -56,15 +56,13 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onLabel,
   isConverting = false,
   isDownloading = false,
-  audioError = null
+  audioError = null,
 }) => {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <div className={styles.actionGrid}>
-
         <ActionButton label="Time Entry" onClick={onTimeTracking}>
           <TimerOutlined className={styles.icon} />
-
         </ActionButton>
 
         <ActionButton label="View Times" onClick={onViewTimeEntries}>
@@ -75,21 +73,25 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
           <EditOutlined className={styles.icon} />
         </ActionButton>
 
-        <ActionButton label="To Speech" onClick={onTextToSpeech} disabled={isConverting || isDownloading}>
+        <ActionButton
+          label="To Speech"
+          onClick={onTextToSpeech}
+          disabled={isConverting || isDownloading}
+        >
           <RecordVoiceOverOutlined className={styles.icon} />
           {isConverting ? 'Converting...' : ''}
         </ActionButton>
 
-        <ActionButton label="Download" onClick={onDownloadAudio} disabled={isDownloading || isConverting}>
+        <ActionButton
+          label="Download"
+          onClick={onDownloadAudio}
+          disabled={isDownloading || isConverting}
+        >
           <HeadphonesOutlined className={styles.icon} />
           {isDownloading ? 'Downloading...' : ''}
         </ActionButton>
 
-        {audioError && (
-          <div className={styles.errorMessage}>
-            {audioError}
-          </div>
-        )}
+        {audioError && <div className={styles.errorMessage}>{audioError}</div>}
 
         <ActionButton label="Pin" onClick={onPin}>
           <PushPinOutlined className={styles.icon} />
@@ -118,8 +120,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         <ActionButton label="Delete" onClick={onDelete} danger={true}>
           <DeleteOutlineOutlined className={styles.icon} />
         </ActionButton>
-
       </div>
     </BottomSheet>
   );
-}; 
+};

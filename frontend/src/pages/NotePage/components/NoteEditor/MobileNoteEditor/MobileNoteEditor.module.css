@@ -61,15 +61,14 @@
     padding: 0.6rem 1.2rem;
     font-size: 0.75rem;
   }
-} 
-
+}
 
 @media (max-width: 600px) and (orientation: portrait) {
   .editor {
     margin: 0px;
     padding: 0px;
   }
-  
+
   .descriptionInput {
     max-height: calc(100vh - 200px);
   }

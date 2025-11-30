@@ -4,7 +4,7 @@ import { Login } from './components/Login';
 import { useAuth } from '../../auth/useAuth';
 import styles from './LoginPage.module.css';
 
-export const LoginPage:React.FC = () => {
+export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
 
@@ -34,4 +34,4 @@ export const LoginPage:React.FC = () => {
       <Login onLogin={handleLogin} />
     </div>
   );
-} 
+};

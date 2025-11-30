@@ -17,7 +17,7 @@ export function Login({ onLogin }: LoginProps) {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
-    
+
     try {
       const success = await onLogin(username, password);
       if (!success) {
@@ -44,7 +44,7 @@ export function Login({ onLogin }: LoginProps) {
             type="text"
             id="username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={e => setUsername(e.target.value)}
             required
             disabled={isSubmitting}
           />
@@ -55,13 +55,13 @@ export function Login({ onLogin }: LoginProps) {
             type="password"
             id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             required
             disabled={isSubmitting}
           />
         </div>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className={styles.submitButton}
           disabled={isSubmitting}
         >
@@ -73,4 +73,4 @@ export function Login({ onLogin }: LoginProps) {
       </div>
     </div>
   );
-} 
+}

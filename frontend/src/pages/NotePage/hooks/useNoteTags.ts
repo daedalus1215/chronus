@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import api from "../../../api/axios.interceptor";
+import { useQuery } from '@tanstack/react-query';
+import api from '../../../api/axios.interceptor';
 
 export type Tag = {
   id: number;
@@ -13,15 +13,13 @@ export const useNoteTags = (noteId: number) => {
     return data;
   };
 
-  const { data, isLoading, error, refetch } = useQuery(
-    {
-      queryKey: ["noteTags", noteId],
-      queryFn: fetchTags,
-      enabled: !!noteId,
-    }
-  );
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['noteTags', noteId],
+    queryFn: fetchTags,
+    enabled: !!noteId,
+  });
 
-  const removeTagFromNote = async (dto: {tagId: number, noteId: number}) => {
+  const removeTagFromNote = async (dto: { tagId: number; noteId: number }) => {
     await api.delete(`/tags/${dto.tagId}/remove-from-note/notes/${dto.noteId}`);
     await refetch();
   };

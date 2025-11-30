@@ -11,6 +11,7 @@ export class CheckItemsHydrator {
     checkItem.doneDate = rawResult.done_date;
     checkItem.archiveDate = rawResult.archived_date;
     checkItem.noteId = rawResult.note_id;
+    checkItem.order = rawResult.order ?? 0;
     checkItem.createdAt = rawResult.created_at;
     checkItem.updatedAt = rawResult.updated_at;
     return checkItem;

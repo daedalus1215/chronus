@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { DataGrid, GridColDef, GridRowsProp, GridRowParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridRowsProp,
+  GridRowParams,
+} from '@mui/x-data-grid';
 import { Box, Typography, TextField, Button, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { TimeTrackAggregationResponse } from '../../../../api/dtos/time-tracks.dtos';
@@ -19,11 +24,11 @@ const formatDate = (dateString: string): string => {
   // Assuming the dateString is in YYYY-MM-DD format
   const [year, month, day] = dateString.split('-').map(Number);
   const date = new Date(year, month - 1, day); // month is 0-indexed
-  
+
   return date.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   });
 };
 
@@ -34,20 +39,22 @@ type Props = {
   loading?: boolean;
 };
 
-export const DailyTimeTracksDataGrid: React.FC<Props> = ({ 
+export const DailyTimeTracksDataGrid: React.FC<Props> = ({
   selectedDate: externalSelectedDate,
   onDateChange,
   data: externalData,
-  loading: externalLoading 
+  loading: externalLoading,
 }) => {
-  const [internalSelectedDate, setInternalSelectedDate] = useState<string>(() => {
-    return getCurrentDateString();
-  });
+  const [internalSelectedDate, setInternalSelectedDate] = useState<string>(
+    () => {
+      return getCurrentDateString();
+    }
+  );
   const navigate = useNavigate();
 
   const selectedDate = externalSelectedDate || internalSelectedDate;
   const shouldFetch = !externalData;
-  
+
   const {
     data: internalData,
     isLoading: internalLoading,
@@ -108,7 +115,7 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
     },
   ];
 
-  const rows: GridRowsProp = timeTracks.map((track) => ({
+  const rows: GridRowsProp = timeTracks.map(track => ({
     id: track.noteId,
     noteName: track.noteName,
     dailyTimeMinutes: track.dailyTimeMinutes,
@@ -145,7 +152,7 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
           </Box>
         )}
       </Box>
-      
+
       {error ? (
         <Box className={styles.error}>
           <Typography color="error">{error}</Typography>
@@ -200,4 +207,4 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
       )}
     </Paper>
   );
-}; 
+};

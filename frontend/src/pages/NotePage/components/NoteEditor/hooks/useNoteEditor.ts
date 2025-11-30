@@ -7,26 +7,29 @@ type Note = {
   userId: string;
   isMemo: boolean;
   createdAt?: string;
-}
+};
 
 type NoteContent = {
   description: string;
-}
+};
 
 type UseNoteEditorProps = {
   note: Note;
   onSave: (note: Partial<Note>) => void;
-}
+};
 
 type UseNoteEditorReturn = {
   content: NoteContent;
   handleDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-}
+};
 
-export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEditorReturn => {
+export const useNoteEditor = ({
+  note,
+  onSave,
+}: UseNoteEditorProps): UseNoteEditorReturn => {
   const [content, setContent] = React.useState<NoteContent>({
-    description: note.description || ''
-  }); 
+    description: note.description || '',
+  });
   const timeoutRef = React.useRef<number>();
   const contentRef = React.useRef(content);
 
@@ -39,7 +42,7 @@ export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEdit
     const currentContent = contentRef.current;
     onSave({
       ...note,
-      description: currentContent.description
+      description: currentContent.description,
     });
   }, [note, onSave]);
 
@@ -50,12 +53,17 @@ export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEdit
     timeoutRef.current = window.setTimeout(saveChanges, 1000);
   }, [saveChanges]);
 
-  const handleContentChange = React.useCallback((updates: Partial<NoteContent>) => {
-    setContent(prev => ({ ...prev, ...updates }));
-    debouncedSave();
-  }, [debouncedSave]);
+  const handleContentChange = React.useCallback(
+    (updates: Partial<NoteContent>) => {
+      setContent(prev => ({ ...prev, ...updates }));
+      debouncedSave();
+    },
+    [debouncedSave]
+  );
 
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     handleContentChange({ description: e.target.value });
   };
 
@@ -70,7 +78,9 @@ export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEdit
 
   // Auto-resize textarea
   React.useEffect(() => {
-    const textarea = document.getElementById('note-description') as HTMLTextAreaElement;
+    const textarea = document.getElementById(
+      'note-description'
+    ) as HTMLTextAreaElement;
     if (textarea) {
       textarea.style.height = 'auto';
       textarea.style.height = `${textarea.scrollHeight}px`;
@@ -81,4 +91,4 @@ export const useNoteEditor = ({ note, onSave }: UseNoteEditorProps): UseNoteEdit
     content,
     handleDescriptionChange,
   };
-}; 
+};

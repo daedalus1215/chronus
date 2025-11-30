@@ -8,17 +8,17 @@ interface LogoProps {
   alt?: string;
 }
 
-export const Logo: React.FC<LogoProps> = ({ 
-  height = 40, 
-  className = '', 
-  alt = 'Chronus Logo' 
+export const Logo: React.FC<LogoProps> = ({
+  height = 40,
+  className = '',
+  alt = 'Chronus Logo',
 }: LogoProps) => {
   return (
-    <img 
-      src={logo} 
+    <img
+      src={logo}
       alt={alt}
       className={`${styles.logo} ${className}`}
       style={{ height: typeof height === 'number' ? `${height}px` : height }}
     />
   );
-}
+};

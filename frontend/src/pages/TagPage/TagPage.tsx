@@ -1,12 +1,12 @@
-import React from "react";
-import { Header } from "../../components/Header/Header";
-import { MobileTagListView } from "./components/TagListView/MobileTagListView/MobileTagListView";
-import { DesktopTagListView } from "./components/TagListView/DesktopTagListView/DesktopTagListView";
-import styles from "./TagPage.module.css";
-import { useIsMobile } from "../../hooks/useIsMobile";
-import { useNavigate, useParams, Outlet } from "react-router-dom";
-import { Box, Paper } from "@mui/material";
-import { DesktopSidebar } from "../../components/Header/Sidebar/DesktopSidebar";
+import React from 'react';
+import { Header } from '../../components/Header/Header';
+import { MobileTagListView } from './components/TagListView/MobileTagListView/MobileTagListView';
+import { DesktopTagListView } from './components/TagListView/DesktopTagListView/DesktopTagListView';
+import styles from './TagPage.module.css';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { useNavigate, useParams, Outlet } from 'react-router-dom';
+import { Box, Paper } from '@mui/material';
+import { DesktopSidebar } from '../../components/Header/Sidebar/DesktopSidebar';
 
 export const TagPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -31,32 +31,39 @@ export const TagPage: React.FC = () => {
     <div className={styles.tagPage}>
       <Header />
       <main
-        className={`${styles.main} ${isMobile ? styles.mainMobile : styles.mainDesktop
-          }`}
+        className={`${styles.main} ${
+          isMobile ? styles.mainMobile : styles.mainDesktop
+        }`}
       >
         {isMobile ? (
-          <Box sx={{
-            height: '100%',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <Box sx={{
-              display: isTagRoute ? 'none' : 'block',
-              flex: 1
-            }}>
+          <Box
+            sx={{
+              height: '100%',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Box
+              sx={{
+                display: isTagRoute ? 'none' : 'block',
+                flex: 1,
+              }}
+            >
               <MobileTagListView />
             </Box>
             {isTagRoute && (
-              <Box sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'background.paper',
-                zIndex: 1
-              }}>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'background.paper',
+                  zIndex: 1,
+                }}
+              >
                 <Outlet />
               </Box>
             )}
@@ -73,7 +80,7 @@ export const TagPage: React.FC = () => {
                 height: '100%',
                 overflow: 'hidden',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
               }}
             >
               <DesktopSidebar isOpen={true} />

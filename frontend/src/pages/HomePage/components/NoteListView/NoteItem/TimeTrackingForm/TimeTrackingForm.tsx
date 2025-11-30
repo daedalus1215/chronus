@@ -4,9 +4,12 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
-import { FormControl } from "@mui/material";
-import { Stack, Chip } from "@mui/material";
-import { getCurrentDateString, getCurrentTimeString } from '../../../../../../utils/dateUtils';
+import { FormControl } from '@mui/material';
+import { Stack, Chip } from '@mui/material';
+import {
+  getCurrentDateString,
+  getCurrentTimeString,
+} from '../../../../../../utils/dateUtils';
 
 type TimeTrackingFormProps = {
   isOpen: boolean;
@@ -15,14 +18,14 @@ type TimeTrackingFormProps = {
   initialData?: TimeTrackingData;
   isSubmitting?: boolean;
   hasPendingTracks: boolean;
-}
+};
 
 export type TimeTrackingData = {
   date: string;
   startTime: string;
   durationMinutes?: number;
   note?: string;
-}
+};
 
 export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   isOpen,
@@ -30,14 +33,16 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   onSubmit,
   initialData,
   isSubmitting,
-  hasPendingTracks
+  hasPendingTracks,
 }) => {
-  const [formData, setFormData] = useState<TimeTrackingData>(initialData || {
-    date: getCurrentDateString(),
-    startTime: getCurrentTimeString(),
-    durationMinutes: 30,
-    note: ''
-  });
+  const [formData, setFormData] = useState<TimeTrackingData>(
+    initialData || {
+      date: getCurrentDateString(),
+      startTime: getCurrentTimeString(),
+      durationMinutes: 30,
+      note: '',
+    }
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,12 +50,12 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   };
 
   const quickDurations = [
-    { label: "15m", value: 15 },
-    { label: "30m", value: 30 },
-    { label: "45m", value: 45 },
-    { label: "1h", value: 60 },
-    { label: "1h 30m", value: 90 },
-    { label: "2h", value: 120 },
+    { label: '15m', value: 15 },
+    { label: '30m', value: 30 },
+    { label: '45m', value: 45 },
+    { label: '1h', value: 60 },
+    { label: '1h 30m', value: 90 },
+    { label: '2h', value: 120 },
   ];
 
   const [customMode, setCustomMode] = useState(false);
@@ -63,7 +68,8 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
             <h3>Track Time</h3>
             {hasPendingTracks && (
               <Alert severity="warning" sx={{ mb: 2 }}>
-                You have time tracks pending sync. They will be uploaded when you're back online.
+                You have time tracks pending sync. They will be uploaded when
+                you're back online.
               </Alert>
             )}
           </Box>
@@ -79,19 +85,23 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
             label="Start Time"
             type="time"
             value={formData.startTime}
-            onChange={e => setFormData({ ...formData, startTime: e.target.value })}
+            onChange={e =>
+              setFormData({ ...formData, startTime: e.target.value })
+            }
             fullWidth
             InputLabelProps={{ shrink: true }}
           />
-          <FormControl fullWidth size="small">
-
-          </FormControl>
+          <FormControl fullWidth size="small"></FormControl>
           <Stack direction="row" spacing={1}>
             {quickDurations.map(opt => (
               <Chip
                 key={opt.value}
                 label={opt.label}
-                color={formData.durationMinutes === opt.value && !customMode ? "primary" : "default"}
+                color={
+                  formData.durationMinutes === opt.value && !customMode
+                    ? 'primary'
+                    : 'default'
+                }
                 onClick={() => {
                   setCustomMode(false);
                   setFormData({ ...formData, durationMinutes: opt.value });
@@ -101,7 +111,7 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
             ))}
             <Chip
               label="Custom"
-              color={customMode ? "primary" : "default"}
+              color={customMode ? 'primary' : 'default'}
               onClick={() => setCustomMode(true)}
               clickable
               aria-label="Enter custom duration"
@@ -111,8 +121,14 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
             <TextField
               label="Custom duration (minutes)"
               type="number"
-              value={formData.durationMinutes || ""}
-              onChange={e => setFormData({ ...formData, durationMinutes: e.target.value === '' ? undefined : Number(e.target.value) })}
+              value={formData.durationMinutes || ''}
+              onChange={e =>
+                setFormData({
+                  ...formData,
+                  durationMinutes:
+                    e.target.value === '' ? undefined : Number(e.target.value),
+                })
+              }
               inputProps={{ min: 1, max: 1440, step: 1 }}
               size="small"
               fullWidth

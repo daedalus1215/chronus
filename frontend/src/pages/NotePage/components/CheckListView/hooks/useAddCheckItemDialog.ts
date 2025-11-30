@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 type UseAddCheckItemDialogReturn = {
   isOpen: boolean;
@@ -11,7 +11,7 @@ type UseAddCheckItemDialogReturn = {
 
 export const useAddCheckItemDialog = (): UseAddCheckItemDialogReturn => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>('');
 
   const openDialog = () => {
     setIsOpen(true);
@@ -19,7 +19,7 @@ export const useAddCheckItemDialog = (): UseAddCheckItemDialogReturn => {
 
   const closeDialog = () => {
     setIsOpen(false);
-    setValue("");
+    setValue('');
   };
 
   const changeValue = (newValue: string) => {
@@ -45,5 +45,3 @@ export const useAddCheckItemDialog = (): UseAddCheckItemDialogReturn => {
     saveNew,
   };
 };
-
-

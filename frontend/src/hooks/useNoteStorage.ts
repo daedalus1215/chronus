@@ -22,16 +22,18 @@ export const useNoteStorage = (userId: string) => {
         baseUrl: '/api',
         endpoint: 'notes',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       }),
     []
   );
 
-  const createNote = async (note: Omit<Note, 'id' | 'userId'>): Promise<Note> => {
+  const createNote = async (
+    note: Omit<Note, 'id' | 'userId'>
+  ): Promise<Note> => {
     return remoteStore.create({
       ...note,
-      userId
+      userId,
     });
   };
 
@@ -44,6 +46,6 @@ export const useNoteStorage = (userId: string) => {
 
   return {
     createNote,
-    updateNote
+    updateNote,
   };
-}; 
+};

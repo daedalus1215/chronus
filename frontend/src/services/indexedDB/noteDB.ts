@@ -11,7 +11,7 @@ export type Note = {
 };
 
 interface NoteDBSchema extends DBSchema {
-  'notes': {
+  notes: {
     key: number;
     value: Note;
     indexes: {
@@ -36,16 +36,16 @@ class NoteDB {
     this.db = openDB<NoteDBSchema>('chronus-notes-db', 1, {
       upgrade(db) {
         // Store for cached notes
-        const noteStore = db.createObjectStore('notes', { 
-          keyPath: 'id'
+        const noteStore = db.createObjectStore('notes', {
+          keyPath: 'id',
         });
         noteStore.createIndex('by-user', 'userId');
         noteStore.createIndex('by-updated', 'updatedAt');
 
         // Store for pending changes when offline
-        db.createObjectStore('pending-note-changes', { 
+        db.createObjectStore('pending-note-changes', {
           keyPath: 'id',
-          autoIncrement: true 
+          autoIncrement: true,
         });
       },
     });
@@ -55,10 +55,7 @@ class NoteDB {
   async cacheNotes(notes: Note[]) {
     const db = await this.db;
     const tx = db.transaction('notes', 'readwrite');
-    await Promise.all([
-      ...notes.map(note => tx.store.put(note)),
-      tx.done
-    ]);
+    await Promise.all([...notes.map(note => tx.store.put(note)), tx.done]);
   }
 
   // Get cached notes
@@ -73,7 +70,7 @@ class NoteDB {
     return db.add('pending-note-changes', {
       type: 'create',
       data: note,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -83,7 +80,7 @@ class NoteDB {
     return db.add('pending-note-changes', {
       type: 'update',
       data: { id: noteId, ...changes },
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -104,9 +101,13 @@ class NoteDB {
     const db = await this.db;
     const note = await db.get('notes', noteId);
     if (note) {
-      await db.put('notes', { ...note, ...changes, updatedAt: new Date().toISOString() });
+      await db.put('notes', {
+        ...note,
+        ...changes,
+        updatedAt: new Date().toISOString(),
+      });
     }
   }
 }
 
-export const noteDB = new NoteDB(); 
+export const noteDB = new NoteDB();

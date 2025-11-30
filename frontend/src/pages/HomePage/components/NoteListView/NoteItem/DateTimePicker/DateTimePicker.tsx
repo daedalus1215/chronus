@@ -10,13 +10,13 @@ type DateTimePickerProps = {
   onClose: () => void;
   onSelect: (date: Date) => void;
   initialDate: Date;
-}
+};
 
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   isOpen,
   onClose,
   onSelect,
-  initialDate
+  initialDate,
 }) => {
   const [selectedDate, setSelectedDate] = useState(initialDate);
 
@@ -28,12 +28,14 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <Box sx={{ p: 2 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>Schedule Note</Typography>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Schedule Note
+        </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
             type="datetime-local"
             value={selectedDate.toISOString().slice(0, 16)}
-            onChange={(e) => setSelectedDate(new Date(e.target.value))}
+            onChange={e => setSelectedDate(new Date(e.target.value))}
             fullWidth
             sx={{ mb: 3 }}
             InputLabelProps={{ shrink: true }}
@@ -47,11 +49,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
+            <Button type="submit" variant="contained" color="primary">
               Set Schedule
             </Button>
           </Box>
@@ -59,4 +57,4 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       </Box>
     </BottomSheet>
   );
-}; 
+};

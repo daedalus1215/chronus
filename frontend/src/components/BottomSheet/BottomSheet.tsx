@@ -1,6 +1,6 @@
-import React from "react";
-import Drawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
+import React from 'react';
+import Drawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
 
 type BottomSheetProps = {
   isOpen: boolean;
@@ -29,17 +29,12 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
         sx: {
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
-          maxHeight: "80vh",
-          margin: "10 auto",
+          maxHeight: '80vh',
+          margin: '10 auto',
         },
       },
     }}
   >
-    <Box 
-      sx={{ p: 2 }}
-
-    >
-      {children}
-    </Box>
+    <Box sx={{ p: 2 }}>{children}</Box>
   </Drawer>
 );

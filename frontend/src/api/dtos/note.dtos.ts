@@ -35,8 +35,6 @@ export type CreateTimeTrackResponse = {
   updatedAt: string;
 };
 
-
-
 export type TimeTrackTotalResponseDto = {
   totalMinutes: number;
   totalDays: number;

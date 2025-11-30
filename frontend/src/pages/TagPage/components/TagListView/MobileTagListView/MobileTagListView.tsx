@@ -1,11 +1,11 @@
-import React, { useCallback, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Tag } from "../../../../../api/dtos/tag.dtos";
-import { fetchTags } from "../../../../../api/requests/tags.requests";
-import { useNavigate } from "react-router-dom";
-import { TagItem } from "../TagItem/TagItem";
-import { SearchBar } from "../SearchBar/SearchBar";
-import styles from "./MobileTagListView.module.css";
+import React, { useCallback, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Tag } from '../../../../../api/dtos/tag.dtos';
+import { fetchTags } from '../../../../../api/requests/tags.requests';
+import { useNavigate } from 'react-router-dom';
+import { TagItem } from '../TagItem/TagItem';
+import { SearchBar } from '../SearchBar/SearchBar';
+import styles from './MobileTagListView.module.css';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -22,18 +22,23 @@ export type TagListViewProps = {
 
 export const MobileTagListView: React.FC<TagListViewProps> = () => {
   const navigate = useNavigate();
-  const { data: tags = [], isLoading: tagsLoading, error: tagsError } = useQuery<Tag[]>({
-    queryKey: ["tags"],
+  const {
+    data: tags = [],
+    isLoading: tagsLoading,
+    error: tagsError,
+  } = useQuery<Tag[]>({
+    queryKey: ['tags'],
     queryFn: fetchTags,
   });
 
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState('');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current || tagsLoading) return;
 
-    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
     const threshold = 100; // pixels from bottom to trigger load
 
     // Check if we're near the bottom
@@ -57,7 +62,7 @@ export const MobileTagListView: React.FC<TagListViewProps> = () => {
 
   const filteredTags = React.useMemo(() => {
     if (!tags) return [];
-    return tags.filter(tag => 
+    return tags.filter(tag =>
       tag.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [tags, searchQuery]);
@@ -72,19 +77,16 @@ export const MobileTagListView: React.FC<TagListViewProps> = () => {
 
   return (
     <div className={styles.tagList}>
-      <SearchBar 
+      <SearchBar
         value={searchQuery}
         onChange={setSearchQuery}
-        onClear={() => setSearchQuery("")}
+        onClear={() => setSearchQuery('')}
       />
       <div className={styles.tagListContent}>
-        <div 
-          ref={scrollContainerRef}
-          className={styles.tagListScrollContainer}
-        >
-          {filteredTags.map((tag) => (
-            <TagItem 
-              key={tag.id} 
+        <div ref={scrollContainerRef} className={styles.tagListScrollContainer}>
+          {filteredTags.map(tag => (
+            <TagItem
+              key={tag.id}
               tag={tag}
               onClick={() => navigate(`/tag-notes/${tag.id}`)}
             />

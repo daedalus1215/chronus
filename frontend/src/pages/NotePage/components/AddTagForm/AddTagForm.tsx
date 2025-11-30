@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import Alert from "@mui/material/Alert";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
-import api from "../../../../api/axios.interceptor";
-import { Stack, Tooltip } from "@mui/material";
+import React, { useState, useRef, useEffect } from 'react';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import api from '../../../../api/axios.interceptor';
+import { Stack, Tooltip } from '@mui/material';
 
 export type Tag = { id: string; name: string };
 
@@ -17,8 +17,13 @@ export type AddTagFormProps = {
   onClose: () => void;
 };
 
-export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded, onClose }) => {
-  const [newTagName, setNewTagName] = useState("");
+export const AddTagForm: React.FC<AddTagFormProps> = ({
+  noteId,
+  tags,
+  onTagAdded,
+  onClose,
+}) => {
+  const [newTagName, setNewTagName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,28 +40,31 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
   const handleAddTag = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!newTagName.trim()) {
-      setError("Tag name cannot be empty");
+      setError('Tag name cannot be empty');
       return;
     }
     setIsLoading(true);
     setError(null);
     try {
-      await api.patch(`/notes/${noteId}/add-tag`, { tagName: newTagName, noteId});
-      setNewTagName("");
+      await api.patch(`/notes/${noteId}/add-tag`, {
+        tagName: newTagName,
+        noteId,
+      });
+      setNewTagName('');
       onTagAdded();
     } catch (err: unknown) {
-      let message = "Failed to add tag. Please try again.";
+      let message = 'Failed to add tag. Please try again.';
       if (
         err &&
-        typeof err === "object" &&
-        "response" in err &&
+        typeof err === 'object' &&
+        'response' in err &&
         err.response &&
-        typeof err.response === "object" &&
-        "data" in err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
         err.response.data &&
-        typeof err.response.data === "object" &&
-        "message" in err.response.data &&
-        typeof (err.response.data as { message?: unknown }).message === "string"
+        typeof err.response.data === 'object' &&
+        'message' in err.response.data &&
+        typeof (err.response.data as { message?: unknown }).message === 'string'
       ) {
         message = (err.response.data as { message: string }).message;
       }
@@ -73,18 +81,18 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
       await api.patch(`/notes/${noteId}/add-tag`, { tagId, noteId });
       onTagAdded();
     } catch (err: unknown) {
-      let message = "Failed to add tag. Please try again.";
+      let message = 'Failed to add tag. Please try again.';
       if (
         err &&
-        typeof err === "object" &&
-        "response" in err &&
+        typeof err === 'object' &&
+        'response' in err &&
         err.response &&
-        typeof err.response === "object" &&
-        "data" in err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
         err.response.data &&
-        typeof err.response.data === "object" &&
-        "message" in err.response.data &&
-        typeof (err.response.data as { message?: unknown }).message === "string"
+        typeof err.response.data === 'object' &&
+        'message' in err.response.data &&
+        typeof (err.response.data as { message?: unknown }).message === 'string'
       ) {
         message = (err.response.data as { message: string }).message;
       }
@@ -114,7 +122,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
           aria-label="New tag name"
           disabled={isLoading}
           onKeyDown={e => {
-            if (e.key === "Enter") handleAddTag();
+            if (e.key === 'Enter') handleAddTag();
           }}
         />
         <Button
@@ -124,7 +132,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
           disabled={isLoading || !newTagName.trim()}
           aria-label="Add tag"
         >
-          {isLoading ? <CircularProgress size={20} /> : "Add"}
+          {isLoading ? <CircularProgress size={20} /> : 'Add'}
         </Button>
         <Button
           onClick={onClose}
@@ -135,7 +143,11 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
           Close
         </Button>
       </div>
-      {error && <Alert severity="error" className="mb-2">{error}</Alert>}
+      {error && (
+        <Alert severity="error" className="mb-2">
+          {error}
+        </Alert>
+      )}
       <Box className="overflow-y-auto flex-1" aria-label="Tag list">
         <Stack
           role="list"
@@ -156,7 +168,8 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
                 aria-label={`Add tag: ${tag.name}`}
                 onClick={() => handleAddExistingTag(tag.id)}
                 onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') handleAddExistingTag(tag.id);
+                  if (e.key === 'Enter' || e.key === ' ')
+                    handleAddExistingTag(tag.id);
                 }}
                 disabled={isLoading}
                 className="cursor-pointer"
@@ -167,4 +180,4 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({ noteId, tags, onTagAdded
       </Box>
     </form>
   );
-}; 
+};

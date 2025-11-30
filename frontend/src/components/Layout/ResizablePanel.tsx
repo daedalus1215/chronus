@@ -7,7 +7,7 @@ type ResizablePanelProps = {
   minWidth?: number;
   maxWidth?: number;
   onWidthChange?: (width: number) => void;
-}
+};
 
 export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   children,
@@ -21,23 +21,32 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   const startX = useRef(0);
   const startWidth = useRef(0);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    isDragging.current = true;
-    startX.current = e.pageX;
-    startWidth.current = width;
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  }, [width]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      isDragging.current = true;
+      startX.current = e.pageX;
+      startWidth.current = width;
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    },
+    [width]
+  );
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging.current) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging.current) return;
 
-    const delta = e.pageX - startX.current;
-    const newWidth = Math.max(minWidth, Math.min(maxWidth, startWidth.current + delta));
-    
-    setWidth(newWidth);
-    onWidthChange?.(newWidth);
-  }, [maxWidth, minWidth, onWidthChange]);
+      const delta = e.pageX - startX.current;
+      const newWidth = Math.max(
+        minWidth,
+        Math.min(maxWidth, startWidth.current + delta)
+      );
+
+      setWidth(newWidth);
+      onWidthChange?.(newWidth);
+    },
+    [maxWidth, minWidth, onWidthChange]
+  );
 
   const handleMouseUp = useCallback(() => {
     isDragging.current = false;
@@ -69,7 +78,7 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
       >
         {children}
       </Paper>
-      
+
       {/* Resize Handle */}
       <Box
         sx={{

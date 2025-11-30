@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NoteActionsGrid } from './NoteActionGrid/NoteActionGrid';
 import { DateTimePicker } from './DateTimePicker/DateTimePicker';
-import { TimeTrackingForm, TimeTrackingData } from './TimeTrackingForm/TimeTrackingForm';
+import {
+  TimeTrackingForm,
+  TimeTrackingData,
+} from './TimeTrackingForm/TimeTrackingForm';
 import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
 import { useAudioActions } from '../../../hooks/useAudioActions/useAudioActions';
@@ -14,11 +17,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-import { deleteNote, updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
+import {
+  deleteNote,
+  updateNoteTimestamp,
+} from '../../../../../api/requests/notes.requests';
 import styles from './NoteItem.module.css';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
 
-type Note = { name: string; id: number; isMemo: number; }
+type Note = { name: string; id: number; isMemo: number };
 
 interface NoteItemProps {
   note: Note;
@@ -26,23 +32,48 @@ interface NoteItemProps {
   isSelected?: boolean;
 }
 
-export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected }) => {
+export const NoteItem: React.FC<NoteItemProps> = ({
+  note,
+  onClick,
+  isSelected,
+}) => {
   const navigate = useNavigate();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
   const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
-  const { createTimeTrack, isCreating, error: createTimeTrackError } = useCreateTimeTrack();
+  const {
+    createTimeTrack,
+    isCreating,
+    error: createTimeTrackError,
+  } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
-  const { timeTracks, isLoadingTimeTracks, totalTimeData, isLoadingTotal, timeTrackError }: ReturnType<typeof useNoteTimeTracks> = useNoteTimeTracks(note.id, isTimeTrackListOpen);
-  const { handleTextToSpeech, handleDownloadAudio, isConverting, isDownloading, error: audioError } = useAudioActions(note.id);
+  const {
+    timeTracks,
+    isLoadingTimeTracks,
+    totalTimeData,
+    isLoadingTotal,
+    timeTrackError,
+  }: ReturnType<typeof useNoteTimeTracks> = useNoteTimeTracks(
+    note.id,
+    isTimeTrackListOpen
+  );
+  const {
+    handleTextToSpeech,
+    handleDownloadAudio,
+    isConverting,
+    isDownloading,
+    error: audioError,
+  } = useAudioActions(note.id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [archiveError, setArchiveError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>(
+    'success'
+  );
 
   const handleClick = () => {
     if (onClick) {
@@ -59,7 +90,12 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
       setIsActionsOpen(true);
     } catch (error) {
       console.error('Failed to update note timestamp:', error);
-      if (error && typeof error === 'object' && 'response' in error && error.response) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response
+      ) {
         // @ts-expect-error: error type is unknown but we expect response.data for logging
         console.error('Error response:', error.response.data);
         // @ts-expect-error: error type is unknown but we expect response.status for logging
@@ -158,9 +194,10 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
       await createTimeTrack({
         date: data.date,
         startTime: data.startTime,
-        durationMinutes: data.durationMinutes === undefined ? 1 : Number(data.durationMinutes),
+        durationMinutes:
+          data.durationMinutes === undefined ? 1 : Number(data.durationMinutes),
         noteId: note.id,
-        note: data.note
+        note: data.note,
       });
       setIsTimeTrackingOpen(false);
       setToastSeverity('success');
@@ -178,12 +215,12 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
 
   return (
     <>
-      <div 
+      <div
         className={`${styles.noteListItem} ${isSelected ? styles.selected : ''}`}
         onClick={handleClick}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             handleClick();
           }
@@ -195,7 +232,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
             {note.isMemo ? 'Memo' : 'List'}
           </span>
         </div>
-        <button 
+        <button
           className={styles.moreButton}
           onClick={handleMoreClick}
           aria-label="More options"
@@ -259,14 +296,27 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
       >
         <DialogTitle id="delete-dialog-title">Delete Note?</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete this note? This action cannot be undone.
-          {deleteError && <Alert severity="error" sx={{ mt: 2 }}>{deleteError}</Alert>}
+          Are you sure you want to delete this note? This action cannot be
+          undone.
+          {deleteError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {deleteError}
+            </Alert>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            disabled={isDeleting}
+          >
             Cancel
           </Button>
-          <Button onClick={confirmDelete} color="error" variant="contained" disabled={isDeleting}>
+          <Button
+            onClick={confirmDelete}
+            color="error"
+            variant="contained"
+            disabled={isDeleting}
+          >
             {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogActions>
@@ -279,14 +329,27 @@ export const NoteItem: React.FC<NoteItemProps> = ({ note, onClick, isSelected })
       >
         <DialogTitle id="archive-dialog-title">Archive Note?</DialogTitle>
         <DialogContent>
-          Are you sure you want to archive this note? It will be hidden from your main list but can be restored later.
-          {archiveError && <Alert severity="error" sx={{ mt: 2 }}>{archiveError}</Alert>}
+          Are you sure you want to archive this note? It will be hidden from
+          your main list but can be restored later.
+          {archiveError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {archiveError}
+            </Alert>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setArchiveDialogOpen(false)} disabled={isArchiving}>
+          <Button
+            onClick={() => setArchiveDialogOpen(false)}
+            disabled={isArchiving}
+          >
             Cancel
           </Button>
-          <Button onClick={confirmArchive} color="warning" variant="contained" disabled={isArchiving}>
+          <Button
+            onClick={confirmArchive}
+            color="warning"
+            variant="contained"
+            disabled={isArchiving}
+          >
             {isArchiving ? 'Archiving...' : 'Archive'}
           </Button>
         </DialogActions>

@@ -15,13 +15,16 @@ import styles from './MobileSidebar.module.css';
 type MobileSidebarProps = {
   isOpen: boolean;
   onClose: () => void;
-}
+};
 
-export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
+export const MobileSidebar: React.FC<MobileSidebarProps> = ({
+  isOpen,
+  onClose,
+}) => {
   return (
-    <Drawer 
-      anchor="left" 
-      open={isOpen} 
+    <Drawer
+      anchor="left"
+      open={isOpen}
       onClose={onClose}
       variant="temporary"
       sx={{
@@ -31,23 +34,42 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
         },
       }}
     >
-      <div className={styles.header} style={{ display: 'flex', alignItems: 'center', padding: '1rem' }}>
-        <Link to="/" className={styles.brand} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit', flexGrow: 1 }} onClick={onClose}>
+      <div
+        className={styles.header}
+        style={{ display: 'flex', alignItems: 'center', padding: '1rem' }}
+      >
+        <Link
+          to="/"
+          className={styles.brand}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+            color: 'inherit',
+            flexGrow: 1,
+          }}
+          onClick={onClose}
+        >
           <Logo />
-          <span className={styles.name} style={{ marginLeft: 8, fontWeight: 600, fontSize: '1.2rem' }}>Chronus</span>
+          <span
+            className={styles.name}
+            style={{ marginLeft: 8, fontWeight: 600, fontSize: '1.2rem' }}
+          >
+            Chronus
+          </span>
         </Link>
         <IconButton onClick={onClose} aria-label="Close sidebar">
           <CloseIcon />
         </IconButton>
       </div>
       <List>
-        {navigationItems.map((item) => {
+        {navigationItems.map(item => {
           const Icon = item.icon;
           return (
             <ListItem key={item.path} disablePadding>
-              <ListItemButton 
-                component={Link} 
-                to={item.path} 
+              <ListItemButton
+                component={Link}
+                to={item.path}
                 onClick={onClose}
                 sx={{
                   '&:hover': {

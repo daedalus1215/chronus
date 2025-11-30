@@ -1,9 +1,9 @@
-import React, { useCallback, useRef } from "react";
-import { useNotes } from "../../../hooks/useNotes";
-import { NoteItem } from "../NoteItem/NoteItem";
-import { SearchBar } from "../SearchBar/SearchBar";
-import styles from "./DesktopNoteListView.module.css";
-import { useResizablePane } from "../../../../../hooks/useResizablePane";
+import React, { useCallback, useRef } from 'react';
+import { useNotes } from '../../../hooks/useNotes';
+import { NoteItem } from '../NoteItem/NoteItem';
+import { SearchBar } from '../SearchBar/SearchBar';
+import styles from './DesktopNoteListView.module.css';
+import { useResizablePane } from '../../../../../hooks/useResizablePane';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -20,28 +20,33 @@ type NoteListViewProps = {
   selectedNoteId?: number | null;
 };
 
-export const DesktopNoteListView: React.FC<NoteListViewProps> = ({ 
-  type, 
+export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
+  type,
   tagId,
   onNoteSelect,
-  selectedNoteId 
+  selectedNoteId,
 }) => {
-  const { 
-    notes, 
-    isLoading, 
-    error, 
-    hasMore, 
+  const {
+    notes,
+    isLoading,
+    error,
+    hasMore,
     loadMore,
     hasPendingChanges,
     searchNotes,
     clearSearch,
-    searchQuery
+    searchQuery,
   } = useNotes(type, tagId);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
-  const { size: width, startResizing, handleKeyDown, handleDoubleClick } = useResizablePane({
+  const {
+    size: width,
+    startResizing,
+    handleKeyDown,
+    handleDoubleClick,
+  } = useResizablePane({
     localStorageKey: 'noteListWidthPx',
     min: 10, // allow thin rail
     max: 300, // do not expand beyond default width
@@ -50,13 +55,14 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
     step: 10,
     largeStep: 20,
     snapPoints: [10, 48, 72, 96, 120, 160, 220, 300],
-    snapThreshold: 10
+    snapThreshold: 10,
   });
 
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current || isLoading || !hasMore) return;
 
-    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
     const threshold = 100; // pixels from bottom to trigger load
 
     // Check if we're near the bottom
@@ -91,9 +97,13 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
   }
 
   return (
-    <div ref={listContainerRef} className={styles.noteList} style={{ position: 'relative', width: `${width}px`, flex: '0 0 auto' }}>
+    <div
+      ref={listContainerRef}
+      className={styles.noteList}
+      style={{ position: 'relative', width: `${width}px`, flex: '0 0 auto' }}
+    >
       {width >= 120 && (
-        <SearchBar 
+        <SearchBar
           value={searchQuery}
           onChange={searchNotes}
           onClear={clearSearch}
@@ -107,13 +117,13 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
           </div>
         )}
 
-        <div 
+        <div
           ref={scrollContainerRef}
           className={styles.noteListScrollContainer}
         >
-          {notes.map((note) => (
-            <NoteItem 
-              key={note.id} 
+          {notes.map(note => (
+            <NoteItem
+              key={note.id}
               note={note}
               onClick={() => handleNoteClick(note.id)}
               isSelected={selectedNoteId === note.id}

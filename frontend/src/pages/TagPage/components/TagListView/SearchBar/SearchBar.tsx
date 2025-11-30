@@ -9,14 +9,18 @@ type SearchBarProps = {
   onClear: () => void;
 };
 
-export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({
+  value,
+  onChange,
+  onClear,
+}) => {
   return (
     <div className={styles.searchBar}>
       <TextField
         fullWidth
         placeholder="Search tags..."
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -40,7 +44,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear }
           '& .MuiOutlinedInput-root': {
             borderRadius: 2,
             backgroundColor: 'background.paper',
-          }
+          },
         }}
       />
     </div>

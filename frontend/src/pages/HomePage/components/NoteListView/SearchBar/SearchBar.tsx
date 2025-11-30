@@ -8,9 +8,14 @@ type SearchBarProps = {
   onChange: (value: string) => void;
   onClear: () => void;
   type?: 'MEMO' | 'CHECKLIST';
-}
+};
 
-export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, type }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({
+  value,
+  onChange,
+  onClear,
+  type,
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   let placeholder = 'Search notes...';
@@ -24,7 +29,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, 
         inputRef={inputRef}
         placeholder={placeholder}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -48,9 +53,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onClear, 
           '& .MuiOutlinedInput-root': {
             borderRadius: 2,
             backgroundColor: 'background.paper',
-          }
+          },
         }}
       />
     </div>
   );
-}; 
+};

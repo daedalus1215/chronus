@@ -5,29 +5,29 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import TimelineIcon from '@mui/icons-material/Timeline';
 
 export const navigationItems = [
-  { 
+  {
     label: 'Home',
     path: '/',
-    icon: HomeIcon
+    icon: HomeIcon,
   },
-  { 
+  {
     label: 'Memos',
     path: '/memo',
-    icon: NoteIcon
+    icon: NoteIcon,
   },
-  { 
+  {
     label: 'CheckLists',
     path: '/checklist',
-    icon: ChecklistIcon
+    icon: ChecklistIcon,
   },
-  { 
+  {
     label: 'Tags',
     path: '/tags',
-    icon: LocalOfferIcon
+    icon: LocalOfferIcon,
   },
-  { 
+  {
     label: 'Activity',
     path: '/activity',
-    icon: TimelineIcon
+    icon: TimelineIcon,
   },
 ];

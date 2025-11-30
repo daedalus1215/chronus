@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import { useAuth } from './auth/useAuth';
 import { SidebarProvider } from './contexts/SidebarContext';
@@ -45,9 +50,15 @@ function AppRoutes() {
           <Route path={ROUTES.ACTIVITY} element={<ActivityPage />} />
 
           {/* Redirect authenticated users trying to access auth pages */}
-          <Route path={ROUTES.LOGIN} element={<Navigate to={ROUTES.HOME} replace />} />
-          <Route path={ROUTES.REGISTER} element={<Navigate to={ROUTES.HOME} replace />} />
-          
+          <Route
+            path={ROUTES.LOGIN}
+            element={<Navigate to={ROUTES.HOME} replace />}
+          />
+          <Route
+            path={ROUTES.REGISTER}
+            element={<Navigate to={ROUTES.HOME} replace />}
+          />
+
           {/* Catch all other routes and redirect to home */}
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>

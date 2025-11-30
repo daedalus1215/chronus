@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 type UseCheckItemEditDialogReturn = {
   isOpen: boolean;
@@ -7,13 +7,15 @@ type UseCheckItemEditDialogReturn = {
   openDialog: (id: number, currentName: string) => void;
   closeDialog: () => void;
   changeValue: (value: string) => void;
-  saveEdit: (update: (id: number, value: string) => Promise<void>) => Promise<void>;
+  saveEdit: (
+    update: (id: number, value: string) => Promise<void>
+  ) => Promise<void>;
 };
 
 export const useCheckItemEditDialog = (): UseCheckItemEditDialogReturn => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [editItemId, setEditItemId] = useState<number | null>(null);
-  const [editItemValue, setEditItemValue] = useState<string>("");
+  const [editItemValue, setEditItemValue] = useState<string>('');
 
   const openDialog = (id: number, currentName: string) => {
     setEditItemId(id);
@@ -24,14 +26,16 @@ export const useCheckItemEditDialog = (): UseCheckItemEditDialogReturn => {
   const closeDialog = () => {
     setIsOpen(false);
     setEditItemId(null);
-    setEditItemValue("");
+    setEditItemValue('');
   };
 
   const changeValue = (value: string) => {
     setEditItemValue(value);
   };
 
-  const saveEdit = async (update: (id: number, value: string) => Promise<void>) => {
+  const saveEdit = async (
+    update: (id: number, value: string) => Promise<void>
+  ) => {
     if (editItemId == null) {
       return;
     }
@@ -54,5 +58,3 @@ export const useCheckItemEditDialog = (): UseCheckItemEditDialogReturn => {
     saveEdit,
   };
 };
-
-

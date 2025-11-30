@@ -66,7 +66,6 @@
 
 .resizeHandle:hover,
 .resizeHandle:focus {
-
   background: var(--color-overlay-medium);
   outline: none;
 }
