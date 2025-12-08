@@ -26,12 +26,14 @@ export class CreateCheckItemTransactionScript {
     name,
     noteId,
   }: CreateCheckItemDto & { noteId: number }): Promise<CheckItem[]> {
-    const maxOrder = await this.checkItemsRepository.getMaxOrderByNoteId(noteId);
+    const minOrder = await this.checkItemsRepository.getMinOrderByNoteId(noteId);
+    
     const newCheckItem = new CheckItem();
     newCheckItem.name = name;
     newCheckItem.noteId = noteId;
-    newCheckItem.order = maxOrder + 1;
+    newCheckItem.order = minOrder - 1;
     await this.checkItemsRepository.save(newCheckItem);
+    
     return this.checkItemsRepository.findByNoteId(noteId);
   }
 } 

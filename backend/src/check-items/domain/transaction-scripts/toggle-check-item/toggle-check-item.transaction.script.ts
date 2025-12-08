@@ -7,7 +7,7 @@ import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
 export class ToggleCheckItemTransactionScript {
   constructor(
     private readonly checkItemsRepository: CheckItemsRepository
-  ) {}
+  ) { }
 
   async apply(id: number, noteId: number, authUser: AuthUser): Promise<CheckItem> {
     const checkItem = await this.checkItemsRepository.findByIdWithNoteValidationForUpdate(id, noteId, authUser.userId);
@@ -18,7 +18,7 @@ export class ToggleCheckItemTransactionScript {
 
     // Toggle the done_date - if it's null, set it to now, if it exists, set it to null
     checkItem.doneDate = checkItem.doneDate ? null : new Date();
-    
+
     return this.checkItemsRepository.save(checkItem);
   }
 }

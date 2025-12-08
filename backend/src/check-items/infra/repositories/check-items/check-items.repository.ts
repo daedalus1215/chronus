@@ -93,4 +93,14 @@ export class CheckItemsRepository {
 
     return result?.maxOrder ?? -1;
   }
+
+  async getMinOrderByNoteId(noteId: number): Promise<number> {
+    const result = await this.checkItemRepository
+      .createQueryBuilder('checkItem')
+      .select('MIN(checkItem.order)', 'minOrder')
+      .where('checkItem.note_id = :noteId', { noteId })
+      .getRawOne();
+
+    return result?.minOrder ?? 0;
+  }
 } 
