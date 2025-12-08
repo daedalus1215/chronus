@@ -124,7 +124,7 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
 
   return (
     <Box>
-      <Paper elevation={0.7} className={styles.container} sx={{ p: 2, mt: 2 }}>
+      <Paper elevation={1} className={styles.container} sx={{ p: 2, mt: 2 }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error.message}

@@ -168,7 +168,54 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
       );
       return response.data;
     },
+    onMutate: async (checkItemIds: number[]) => {
+      // Cancel any outgoing refetches to avoid overwriting optimistic update
+      await queryClient.cancelQueries({ queryKey: checkItemKeys.list(note.id) });
+      await queryClient.cancelQueries({ queryKey: ['note', note.id] });
+
+      // Snapshot the previous values
+      const previousCheckItems = queryClient.getQueryData<CheckItem[]>(
+        checkItemKeys.list(note.id)
+      );
+      const previousNote = queryClient.getQueryData<Note>(['note', note.id]);
+
+      // Optimistically update the check items order
+      if (previousCheckItems) {
+        const reorderedItems = checkItemIds
+          .map(id => previousCheckItems.find(item => item.id === id))
+          .filter((item): item is CheckItem => item !== undefined);
+
+        queryClient.setQueryData(checkItemKeys.list(note.id), reorderedItems);
+      }
+
+      if (previousNote) {
+        const reorderedItems = checkItemIds
+          .map(id => previousNote.checkItems?.find(item => item.id === id))
+          .filter((item): item is CheckItem => item !== undefined);
+
+        queryClient.setQueryData(['note', note.id], {
+          ...previousNote,
+          checkItems: reorderedItems,
+        });
+      }
+
+      // Return context with snapshot values for rollback
+      return { previousCheckItems, previousNote };
+    },
+    onError: (_err, _checkItemIds, context) => {
+      // Rollback to previous state on error
+      if (context?.previousCheckItems) {
+        queryClient.setQueryData(
+          checkItemKeys.list(note.id),
+          context.previousCheckItems
+        );
+      }
+      if (context?.previousNote) {
+        queryClient.setQueryData(['note', note.id], context.previousNote);
+      }
+    },
     onSuccess: checkItems => {
+      // Update with server response (in case server made any adjustments)
       queryClient.setQueryData(
         ['note', note.id],
         (oldData: Note | undefined) => {
