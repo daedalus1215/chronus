@@ -146,9 +146,9 @@ export const HomePage: React.FC = () => {
                   selectedNoteId={selectedNoteId}
                 />
               </Box>
-              <Box sx={{ flex: 1, height: '100%', minWidth: 0 }}>
+              <Box sx={{ flex: 1, height: '100%', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 {selectedNoteId && (
-                  <Box sx={{ p: 2 }}>
+                  <Box sx={{ p: 2, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                     <Outlet />
                   </Box>
                 )}

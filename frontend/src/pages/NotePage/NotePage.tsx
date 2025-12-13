@@ -66,7 +66,7 @@ export const NotePage: React.FC = () => {
 
   return (
     <main className={styles.main}>
-      <Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box className="flex items-center gap-2 overflow-x-auto py-2 mb-2">
           <IconButton
             onClick={() => setAddTagOpen(true)}
@@ -140,17 +140,19 @@ export const NotePage: React.FC = () => {
             {titleError}
           </Alert>
         )}
-        {note?.isMemo ? (
-          isMobile ? (
-            <MobileNoteEditor note={note} onSave={handleSave} />
+        <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          {note?.isMemo ? (
+            isMobile ? (
+              <MobileNoteEditor note={note} onSave={handleSave} />
+            ) : (
+              <DesktopNoteEditor note={note} onSave={handleSave} />
+            )
+          ) : isMobile ? (
+            <MobileCheckListView note={note} />
           ) : (
-            <DesktopNoteEditor note={note} onSave={handleSave} />
-          )
-        ) : isMobile ? (
-          <MobileCheckListView note={note} />
-        ) : (
-          <DesktopCheckListView note={note} />
-        )}
+            <DesktopCheckListView note={note} />
+          )}
+        </Box>
       </Box>
     </main>
   );

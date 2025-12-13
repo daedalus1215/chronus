@@ -123,8 +123,19 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
   };
 
   return (
-    <Box>
-      <Paper elevation={1} className={styles.container} sx={{ p: 2, mt: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Paper
+        elevation={1}
+        className={styles.container}
+        sx={{
+          p: 2,
+          mt: 2,
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error.message}
@@ -149,7 +160,19 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
             onClose={closeEditDialog}
           />
         )}
-        <List className={styles.list}>
+        <List
+          className={styles.list}
+          sx={{
+            overflowY: 'auto',
+            flex: 1,
+            minHeight: 0,
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': {
+              display: 'none',
+            },
+            touchAction: 'pan-y',
+          }}
+        >
           <DraggableCheckItemList
             checkItems={checkItems}
             onReorder={handleReorder}
