@@ -130,6 +130,7 @@ export const NotePage: React.FC = () => {
             disableUnderline: true,
             style: {
               fontWeight: 600,
+              marginLeft: '20px',
               fontSize: '1.2rem',
               color: 'var(--color-text)',
             },
