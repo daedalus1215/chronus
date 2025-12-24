@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { TagItem } from '../TagItem/TagItem';
 import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './DesktopTagListView.module.css';
+import Fade from '@mui/material/Fade';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -97,13 +98,23 @@ export const DesktopTagListView: React.FC<TagListViewProps> = ({
       />
       <div className={styles.tagListContent}>
         <div ref={scrollContainerRef} className={styles.tagListScrollContainer}>
-          {filteredTags.map(tag => (
-            <TagItem
+          {filteredTags.map((tag, index) => (
+            <Fade
               key={tag.id}
-              tag={tag}
-              onClick={() => handleTagClick(tag.id)}
-              isSelected={selectedTagId === tag.id}
-            />
+              in={true}
+              timeout={300}
+              style={{
+                transitionDelay: `${Math.min(index * 50, 300)}ms`,
+              }}
+            >
+              <div>
+                <TagItem
+                  tag={tag}
+                  onClick={() => handleTagClick(tag.id)}
+                  isSelected={selectedTagId === tag.id}
+                />
+              </div>
+            </Fade>
           ))}
           {tagsLoading && <LoadingSpinner />}
           {!tagsLoading && filteredTags.length === 0 && <NoMoreTags />}
