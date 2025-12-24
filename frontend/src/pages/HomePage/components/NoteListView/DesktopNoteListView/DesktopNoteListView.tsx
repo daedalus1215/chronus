@@ -4,6 +4,7 @@ import { NoteItem } from '../NoteItem/NoteItem';
 import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './DesktopNoteListView.module.css';
 import { useResizablePane } from '../../../../../hooks/useResizablePane';
+import Fade from '@mui/material/Fade';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -121,13 +122,23 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
           ref={scrollContainerRef}
           className={styles.noteListScrollContainer}
         >
-          {notes.map(note => (
-            <NoteItem
+          {notes.map((note, index) => (
+            <Fade
               key={note.id}
-              note={note}
-              onClick={() => handleNoteClick(note.id)}
-              isSelected={selectedNoteId === note.id}
-            />
+              in={true}
+              timeout={300}
+              style={{
+                transitionDelay: `${Math.min(index * 50, 300)}ms`,
+              }}
+            >
+              <div>
+                <NoteItem
+                  note={note}
+                  onClick={() => handleNoteClick(note.id)}
+                  isSelected={selectedNoteId === note.id}
+                />
+              </div>
+            </Fade>
           ))}
           {isLoading && <LoadingSpinner />}
           {!hasMore && <NoMoreNotes />}
