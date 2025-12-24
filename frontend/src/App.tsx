@@ -17,14 +17,15 @@ import { muiTheme } from './theme';
 import { TagPage } from './pages/TagPage/TagPage';
 import { ActivityPage } from './pages/ActivityPage/ActivityPage';
 import { ROUTES, ROUTE_PATTERNS } from './constants/routes';
+import { AuthenticatedLayout } from './components/Layout/AuthenticatedLayout';
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
 
   if (isAuthenticated) {
     return (
-      <>
-        <Routes>
+      <Routes>
+        <Route element={<AuthenticatedLayout />}>
           {/* Home route with optional note */}
           <Route path={ROUTES.HOME} element={<HomePage />}>
             <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
@@ -61,8 +62,8 @@ function AppRoutes() {
 
           {/* Catch all other routes and redirect to home */}
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
-        </Routes>
-      </>
+        </Route>
+      </Routes>
     );
   }
 

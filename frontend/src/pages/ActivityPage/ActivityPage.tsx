@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Header } from '../../components/Header/Header';
 import { DailyTimeTracksDataGrid } from './components/DailyTimeTracksDataGrid/DailyTimeTracksDataGrid';
 import { DailyTimeTracksRadar } from './components/DailyTimeTracksRadar/DailyTimeTracksRadar';
 import {
@@ -60,9 +59,8 @@ export const ActivityPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.activityPage}>
-      <Header />
-      <main className={styles.main}>
+    <div className={styles.activityPage} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, overflow: 'auto', padding: '1rem' }}>
         {/* Top Cards Section */}
         <div className={styles.cardsContainer}>
           {/* Time Radar Card */}
@@ -103,7 +101,7 @@ export const ActivityPage: React.FC = () => {
             loading={loading}
           />
         </Paper>
-      </main>
+      </div>
     </div>
   );
 };
