@@ -2,9 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Register } from './components/Register';
 import { useAuth } from '../../auth/useAuth';
-import styles from './RegisterPage.module.css';
+import { Container, Box } from '@mui/material';
 
-export function RegisterPage() {
+export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { register, isAuthenticated } = useAuth();
 
@@ -29,8 +29,18 @@ export function RegisterPage() {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className={styles.registerPage}>
-      <Register onRegister={handleRegister} />
-    </div>
+    <Container
+      maxWidth="sm"
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Box sx={{ width: '100%' }}>
+        <Register onRegister={handleRegister} />
+      </Box>
+    </Container>
   );
-}
+};

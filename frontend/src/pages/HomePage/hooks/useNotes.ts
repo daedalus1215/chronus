@@ -56,6 +56,18 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
     }
   }, [hasMore, isLoading, nextCursor, fetchNotes, searchQuery]);
 
+  const moveNoteToTop = useCallback((noteId: number) => {
+    setNotes(prevNotes => {
+      const noteIndex = prevNotes.findIndex(note => note.id === noteId);
+      if (noteIndex === -1 || noteIndex === 0) {
+        return prevNotes;
+      }
+      const clickedNote = prevNotes[noteIndex];
+      const otherNotes = prevNotes.filter(note => note.id !== noteId);
+      return [clickedNote, ...otherNotes];
+    });
+  }, []);
+
   // Single effect for both initial load and search
   useEffect(() => {
     fetchNotes(0, debouncedSearchQuery);
@@ -72,5 +84,6 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
     searchNotes,
     clearSearch,
     searchQuery,
+    moveNoteToTop,
   };
 };

@@ -1,9 +1,12 @@
 import React, { useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useNotes } from '../../../hooks/useNotes';
 import { NoteItem } from '../NoteItem/NoteItem';
 import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './MobileNoteListView.module.css';
 import { NOTE_TYPES } from '../../../../../constant';
+import Fade from '@mui/material/Fade';
+import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -22,6 +25,7 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
   type,
   tagId,
 }) => {
+  const navigate = useNavigate();
   const {
     notes,
     isLoading,
@@ -32,6 +36,7 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
     searchNotes,
     clearSearch,
     searchQuery,
+    moveNoteToTop,
   } = useNotes(type, tagId);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -62,6 +67,16 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
     return () => scrollContainer.removeEventListener('scroll', scrollHandler);
   }, [handleScroll]);
 
+  const handleNoteClick = useCallback(async (noteId: number) => {
+    moveNoteToTop(noteId);
+    try {
+      await updateNoteTimestamp(noteId);
+    } catch (error) {
+      console.error('Failed to update note timestamp:', error);
+    }
+    navigate(`/notes/${noteId}`);
+  }, [moveNoteToTop, navigate]);
+
   if (isLoading && notes.length === 0) {
     return <div className={styles.noteListLoading}>Loading notes...</div>;
   }
@@ -89,8 +104,22 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
           ref={scrollContainerRef}
           className={styles.noteListScrollContainer}
         >
-          {notes.map(note => (
-            <NoteItem key={note.id} note={note} />
+          {notes.map((note, index) => (
+            <Fade
+              key={note.id}
+              in={true}
+              timeout={300}
+              style={{
+                transitionDelay: `${Math.min(index * 50, 300)}ms`,
+              }}
+            >
+              <div>
+                <NoteItem
+                  note={note}
+                  onClick={() => handleNoteClick(note.id)}
+                />
+              </div>
+            </Fade>
           ))}
           {isLoading && <LoadingSpinner />}
           {!hasMore && <NoMoreNotes />}

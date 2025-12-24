@@ -5,9 +5,6 @@ import { useAuth } from '../../auth/useAuth';
 import { DesktopNoteListView } from './components/NoteListView/DesktopNoteListView/DesktopNoteListView';
 import { useCreateNote } from './hooks/useCreateNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
-import { Header } from '../../components/Header/Header';
-import { Paper } from '@mui/material';
-import { DesktopSidebar } from '../../components/Header/Sidebar/DesktopSidebar';
 import { NOTE_TYPES, NoteTypes } from '../../constant';
 import { useLocation, useParams, useNavigate, Outlet } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -75,12 +72,8 @@ export const HomePage: React.FC = () => {
   const isNoteRoute = !!routeNoteId;
 
   return (
-    <div className={styles.homePage}>
-      <Header />
-      <main
-        className={`${styles.main} ${isMobile ? styles.mainMobile : styles.mainDesktop}`}
-      >
-        {isMobile ? (
+    <div className={styles.homePage} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {isMobile ? (
           <Box
             sx={{
               height: '100%',
@@ -117,23 +110,6 @@ export const HomePage: React.FC = () => {
           <Box
             sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}
           >
-            {/* Sidebar in the same flex row */}
-            <Paper
-              elevation={0}
-              sx={{
-                flex: '0 0 auto',
-                borderRight: '1px solid',
-                borderColor: 'divider',
-                backgroundColor: '#111',
-                height: '100%',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <DesktopSidebar isOpen={true} />
-            </Paper>
-
             {/* Note list and content */}
             <Box
               sx={{ display: 'flex', flex: 1, overflow: 'hidden', minWidth: 0 }}
@@ -156,7 +132,6 @@ export const HomePage: React.FC = () => {
             </Box>
           </Box>
         )}
-      </main>
       {!isNoteRoute && (
         <Fab
           color="primary"

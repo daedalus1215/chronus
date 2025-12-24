@@ -6,11 +6,11 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText,
+  Tooltip,
 } from '@mui/material';
+import Fade from '@mui/material/Fade';
 import { navigationItems } from './navigation-items';
 import styles from './DesktopSidebar.module.css';
-import { useResizablePane } from '../../../hooks/useResizablePane';
 
 type DesktopSidebarProps = {
   isOpen: boolean;
@@ -18,103 +18,93 @@ type DesktopSidebarProps = {
 
 export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
   const location = useLocation();
-  const localStorageKey = 'sidebarWidthPx';
-  const {
-    size: width,
-    setSize,
-    startResizing,
-    handleKeyDown,
-  } = useResizablePane({
-    localStorageKey,
-    min: 0,
-    max: 420,
-    initial: 180,
-    axis: 'x',
-    step: 10,
-    largeStep: 20,
-    snapPoints: [0, 120, 180, 240, 320, 420],
-    snapThreshold: 16,
-  });
-
-  const handleDoubleClickToggle = React.useCallback(() => {
-    const next = width <= 4 ? 180 : 0;
-    setSize(next);
-    localStorage.setItem(localStorageKey, String(next));
-  }, [localStorageKey, setSize, width]);
+  const fixedWidth = 85;
 
   return (
     <Box
       className={styles.sidebar}
       sx={{
         position: 'relative',
-        width: `${width}px`,
+        width: `${fixedWidth}px`,
         flex: '0 0 auto',
         minWidth: 0,
-        padding: width < 80 ? '0.25rem' : '1rem',
+        padding: '0.25rem',
       }}
     >
-      {/* Header */}
-      {/* <Box className={styles.header}> */}
-      {/* <Link to="/" className={styles.brand}>
-          <img src="/chronus-white.svg" alt="Logo" className={styles.logo} />
-          {width >= 120 && (<span className={styles.name}>Chronus</span>)}
-        </Link> */}
-      {/* </Box> */}
-
-      {/* Navigation Items */}
       <List className={styles.nav}>
-        {navigationItems.map(item => {
-          const isActive = location.pathname === item.path;
+        {navigationItems.map((item, index) => {
+          // Improved route matching to handle nested routes
+          const isActive = React.useMemo(() => {
+            const pathname = location.pathname;
+
+            // Special handling for Home route (/)
+            if (item.path === '/') {
+              // Home is active if:
+              // 1. Exact match: /
+              // 2. Nested note route: /notes/:id
+              // 3. But NOT if it's /memo, /checklist, /tags, /activity, or /tag-notes
+              if (pathname === '/') return true;
+              if (pathname.startsWith('/notes/')) {
+                // Check if it's not under another route
+                const basePath = pathname.split('/notes/')[0];
+                return basePath === '' || basePath === '/';
+              }
+              return false;
+            }
+
+            // For other routes, check if pathname starts with the route path
+            // This handles nested routes like /memo/notes/:id
+            if (pathname === item.path) return true;
+            if (pathname.startsWith(`${item.path}/`)) return true;
+
+            // Special case for Tags: also match /tag-notes/:tagId
+            if (item.path === '/tags' && pathname.startsWith('/tag-notes/')) {
+              return true;
+            }
+
+            return false;
+          }, [location.pathname, item.path]);
+
           return (
-            <ListItem key={item.path} disablePadding>
-              <ListItemButton
-                component={Link}
-                to={item.path}
-                className={`${styles.navItem} ${isActive ? styles.active : ''}`}
-                sx={{
-                  justifyContent: width < 120 ? 'center' : 'flex-start',
-                  gap: width < 120 ? 0 : undefined,
-                }}
-              >
-                <ListItemIcon
-                  className={styles.navIcon}
-                  sx={{
-                    minWidth: width < 120 ? 0 : undefined,
-                    justifyContent: 'center',
-                  }}
-                >
-                  <item.icon />
-                </ListItemIcon>
-                {width >= 120 && (
-                  <ListItemText
-                    primary={item.label}
+            <Fade
+              key={item.path}
+              in={true}
+              timeout={300}
+              style={{
+                transitionDelay: `${Math.min(index * 50, 300)}ms`,
+              }}
+            >
+              <ListItem disablePadding>
+                <Tooltip title={item.label} placement="right" arrow>
+                  <ListItemButton
+                    component={Link}
+                    to={item.path}
+                    className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                     sx={{
-                      '& .MuiListItemText-primary': {
-                        fontSize: '0.875rem',
-                        fontWeight: isActive ? 600 : 400,
-                        color: isActive ? '#fff' : '#9ca3af',
+                      justifyContent: 'center',
+                      backgroundColor: isActive ? 'action.selected' : 'transparent',
+                      '&:hover': {
+                        backgroundColor: isActive ? 'action.selected' : 'action.hover',
                       },
                     }}
-                  />
-                )}
-              </ListItemButton>
-            </ListItem>
+                  >
+                    <ListItemIcon
+                      className={styles.navIcon}
+                      sx={{
+                        minWidth: 0,
+                        justifyContent: 'center',
+                        color: isActive ? 'primary.main' : 'text.secondary',
+                      }}
+                    >
+                      <item.icon />
+                    </ListItemIcon>
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            </Fade>
           );
         })}
       </List>
-
-      {/* Resize handle */}
-      <div
-        role="separator"
-        aria-orientation="vertical"
-        aria-label="Resize sidebar"
-        tabIndex={0}
-        className={styles.resizeHandle}
-        onMouseDown={startResizing}
-        onPointerDown={startResizing}
-        onKeyDown={handleKeyDown}
-        onDoubleClick={handleDoubleClickToggle}
-      />
     </Box>
   );
 };

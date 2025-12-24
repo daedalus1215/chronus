@@ -1,12 +1,10 @@
 import React from 'react';
-import { Header } from '../../components/Header/Header';
 import { MobileTagListView } from './components/TagListView/MobileTagListView/MobileTagListView';
 import { DesktopTagListView } from './components/TagListView/DesktopTagListView/DesktopTagListView';
 import styles from './TagPage.module.css';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useNavigate, useParams, Outlet } from 'react-router-dom';
-import { Box, Paper } from '@mui/material';
-import { DesktopSidebar } from '../../components/Header/Sidebar/DesktopSidebar';
+import { Box } from '@mui/material';
 
 export const TagPage: React.FC = () => {
   const isMobile = useIsMobile();
@@ -28,14 +26,8 @@ export const TagPage: React.FC = () => {
   const isTagRoute = !!routeTagId;
 
   return (
-    <div className={styles.tagPage}>
-      <Header />
-      <main
-        className={`${styles.main} ${
-          isMobile ? styles.mainMobile : styles.mainDesktop
-        }`}
-      >
-        {isMobile ? (
+    <div className={styles.tagPage} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {isMobile ? (
           <Box
             sx={{
               height: '100%',
@@ -70,21 +62,6 @@ export const TagPage: React.FC = () => {
           </Box>
         ) : (
           <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-            <Paper
-              elevation={0}
-              sx={{
-                flex: '0 0 auto',
-                borderRight: '1px solid',
-                borderColor: 'divider',
-                backgroundColor: '#111',
-                height: '100%',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <DesktopSidebar isOpen={true} />
-            </Paper>
             <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
               <DesktopTagListView
                 onTagSelect={handleTagSelect}
@@ -100,7 +77,6 @@ export const TagPage: React.FC = () => {
             </Box>
           </Box>
         )}
-      </main>
     </div>
   );
 };
