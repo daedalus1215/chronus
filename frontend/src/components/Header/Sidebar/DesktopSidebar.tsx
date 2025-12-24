@@ -6,12 +6,11 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText,
+  Tooltip,
 } from '@mui/material';
 import Fade from '@mui/material/Fade';
 import { navigationItems } from './navigation-items';
 import styles from './DesktopSidebar.module.css';
-import { useResizablePane } from '../../../hooks/useResizablePane';
 
 type DesktopSidebarProps = {
   isOpen: boolean;
@@ -19,39 +18,17 @@ type DesktopSidebarProps = {
 
 export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
   const location = useLocation();
-  const localStorageKey = 'sidebarWidthPx';
-  const {
-    size: width,
-    setSize,
-    startResizing,
-    handleKeyDown,
-  } = useResizablePane({
-    localStorageKey,
-    min: 0,
-    max: 420,
-    initial: 180,
-    axis: 'x',
-    step: 10,
-    largeStep: 20,
-    snapPoints: [0, 120, 180, 240, 320, 420],
-    snapThreshold: 16,
-  });
-
-  const handleDoubleClickToggle = React.useCallback(() => {
-    const next = width <= 4 ? 180 : 0;
-    setSize(next);
-    localStorage.setItem(localStorageKey, String(next));
-  }, [localStorageKey, setSize, width]);
+  const fixedWidth = 85;
 
   return (
     <Box
       className={styles.sidebar}
       sx={{
         position: 'relative',
-        width: `${width}px`,
+        width: `${fixedWidth}px`,
         flex: '0 0 auto',
         minWidth: 0,
-        padding: width < 80 ? '0.25rem' : '1rem',
+        padding: '0.25rem',
       }}
     >
       {/* Header */}
@@ -76,55 +53,31 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
               }}
             >
               <ListItem disablePadding>
-                <ListItemButton
-                  component={Link}
-                  to={item.path}
-                  className={`${styles.navItem} ${isActive ? styles.active : ''}`}
-                  sx={{
-                    justifyContent: width < 120 ? 'center' : 'flex-start',
-                    gap: width < 120 ? 0 : undefined,
-                  }}
-                >
-                  <ListItemIcon
-                    className={styles.navIcon}
+                <Tooltip title={item.label} placement="right" arrow>
+                  <ListItemButton
+                    component={Link}
+                    to={item.path}
+                    className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                     sx={{
-                      minWidth: width < 120 ? 0 : undefined,
                       justifyContent: 'center',
                     }}
                   >
-                    <item.icon />
-                  </ListItemIcon>
-                  {width >= 120 && (
-                    <ListItemText
-                      primary={item.label}
+                    <ListItemIcon
+                      className={styles.navIcon}
                       sx={{
-                        '& .MuiListItemText-primary': {
-                          fontSize: '0.875rem',
-                          fontWeight: isActive ? 600 : 400,
-                          color: isActive ? '#fff' : '#9ca3af',
-                        },
+                        minWidth: 0,
+                        justifyContent: 'center',
                       }}
-                    />
-                  )}
-                </ListItemButton>
+                    >
+                      <item.icon />
+                    </ListItemIcon>
+                  </ListItemButton>
+                </Tooltip>
               </ListItem>
             </Fade>
           );
         })}
       </List>
-
-      {/* Resize handle */}
-      <div
-        role="separator"
-        aria-orientation="vertical"
-        aria-label="Resize sidebar"
-        tabIndex={0}
-        className={styles.resizeHandle}
-        onMouseDown={startResizing}
-        onPointerDown={startResizing}
-        onKeyDown={handleKeyDown}
-        onDoubleClick={handleDoubleClickToggle}
-      />
     </Box>
   );
 };
