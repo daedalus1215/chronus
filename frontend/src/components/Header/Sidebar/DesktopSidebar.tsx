@@ -8,6 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
+import Fade from '@mui/material/Fade';
 import { navigationItems } from './navigation-items';
 import styles from './DesktopSidebar.module.css';
 import { useResizablePane } from '../../../hooks/useResizablePane';
@@ -63,42 +64,51 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
 
       {/* Navigation Items */}
       <List className={styles.nav}>
-        {navigationItems.map(item => {
+        {navigationItems.map((item, index) => {
           const isActive = location.pathname === item.path;
           return (
-            <ListItem key={item.path} disablePadding>
-              <ListItemButton
-                component={Link}
-                to={item.path}
-                className={`${styles.navItem} ${isActive ? styles.active : ''}`}
-                sx={{
-                  justifyContent: width < 120 ? 'center' : 'flex-start',
-                  gap: width < 120 ? 0 : undefined,
-                }}
-              >
-                <ListItemIcon
-                  className={styles.navIcon}
+            <Fade
+              key={item.path}
+              in={true}
+              timeout={300}
+              style={{
+                transitionDelay: `${Math.min(index * 50, 300)}ms`,
+              }}
+            >
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={Link}
+                  to={item.path}
+                  className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                   sx={{
-                    minWidth: width < 120 ? 0 : undefined,
-                    justifyContent: 'center',
+                    justifyContent: width < 120 ? 'center' : 'flex-start',
+                    gap: width < 120 ? 0 : undefined,
                   }}
                 >
-                  <item.icon />
-                </ListItemIcon>
-                {width >= 120 && (
-                  <ListItemText
-                    primary={item.label}
+                  <ListItemIcon
+                    className={styles.navIcon}
                     sx={{
-                      '& .MuiListItemText-primary': {
-                        fontSize: '0.875rem',
-                        fontWeight: isActive ? 600 : 400,
-                        color: isActive ? '#fff' : '#9ca3af',
-                      },
+                      minWidth: width < 120 ? 0 : undefined,
+                      justifyContent: 'center',
                     }}
-                  />
-                )}
-              </ListItemButton>
-            </ListItem>
+                  >
+                    <item.icon />
+                  </ListItemIcon>
+                  {width >= 120 && (
+                    <ListItemText
+                      primary={item.label}
+                      sx={{
+                        '& .MuiListItemText-primary': {
+                          fontSize: '0.875rem',
+                          fontWeight: isActive ? 600 : 400,
+                          color: isActive ? '#fff' : '#9ca3af',
+                        },
+                      }}
+                    />
+                  )}
+                </ListItemButton>
+              </ListItem>
+            </Fade>
           );
         })}
       </List>

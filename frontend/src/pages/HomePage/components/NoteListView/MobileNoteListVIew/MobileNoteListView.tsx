@@ -4,6 +4,7 @@ import { NoteItem } from '../NoteItem/NoteItem';
 import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './MobileNoteListView.module.css';
 import { NOTE_TYPES } from '../../../../../constant';
+import Fade from '@mui/material/Fade';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -89,8 +90,19 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
           ref={scrollContainerRef}
           className={styles.noteListScrollContainer}
         >
-          {notes.map(note => (
-            <NoteItem key={note.id} note={note} />
+          {notes.map((note, index) => (
+            <Fade
+              key={note.id}
+              in={true}
+              timeout={300}
+              style={{
+                transitionDelay: `${Math.min(index * 50, 300)}ms`,
+              }}
+            >
+              <div>
+                <NoteItem note={note} />
+              </div>
+            </Fade>
           ))}
           {isLoading && <LoadingSpinner />}
           {!hasMore && <NoMoreNotes />}

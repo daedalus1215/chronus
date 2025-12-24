@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Fade from '@mui/material/Fade';
 import { Link } from 'react-router-dom';
 import { Logo } from '../../Logo/Logo';
 import { navigationItems } from './navigation-items';
@@ -63,29 +64,38 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
         </IconButton>
       </div>
       <List>
-        {navigationItems.map(item => {
+        {navigationItems.map((item, index) => {
           const Icon = item.icon;
           return (
-            <ListItem key={item.path} disablePadding>
-              <ListItemButton
-                component={Link}
-                to={item.path}
-                onClick={onClose}
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                  },
-                  borderRadius: '8px',
-                  margin: '0 8px',
-                  padding: '8px 16px',
-                }}
-              >
-                <ListItemIcon>
-                  <Icon />
-                </ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            </ListItem>
+            <Fade
+              key={item.path}
+              in={isOpen}
+              timeout={300}
+              style={{
+                transitionDelay: `${Math.min(index * 50, 300)}ms`,
+              }}
+            >
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={Link}
+                  to={item.path}
+                  onClick={onClose}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                    },
+                    borderRadius: '8px',
+                    margin: '0 8px',
+                    padding: '8px 16px',
+                  }}
+                >
+                  <ListItemIcon>
+                    <Icon />
+                  </ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
+              </ListItem>
+            </Fade>
           );
         })}
       </List>
