@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './Register.module.css';
+import {
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  Alert,
+  Stack,
+  Box,
+  Typography,
+} from '@mui/material';
 import { Logo } from '../../../components/Logo/Logo';
 
 interface RegisterProps {
@@ -12,13 +21,16 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      setIsSubmitting(false);
       return;
     }
 
@@ -29,54 +41,119 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
       }
     } catch {
       setError('An error occurred during registration');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className={styles.registerContainer}>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <h2 className={styles.title}>
-          <Logo height={75} />
-          <span>Register</span>
-        </h2>
-        {error && <div className={styles.error}>{error}</div>}
-        <div className={styles.formGroup}>
-          <label htmlFor="username">Username</label>
-          <input
+    <Card
+      elevation={3}
+      sx={{
+        maxWidth: 400,
+        width: '100%',
+        mx: 'auto',
+      }}
+    >
+      <CardContent sx={{ p: 4 }}>
+        <Stack spacing={3} component="form" onSubmit={handleSubmit}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              mb: 1,
+            }}
+          >
+            <Logo height={75} />
+            <Typography variant="h4" component="h1" fontWeight={600}>
+              Register
+            </Typography>
+          </Box>
+
+          {error && (
+            <Alert severity="error" sx={{ width: '100%' }}>
+              {error}
+            </Alert>
+          )}
+
+          <TextField
+            label="Username"
             type="text"
             id="username"
             value={username}
             onChange={e => setUsername(e.target.value)}
             required
+            disabled={isSubmitting}
+            fullWidth
+            autoComplete="username"
           />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="password">Password</label>
-          <input
+
+          <TextField
+            label="Password"
             type="password"
             id="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
+            disabled={isSubmitting}
+            fullWidth
+            autoComplete="new-password"
           />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <input
+
+          <TextField
+            label="Confirm Password"
             type="password"
             id="confirmPassword"
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
             required
+            disabled={isSubmitting}
+            fullWidth
+            autoComplete="new-password"
+            error={confirmPassword !== '' && password !== confirmPassword}
+            helperText={
+              confirmPassword !== '' && password !== confirmPassword
+                ? 'Passwords do not match'
+                : ''
+            }
           />
-        </div>
-        <button type="submit" className={styles.submitButton}>
-          Register
-        </button>
-      </form>
-      <div className={styles.loginLink}>
-        Already have an account? <Link to="/login">Login here</Link>
-      </div>
-    </div>
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={isSubmitting}
+            fullWidth
+            sx={{
+              py: 1.5,
+              borderRadius: '9999px',
+              textTransform: 'none',
+              fontSize: '1rem',
+              fontWeight: 600,
+            }}
+          >
+            {isSubmitting ? 'Registering...' : 'Register'}
+          </Button>
+
+          <Box sx={{ textAlign: 'center', mt: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              Already have an account?{' '}
+              <Link
+                to="/login"
+                style={{
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  fontWeight: 500,
+                }}
+              >
+                Login here
+              </Link>
+            </Typography>
+          </Box>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 };

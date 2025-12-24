@@ -1,42 +1,138 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Stack,
+  Divider,
+} from '@mui/material';
 import { Logo } from '../../components/Logo/Logo';
-import styles from './LandingPage.module.css';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <div className={styles.logoSection}>
-          <Logo height={400} className={styles.logo} />
-        </div>
+    <Container
+      maxWidth="lg"
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        py: 4,
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: 'center',
+          gap: { xs: 4, md: 8 },
+          width: '100%',
+        }}
+      >
+        {/* Logo Section */}
+        <Box
+          sx={{
+            flex: { xs: '0 0 auto', md: '1 1 50%' },
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Logo height={300} />
+        </Box>
 
-        <div className={styles.actionSection}>
-          <h1 className={styles.title}>Chronus</h1>
+        {/* Action Section */}
+        <Box
+          sx={{
+            flex: { xs: '0 0 auto', md: '1 1 50%' },
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3,
+            maxWidth: { xs: '100%', md: '500px' },
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h2"
+              component="h1"
+              fontWeight={700}
+              sx={{
+                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
+                lineHeight: 1.2,
+                mb: 2,
+              }}
+            >
+              Chronus
+            </Typography>
+            <Typography
+              variant="h5"
+              component="p"
+              color="text.secondary"
+              sx={{
+                fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                fontWeight: 400,
+                lineHeight: 1.6,
+              }}
+            >
+              Your personal time tracking and note-taking companion. Organize
+              your thoughts, track your time, and stay productive.
+            </Typography>
+          </Box>
 
-          <div className={styles.buttonGroup}>
-            <button
+          <Stack spacing={2} sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              size="large"
               onClick={() => navigate('/register')}
-              className={styles.createAccountButton}
+              fullWidth
+              sx={{
+                py: 1.5,
+                borderRadius: '9999px',
+                textTransform: 'none',
+                fontSize: '1rem',
+                fontWeight: 600,
+              }}
             >
               Create account
-            </button>
+            </Button>
 
-            <div className={styles.divider}>
-              <span>or</span>
-            </div>
+            <Divider sx={{ my: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                or
+              </Typography>
+            </Divider>
 
-            <div className={styles.signInSection}>
-              <p>Already have an account?</p>
-              <Link to="/login" className={styles.signInButton}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                Already have an account?
+              </Typography>
+              <Button
+                component={Link}
+                to="/login"
+                variant="outlined"
+                size="large"
+                fullWidth
+                sx={{
+                  py: 1.5,
+                  borderRadius: '9999px',
+                  textTransform: 'none',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  borderWidth: 2,
+                  '&:hover': {
+                    borderWidth: 2,
+                  },
+                }}
+              >
                 Sign in
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              </Button>
+            </Box>
+          </Stack>
+        </Box>
+      </Box>
+    </Container>
   );
 };

@@ -31,18 +31,40 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
         padding: '0.25rem',
       }}
     >
-      {/* Header */}
-      {/* <Box className={styles.header}> */}
-      {/* <Link to="/" className={styles.brand}>
-          <img src="/chronus-white.svg" alt="Logo" className={styles.logo} />
-          {width >= 120 && (<span className={styles.name}>Chronus</span>)}
-        </Link> */}
-      {/* </Box> */}
-
-      {/* Navigation Items */}
       <List className={styles.nav}>
         {navigationItems.map((item, index) => {
-          const isActive = location.pathname === item.path;
+          // Improved route matching to handle nested routes
+          const isActive = React.useMemo(() => {
+            const pathname = location.pathname;
+
+            // Special handling for Home route (/)
+            if (item.path === '/') {
+              // Home is active if:
+              // 1. Exact match: /
+              // 2. Nested note route: /notes/:id
+              // 3. But NOT if it's /memo, /checklist, /tags, /activity, or /tag-notes
+              if (pathname === '/') return true;
+              if (pathname.startsWith('/notes/')) {
+                // Check if it's not under another route
+                const basePath = pathname.split('/notes/')[0];
+                return basePath === '' || basePath === '/';
+              }
+              return false;
+            }
+
+            // For other routes, check if pathname starts with the route path
+            // This handles nested routes like /memo/notes/:id
+            if (pathname === item.path) return true;
+            if (pathname.startsWith(`${item.path}/`)) return true;
+
+            // Special case for Tags: also match /tag-notes/:tagId
+            if (item.path === '/tags' && pathname.startsWith('/tag-notes/')) {
+              return true;
+            }
+
+            return false;
+          }, [location.pathname, item.path]);
+
           return (
             <Fade
               key={item.path}
@@ -60,6 +82,10 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
                     className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                     sx={{
                       justifyContent: 'center',
+                      backgroundColor: isActive ? 'action.selected' : 'transparent',
+                      '&:hover': {
+                        backgroundColor: isActive ? 'action.selected' : 'action.hover',
+                      },
                     }}
                   >
                     <ListItemIcon
@@ -67,6 +93,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
                       sx={{
                         minWidth: 0,
                         justifyContent: 'center',
+                        color: isActive ? 'primary.main' : 'text.secondary',
                       }}
                     >
                       <item.icon />

@@ -8,7 +8,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Fade from '@mui/material/Fade';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Logo } from '../../Logo/Logo';
 import { navigationItems } from './navigation-items';
 import styles from './MobileSidebar.module.css';
@@ -22,6 +22,40 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
   isOpen,
   onClose,
 }) => {
+  const location = useLocation();
+
+  // Helper function to determine if a route is active
+  const isRouteActive = React.useCallback((itemPath: string) => {
+    const pathname = location.pathname;
+    
+    // Special handling for Home route (/)
+    if (itemPath === '/') {
+      // Home is active if:
+      // 1. Exact match: /
+      // 2. Nested note route: /notes/:id
+      // 3. But NOT if it's /memo, /checklist, /tags, /activity, or /tag-notes
+      if (pathname === '/') return true;
+      if (pathname.startsWith('/notes/')) {
+        // Check if it's not under another route
+        const basePath = pathname.split('/notes/')[0];
+        return basePath === '' || basePath === '/';
+      }
+      return false;
+    }
+    
+    // For other routes, check if pathname starts with the route path
+    // This handles nested routes like /memo/notes/:id
+    if (pathname === itemPath) return true;
+    if (pathname.startsWith(`${itemPath}/`)) return true;
+    
+    // Special case for Tags: also match /tag-notes/:tagId
+    if (itemPath === '/tags' && pathname.startsWith('/tag-notes/')) {
+      return true;
+    }
+    
+    return false;
+  }, [location.pathname]);
+
   return (
     <Drawer
       anchor="left"
@@ -66,6 +100,8 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
       <List>
         {navigationItems.map((item, index) => {
           const Icon = item.icon;
+          const isActive = isRouteActive(item.path);
+          
           return (
             <Fade
               key={item.path}
@@ -80,19 +116,31 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                   component={Link}
                   to={item.path}
                   onClick={onClose}
+                  selected={isActive}
                   sx={{
+                    backgroundColor: isActive ? 'action.selected' : 'transparent',
                     '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                      backgroundColor: isActive ? 'action.selected' : 'action.hover',
                     },
                     borderRadius: '8px',
                     margin: '0 8px',
                     padding: '8px 16px',
                   }}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon
+                    sx={{
+                      color: isActive ? 'primary.main' : 'text.secondary',
+                    }}
+                  >
                     <Icon />
                   </ListItemIcon>
-                  <ListItemText primary={item.label} />
+                  <ListItemText 
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? 600 : 400,
+                      color: isActive ? 'primary.main' : 'text.primary',
+                    }}
+                  />
                 </ListItemButton>
               </ListItem>
             </Fade>
