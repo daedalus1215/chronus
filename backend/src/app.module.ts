@@ -23,6 +23,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         NODE_ENV: Joi.string().required(),
         JWT_EXPIRES_IN: Joi.string().required(),
         HERMES_API_URL: Joi.string().required(),
+        THOTH_WS_URL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
