@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { AuthModule } from "../auth/auth.module";
 import { Note } from "./domain/entities/notes/note.entity";
 import { Memo } from "./domain/entities/notes/memo.entity";
 import { NoteMemoTagRepository } from "./infra/repositories/note-memo-tag.repository";
@@ -25,7 +26,11 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
 import { GetNoteDetailsListener } from "./apps/listeners/get-note-details.listener";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Note, Memo]), EventEmitterModule.forRoot()],
+  imports: [
+    TypeOrmModule.forFeature([Note, Memo]),
+    EventEmitterModule.forRoot(),
+    AuthModule,
+  ],
   providers: [
     NoteMemoTagRepository,
     NoteAggregator,

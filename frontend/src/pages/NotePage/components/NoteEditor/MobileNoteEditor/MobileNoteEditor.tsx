@@ -14,16 +14,24 @@ type Note = {
 type NoteEditorProps = {
   note: Note;
   onSave: (note: Partial<Note>) => void;
+  onAppendToDescription?: (appendFn: (text: string) => void) => void;
 };
 
 export const MobileNoteEditor: React.FC<NoteEditorProps> = ({
   note,
   onSave,
+  onAppendToDescription,
 }) => {
-  const { content, handleDescriptionChange } = useNoteEditor({
+  const { content, handleDescriptionChange, appendToDescription } = useNoteEditor({
     note,
     onSave,
   });
+
+  React.useEffect(() => {
+    if (onAppendToDescription) {
+      onAppendToDescription(appendToDescription);
+    }
+  }, [appendToDescription, onAppendToDescription]);
 
   return (
     <div className={styles.editor}>

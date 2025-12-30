@@ -21,6 +21,7 @@ type UseNoteEditorProps = {
 type UseNoteEditorReturn = {
   content: NoteContent;
   handleDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  appendToDescription: (text: string) => void;
 };
 
 export const useNoteEditor = ({
@@ -87,8 +88,37 @@ export const useNoteEditor = ({
     }
   }, [content.description]);
 
+  const appendToDescription = React.useCallback(
+    (text: string) => {
+      console.log('appendToDescription called with:', text);
+      // Strict validation - only append valid, non-empty strings
+      if (
+        !text ||
+        text === undefined ||
+        text === null ||
+        typeof text !== 'string' ||
+        text.trim() === '' ||
+        text === 'undefined' ||
+        text === 'null'
+      ) {
+        console.debug('Skipping invalid text in appendToDescription:', text);
+        return;
+      }
+
+      const currentDescription = contentRef.current.description || '';
+      const separator = currentDescription ? ' ' : '';
+      const newDescription = `${currentDescription}${separator}${text.trim()}`;
+      console.log(`Appending to description. Current length: ${currentDescription.length}, New length: ${newDescription.length}`);
+      handleContentChange({
+        description: newDescription,
+      });
+    },
+    [handleContentChange],
+  );
+
   return {
     content,
     handleDescriptionChange,
+    appendToDescription,
   };
 };
