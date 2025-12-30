@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { IconButton, CircularProgress, Alert, Box, Chip } from '@mui/material';
-import { Mic, Error as ErrorIcon } from '@mui/icons-material';
+import {
+  Fab,
+  Tooltip,
+  CircularProgress,
+  Alert,
+  Snackbar,
+  Badge,
+} from '@mui/material';
+import { Mic, Stop } from '@mui/icons-material';
 import { useTranscriptionWebSocket } from '../../hooks/useTranscriptionWebSocket/useTranscriptionWebSocket';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder/useAudioRecorder';
 
@@ -15,6 +22,9 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
 }) => {
   const [micAvailable, setMicAvailable] = useState<boolean | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'warning'>('error');
 
   // Log when onTranscription changes to verify it's being passed correctly
   useEffect(() => {
@@ -69,9 +79,22 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
     const checkMic = async () => {
       const result = await checkMicrophoneAvailability();
       setMicAvailable(result.available);
+      if (!result.available) {
+        setSnackbarMessage('Microphone not available');
+        setSnackbarSeverity('warning');
+        setSnackbarOpen(true);
+      }
     };
     checkMic();
   }, [checkMicrophoneAvailability]);
+
+  useEffect(() => {
+    if (error) {
+      setSnackbarMessage(error);
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  }, [error]);
 
   const handleToggleRecording = async () => {
     if (isRecording) {
@@ -104,65 +127,78 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
   };
 
   const getStatusText = () => {
-    if (error) return 'Error';
-    if (isRecording) return 'Recording';
+    if (error) return `Error: ${error}`;
+    if (isRecording) return 'Recording - Click to stop';
     if (isInitializing) return 'Initializing...';
-    if (isConnected) return 'Ready';
-    return 'Idle';
+    if (micAvailable === false) return 'Microphone not available';
+    if (isConnected) return 'Ready to record';
+    return 'Idle - Click to start recording';
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1,
-        p: 1,
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 1,
-        mb: 2,
-      }}
-    >
-      <IconButton
-        onClick={handleToggleRecording}
-        disabled={micAvailable === false || isInitializing}
-        color={isRecording ? 'error' : 'primary'}
-        aria-label={isRecording ? 'Stop recording' : 'Start recording'}
-        sx={{
-          backgroundColor: isRecording ? 'error.light' : 'transparent',
-          '&:hover': {
-            backgroundColor: isRecording ? 'error.dark' : 'action.hover',
-          },
-        }}
+    <>
+      <Tooltip title={getStatusText()} arrow placement="left">
+        <Fab
+          color={isRecording ? 'error' : 'primary'}
+          onClick={handleToggleRecording}
+          disabled={micAvailable === false || isInitializing}
+          aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 1000,
+          }}
+        >
+          <Badge
+            badgeContent=" "
+            color="error"
+            invisible={!isRecording}
+            sx={{
+              '& .MuiBadge-badge': {
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              },
+              '@keyframes pulse': {
+                '0%, 100%': {
+                  opacity: 1,
+                },
+                '50%': {
+                  opacity: 0.5,
+                },
+              },
+            }}
+          >
+            {isInitializing ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : isRecording ? (
+              <Stop />
+            ) : (
+              <Mic />
+            )}
+          </Badge>
+        </Fab>
+      </Tooltip>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        {isInitializing ? (
-          <CircularProgress size={24} color="inherit" />
-        ) : (
-          <Mic />
-        )}
-      </IconButton>
-
-      <Chip
-        icon={error ? <ErrorIcon /> : undefined}
-        label={getStatusText()}
-        color={error ? 'error' : isRecording ? 'success' : 'default'}
-        size="small"
-        variant="outlined"
-      />
-
-      {error && (
-        <Alert severity="error" sx={{ flex: 1, py: 0 }}>
-          {error}
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
         </Alert>
-      )}
-
-      {micAvailable === false && !error && (
-        <Alert severity="warning" sx={{ flex: 1, py: 0 }}>
-          Microphone not available
-        </Alert>
-      )}
-    </Box>
+      </Snackbar>
+    </>
   );
 };
 
