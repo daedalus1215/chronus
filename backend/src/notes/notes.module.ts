@@ -24,9 +24,6 @@ import { GetNoteNamesByIdsTransactionScript } from "./domain/transaction-scripts
 import { VerifyNoteAccessListener } from "./apps/listeners/verify-note-access.listener";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { GetNoteDetailsListener } from "./apps/listeners/get-note-details.listener";
-import { ThothWebSocketClientService } from "./infra/remote-callers/thoth-websocket-client.service";
-import { AppendTranscriptionToNoteTransactionScript } from "./domain/transaction-scripts/append-transcription-to-note.transaction.script";
-import { TranscribeAudioGateway } from "./apps/gateways/transcribe-audio.gateway";
 
 @Module({
   imports: [
@@ -47,9 +44,6 @@ import { TranscribeAudioGateway } from "./apps/gateways/transcribe-audio.gateway
     GetNoteNamesByIdsTransactionScript,
     VerifyNoteAccessListener,
     GetNoteDetailsListener,
-    ThothWebSocketClientService,
-    AppendTranscriptionToNoteTransactionScript,
-    TranscribeAudioGateway,
   ],
   controllers: [
     GetNoteNamesByUserIdAction,
