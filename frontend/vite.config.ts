@@ -45,7 +45,7 @@ export default defineConfig({
         orientation: 'portrait'
       },
       devOptions: {
-        enabled: true,
+        enabled: false, // Disable service worker in development to avoid SSL certificate errors
         type: 'module'
       },
       workbox: {

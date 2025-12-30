@@ -18,6 +18,8 @@ import { DesktopNoteEditor } from './components/NoteEditor/DesktopNoteEditor/Des
 import { MobileNoteEditor } from './components/NoteEditor/MobileNoteEditor/MobileNoteEditor';
 import { DesktopCheckListView } from './components/CheckListView/DesktopCheckListView/DesktopCheckListView';
 import { MobileCheckListView } from './components/CheckListView/MobileCheckListView/MobileCheckListView';
+import { TranscriptionRecorder } from './components/TranscriptionRecorder/TranscriptionRecorder';
+import { useTranscriptionCallback } from './hooks/useTranscriptionCallback/useTranscriptionCallback';
 import styles from './NotePage.module.css';
 
 export const NotePage: React.FC = () => {
@@ -39,6 +41,9 @@ export const NotePage: React.FC = () => {
     error: allTagsError,
   } = useAllTags();
   const [isAddTagOpen, setAddTagOpen] = useState(false);
+  
+  // Use custom hook to manage transcription callback chain
+  const { setAppendToDescriptionFn, onTranscription: onTranscriptionCallback } = useTranscriptionCallback();
 
   if (isLoading) {
     return (
@@ -143,11 +148,25 @@ export const NotePage: React.FC = () => {
         )}
         <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           {note?.isMemo ? (
-            isMobile ? (
-              <MobileNoteEditor note={note} onSave={handleSave} />
-            ) : (
-              <DesktopNoteEditor note={note} onSave={handleSave} />
-            )
+            <>
+              <TranscriptionRecorder
+                noteId={note.id}
+                onTranscription={onTranscriptionCallback}
+              />
+              {isMobile ? (
+                <MobileNoteEditor
+                  note={note}
+                  onSave={handleSave}
+                  onAppendToDescription={setAppendToDescriptionFn}
+                />
+              ) : (
+                <DesktopNoteEditor
+                  note={note}
+                  onSave={handleSave}
+                  onAppendToDescription={setAppendToDescriptionFn}
+                />
+              )}
+            </>
           ) : isMobile ? (
             <MobileCheckListView note={note} />
           ) : (
