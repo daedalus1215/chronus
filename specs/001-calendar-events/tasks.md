@@ -22,11 +22,11 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create calendar-events module directory structure in backend/src/calendar-events/
-- [ ] T002 [P] Create apps/actions/ directory structure in backend/src/calendar-events/apps/actions/
-- [ ] T003 [P] Create domain/ directory structure in backend/src/calendar-events/domain/
-- [ ] T004 [P] Create infra/ directory structure in backend/src/calendar-events/infra/
-- [ ] T005 [P] Create CalendarPage directory structure in frontend/src/pages/CalendarPage/
+- [x] T001 Create calendar-events module directory structure in backend/src/calendar-events/
+- [x] T002 [P] Create apps/actions/ directory structure in backend/src/calendar-events/apps/actions/
+- [x] T003 [P] Create domain/ directory structure in backend/src/calendar-events/domain/
+- [x] T004 [P] Create infra/ directory structure in backend/src/calendar-events/infra/
+- [x] T005 [P] Create CalendarPage directory structure in frontend/src/pages/CalendarPage/
 
 ---
 
@@ -36,12 +36,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Create database migration for calendar_events table in backend/src/typeorm/migrations/
-- [ ] T007 [P] Create domain entity CalendarEvent in backend/src/calendar-events/domain/entities/calendar-event.entity.ts
-- [ ] T008 [P] Create infrastructure entity CalendarEventEntity in backend/src/calendar-events/infra/entities/calendar-event.entity.ts
-- [ ] T009 Create CalendarEventRepository in backend/src/calendar-events/infra/repositories/calendar-event.repository.ts with methods: create, findByDateRange, findById, update
-- [ ] T010 Create calendar-events.module.ts in backend/src/calendar-events/calendar-events.module.ts
-- [ ] T011 Register CalendarEventsModule in backend/src/app.module.ts
+- [x] T006 Create database migration for calendar_events table in backend/src/typeorm/migrations/
+- [x] T007 [P] Create domain entity CalendarEvent in backend/src/calendar-events/domain/entities/calendar-event.entity.ts
+- [x] T008 [P] Create infrastructure entity CalendarEventEntity in backend/src/calendar-events/infra/entities/calendar-event.entity.ts
+- [x] T009 Create CalendarEventRepository in backend/src/calendar-events/infra/repositories/calendar-event.repository.ts with methods: create, findByDateRange, findById, update
+- [x] T010 Create calendar-events.module.ts in backend/src/calendar-events/calendar-events.module.ts
+- [x] T011 Register CalendarEventsModule in backend/src/app.module.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -63,24 +63,24 @@
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Create FetchCalendarEventsTransactionScript in backend/src/calendar-events/domain/transaction-scripts/fetch-calendar-events-TS/fetch-calendar-events.transaction.script.ts
-- [ ] T015 [US1] Create CalendarEventService in backend/src/calendar-events/domain/services/calendar-event.service.ts (orchestrates Transaction Scripts)
-- [ ] T016 [US1] Create FetchCalendarEventsAction in backend/src/calendar-events/apps/actions/fetch-calendar-events-action/fetch-calendar-events.action.ts
-- [ ] T017 [P] [US1] Create FetchCalendarEventsSwagger in backend/src/calendar-events/apps/actions/fetch-calendar-events-action/fetch-calendar-events.swagger.ts
-- [ ] T018 [P] [US1] Create FetchCalendarEventsRequestDto in backend/src/calendar-events/apps/actions/fetch-calendar-events-action/dtos/requests/fetch-calendar-events.dto.ts
-- [ ] T019 [P] [US1] Create CalendarEventResponseDto in backend/src/calendar-events/apps/dtos/responses/calendar-event.response.dto.ts
-- [ ] T020 [US1] Register FetchCalendarEventsAction in backend/src/calendar-events/calendar-events.module.ts
-- [ ] T021 [P] [US1] Create API client functions in frontend/src/api/calendar-events/requests.ts (fetchCalendarEvents function)
-- [ ] T022 [P] [US1] Create API response types in frontend/src/api/calendar-events/responses.ts
-- [ ] T023 [P] [US1] Create useCalendarEvents hook in frontend/src/pages/CalendarPage/hooks/useCalendarEvents.ts
-- [ ] T024 [P] [US1] Create CalendarView component in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.tsx
+- [x] T014 [P] [US1] Create FetchCalendarEventsTransactionScript in backend/src/calendar-events/domain/transaction-scripts/fetch-calendar-events-TS/fetch-calendar-events.transaction.script.ts
+- [x] T015 [US1] Create CalendarEventService in backend/src/calendar-events/domain/services/calendar-event.service.ts (orchestrates Transaction Scripts)
+- [x] T016 [US1] Create FetchCalendarEventsAction in backend/src/calendar-events/apps/actions/fetch-calendar-events-action/fetch-calendar-events.action.ts
+- [x] T017 [P] [US1] Create FetchCalendarEventsSwagger in backend/src/calendar-events/apps/actions/fetch-calendar-events-action/fetch-calendar-events.swagger.ts
+- [x] T018 [P] [US1] Create FetchCalendarEventsRequestDto in backend/src/calendar-events/apps/actions/fetch-calendar-events-action/dtos/requests/fetch-calendar-events.dto.ts
+- [x] T019 [P] [US1] Create CalendarEventResponseDto in backend/src/calendar-events/apps/dtos/responses/calendar-event.response.dto.ts
+- [x] T020 [US1] Register FetchCalendarEventsAction in backend/src/calendar-events/calendar-events.module.ts
+- [x] T021 [P] [US1] Create API client functions in frontend/src/api/requests/calendar-events.requests.ts (fetchCalendarEvents function)
+- [x] T022 [P] [US1] Create API response types in frontend/src/api/dtos/calendar-events.dtos.ts
+- [x] T023 [P] [US1] Create useCalendarEvents hook in frontend/src/pages/CalendarPage/hooks/useCalendarEvents.ts
+- [x] T024 [P] [US1] Create CalendarView component in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.tsx
 - [ ] T024a [US1] Implement multi-day event handling in CalendarView: events spanning multiple days should display across day boundaries (edge case clarification) in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.tsx
-- [ ] T025 [P] [US1] Create CalendarView styles in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.module.css
-- [ ] T026 [US1] Create CalendarPage component in frontend/src/pages/CalendarPage/CalendarPage.tsx
-- [ ] T027 [P] [US1] Create CalendarPage styles in frontend/src/pages/CalendarPage/CalendarPage.module.css
-- [ ] T028 [US1] Add route for CalendarPage in frontend/src/router/router.tsx
-- [ ] T029 [P] [US1] Add week navigation controls to CalendarPage (previous/next week buttons) in frontend/src/pages/CalendarPage/CalendarPage.tsx
-- [ ] T030 [P] [US1] Add current date indicator to CalendarView in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.tsx
+- [x] T025 [P] [US1] Create CalendarView styles in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.module.css
+- [x] T026 [US1] Create CalendarPage component in frontend/src/pages/CalendarPage/CalendarPage.tsx
+- [x] T027 [P] [US1] Create CalendarPage styles in frontend/src/pages/CalendarPage/CalendarPage.module.css
+- [x] T028 [US1] Add route for CalendarPage in frontend/src/App.tsx
+- [x] T029 [P] [US1] Add week navigation controls to CalendarPage (previous/next week buttons) in frontend/src/pages/CalendarPage/CalendarPage.tsx
+- [x] T030 [P] [US1] Add current date indicator to CalendarView in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.tsx
 - [ ] T031 [P] [US1] Performance test: Verify calendar page loads in under 2 seconds with 50+ events (SC-001, SC-006) in backend/test/calendar-events.e2e-spec.ts
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently. Users can navigate to the calendar page, see events displayed in a weekly view, navigate between weeks, and see the current date indicator.
