@@ -12,13 +12,6 @@
   box-sizing: border-box;
 }
 
-.createButton {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  z-index: 1000;
-}
-
 .errorMessage {
   padding: 2rem;
   color: var(--color-error, #f44336);

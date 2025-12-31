@@ -103,18 +103,18 @@
 
 ### Implementation for User Story 2
 
-- [ ] T035 [P] [US2] Create CreateCalendarEventTransactionScript in backend/src/calendar-events/domain/transaction-scripts/create-calendar-event-TS/create-calendar-event.transaction.script.ts
-- [ ] T036 [US2] Add createCalendarEvent method to CalendarEventService in backend/src/calendar-events/domain/services/calendar-event.service.ts
-- [ ] T037 [US2] Create CreateCalendarEventAction in backend/src/calendar-events/apps/actions/create-calendar-event-action/create-calendar-event.action.ts
-- [ ] T038 [P] [US2] Create CreateCalendarEventSwagger in backend/src/calendar-events/apps/actions/create-calendar-event-action/create-calendar-event.swagger.ts
-- [ ] T039 [P] [US2] Create CreateCalendarEventRequestDto in backend/src/calendar-events/apps/actions/create-calendar-event-action/dtos/requests/create-calendar-event.dto.ts
-- [ ] T040 [US2] Register CreateCalendarEventAction in backend/src/calendar-events/calendar-events.module.ts
-- [ ] T041 [P] [US2] Add createCalendarEvent function to frontend/src/api/calendar-events/requests.ts
-- [ ] T042 [P] [US2] Create useCreateCalendarEvent hook in frontend/src/pages/CalendarPage/hooks/useCreateCalendarEvent.ts
-- [ ] T043 [P] [US2] Create CreateEventModal component in frontend/src/pages/CalendarPage/components/CreateEventModal/CreateEventModal.tsx
-- [ ] T044 [P] [US2] Create CreateEventModal styles in frontend/src/pages/CalendarPage/components/CreateEventModal/CreateEventModal.module.css
-- [ ] T045 [US2] Add create event button to CalendarPage in frontend/src/pages/CalendarPage/CalendarPage.tsx
-- [ ] T046 [US2] Integrate CreateEventModal with CalendarPage in frontend/src/pages/CalendarPage/CalendarPage.tsx
+- [x] T035 [P] [US2] Create CreateCalendarEventTransactionScript in backend/src/calendar-events/domain/transaction-scripts/create-calendar-event-TS/create-calendar-event.transaction.script.ts
+- [x] T036 [US2] Add createCalendarEvent method to CalendarEventService in backend/src/calendar-events/domain/services/calendar-event.service.ts
+- [x] T037 [US2] Create CreateCalendarEventAction in backend/src/calendar-events/apps/actions/create-calendar-event-action/create-calendar-event.action.ts
+- [x] T038 [P] [US2] Create CreateCalendarEventSwagger in backend/src/calendar-events/apps/actions/create-calendar-event-action/create-calendar-event.swagger.ts
+- [x] T039 [P] [US2] Create CreateCalendarEventRequestDto in backend/src/calendar-events/apps/actions/create-calendar-event-action/dtos/requests/create-calendar-event.dto.ts
+- [x] T040 [US2] Register CreateCalendarEventAction in backend/src/calendar-events/calendar-events.module.ts
+- [x] T041 [P] [US2] Add createCalendarEvent function to frontend/src/api/requests/calendar-events.requests.ts
+- [x] T042 [P] [US2] Create useCreateCalendarEvent hook in frontend/src/pages/CalendarPage/hooks/useCreateCalendarEvent.ts
+- [x] T043 [P] [US2] Create CreateEventModal component in frontend/src/pages/CalendarPage/components/CreateEventModal/CreateEventModal.tsx
+- [x] T044 [P] [US2] Create CreateEventModal styles in frontend/src/pages/CalendarPage/components/CreateEventModal/CreateEventModal.module.css
+- [x] T045 [US2] Add create event button to CalendarPage in frontend/src/pages/CalendarPage/CalendarPage.tsx
+- [x] T046 [US2] Integrate CreateEventModal with CalendarPage in frontend/src/pages/CalendarPage/CalendarPage.tsx
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. Users can view the calendar and create new events.
 

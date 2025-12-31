@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Box, Paper, Typography, Button, CircularProgress } from '@mui/material';
 import { ArrowBack, ArrowForward, Today } from '@mui/icons-material';
 import {
@@ -36,6 +36,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   });
 
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
+  const calendarGridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (calendarGridRef.current) {
+      calendarGridRef.current.scrollTop = 0;
+    }
+  }, [weekStartDate]);
 
   const getEventsForDay = (day: Date): CalendarEventResponseDto[] => {
     return events.filter((event) => {
@@ -94,7 +101,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </Box>
       </Box>
 
-      <Box className={styles.calendarGrid}>
+      <Box className={styles.calendarGrid} ref={calendarGridRef}>
         <Box className={styles.timeColumn}>
           <Box className={styles.timeSlotHeader}></Box>
           {timeSlots.map((hour) => (

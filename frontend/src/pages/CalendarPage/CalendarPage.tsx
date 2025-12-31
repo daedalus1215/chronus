@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Box, Fab, CircularProgress } from '@mui/material';
+import { Box, Fab } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { CalendarView } from './components/CalendarView/CalendarView';
+import { CreateEventModal } from './components/CreateEventModal/CreateEventModal';
 import { useCalendarEvents } from './hooks/useCalendarEvents';
-import { startOfWeek, addWeeks, format } from 'date-fns';
+import { startOfWeek, addWeeks } from 'date-fns';
 import styles from './CalendarPage.module.css';
 
 export const CalendarPage: React.FC = () => {
   const [currentWeek, setCurrentWeek] = useState<Date>(
     startOfWeek(new Date(), { weekStartsOn: 1 }),
   );
-  const { events, isLoading, error } = useCalendarEvents(currentWeek);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { events, isLoading, error, refetch } = useCalendarEvents(currentWeek);
 
   const handlePreviousWeek = () => {
     setCurrentWeek((prev) => addWeeks(prev, -1));
@@ -22,6 +24,15 @@ export const CalendarPage: React.FC = () => {
 
   const handleToday = () => {
     setCurrentWeek(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  };
+
+  const handleCreateEvent = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsCreateModalOpen(false);
+    refetch();
   };
 
   if (error) {
@@ -47,14 +58,21 @@ export const CalendarPage: React.FC = () => {
       <Fab
         color="primary"
         aria-label="create event"
-        className={styles.createButton}
-        onClick={() => {
-          // TODO: Open create event modal
-          console.log('Create event clicked');
+        onClick={handleCreateEvent}
+        sx={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          zIndex: 1000,
         }}
       >
         <AddIcon />
       </Fab>
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseModal}
+        defaultDate={new Date()}
+      />
     </Box>
   );
 };

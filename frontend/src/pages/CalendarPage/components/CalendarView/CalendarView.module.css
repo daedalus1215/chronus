@@ -29,10 +29,14 @@
 .calendarGrid {
   display: flex;
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: auto;
   border: 1px solid var(--color-border, #333);
   border-radius: 8px;
   background-color: var(--color-card-bg, #1e1e1e);
+  min-height: 0;
+  position: relative;
+  align-items: flex-start;
 }
 
 .timeColumn {
@@ -41,7 +45,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 1500px; /* 60px header + 1440px content (24 hours * 60px) */
+  height: 1620px; /* 60px header + 1560px content (24 hours * 60px + extra buffer) */
+  flex-shrink: 0;
 }
 
 .timeColumn::after {
@@ -78,7 +83,8 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 1500px; /* 60px header + 1440px content (24 hours * 60px) */
+  height: 1620px; /* 60px header + 1560px content (24 hours * 60px + extra buffer) */
+  flex-shrink: 0;
 }
 
 .dayColumn::after {
@@ -98,10 +104,12 @@
 
 .dayHeader {
   height: 60px;
+  min-height: 60px;
   padding: 0.5rem;
   text-align: center;
   border-bottom: 1px solid var(--color-border, #333);
   background-color: var(--color-card-bg, #1e1e1e);
+  flex-shrink: 0;
 }
 
 .dayHeader.today {
@@ -110,17 +118,19 @@
 }
 
 .dayContent {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  height: 1440px; /* 24 hours * 60px per hour */
+  height: 1560px; /* 24 hours * 60px per hour + extra buffer */
+  flex-shrink: 0;
 }
 
 .timeSlotCell {
   height: 60px;
+  min-height: 60px;
   border-bottom: 1px solid var(--color-border, #333);
   position: relative;
   padding: 2px;
+  flex-shrink: 0;
 }
 
 .eventCard {
