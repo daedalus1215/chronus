@@ -7,6 +7,11 @@ import { useCalendarEvents } from './hooks/useCalendarEvents';
 import { startOfWeek, addWeeks } from 'date-fns';
 import styles from './CalendarPage.module.css';
 
+/**
+ * Main calendar page component.
+ * Displays a weekly calendar view with events and provides functionality to create new events.
+ * Handles week navigation and event creation through a modal.
+ */
 export const CalendarPage: React.FC = () => {
   const [currentWeek, setCurrentWeek] = useState<Date>(
     startOfWeek(new Date(), { weekStartsOn: 1 }),

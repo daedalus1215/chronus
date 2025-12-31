@@ -22,6 +22,19 @@ type CalendarViewProps = {
   onToday: () => void;
 };
 
+/**
+ * Calendar view component displaying a weekly calendar grid with hourly time slots.
+ * Shows events in their respective time slots and days.
+ * Supports clicking events to view/edit details.
+ *
+ * @param props - Component props
+ * @param props.weekStartDate - The start date of the week (Monday)
+ * @param props.events - Array of calendar events to display
+ * @param props.isLoading - Whether events are currently loading
+ * @param props.onPreviousWeek - Callback to navigate to previous week
+ * @param props.onNextWeek - Callback to navigate to next week
+ * @param props.onToday - Callback to navigate to current week
+ */
 export const CalendarView: React.FC<CalendarViewProps> = ({
   weekStartDate,
   events,

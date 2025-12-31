@@ -162,12 +162,12 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T067 [P] Add JSDoc documentation to all public classes and methods in backend/src/calendar-events/
-- [ ] T068 [P] Add JSDoc documentation to all public components and hooks in frontend/src/pages/CalendarPage/
+- [x] T067 [P] Add JSDoc documentation to all public classes and methods in backend/src/calendar-events/
+- [x] T068 [P] Add JSDoc documentation to all public components and hooks in frontend/src/pages/CalendarPage/
 - [ ] T069 [P] Code cleanup and refactoring across calendar-events module
 - [ ] T070 [P] Performance optimization: optimize date range queries, add caching if needed
-- [ ] T071 [P] Add error handling and loading states to all frontend components
-- [ ] T072 [P] Add validation error messages to CreateEventModal and EventDetailsModal
+- [x] T071 [P] Add error handling and loading states to all frontend components
+- [x] T072 [P] Add validation error messages to CreateEventModal and EventDetailsModal
 - [ ] T073 [P] Implement event overlap visualization in CalendarView component
 - [ ] T074 [P] Add responsive design for mobile devices
 - [ ] T075 Run quickstart.md validation checklist

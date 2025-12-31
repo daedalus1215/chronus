@@ -9,6 +9,10 @@ import { CreateCalendarEventRequestDto } from './dtos/requests/create-calendar-e
 import { CreateCalendarEventCommand } from '../../../domain/transaction-scripts/create-calendar-event-TS/create-calendar-event.command';
 import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.response.dto';
 
+/**
+ * Action handler for creating new calendar events.
+ * Handles POST /calendar-events requests.
+ */
 @Controller('calendar-events')
 @UseGuards(JwtAuthGuard)
 @ApiTags('Calendar Events')
@@ -18,6 +22,13 @@ export class CreateCalendarEventAction {
     private readonly calendarEventService: CalendarEventService,
   ) {}
 
+  /**
+   * Create a new calendar event for the authenticated user.
+   *
+   * @param dto - Request DTO with event details (title, description, startDate, endDate)
+   * @param user - Authenticated user from JWT token
+   * @returns Created calendar event response DTO
+   */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ProtectedAction(CreateCalendarEventSwagger)

@@ -8,6 +8,10 @@ import { FetchCalendarEventSwagger } from './fetch-calendar-event.swagger';
 import { FetchCalendarEventCommand } from '../../../domain/transaction-scripts/fetch-calendar-event-TS/fetch-calendar-event.command';
 import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.response.dto';
 
+/**
+ * Action handler for fetching a single calendar event by ID.
+ * Handles GET /calendar-events/:id requests.
+ */
 @Controller('calendar-events')
 @UseGuards(JwtAuthGuard)
 @ApiTags('Calendar Events')
@@ -17,6 +21,14 @@ export class FetchCalendarEventAction {
     private readonly calendarEventService: CalendarEventService,
   ) {}
 
+  /**
+   * Fetch a specific calendar event by ID for the authenticated user.
+   * Returns 404 if event doesn't exist or doesn't belong to the user.
+   *
+   * @param id - Calendar event ID from path parameter
+   * @param user - Authenticated user from JWT token
+   * @returns Calendar event response DTO
+   */
   @Get(':id')
   @ProtectedAction(FetchCalendarEventSwagger)
   async apply(

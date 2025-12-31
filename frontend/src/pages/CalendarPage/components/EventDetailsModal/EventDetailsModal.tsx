@@ -21,6 +21,16 @@ type EventDetailsModalProps = {
   eventId: number | null;
 };
 
+/**
+ * Modal component for viewing and editing calendar event details.
+ * Supports two modes: view mode (read-only) and edit mode (with form).
+ * Automatically refreshes the calendar after successful update.
+ *
+ * @param props - Component props
+ * @param props.isOpen - Whether the modal is open
+ * @param props.onClose - Callback to close the modal
+ * @param props.eventId - The ID of the event to display/edit, or null to disable
+ */
 export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   isOpen,
   onClose,
@@ -35,6 +45,11 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
     startDate: '',
     endDate: '',
   });
+  const [validationErrors, setValidationErrors] = useState<{
+    title?: string;
+    startDate?: string;
+    endDate?: string;
+  }>({});
 
   useEffect(() => {
     if (event) {
@@ -45,12 +60,44 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
         endDate: format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm"),
       });
       setIsEditing(false);
+      setValidationErrors({});
     }
   }, [event]);
+
+  const validateForm = (): boolean => {
+    const errors: {
+      title?: string;
+      startDate?: string;
+      endDate?: string;
+    } = {};
+    if (!formData.title.trim()) {
+      errors.title = 'Title is required';
+    } else if (formData.title.length > 255) {
+      errors.title = 'Title cannot exceed 255 characters';
+    }
+    if (!formData.startDate) {
+      errors.startDate = 'Start date is required';
+    }
+    if (!formData.endDate) {
+      errors.endDate = 'End date is required';
+    }
+    if (formData.startDate && formData.endDate) {
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
+      if (start >= end) {
+        errors.endDate = 'End date must be after start date';
+      }
+    }
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!eventId) {
+      return;
+    }
+    if (!validateForm()) {
       return;
     }
     try {
@@ -80,6 +127,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
       });
     }
     setIsEditing(false);
+    setValidationErrors({});
   };
 
   const handleClose = () => {
@@ -150,12 +198,17 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             <TextField
               label="Title"
               value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, title: e.target.value });
+                if (validationErrors.title) {
+                  setValidationErrors({ ...validationErrors, title: undefined });
+                }
+              }}
               required
               fullWidth
               disabled={!isEditing || updateMutation.isPending}
+              error={!!validationErrors.title}
+              helperText={validationErrors.title}
             />
             <TextField
               label="Description"
@@ -172,25 +225,42 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               label="Start Date & Time"
               type="datetime-local"
               value={formData.startDate}
-              onChange={(e) =>
-                setFormData({ ...formData, startDate: e.target.value })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, startDate: e.target.value });
+                if (validationErrors.startDate) {
+                  setValidationErrors({ ...validationErrors, startDate: undefined });
+                }
+                if (validationErrors.endDate && formData.endDate) {
+                  const start = new Date(e.target.value);
+                  const end = new Date(formData.endDate);
+                  if (start < end) {
+                    setValidationErrors({ ...validationErrors, endDate: undefined });
+                  }
+                }
+              }}
               required
               fullWidth
               InputLabelProps={{ shrink: true }}
               disabled={!isEditing || updateMutation.isPending}
+              error={!!validationErrors.startDate}
+              helperText={validationErrors.startDate}
             />
             <TextField
               label="End Date & Time"
               type="datetime-local"
               value={formData.endDate}
-              onChange={(e) =>
-                setFormData({ ...formData, endDate: e.target.value })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, endDate: e.target.value });
+                if (validationErrors.endDate) {
+                  setValidationErrors({ ...validationErrors, endDate: undefined });
+                }
+              }}
               required
               fullWidth
               InputLabelProps={{ shrink: true }}
               disabled={!isEditing || updateMutation.isPending}
+              error={!!validationErrors.endDate}
+              helperText={validationErrors.endDate}
             />
             {updateMutation.error && (
               <Typography color="error" variant="body2">

@@ -9,6 +9,10 @@ import { UpdateCalendarEventRequestDto } from './dtos/requests/update-calendar-e
 import { UpdateCalendarEventCommand } from '../../../domain/transaction-scripts/update-calendar-event-TS/update-calendar-event.command';
 import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.response.dto';
 
+/**
+ * Action handler for updating existing calendar events.
+ * Handles PUT /calendar-events/:id requests.
+ */
 @Controller('calendar-events')
 @UseGuards(JwtAuthGuard)
 @ApiTags('Calendar Events')
@@ -18,6 +22,15 @@ export class UpdateCalendarEventAction {
     private readonly calendarEventService: CalendarEventService,
   ) {}
 
+  /**
+   * Update an existing calendar event for the authenticated user.
+   * Returns 404 if event doesn't exist or doesn't belong to the user.
+   *
+   * @param id - Calendar event ID from path parameter
+   * @param dto - Request DTO with updated event details
+   * @param user - Authenticated user from JWT token
+   * @returns Updated calendar event response DTO
+   */
   @Put(':id')
   @ProtectedAction(UpdateCalendarEventSwagger)
   async apply(

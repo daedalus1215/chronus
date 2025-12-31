@@ -1,12 +1,12 @@
-import { IsDateString, IsNotEmpty } from 'class-validator';
+import { IsDateString, IsOptional } from 'class-validator';
 
 export class FetchCalendarEventsRequestDto {
   @IsDateString()
-  @IsNotEmpty()
-  startDate: string;
+  @IsOptional()
+  startDate?: string;
 
   @IsDateString()
-  @IsNotEmpty()
-  endDate: string;
+  @IsOptional()
+  endDate?: string;
 }
 

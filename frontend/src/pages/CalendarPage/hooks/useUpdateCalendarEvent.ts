@@ -6,6 +6,12 @@ import {
 } from '../../../api/dtos/calendar-events.dtos';
 import { calendarEventKeys } from './useCalendarEvents';
 
+/**
+ * Hook to update an existing calendar event.
+ * Automatically invalidates calendar event queries after successful update.
+ *
+ * @returns Mutation object with update function, loading state, and error handling
+ */
 export const useUpdateCalendarEvent = () => {
   const queryClient = useQueryClient();
 
