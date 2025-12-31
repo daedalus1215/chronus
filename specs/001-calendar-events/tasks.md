@@ -137,22 +137,22 @@
 
 ### Implementation for User Story 3
 
-- [ ] T051 [P] [US3] Create FetchCalendarEventTransactionScript in backend/src/calendar-events/domain/transaction-scripts/fetch-calendar-event-TS/fetch-calendar-event.transaction.script.ts
-- [ ] T052 [P] [US3] Create UpdateCalendarEventTransactionScript in backend/src/calendar-events/domain/transaction-scripts/update-calendar-event-TS/update-calendar-event.transaction.script.ts (must use CalendarEventRepository.update method from T009)
-- [ ] T053 [US3] Add fetchCalendarEventById and updateCalendarEvent methods to CalendarEventService in backend/src/calendar-events/domain/services/calendar-event.service.ts
-- [ ] T054 [US3] Create FetchCalendarEventAction in backend/src/calendar-events/apps/actions/fetch-calendar-event-action/fetch-calendar-event.action.ts
-- [ ] T055 [P] [US3] Create FetchCalendarEventSwagger in backend/src/calendar-events/apps/actions/fetch-calendar-event-action/fetch-calendar-event.swagger.ts
-- [ ] T056 [P] [US3] Create FetchCalendarEventRequestDto in backend/src/calendar-events/apps/actions/fetch-calendar-event-action/dtos/requests/fetch-calendar-event.dto.ts
-- [ ] T057 [US3] Create UpdateCalendarEventAction in backend/src/calendar-events/apps/actions/update-calendar-event-action/update-calendar-event.action.ts
-- [ ] T058 [P] [US3] Create UpdateCalendarEventSwagger in backend/src/calendar-events/apps/actions/update-calendar-event-action/update-calendar-event.swagger.ts
-- [ ] T059 [P] [US3] Create UpdateCalendarEventRequestDto in backend/src/calendar-events/apps/actions/update-calendar-event-action/dtos/requests/update-calendar-event.dto.ts
-- [ ] T060 [US3] Register FetchCalendarEventAction and UpdateCalendarEventAction in backend/src/calendar-events/calendar-events.module.ts
-- [ ] T061 [P] [US3] Add fetchCalendarEvent and updateCalendarEvent functions to frontend/src/api/calendar-events/requests.ts
-- [ ] T062 [P] [US3] Create useUpdateCalendarEvent hook in frontend/src/pages/CalendarPage/hooks/useUpdateCalendarEvent.ts
-- [ ] T063 [P] [US3] Create EventDetailsModal component in frontend/src/pages/CalendarPage/components/EventDetailsModal/EventDetailsModal.tsx
-- [ ] T064 [P] [US3] Create EventDetailsModal styles in frontend/src/pages/CalendarPage/components/EventDetailsModal/EventDetailsModal.module.css
-- [ ] T065 [US3] Integrate EventDetailsModal with CalendarView to show event details on click in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.tsx
-- [ ] T066 [US3] Add edit functionality to EventDetailsModal in frontend/src/pages/CalendarPage/components/EventDetailsModal/EventDetailsModal.tsx
+- [x] T051 [P] [US3] Create FetchCalendarEventTransactionScript in backend/src/calendar-events/domain/transaction-scripts/fetch-calendar-event-TS/fetch-calendar-event.transaction.script.ts
+- [x] T052 [P] [US3] Create UpdateCalendarEventTransactionScript in backend/src/calendar-events/domain/transaction-scripts/update-calendar-event-TS/update-calendar-event.transaction.script.ts (must use CalendarEventRepository.update method from T009)
+- [x] T053 [US3] Add fetchCalendarEventById and updateCalendarEvent methods to CalendarEventService in backend/src/calendar-events/domain/services/calendar-event.service.ts
+- [x] T054 [US3] Create FetchCalendarEventAction in backend/src/calendar-events/apps/actions/fetch-calendar-event-action/fetch-calendar-event.action.ts
+- [x] T055 [P] [US3] Create FetchCalendarEventSwagger in backend/src/calendar-events/apps/actions/fetch-calendar-event-action/fetch-calendar-event.swagger.ts
+- [x] T056 [P] [US3] Create FetchCalendarEventRequestDto in backend/src/calendar-events/apps/actions/fetch-calendar-event-action/dtos/requests/fetch-calendar-event.dto.ts
+- [x] T057 [US3] Create UpdateCalendarEventAction in backend/src/calendar-events/apps/actions/update-calendar-event-action/update-calendar-event.action.ts
+- [x] T058 [P] [US3] Create UpdateCalendarEventSwagger in backend/src/calendar-events/apps/actions/update-calendar-event-action/update-calendar-event.swagger.ts
+- [x] T059 [P] [US3] Create UpdateCalendarEventRequestDto in backend/src/calendar-events/apps/actions/update-calendar-event-action/dtos/requests/update-calendar-event.dto.ts
+- [x] T060 [US3] Register FetchCalendarEventAction and UpdateCalendarEventAction in backend/src/calendar-events/calendar-events.module.ts
+- [x] T061 [P] [US3] Add fetchCalendarEvent and updateCalendarEvent functions to frontend/src/api/requests/calendar-events.requests.ts
+- [x] T062 [P] [US3] Create useUpdateCalendarEvent hook in frontend/src/pages/CalendarPage/hooks/useUpdateCalendarEvent.ts
+- [x] T063 [P] [US3] Create EventDetailsModal component in frontend/src/pages/CalendarPage/components/EventDetailsModal/EventDetailsModal.tsx
+- [x] T064 [P] [US3] Create EventDetailsModal styles in frontend/src/pages/CalendarPage/components/EventDetailsModal/EventDetailsModal.module.css
+- [x] T065 [US3] Integrate EventDetailsModal with CalendarView to show event details on click in frontend/src/pages/CalendarPage/components/CalendarView/CalendarView.tsx
+- [x] T066 [US3] Add edit functionality to EventDetailsModal in frontend/src/pages/CalendarPage/components/EventDetailsModal/EventDetailsModal.tsx
 
 **Checkpoint**: All user stories should now be independently functional. Users can view, create, and update calendar events.
 

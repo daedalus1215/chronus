@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Box, Paper, Typography, Button, CircularProgress } from '@mui/material';
 import { ArrowBack, ArrowForward, Today } from '@mui/icons-material';
 import {
@@ -10,6 +10,7 @@ import {
   isSameDay,
 } from 'date-fns';
 import { CalendarEventResponseDto } from '../../../../api/dtos/calendar-events.dtos';
+import { EventDetailsModal } from '../EventDetailsModal/EventDetailsModal';
 import styles from './CalendarView.module.css';
 
 type CalendarViewProps = {
@@ -37,6 +38,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
   const calendarGridRef = useRef<HTMLDivElement>(null);
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
   useEffect(() => {
     if (calendarGridRef.current) {
@@ -136,8 +138,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         key={event.id}
                         className={styles.eventCard}
                         onClick={() => {
-                          // TODO: Open event details modal
-                          console.log('Event clicked:', event);
+                          setSelectedEventId(event.id);
                         }}
                       >
                         <Typography variant="caption" className={styles.eventTitle}>
@@ -160,6 +161,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </Box>
         ))}
       </Box>
+      <EventDetailsModal
+        isOpen={selectedEventId !== null}
+        onClose={() => setSelectedEventId(null)}
+        eventId={selectedEventId}
+      />
     </Box>
   );
 };

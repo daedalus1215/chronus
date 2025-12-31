@@ -2,6 +2,7 @@ import api from '../axios.interceptor';
 import {
   CalendarEventResponseDto,
   CreateCalendarEventRequest,
+  UpdateCalendarEventRequest,
 } from '../dtos/calendar-events.dtos';
 
 export const fetchCalendarEvents = async (
@@ -25,6 +26,26 @@ export const createCalendarEvent = async (
 ): Promise<CalendarEventResponseDto> => {
   const { data } = await api.post<CalendarEventResponseDto>(
     '/calendar-events',
+    event,
+  );
+  return data;
+};
+
+export const fetchCalendarEvent = async (
+  id: number,
+): Promise<CalendarEventResponseDto> => {
+  const { data } = await api.get<CalendarEventResponseDto>(
+    `/calendar-events/${id}`,
+  );
+  return data;
+};
+
+export const updateCalendarEvent = async (
+  id: number,
+  event: UpdateCalendarEventRequest,
+): Promise<CalendarEventResponseDto> => {
+  const { data } = await api.put<CalendarEventResponseDto>(
+    `/calendar-events/${id}`,
     event,
   );
   return data;
