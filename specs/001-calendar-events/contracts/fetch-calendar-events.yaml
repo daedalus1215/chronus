@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: Fetch Calendar Events API
+  version: 1.0.0
+  description: Endpoint to fetch calendar events within a date range
+
+paths:
+  /calendar-events:
+    get:
+      summary: Fetch calendar events within a date range
+      operationId: fetchCalendarEvents
+      tags:
+        - Calendar Events
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: Start date of the range (ISO 8601 date format YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+          example: "2024-12-30"
+        - name: endDate
+          in: query
+          required: true
+          description: End date of the range (ISO 8601 date format YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+          example: "2025-01-05"
+      responses:
+        '200':
+          description: List of calendar events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CalendarEventResponse'
+              example:
+                events:
+                  - id: 1
+                    userId: 123
+                    title: "Team Meeting"
+                    description: "Weekly team sync"
+                    startDate: "2024-12-30T10:00:00Z"
+                    endDate: "2024-12-30T11:00:00Z"
+                    createdAt: "2024-12-30T09:00:00Z"
+                    updatedAt: "2024-12-30T09:00:00Z"
+        '400':
+          description: Invalid date range
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CalendarEventResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Event unique identifier
+          example: 1
+        userId:
+          type: integer
+          description: User who owns the event
+          example: 123
+        title:
+          type: string
+          description: Event title
+          example: "Team Meeting"
+        description:
+          type: string
+          nullable: true
+          description: Event description
+          example: "Weekly team sync"
+        startDate:
+          type: string
+          format: date-time
+          description: Event start date and time
+          example: "2024-12-30T10:00:00Z"
+        endDate:
+          type: string
+          format: date-time
+          description: Event end date and time
+          example: "2024-12-30T11:00:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2024-12-30T09:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2024-12-30T09:00:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Invalid date range"
+        error:
+          type: string
+          example: "Bad Request"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
