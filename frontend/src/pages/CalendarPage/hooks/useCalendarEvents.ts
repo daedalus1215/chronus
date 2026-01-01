@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchCalendarEvents } from '../../../api/requests/calendar-events.requests';
 import { CalendarEventResponseDto } from '../../../api/dtos/calendar-events.dtos';
-import { format, startOfWeek, endOfWeek } from 'date-fns';
+import { format, endOfWeek } from 'date-fns';
 
 /**
  * React Query key factory for calendar events.

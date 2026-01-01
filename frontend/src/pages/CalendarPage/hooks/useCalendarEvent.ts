@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchCalendarEvent } from '../../../api/requests/calendar-events.requests';
-import { CalendarEventResponseDto } from '../../../api/dtos/calendar-events.dtos';
 import { calendarEventKeys } from './useCalendarEvents';
 
 /**
