@@ -64,7 +64,9 @@
 .timeColumn {
   min-width: 80px;
   background-color: var(--color-card-bg, #1e1e1e);
-  position: relative;
+  position: sticky;
+  left: 0;
+  z-index: 20;
   display: flex;
   flex-direction: column;
   height: 1500px; /* 60px header + 1440px content (24 hours * 60px) */
@@ -92,6 +94,10 @@
   height: 60px;
   border-bottom: 1px solid var(--color-border, #333);
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: var(--color-card-bg, #1e1e1e);
 }
 
 .timeSlot {
@@ -103,6 +109,7 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  background-color: var(--color-card-bg, #1e1e1e);
 }
 
 @media (max-width: 600px) {

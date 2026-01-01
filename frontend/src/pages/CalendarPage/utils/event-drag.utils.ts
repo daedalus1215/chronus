@@ -57,8 +57,20 @@ export const calculateDropPosition = (
   const rect = dayContent.getBoundingClientRect();
   const relativeY = clientY - rect.top;
 
-  if (relativeY < 0 || relativeY > rect.height) {
-    return null;
+  if (relativeY < 0) {
+    return {
+      day,
+      hour: 0,
+      minutes: 0,
+    };
+  }
+
+  if (relativeY > rect.height) {
+    return {
+      day,
+      hour: 23,
+      minutes: 45,
+    };
   }
 
   const totalMinutes = (relativeY / rect.height) * (24 * 60);
@@ -66,7 +78,7 @@ export const calculateDropPosition = (
   const minutes = Math.floor((totalMinutes % 60) / 15) * 15;
 
   const clampedHour = Math.min(23, Math.max(0, hour));
-  const clampedMinutes = clampedHour === 23 ? 0 : Math.min(45, minutes);
+  const clampedMinutes = clampedHour === 23 ? 45 : Math.min(45, minutes);
 
   return {
     day,
