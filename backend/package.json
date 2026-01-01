@@ -25,6 +25,7 @@
     "migration:run": "npx ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/typeorm/cli.js migration:run -d ./src/typeorm/data-source.ts",
     "migration:revert": "npx ts-node -r tsconfig-paths/register -r dotenv/config ./node_modules/typeorm/cli.js  migration:revert -d ./src/typeorm/data-source.ts",
     "test:architecture": "depcruise --config load-depcruise-config.js src",
+    "test:fitness": "npx ts-node -r tsconfig-paths/register run-all-fitness-checks.ts",
     "depcruise": "depcruise --config load-depcruise-config.js src",
     "depcruise:html": "depcruise --config load-depcruise-config.js --output-type html src > dependency-graph.html",
     "prepare": "cd .. && git config core.hooksPath backend/.husky || true"
