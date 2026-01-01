@@ -1,17 +1,35 @@
 .eventCard {
   position: absolute;
   padding: 4px;
-  background-color: var(--color-primary, #1976d2);
+  background-color: #6366f1;
   color: white;
   cursor: pointer;
   border-radius: 4px;
   overflow: hidden;
   z-index: 1;
   box-sizing: border-box;
+  min-height: 24px;
+  touch-action: manipulation;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .eventCard:hover {
-  opacity: 0.9;
+  background-color: #818cf8;
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+}
+
+@media (max-width: 600px) {
+  .eventCard {
+    padding: 6px;
+    min-height: 32px;
+    border-radius: 6px;
+  }
+
+  .eventCard:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
 }
 
 .eventTitle {
@@ -29,5 +47,17 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+  .eventTitle {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .eventDescription {
+    font-size: 0.65rem;
+    margin-top: 2px;
+  }
 }
 

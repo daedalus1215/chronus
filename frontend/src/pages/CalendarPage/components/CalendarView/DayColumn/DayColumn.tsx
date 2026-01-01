@@ -35,8 +35,12 @@ export const DayColumn: React.FC<DayColumnProps> = ({
           isToday(day) ? styles.today : ''
         }`}
       >
-        <Typography variant="subtitle2">{format(day, 'EEE')}</Typography>
-        <Typography variant="h6">{format(day, 'd')}</Typography>
+        <Typography variant="subtitle2" sx={{ lineHeight: 1.2 }}>
+          {format(day, 'EEE')}
+        </Typography>
+        <Typography variant="h6" sx={{ lineHeight: 1.2, fontSize: '1.25rem' }}>
+          {format(day, 'd')}
+        </Typography>
       </Paper>
       <Box className={styles.dayContent}>
         {timeSlots.map((hour) => (

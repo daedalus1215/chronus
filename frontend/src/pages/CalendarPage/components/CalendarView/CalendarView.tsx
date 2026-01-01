@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Box, Typography, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, IconButton } from '@mui/material';
 import { ArrowBack, ArrowForward, Today } from '@mui/icons-material';
 import {
   format,
@@ -10,6 +10,7 @@ import { CalendarEventResponseDto } from '../../../../api/dtos/calendar-events.d
 import { EventDetailsModal } from '../EventDetailsModal/EventDetailsModal';
 import { useEventLayouts } from '../../hooks/useEventLayouts';
 import { DayColumn } from './DayColumn/DayColumn';
+import { useIsMobile } from '../../../../hooks/useIsMobile';
 import styles from './CalendarView.module.css';
 
 type CalendarViewProps = {
@@ -52,6 +53,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const calendarGridRef = useRef<HTMLDivElement>(null);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const dayLayoutMaps = useEventLayouts(weekStartDate, events);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (calendarGridRef.current) {
@@ -70,33 +72,67 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   return (
     <Box className={styles.calendarView}>
       <Box className={styles.header}>
-        <Button
-          startIcon={<ArrowBack />}
-          onClick={onPreviousWeek}
-          variant="outlined"
-        >
-          Previous
-        </Button>
-        <Typography variant="h5" className={styles.weekTitle}>
-          {format(weekStartDate, 'MMM d')} - {format(weekEndDate, 'MMM d, yyyy')}
-        </Typography>
-        <Box>
-          <Button
-            startIcon={<Today />}
-            onClick={onToday}
-            variant="outlined"
-            sx={{ mr: 1 }}
-          >
-            Today
-          </Button>
-          <Button
-            endIcon={<ArrowForward />}
-            onClick={onNextWeek}
-            variant="outlined"
-          >
-            Next
-          </Button>
-        </Box>
+        {isMobile ? (
+          <>
+            <IconButton
+              onClick={onPreviousWeek}
+              aria-label="Previous week"
+              size="small"
+            >
+              <ArrowBack />
+            </IconButton>
+            <Typography variant="subtitle1" className={styles.weekTitle}>
+              {format(weekStartDate, 'MMM d')} - {format(weekEndDate, 'MMM d')}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              <IconButton
+                onClick={onToday}
+                aria-label="Today"
+                size="small"
+              >
+                <Today />
+              </IconButton>
+              <IconButton
+                onClick={onNextWeek}
+                aria-label="Next week"
+                size="small"
+              >
+                <ArrowForward />
+              </IconButton>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Button
+              startIcon={<ArrowBack />}
+              onClick={onPreviousWeek}
+              variant="outlined"
+            >
+              Previous
+            </Button>
+            <Typography variant="h5" className={styles.weekTitle}>
+              {format(weekStartDate, 'MMM d')} - {format(weekEndDate, 'MMM d, yyyy')}
+            </Typography>
+            
+            <Box>
+              <Button
+                startIcon={<Today />}
+                onClick={onToday}
+                variant="outlined"
+                sx={{ mr: 1 }}
+              >
+                Today
+              </Button>
+              <Button
+                endIcon={<ArrowForward />}
+                onClick={onNextWeek}
+                variant="outlined"
+              >
+                Next
+              </Button>
+            </Box>
+          </>
+        )}
       </Box>
 
       <Box className={styles.calendarGrid} ref={calendarGridRef}>
