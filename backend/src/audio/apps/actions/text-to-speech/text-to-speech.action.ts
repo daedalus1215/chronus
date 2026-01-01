@@ -4,7 +4,7 @@ import { AudioService } from 'src/audio/domain/services/audio.service';
 import { TextToSpeechRequestDto } from '../../dtos/requests/text-to-speech.dto';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { TextToSpeechSwagger } from './text-to-speech.swagger';
-import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 
 @Controller('audio')
 @UseGuards(JwtAuthGuard)

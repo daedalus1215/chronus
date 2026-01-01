@@ -1,6 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
-import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetTagByIdSwagger } from './get-tag-by-id.swagger';
 import { TagResponseDto } from '../../dtos/responses/tag.response.dto';

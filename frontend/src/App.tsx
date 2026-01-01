@@ -16,6 +16,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import { muiTheme } from './theme';
 import { TagPage } from './pages/TagPage/TagPage';
 import { ActivityPage } from './pages/ActivityPage/ActivityPage';
+import { CalendarPage } from './pages/CalendarPage/CalendarPage';
 import { ROUTES, ROUTE_PATTERNS } from './constants/routes';
 import { AuthenticatedLayout } from './components/Layout/AuthenticatedLayout';
 
@@ -49,6 +50,7 @@ function AppRoutes() {
           {/* Other routes */}
           <Route path={ROUTES.TAGS} element={<TagPage />} />
           <Route path={ROUTES.ACTIVITY} element={<ActivityPage />} />
+          <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
 
           {/* Redirect authenticated users trying to access auth pages */}
           <Route

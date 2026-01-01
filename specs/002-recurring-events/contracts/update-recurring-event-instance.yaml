@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: Update Recurring Event Instance API
+  version: 1.0.0
+  description: Update a single instance of a recurring event without affecting other instances
+
+paths:
+  /calendar-events/recurring/{recurringEventId}/instances/{instanceId}:
+    put:
+      tags:
+        - Recurring Events
+      summary: Update a single recurring event instance
+      description: Updates a specific instance of a recurring event. Only this instance is modified; other instances in the series remain unchanged.
+      operationId: updateRecurringEventInstance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: recurringEventId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the recurring event series
+        - name: instanceId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the event instance to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventInstanceRequest'
+            example:
+              title: "Team Meeting - Rescheduled"
+              startDate: "2024-01-17T14:00:00Z"
+              endDate: "2024-01-17T15:00:00Z"
+              description: "Moved to afternoon"
+      responses:
+        '200':
+          description: Event instance updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventInstanceResponse'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Event instance not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - user does not own this event
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    UpdateEventInstanceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          description: Override title for this instance
+        description:
+          type: string
+          description: Override description for this instance
+        startDate:
+          type: string
+          format: date-time
+          description: Override start date/time for this instance
+        endDate:
+          type: string
+          format: date-time
+          description: Override end date/time for this instance
+
+    EventInstanceResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        recurringEventId:
+          type: integer
+        instanceDate:
+          type: string
+          format: date
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        isModified:
+          type: boolean
+        titleOverride:
+          type: string
+          nullable: true
+        descriptionOverride:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+

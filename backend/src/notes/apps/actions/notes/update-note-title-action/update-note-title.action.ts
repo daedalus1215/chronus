@@ -4,8 +4,8 @@ import { UpdateNoteTitleDto } from 'src/notes/apps/dtos/requests/update-note-tit
 import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { UpdateNoteTitleSwagger } from './update-note-title.swagger';
-import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
-import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
+import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 
 /**
  * Handles the update of a note's title for a given note ID.

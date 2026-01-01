@@ -1,7 +1,7 @@
 import { Controller, Patch, Param, Body, ParseIntPipe } from '@nestjs/common';
 import { UpdateTagTransactionScript } from '../../../domain/transaction-scripts/update-tag.transaction.script';
 import { UpdateTagDto } from './dtos/update-tag.dto';
-import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { UpdateTagSwagger } from './update-tag.swagger';
 import { TagResponseDto } from '../../dtos/responses/tag.response.dto';

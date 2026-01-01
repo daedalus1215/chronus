@@ -10,6 +10,7 @@ export const ROUTES = {
   CHECKLISTS: '/checklist',
   TAGS: '/tags',
   ACTIVITY: '/activity',
+  CALENDAR: '/calendar',
   TAG_NOTES: (tagId: string | number) => `/tag-notes/${tagId}`,
   NOTE: (noteId: string | number) => `notes/${noteId}`, // Removed leading slash for nested routes
 } as const;

@@ -9,7 +9,7 @@ import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-act
 import {
   AuthUser,
   GetAuthUser,
-} from "src/auth/app/decorators/get-auth-user.decorator";
+} from "src/shared-kernel/apps/decorators/get-auth-user.decorator";
 import { ApiTags } from "@nestjs/swagger";
 import { UpdateResult } from "typeorm";
 

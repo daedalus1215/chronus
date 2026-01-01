@@ -1,0 +1,27 @@
+.calendarPage {
+  height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  padding: 1.5rem;
+  margin-top: 60px;
+  width: calc(100vw - 182px);
+  box-sizing: border-box;
+}
+
+.errorMessage {
+  padding: 2rem;
+  color: var(--color-error, #f44336);
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .calendarPage {
+    margin-left: 0;
+    width: 100vw;
+  }
+}
+

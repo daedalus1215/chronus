@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: Update Calendar Event API
+  version: 1.0.0
+  description: Endpoint to update an existing calendar event
+
+paths:
+  /calendar-events/{id}:
+    put:
+      summary: Update a calendar event
+      operationId: updateCalendarEvent
+      tags:
+        - Calendar Events
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Calendar event ID
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCalendarEventRequest'
+            example:
+              title: "Updated Team Meeting"
+              description: "Updated weekly team sync"
+              startDate: "2024-12-30T14:00:00Z"
+              endDate: "2024-12-30T15:00:00Z"
+      responses:
+        '200':
+          description: Calendar event updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEventResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - user does not own this event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    UpdateCalendarEventRequest:
+      type: object
+      required:
+        - title
+        - startDate
+        - endDate
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          description: Event title
+          example: "Updated Team Meeting"
+        description:
+          type: string
+          nullable: true
+          description: Optional event description
+          example: "Updated weekly team sync"
+        startDate:
+          type: string
+          format: date-time
+          description: Event start date and time (ISO 8601)
+          example: "2024-12-30T14:00:00Z"
+        endDate:
+          type: string
+          format: date-time
+          description: Event end date and time (ISO 8601)
+          example: "2024-12-30T15:00:00Z"
+
+    CalendarEventResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Event unique identifier
+          example: 1
+        userId:
+          type: integer
+          description: User who owns the event
+          example: 123
+        title:
+          type: string
+          description: Event title
+          example: "Updated Team Meeting"
+        description:
+          type: string
+          nullable: true
+          description: Event description
+          example: "Updated weekly team sync"
+        startDate:
+          type: string
+          format: date-time
+          description: Event start date and time
+          example: "2024-12-30T14:00:00Z"
+        endDate:
+          type: string
+          format: date-time
+          description: Event end date and time
+          example: "2024-12-30T15:00:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2024-12-30T09:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2024-12-30T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Validation failed"
+        error:
+          type: string
+          example: "Bad Request"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+

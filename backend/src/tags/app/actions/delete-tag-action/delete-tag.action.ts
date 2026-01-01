@@ -1,6 +1,6 @@
 import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { DeleteTagTransactionScript } from '../../../domain/transaction-scripts/delete-tag.transaction.script';
-import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { DeleteTagSwagger } from './delete-tag.swagger';
 

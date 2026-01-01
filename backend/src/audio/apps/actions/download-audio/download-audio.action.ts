@@ -4,7 +4,7 @@ import { JwtAuthGuard } from "../../../../auth/jwt-auth.guard";
 import { AudioService } from "src/audio/domain/services/audio.service";
 import { DownloadAudioSwagger } from "./download-audio.swagger";
 import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-action.decorator";
-import { GetAuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
+import { GetAuthUser } from "src/shared-kernel/apps/decorators/get-auth-user.decorator";
 
 @Controller("audio")
 @UseGuards(JwtAuthGuard)

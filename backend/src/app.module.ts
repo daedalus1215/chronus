@@ -10,6 +10,7 @@ import { CheckItemsModule } from "./check-items/check-items.module";
 import * as Joi from "joi";
 import { AudioModule } from "./audio/audio.module";
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CalendarEventsModule } from "./calendar-events/calendar-events.module";
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     TagsModule,
     CheckItemsModule,
     AudioModule,
+    CalendarEventsModule,
     EventEmitterModule.forRoot(),
   ],
   controllers: [],

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CheckItemsRepository } from '../../../infra/repositories/check-items/check-items.repository';
-import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { CheckItem } from '../../entities/check-item.entity';
 
 @Injectable()

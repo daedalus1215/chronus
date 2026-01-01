@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  title: Delete Recurring Event Instance API
+  version: 1.0.0
+  description: Delete a single instance of a recurring event by creating a recurrence exception
+
+paths:
+  /calendar-events/recurring/{recurringEventId}/instances/{instanceId}:
+    delete:
+      tags:
+        - Recurring Events
+      summary: Delete a single recurring event instance
+      description: Deletes a specific instance of a recurring event by creating a RecurrenceException. The instance is removed from the calendar, but other instances in the series continue. The instance is not permanently deleted from the database but marked as an exception.
+      operationId: deleteRecurringEventInstance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: recurringEventId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the recurring event series
+        - name: instanceId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the event instance to delete
+      responses:
+        '200':
+          description: Event instance deleted successfully (RecurrenceException created)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "Instance deleted successfully"
+        '404':
+          description: Event instance not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - user does not own this event
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+

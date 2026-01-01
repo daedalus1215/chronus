@@ -1,7 +1,7 @@
 import { Controller, Post, Body } from "@nestjs/common";
 import { CreateTagTransactionScript } from "../../../domain/transaction-scripts/create-tag.transaction.script";
 import { CreateTagDto } from "./dtos/create-tag.dto";
-import { GetAuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
+import { GetAuthUser } from "src/shared-kernel/apps/decorators/get-auth-user.decorator";
 import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-action.decorator";
 import { CreateTagSwagger } from "./create-tag.swagger";
 

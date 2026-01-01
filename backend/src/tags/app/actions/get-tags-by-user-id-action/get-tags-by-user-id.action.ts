@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { TagService } from '../../../domain/services/tag.service';
-import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetTagsByUserIdSwagger } from './get-tags-by-user-id.swagger';
 import { TagWithCount } from 'src/tags/domain/transaction-scripts/get-tags-by-user-id.transaction.script';
