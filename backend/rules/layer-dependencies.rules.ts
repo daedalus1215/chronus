@@ -6,8 +6,8 @@
  * - Domain should not depend on application layer
  *
  * Note: For naming conventions (no "Dto" in domain), see:
- * - npm run test:naming
- * - fitness-functions-rules/naming-rules/check-domain-naming.ts
+ * - npm run test:fitness
+ * - rules/naming-rules/check-domain-naming.ts
  */
 
 import type { IForbiddenRuleType } from 'dependency-cruiser';

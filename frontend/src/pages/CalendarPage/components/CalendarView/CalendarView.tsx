@@ -160,6 +160,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       });
     } catch (error) {
       console.error('Error moving calendar event:', error);
+      setToastSeverity('error');
+      setToastMessage(
+        error instanceof Error
+          ? error.message || 'Failed to move event'
+          : 'Failed to move event',
+      );
     }
   };
 
