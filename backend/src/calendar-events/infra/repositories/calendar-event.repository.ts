@@ -79,6 +79,16 @@ export class CalendarEventRepository {
   }
 
   /**
+   * Delete a calendar event by ID and user ID.
+   */
+  async delete(id: number, userId: number): Promise<void> {
+    const result = await this.repository.delete({ id, userId });
+    if (result.affected === 0) {
+      throw new Error('Calendar event not found');
+    }
+  }
+
+  /**
    * Map domain entity to infrastructure entity.
    */
   private domainToInfrastructure(

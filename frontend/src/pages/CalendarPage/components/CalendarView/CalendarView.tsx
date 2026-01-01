@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Box, Typography, Button, CircularProgress, IconButton } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, IconButton, Snackbar, Alert } from '@mui/material';
 import { ArrowBack, ArrowForward, Today } from '@mui/icons-material';
 import {
   format,
@@ -72,6 +72,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const dayLayoutMaps = useEventLayouts(weekStartDate, events);
   const isMobile = useIsMobile();
   const updateMutation = useUpdateCalendarEvent();
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -286,7 +288,30 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         isOpen={selectedEventId !== null}
         onClose={() => setSelectedEventId(null)}
         eventId={selectedEventId}
+        onDeleteSuccess={() => {
+          setToastSeverity('success');
+          setToastMessage('Event deleted successfully');
+        }}
+        onDeleteError={(error) => {
+          setToastSeverity('error');
+          setToastMessage(error.message || 'Failed to delete event');
+        }}
       />
+      <Snackbar
+        open={toastMessage !== null}
+        autoHideDuration={6000}
+        onClose={() => setToastMessage(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setToastMessage(null)}
+          severity={toastSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

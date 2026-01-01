@@ -51,3 +51,12 @@ export const updateCalendarEvent = async (
   return data;
 };
 
+export const deleteCalendarEvent = async (
+  id: number,
+): Promise<{ success: boolean }> => {
+  const { data } = await api.delete<{ success: boolean }>(
+    `/calendar-events/${id}`,
+  );
+  return data;
+};
+

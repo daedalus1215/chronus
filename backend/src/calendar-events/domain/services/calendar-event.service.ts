@@ -7,6 +7,8 @@ import { FetchCalendarEventTransactionScript } from '../transaction-scripts/fetc
 import { FetchCalendarEventCommand } from '../transaction-scripts/fetch-calendar-event-TS/fetch-calendar-event.command';
 import { UpdateCalendarEventTransactionScript } from '../transaction-scripts/update-calendar-event-TS/update-calendar-event.transaction.script';
 import { UpdateCalendarEventCommand } from '../transaction-scripts/update-calendar-event-TS/update-calendar-event.command';
+import { DeleteCalendarEventTransactionScript } from '../transaction-scripts/delete-calendar-event-TS/delete-calendar-event.transaction.script';
+import { DeleteCalendarEventCommand } from '../transaction-scripts/delete-calendar-event-TS/delete-calendar-event.command';
 import { CalendarEvent } from '../entities/calendar-event.entity';
 
 /**
@@ -20,6 +22,7 @@ export class CalendarEventService {
     private readonly createCalendarEventTransactionScript: CreateCalendarEventTransactionScript,
     private readonly fetchCalendarEventTransactionScript: FetchCalendarEventTransactionScript,
     private readonly updateCalendarEventTransactionScript: UpdateCalendarEventTransactionScript,
+    private readonly deleteCalendarEventTransactionScript: DeleteCalendarEventTransactionScript,
   ) {}
 
   /**
@@ -56,6 +59,13 @@ export class CalendarEventService {
     command: UpdateCalendarEventCommand,
   ): Promise<CalendarEvent> {
     return await this.updateCalendarEventTransactionScript.apply(command);
+  }
+
+  /**
+   * Delete a calendar event.
+   */
+  async deleteCalendarEvent(command: DeleteCalendarEventCommand): Promise<void> {
+    return await this.deleteCalendarEventTransactionScript.apply(command);
   }
 }
 

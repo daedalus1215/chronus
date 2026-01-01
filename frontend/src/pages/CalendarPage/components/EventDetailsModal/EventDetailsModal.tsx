@@ -5,11 +5,22 @@ import {
   Typography,
   CircularProgress,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
-import { Edit as EditIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import {
+  Edit as EditIcon,
+  Save as SaveIcon,
+  Cancel as CancelIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material';
 import { BottomSheet } from '../../../../components/BottomSheet/BottomSheet';
 import { useCalendarEvent } from '../../hooks/useCalendarEvent';
 import { useUpdateCalendarEvent } from '../../hooks/useUpdateCalendarEvent';
+import { useDeleteCalendarEvent } from '../../hooks/useDeleteCalendarEvent';
 import { useEventForm } from '../../hooks/useEventForm';
 import { EventFormFields } from './EventFormFields/EventFormFields';
 
@@ -17,6 +28,8 @@ type EventDetailsModalProps = {
   isOpen: boolean;
   onClose: () => void;
   eventId: number | null;
+  onDeleteSuccess?: () => void;
+  onDeleteError?: (error: Error) => void;
 };
 
 /**
@@ -33,10 +46,14 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   isOpen,
   onClose,
   eventId,
+  onDeleteSuccess,
+  onDeleteError,
 }) => {
   const { data: event, isLoading, error } = useCalendarEvent(eventId);
   const updateMutation = useUpdateCalendarEvent();
+  const deleteMutation = useDeleteCalendarEvent();
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const {
     formData,
@@ -73,10 +90,34 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   };
 
   const handleClose = () => {
-    if (!updateMutation.isPending && !isSubmitting) {
+    if (!updateMutation.isPending && !deleteMutation.isPending && !isSubmitting) {
       setIsEditing(false);
       onClose();
     }
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!eventId) {
+      return;
+    }
+    try {
+      await deleteMutation.mutateAsync(eventId);
+      setIsDeleteDialogOpen(false);
+      onDeleteSuccess?.();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting calendar event:', error);
+      onDeleteError?.(error instanceof Error ? error : new Error('Failed to delete event'));
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteDialogOpen(false);
   };
 
   if (isLoading) {
@@ -112,8 +153,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   }
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={handleClose}>
-      <Box>
+    <>
+      <BottomSheet isOpen={isOpen} onClose={handleClose}>
+        <Box>
         <Box
           sx={{
             display: 'flex',
@@ -126,13 +168,23 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             {isEditing ? 'Edit Event' : 'Event Details'}
           </Typography>
           {!isEditing && (
-            <IconButton
-              onClick={() => setIsEditing(true)}
-              disabled={updateMutation.isPending}
-              aria-label="edit event"
-            >
-              <EditIcon />
-            </IconButton>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <IconButton
+                onClick={handleDeleteClick}
+                disabled={updateMutation.isPending || deleteMutation.isPending}
+                aria-label="delete event"
+                color="error"
+              >
+                <DeleteIcon />
+              </IconButton>
+              <IconButton
+                onClick={() => setIsEditing(true)}
+                disabled={updateMutation.isPending || deleteMutation.isPending}
+                aria-label="edit event"
+              >
+                <EditIcon />
+              </IconButton>
+            </Box>
           )}
         </Box>
         <form onSubmit={handleSubmit}>
@@ -174,7 +226,11 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                 type="button"
                 onClick={handleClose}
                 variant="outlined"
-                disabled={isSubmitting || updateMutation.isPending}
+                disabled={
+                  isSubmitting ||
+                  updateMutation.isPending ||
+                  deleteMutation.isPending
+                }
               >
                 Close
               </Button>
@@ -182,7 +238,46 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
           )}
         </form>
       </Box>
-    </BottomSheet>
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">Delete Event</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete "{event?.title}"? This action cannot
+            be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleDeleteCancel}
+            disabled={deleteMutation.isPending}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            disabled={deleteMutation.isPending}
+            variant="contained"
+            color="error"
+            startIcon={
+              deleteMutation.isPending ? (
+                <CircularProgress size={20} />
+              ) : (
+                <DeleteIcon />
+              )
+            }
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      </BottomSheet>
+    </>
   );
 };
 
