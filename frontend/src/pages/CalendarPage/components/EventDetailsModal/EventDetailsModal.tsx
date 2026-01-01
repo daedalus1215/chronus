@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
-  TextField,
   Button,
-  Stack,
   Typography,
   CircularProgress,
   IconButton,
@@ -12,8 +10,8 @@ import { Edit as EditIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/i
 import { BottomSheet } from '../../../../components/BottomSheet/BottomSheet';
 import { useCalendarEvent } from '../../hooks/useCalendarEvent';
 import { useUpdateCalendarEvent } from '../../hooks/useUpdateCalendarEvent';
-import { UpdateCalendarEventRequest } from '../../../../api/dtos/calendar-events.dtos';
-import { format } from 'date-fns';
+import { useEventForm } from '../../hooks/useEventForm';
+import { EventFormFields } from './EventFormFields/EventFormFields';
 
 type EventDetailsModalProps = {
   isOpen: boolean;
@@ -39,99 +37,43 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   const { data: event, isLoading, error } = useCalendarEvent(eventId);
   const updateMutation = useUpdateCalendarEvent();
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<UpdateCalendarEventRequest>({
-    title: '',
-    description: '',
-    startDate: '',
-    endDate: '',
-  });
-  const [validationErrors, setValidationErrors] = useState<{
-    title?: string;
-    startDate?: string;
-    endDate?: string;
-  }>({});
 
-  useEffect(() => {
-    if (event) {
-      setFormData({
-        title: event.title,
-        description: event.description || '',
-        startDate: format(new Date(event.startDate), "yyyy-MM-dd'T'HH:mm"),
-        endDate: format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm"),
-      });
-      setIsEditing(false);
-      setValidationErrors({});
-    }
-  }, [event]);
-
-  const validateForm = (): boolean => {
-    const errors: {
-      title?: string;
-      startDate?: string;
-      endDate?: string;
-    } = {};
-    if (!formData.title.trim()) {
-      errors.title = 'Title is required';
-    } else if (formData.title.length > 255) {
-      errors.title = 'Title cannot exceed 255 characters';
-    }
-    if (!formData.startDate) {
-      errors.startDate = 'Start date is required';
-    }
-    if (!formData.endDate) {
-      errors.endDate = 'End date is required';
-    }
-    if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
-      if (start >= end) {
-        errors.endDate = 'End date must be after start date';
+  const {
+    formData,
+    validationErrors,
+    isSubmitting,
+    updateField,
+    resetForm,
+    handleSubmit: handleFormSubmit,
+  } = useEventForm({
+    event,
+    onUpdate: async (data) => {
+      if (!eventId) {
+        return;
       }
-    }
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+      await updateMutation.mutateAsync({
+        id: eventId,
+        event: data,
+      });
+    },
+    onSuccess: () => {
+      setIsEditing(false);
+      onClose();
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!eventId) {
-      return;
-    }
-    if (!validateForm()) {
-      return;
-    }
-    try {
-      await updateMutation.mutateAsync({
-        id: eventId,
-        event: {
-          title: formData.title,
-          description: formData.description || undefined,
-          startDate: new Date(formData.startDate).toISOString(),
-          endDate: new Date(formData.endDate).toISOString(),
-        },
-      });
-      setIsEditing(false);
-      onClose();
-    } catch (error) {
-      console.error('Error updating calendar event:', error);
-    }
+    await handleFormSubmit(e);
   };
 
   const handleCancel = () => {
-    if (event) {
-      setFormData({
-        title: event.title,
-        description: event.description || '',
-        startDate: format(new Date(event.startDate), "yyyy-MM-dd'T'HH:mm"),
-        endDate: format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm"),
-      });
-    }
+    resetForm();
     setIsEditing(false);
-    setValidationErrors({});
   };
 
   const handleClose = () => {
-    if (!updateMutation.isPending) {
+    if (!updateMutation.isPending && !isSubmitting) {
       setIsEditing(false);
       onClose();
     }
@@ -194,118 +136,50 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
           )}
         </Box>
         <form onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            <TextField
-              label="Title"
-              value={formData.title}
-              onChange={(e) => {
-                setFormData({ ...formData, title: e.target.value });
-                if (validationErrors.title) {
-                  setValidationErrors({ ...validationErrors, title: undefined });
-                }
-              }}
-              required
-              fullWidth
-              disabled={!isEditing || updateMutation.isPending}
-              error={!!validationErrors.title}
-              helperText={validationErrors.title}
-            />
-            <TextField
-              label="Description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              multiline
-              rows={3}
-              fullWidth
-              disabled={!isEditing || updateMutation.isPending}
-            />
-            <TextField
-              label="Start Date & Time"
-              type="datetime-local"
-              value={formData.startDate}
-              onChange={(e) => {
-                setFormData({ ...formData, startDate: e.target.value });
-                if (validationErrors.startDate) {
-                  setValidationErrors({ ...validationErrors, startDate: undefined });
-                }
-                if (validationErrors.endDate && formData.endDate) {
-                  const start = new Date(e.target.value);
-                  const end = new Date(formData.endDate);
-                  if (start < end) {
-                    setValidationErrors({ ...validationErrors, endDate: undefined });
-                  }
-                }
-              }}
-              required
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              disabled={!isEditing || updateMutation.isPending}
-              error={!!validationErrors.startDate}
-              helperText={validationErrors.startDate}
-            />
-            <TextField
-              label="End Date & Time"
-              type="datetime-local"
-              value={formData.endDate}
-              onChange={(e) => {
-                setFormData({ ...formData, endDate: e.target.value });
-                if (validationErrors.endDate) {
-                  setValidationErrors({ ...validationErrors, endDate: undefined });
-                }
-              }}
-              required
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              disabled={!isEditing || updateMutation.isPending}
-              error={!!validationErrors.endDate}
-              helperText={validationErrors.endDate}
-            />
-            {updateMutation.error && (
-              <Typography color="error" variant="body2">
-                {updateMutation.error instanceof Error
-                  ? updateMutation.error.message
-                  : 'Failed to update event'}
-              </Typography>
-            )}
-            {isEditing ? (
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                <Button
-                  type="button"
-                  onClick={handleCancel}
-                  variant="outlined"
-                  startIcon={<CancelIcon />}
-                  disabled={updateMutation.isPending}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  startIcon={<SaveIcon />}
-                  disabled={updateMutation.isPending || !formData.title.trim()}
-                >
-                  {updateMutation.isPending ? (
-                    <CircularProgress size={24} />
-                  ) : (
-                    'Save'
-                  )}
-                </Button>
-              </Box>
-            ) : (
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button
-                  type="button"
-                  onClick={handleClose}
-                  variant="outlined"
-                  disabled={updateMutation.isPending}
-                >
-                  Close
-                </Button>
-              </Box>
-            )}
-          </Stack>
+          <EventFormFields
+            formData={formData}
+            validationErrors={validationErrors}
+            isEditing={isEditing}
+            isSubmitting={isSubmitting || updateMutation.isPending}
+            updateMutationError={updateMutation.error as Error | null}
+            onFieldChange={updateField}
+          />
+          {isEditing ? (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+              <Button
+                type="button"
+                onClick={handleCancel}
+                variant="outlined"
+                startIcon={<CancelIcon />}
+                disabled={isSubmitting || updateMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={<SaveIcon />}
+                disabled={isSubmitting || updateMutation.isPending || !formData.title.trim()}
+              >
+                {isSubmitting || updateMutation.isPending ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  'Save'
+                )}
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Button
+                type="button"
+                onClick={handleClose}
+                variant="outlined"
+                disabled={isSubmitting || updateMutation.isPending}
+              >
+                Close
+              </Button>
+            </Box>
+          )}
         </form>
       </Box>
     </BottomSheet>
