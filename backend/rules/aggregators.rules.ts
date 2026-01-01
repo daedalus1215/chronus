@@ -27,7 +27,10 @@ export const aggregatorRules: IForbiddenRuleType[] = [
 		name: 'aggregators-no-services',
 		comment: 'Aggregators should not depend on domain services',
 		severity: 'error',
-		from: { path: '.*aggregator.*' },
+		from: {
+			path: '.*\\.aggregator\\.ts$', // Match only files ending with .aggregator.ts
+			pathNot: '(__specs__|__spec__)',
+		},
 		to: { path: '.*\\.service\\.ts$' },
 	},
 ];

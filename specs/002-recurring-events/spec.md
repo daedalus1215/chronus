@@ -19,7 +19,7 @@ Users need to create calendar events that automatically repeat on a schedule. Wh
 
 1. **Given** a user is creating a new calendar event, **When** they select a recurrence pattern (daily/weekly/monthly/yearly) and set an end date, **Then** the event is created and all instances appear in the calendar
 2. **Given** a user is creating a weekly recurring event, **When** they select specific days of the week (e.g., Monday, Wednesday, Friday), **Then** the event appears only on those selected days
-3. **Given** a user is creating a monthly recurring event, **When** they select "on the 15th of each month", **Then** the event appears on the 15th of each month
+3. **Given** a user is creating a monthly recurring event, **When** they select "on the 15th of each month", **Then** the event appears on the 15th of each month (or last day if month has fewer days, e.g., Feb 15th appears on Feb 28/29)
 4. **Given** a user is creating a recurring event, **When** they set an end date, **Then** no instances are created after that date
 5. **Given** a user is creating a recurring event, **When** they select "no end date", **Then** instances are generated for a reasonable future period (e.g., 2 years ahead)
 
@@ -46,14 +46,14 @@ Users need to see all instances of recurring events displayed in the calendar vi
 
 Users need to modify a single instance of a recurring event without affecting other instances in the series. This allows users to handle exceptions like rescheduling a specific meeting or changing details for one occurrence.
 
-**Why this priority**: Real-world schedules require flexibility. Users often need to modify individual instances (e.g., "this week's meeting is cancelled" or "next meeting is at a different time"). This is important but less critical than creating and viewing.
+**Why this priority**: Real-world schedules require flexibility. Users often need to modify individual instances (e.g., "this week's meeting is deleted" or "next meeting is at a different time"). This is important but less critical than creating and viewing.
 
-**Independent Test**: Can be fully tested by creating a recurring event, editing one specific instance (changing time, title, or cancelling it), and verifying only that instance changes while others remain unchanged. Delivers value by allowing users to handle exceptions to their recurring schedule.
+**Independent Test**: Can be fully tested by creating a recurring event, editing one specific instance (changing time, title, or deleting it), and verifying only that instance changes while others remain unchanged. Delivers value by allowing users to handle exceptions to their recurring schedule.
 
 **Acceptance Scenarios**:
 
 1. **Given** a user has a recurring weekly meeting, **When** they edit one specific instance to change the time, **Then** only that instance is modified and other instances remain unchanged
-2. **Given** a user has a recurring event, **When** they delete/cancel one specific instance, **Then** that instance is removed but future instances continue
+2. **Given** a user has a recurring event, **When** they delete one specific instance, **Then** that instance is removed (via RecurrenceException) but future instances continue
 3. **Given** a user edits an individual instance, **When** they view the event details, **Then** they can see it's a modified instance of a recurring series
 4. **Given** a user has modified an individual instance, **When** they view the calendar, **Then** the modified instance shows the updated information
 
@@ -111,7 +111,7 @@ Users need to delete an entire recurring event series, removing all past and fut
 
 - **FR-001**: System MUST allow users to create calendar events with recurrence patterns (daily, weekly, monthly, yearly)
 - **FR-002**: System MUST support weekly recurrence with selection of specific days of the week
-- **FR-003**: System MUST support monthly recurrence with options for "same day of month" or "same day of week" (e.g., first Monday)
+- **FR-003**: System MUST support monthly recurrence with "same day of month" option (e.g., 15th of each month). Note: "Same day of week" patterns (e.g., first Monday) are deferred to post-MVP.
 - **FR-004**: System MUST allow users to set an end date for recurring events or specify "no end date"
 - **FR-005**: System MUST generate and display all instances of recurring events within the visible calendar range
 - **FR-006**: System MUST allow users to edit individual instances of a recurring series without affecting other instances
@@ -122,10 +122,10 @@ Users need to delete an entire recurring event series, removing all past and fut
 - **FR-011**: System MUST allow users to delete only future instances of a recurring series
 - **FR-012**: System MUST store recurrence pattern data (frequency, interval, days of week, end date) with the event
 - **FR-013**: System MUST handle edge cases for monthly/yearly recurrence (e.g., Feb 30th, leap years)
-- **FR-014**: System MUST display recurring events with visual indication that they are part of a series
+- **FR-014**: System MUST display recurring events with visual indication that they are part of a series (e.g., recurring icon, badge, or distinct styling to distinguish from one-time events)
 - **FR-015**: System MUST handle timezone changes (DST) correctly for recurring events
-- **FR-016**: System MUST limit the generation of "no end date" recurring events to a reasonable future period [NEEDS CLARIFICATION: what is reasonable? 2 years? 5 years?]
-- **FR-017**: System MUST support recurrence intervals (e.g., "every 2 weeks", "every 3 months") [NEEDS CLARIFICATION: is this required for MVP or can be added later?]
+- **FR-016**: System MUST limit the generation of "no end date" recurring events to a reasonable future period (2 years ahead by default, dynamic for calendar view)
+- **FR-017**: System MUST support recurrence intervals (e.g., "every 2 weeks", "every 3 months") - Deferred to post-MVP; MVP supports INTERVAL=1 only
 
 ### Key Entities *(include if feature involves data)*
 

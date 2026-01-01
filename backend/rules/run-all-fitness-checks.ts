@@ -13,15 +13,15 @@ const checks: Check[] = [
 	},
 	{
 		name: 'Domain Naming',
-		script: 'fitness-functions-rules/naming-rules/check-domain-naming.ts',
+		script: 'rules/naming-rules/check-domain-naming.ts',
 	},
 	{
 		name: 'Domain Type Structure',
-		script: 'fitness-functions-rules/naming-rules/check-domain-type-structure.ts',
+		script: 'rules/naming-rules/check-domain-type-structure.ts',
 	},
 	{
 		name: 'DTO Structure',
-		script: 'fitness-functions-rules/naming-rules/check-dto-structure.ts',
+		script: 'rules/naming-rules/check-dto-structure.ts',
 	},
 ];
 

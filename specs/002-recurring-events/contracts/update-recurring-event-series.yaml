@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  title: Update Recurring Event Series API
+  version: 1.0.0
+  description: Update the entire recurring event series, affecting all future instances
+
+paths:
+  /calendar-events/recurring/{recurringEventId}/series:
+    put:
+      tags:
+        - Recurring Events
+      summary: Update entire recurring event series
+      description: Updates the recurring event series pattern and metadata. All future instances will reflect the changes. Past instances and individually modified instances are preserved.
+      operationId: updateRecurringEventSeries
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: recurringEventId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID of the recurring event series
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRecurringSeriesRequest'
+            example:
+              title: "Weekly Team Meeting - Updated"
+              startDate: "2024-01-15T11:00:00Z"
+              endDate: "2024-01-15T12:00:00Z"
+              recurrencePattern:
+                type: "WEEKLY"
+                interval: 1
+                daysOfWeek: [1, 3]
+              recurrenceEndDate: "2024-06-30T23:59:59Z"
+      responses:
+        '200':
+          description: Recurring event series updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringEventResponse'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Recurring event not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - user does not own this event
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    UpdateRecurringSeriesRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          description: Event title
+        description:
+          type: string
+          description: Event description
+        startDate:
+          type: string
+          format: date-time
+          description: Start date and time (affects all future instances)
+        endDate:
+          type: string
+          format: date-time
+          description: End date and time (affects all future instances)
+        recurrencePattern:
+          $ref: '#/components/schemas/RecurrencePattern'
+          description: Updated recurrence pattern (affects all future instances)
+        recurrenceEndDate:
+          type: string
+          format: date-time
+          description: Updated end date for the series
+        noEndDate:
+          type: boolean
+          description: If true, series has no end date
+
+    RecurrencePattern:
+      type: object
+      required:
+        - type
+        - interval
+      properties:
+        type:
+          type: string
+          enum: [DAILY, WEEKLY, MONTHLY, YEARLY]
+        interval:
+          type: integer
+          minimum: 1
+          default: 1
+        daysOfWeek:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+
+    RecurringEventResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        recurrencePattern:
+          $ref: '#/components/schemas/RecurrencePattern'
+        recurrenceEndDate:
+          type: string
+          format: date-time
+          nullable: true
+        noEndDate:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
