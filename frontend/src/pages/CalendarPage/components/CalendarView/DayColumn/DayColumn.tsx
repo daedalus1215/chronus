@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
+import { useDroppable } from '@dnd-kit/core';
 import { format, isToday } from 'date-fns';
 import { EventLayoutMap } from '../../../hooks/useEventLayouts';
 import { EventCard } from './EventCard/EventCard';
@@ -28,8 +29,19 @@ export const DayColumn: React.FC<DayColumnProps> = ({
   timeSlots,
   onEventSelect,
 }) => {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `day-${day.toISOString()}`,
+    data: {
+      day,
+    },
+  });
+
   return (
-    <Box className={styles.dayColumn}>
+    <Box
+      ref={setNodeRef}
+      data-day-id={day.toISOString()}
+      className={`${styles.dayColumn} ${isOver ? styles.dropOver : ''}`}
+    >
       <Paper
         className={`${styles.dayHeader} ${
           isToday(day) ? styles.today : ''
