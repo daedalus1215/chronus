@@ -132,12 +132,14 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
+  height: calc(100vh - 64px);
   background-color: var(--background);
+  overflow: hidden;
 }
 
 #root {
