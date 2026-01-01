@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Create_recurringEvents_table1767246789001
+export class Create_RecurringEventsTable1767246789001
   implements MigrationInterface
 {
-  name = 'Create_recurringEvents_table1767246789001';
+  name = 'Create_RecurringEventsTable1767246789001';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`

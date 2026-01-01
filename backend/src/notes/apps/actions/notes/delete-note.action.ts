@@ -1,6 +1,6 @@
 import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
-import { GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { NoteService } from 'src/notes/domain/services/note.service';
 
 @Controller('notes')

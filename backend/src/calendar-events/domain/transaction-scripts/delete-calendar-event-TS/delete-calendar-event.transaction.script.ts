@@ -5,6 +5,7 @@ import { DeleteCalendarEventCommand } from './delete-calendar-event.command';
 /**
  * Transaction script for deleting calendar events.
  * Encapsulates all business logic for deleting calendar events.
+ * Handles both one-time events and recurring event instances (now in single table).
  */
 @Injectable()
 export class DeleteCalendarEventTransactionScript {
@@ -13,18 +14,22 @@ export class DeleteCalendarEventTransactionScript {
   ) {}
 
   /**
-   * Delete a calendar event.
+   * Delete a calendar event (one-time or instance).
    * Validates that the event exists and belongs to the user.
    */
   async apply(command: DeleteCalendarEventCommand): Promise<void> {
-    const existingEvent = await this.calendarEventRepository.findById(
+    const calendarEvent = await this.calendarEventRepository.findById(
       command.eventId,
       command.user.userId,
     );
-    if (!existingEvent) {
+    if (!calendarEvent) {
       throw new NotFoundException('Calendar event not found');
     }
-    await this.calendarEventRepository.delete(command.eventId, command.user.userId);
+
+    await this.calendarEventRepository.delete(
+      command.eventId,
+      command.user.userId,
+    );
   }
 }
 

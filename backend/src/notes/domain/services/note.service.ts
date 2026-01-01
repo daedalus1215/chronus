@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Note } from "../entities/notes/note.entity";
 import { ArchiveNoteTransactionScript } from "../transaction-scripts/archive-note/archive-note.transaction.script";
-import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
+import { AuthUser } from "src/shared-kernel/apps/decorators/get-auth-user.decorator";
 import { NoteMemoTagRepository } from "../../infra/repositories/note-memo-tag.repository";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { DELETE_CHECK_ITEMS_BY_NOTE_COMMAND } from "src/shared-kernel/domain/cross-domain-commands/check-items/delete-check-items-by-note.command";

@@ -1,4 +1,4 @@
-import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { RecurrencePattern } from '../../entities/recurrence-pattern.value-object';
 
 export type CreateRecurringEventCommand = {

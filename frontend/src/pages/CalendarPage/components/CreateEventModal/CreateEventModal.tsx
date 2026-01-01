@@ -6,11 +6,19 @@ import {
   Stack,
   Typography,
   CircularProgress,
+  FormControlLabel,
+  Checkbox,
+  Divider,
 } from '@mui/material';
 import { BottomSheet } from '../../../../components/BottomSheet/BottomSheet';
 import { useCreateCalendarEvent } from '../../hooks/useCreateCalendarEvent';
-import { CreateCalendarEventRequest } from '../../../../api/dtos/calendar-events.dtos';
+import { useCreateRecurringEvent } from '../../hooks/useCreateRecurringEvent';
+import {
+  CreateCalendarEventRequest,
+  RecurrencePatternDto,
+} from '../../../../api/dtos/calendar-events.dtos';
 import { format } from 'date-fns';
+import { RecurrencePatternForm } from '../RecurrencePatternForm/RecurrencePatternForm';
 
 type CreateEventModalProps = {
   isOpen: boolean;
@@ -34,6 +42,8 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
   defaultDate = new Date(),
 }) => {
   const createMutation = useCreateCalendarEvent();
+  const createRecurringMutation = useCreateRecurringEvent();
+  const [isRecurring, setIsRecurring] = useState(false);
   const [formData, setFormData] = useState<CreateCalendarEventRequest>({
     title: '',
     description: '',
@@ -43,10 +53,23 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
       "yyyy-MM-dd'T'HH:mm",
     ),
   });
+  const [recurrenceData, setRecurrenceData] = useState<{
+    recurrencePattern: RecurrencePatternDto;
+    recurrenceEndDate?: string;
+    noEndDate: boolean;
+  }>({
+    recurrencePattern: {
+      type: 'DAILY',
+      interval: 1,
+    },
+    noEndDate: true,
+  });
   const [validationErrors, setValidationErrors] = useState<{
     title?: string;
     startDate?: string;
     endDate?: string;
+    recurrencePattern?: string;
+    recurrenceEndDate?: string;
   }>({});
 
   const validateForm = (): boolean => {
@@ -54,6 +77,8 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
       title?: string;
       startDate?: string;
       endDate?: string;
+      recurrencePattern?: string;
+      recurrenceEndDate?: string;
     } = {};
     if (!formData.title.trim()) {
       errors.title = 'Title is required';
@@ -73,6 +98,30 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
         errors.endDate = 'End date must be after start date';
       }
     }
+    if (isRecurring) {
+      if (
+        recurrenceData.recurrencePattern.type === 'WEEKLY' &&
+        (!recurrenceData.recurrencePattern.daysOfWeek ||
+          recurrenceData.recurrencePattern.daysOfWeek.length === 0)
+      ) {
+        errors.recurrencePattern = 'Please select at least one day of the week';
+      }
+      if (!recurrenceData.noEndDate && !recurrenceData.recurrenceEndDate) {
+        errors.recurrenceEndDate = 'Please select an end date or choose "No end date"';
+      }
+      if (
+        !recurrenceData.noEndDate &&
+        recurrenceData.recurrenceEndDate &&
+        formData.startDate
+      ) {
+        const start = new Date(formData.startDate);
+        const end = new Date(recurrenceData.recurrenceEndDate);
+        if (end <= start) {
+          errors.recurrenceEndDate =
+            'Recurrence end date must be after start date';
+        }
+      }
+    }
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -83,12 +132,26 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
       return;
     }
     try {
-      await createMutation.mutateAsync({
-        title: formData.title,
-        description: formData.description || undefined,
-        startDate: new Date(formData.startDate).toISOString(),
-        endDate: new Date(formData.endDate).toISOString(),
-      });
+      if (isRecurring) {
+        await createRecurringMutation.mutateAsync({
+          title: formData.title,
+          description: formData.description || undefined,
+          startDate: new Date(formData.startDate).toISOString(),
+          endDate: new Date(formData.endDate).toISOString(),
+          recurrencePattern: recurrenceData.recurrencePattern,
+          recurrenceEndDate: recurrenceData.recurrenceEndDate
+            ? new Date(recurrenceData.recurrenceEndDate).toISOString()
+            : undefined,
+          noEndDate: recurrenceData.noEndDate,
+        });
+      } else {
+        await createMutation.mutateAsync({
+          title: formData.title,
+          description: formData.description || undefined,
+          startDate: new Date(formData.startDate).toISOString(),
+          endDate: new Date(formData.endDate).toISOString(),
+        });
+      }
       onClose();
       setFormData({
         title: '',
@@ -99,6 +162,14 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
           "yyyy-MM-dd'T'HH:mm",
         ),
       });
+      setRecurrenceData({
+        recurrencePattern: {
+          type: 'DAILY',
+          interval: 1,
+        },
+        noEndDate: true,
+      });
+      setIsRecurring(false);
       setValidationErrors({});
     } catch (error) {
       console.error('Error creating calendar event:', error);
@@ -106,7 +177,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
   };
 
   const handleClose = () => {
-    if (!createMutation.isPending) {
+    if (!createMutation.isPending && !createRecurringMutation.isPending) {
       onClose();
       setFormData({
         title: '',
@@ -117,6 +188,14 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
           "yyyy-MM-dd'T'HH:mm",
         ),
       });
+      setRecurrenceData({
+        recurrencePattern: {
+          type: 'DAILY',
+          interval: 1,
+        },
+        noEndDate: true,
+      });
+      setIsRecurring(false);
       setValidationErrors({});
     }
   };
@@ -196,10 +275,34 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
               error={!!validationErrors.endDate}
               helperText={validationErrors.endDate}
             />
-            {createMutation.error && (
+            <Divider sx={{ my: 2 }} />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isRecurring}
+                  onChange={(e) => setIsRecurring(e.target.checked)}
+                  disabled={
+                    createMutation.isPending || createRecurringMutation.isPending
+                  }
+                />
+              }
+              label="Make this a recurring event"
+            />
+            {isRecurring && (
+              <RecurrencePatternForm
+                value={recurrenceData}
+                onChange={setRecurrenceData}
+                errors={{
+                  recurrencePattern: validationErrors.recurrencePattern,
+                  recurrenceEndDate: validationErrors.recurrenceEndDate,
+                }}
+              />
+            )}
+            {(createMutation.error || createRecurringMutation.error) && (
               <Typography color="error" variant="body2">
-                {createMutation.error instanceof Error
-                  ? createMutation.error.message
+                {(createMutation.error || createRecurringMutation.error) instanceof
+                Error
+                  ? (createMutation.error || createRecurringMutation.error)?.message
                   : 'Failed to create event'}
               </Typography>
             )}
@@ -208,16 +311,22 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
                 type="button"
                 onClick={handleClose}
                 variant="outlined"
-                disabled={createMutation.isPending}
+                disabled={
+                  createMutation.isPending || createRecurringMutation.isPending
+                }
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 variant="contained"
-                disabled={createMutation.isPending || !formData.title.trim()}
+                disabled={
+                  createMutation.isPending ||
+                  createRecurringMutation.isPending ||
+                  !formData.title.trim()
+                }
               >
-                {createMutation.isPending ? (
+                {createMutation.isPending || createRecurringMutation.isPending ? (
                   <CircularProgress size={24} />
                 ) : (
                   'Create Event'

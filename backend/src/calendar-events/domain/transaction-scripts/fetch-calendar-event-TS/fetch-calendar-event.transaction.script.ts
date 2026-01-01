@@ -6,6 +6,7 @@ import { CalendarEvent } from '../../entities/calendar-event.entity';
 /**
  * Transaction script for fetching a single calendar event by ID.
  * Encapsulates all business logic for fetching calendar events.
+ * Now uses a single table for both one-time events and recurring event instances.
  */
 @Injectable()
 export class FetchCalendarEventTransactionScript {
@@ -15,17 +16,26 @@ export class FetchCalendarEventTransactionScript {
 
   /**
    * Fetch a calendar event by ID for a specific user.
+   * Handles both one-time events and recurring event instances (now in single table).
    * Throws NotFoundException if event doesn't exist or doesn't belong to user.
    */
   async apply(command: FetchCalendarEventCommand): Promise<CalendarEvent> {
-    const event = await this.calendarEventRepository.findById(
+    const calendarEvent = await this.calendarEventRepository.findById(
       command.eventId,
       command.user.userId,
     );
-    if (!event) {
+    // @TODO: Can be moved to a validator
+    if (!calendarEvent) {
       throw new NotFoundException('Calendar event not found');
     }
-    return event;
+
+    // Add metadata for response DTO conversion if it's a recurring instance
+    if (calendarEvent.recurringEventId !== undefined) {
+      (calendarEvent as any).__isRecurring = true;
+      (calendarEvent as any).__recurringEventId = calendarEvent.recurringEventId;
+    }
+
+    return calendarEvent;
   }
 }
 

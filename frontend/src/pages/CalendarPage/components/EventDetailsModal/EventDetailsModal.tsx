@@ -16,6 +16,7 @@ import {
   Save as SaveIcon,
   Cancel as CancelIcon,
   Delete as DeleteIcon,
+  Repeat as RepeatIcon,
 } from '@mui/icons-material';
 import { BottomSheet } from '../../../../components/BottomSheet/BottomSheet';
 import { useCalendarEvent } from '../../hooks/useCalendarEvent';
@@ -164,9 +165,26 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             mb: 2,
           }}
         >
-          <Typography variant="h6">
-            {isEditing ? 'Edit Event' : 'Event Details'}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="h6">
+              {isEditing ? 'Edit Event' : 'Event Details'}
+            </Typography>
+            {event.isRecurring && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  color: 'text.secondary',
+                }}
+              >
+                <RepeatIcon fontSize="small" />
+                <Typography variant="caption" color="text.secondary">
+                  Recurring
+                </Typography>
+              </Box>
+            )}
+          </Box>
           {!isEditing && (
             <Box sx={{ display: 'flex', gap: 1 }}>
               <IconButton

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CheckItem } from '../../entities/check-item.entity';
 import { CheckItemsRepository } from '../../../infra/repositories/check-items/check-items.repository';
 import { UpdateCheckItemDto } from '../../../apps/dtos/requests/update-check-item.dto';
-import { AuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 
 @Injectable()
 export class UpdateCheckItemTransactionScript {

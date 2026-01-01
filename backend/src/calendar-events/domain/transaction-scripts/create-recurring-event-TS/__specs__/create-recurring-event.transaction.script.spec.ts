@@ -1,20 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateRecurringEventTransactionScript } from '../create-recurring-event.transaction.script';
 import { RecurringEventRepository } from '../../../../infra/repositories/recurring-event.repository';
-import { GenerateEventInstancesTransactionScript } from '../../../transaction-scripts/generate-event-instances-TS/generate-event-instances.transaction.script';
 import { CreateRecurringEventCommand } from '../create-recurring-event.command';
 import { RecurringEvent } from '../../../../domain/entities/recurring-event.entity';
-import { EventInstance } from '../../../../domain/entities/event-instance.entity';
+import { CalendarEvent } from '../../../../domain/entities/calendar-event.entity';
 import { RecurringEventToInfrastructureConverter } from '../recurring-event-to-infrastructure.converter';
 import { RecurringEventToDomainConverter } from '../recurring-event-to-domain.converter';
 import { RecurringEventEntity } from '../../../../infra/entities/recurring-event.entity';
 import { generateRandomNumbers, createMock } from 'src/shared-kernel/test-utils';
-import { addYears, addDays } from 'date-fns';
 
 describe('CreateRecurringEventTransactionScript', () => {
   let target: CreateRecurringEventTransactionScript;
   let mockRecurringEventRepository: jest.Mocked<RecurringEventRepository>;
-  let mockGenerateEventInstancesTransactionScript: jest.Mocked<GenerateEventInstancesTransactionScript>;
   let mockToInfrastructureConverter: jest.Mocked<RecurringEventToInfrastructureConverter>;
   let mockToDomainConverter: jest.Mocked<RecurringEventToDomainConverter>;
 
@@ -46,10 +43,6 @@ describe('CreateRecurringEventTransactionScript', () => {
       delete: jest.fn(),
     });
 
-    mockGenerateEventInstancesTransactionScript = createMock<GenerateEventInstancesTransactionScript>({
-      apply: jest.fn(),
-    });
-
     mockToInfrastructureConverter = createMock<RecurringEventToInfrastructureConverter>({
       apply: jest.fn(),
     });
@@ -64,10 +57,6 @@ describe('CreateRecurringEventTransactionScript', () => {
         {
           provide: RecurringEventRepository,
           useValue: mockRecurringEventRepository,
-        },
-        {
-          provide: GenerateEventInstancesTransactionScript,
-          useValue: mockGenerateEventInstancesTransactionScript,
         },
         {
           provide: RecurringEventToInfrastructureConverter,
@@ -124,19 +113,6 @@ describe('CreateRecurringEventTransactionScript', () => {
         updatedAt: new Date(),
       } as RecurringEventEntity;
 
-      const mockInstances: EventInstance[] = [
-        {
-          id: generateRandomNumbers(),
-          recurringEventId: mockDomainEvent.id,
-          instanceDate: new Date('2024-01-15T00:00:00Z'),
-          startDate: new Date('2024-01-15T10:00:00Z'),
-          endDate: new Date('2024-01-15T11:00:00Z'),
-          isModified: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
       mockToInfrastructureConverter.apply.mockReturnValue(
         mockInfrastructureEntity as Partial<RecurringEventEntity>,
       );
@@ -144,9 +120,6 @@ describe('CreateRecurringEventTransactionScript', () => {
         mockInfrastructureEntity,
       );
       mockToDomainConverter.apply.mockReturnValue(mockDomainEvent);
-      mockGenerateEventInstancesTransactionScript.apply.mockResolvedValue(
-        mockInstances,
-      );
 
       const result = await target.apply(validCommand);
 
@@ -158,7 +131,6 @@ describe('CreateRecurringEventTransactionScript', () => {
       expect(mockToDomainConverter.apply).toHaveBeenCalledWith(
         mockInfrastructureEntity,
       );
-      expect(mockGenerateEventInstancesTransactionScript.apply).toHaveBeenCalled();
     });
 
 
@@ -209,22 +181,11 @@ describe('CreateRecurringEventTransactionScript', () => {
         mockInfrastructureEntity,
       );
       mockToDomainConverter.apply.mockReturnValue(mockDomainEvent);
-      mockGenerateEventInstancesTransactionScript.apply.mockResolvedValue([]);
 
-      await target.apply(noEndDateCommand);
+      const result = await target.apply(noEndDateCommand);
 
-      expect(mockGenerateEventInstancesTransactionScript.apply).toHaveBeenCalledWith(
-        mockDomainEvent,
-        expect.any(Date),
-        expect.any(Date),
-      );
-
-      const callArgs =
-        mockGenerateEventInstancesTransactionScript.apply.mock.calls[0];
-      const rangeEnd = callArgs[2];
-      const expectedEndDate = addYears(noEndDateCommand.startDate, 2);
-
-      expect(rangeEnd.getTime()).toBeCloseTo(expectedEndDate.getTime(), -3);
+      expect(result).toEqual(mockDomainEvent);
+      // Note: Instances are generated lazily when events are fetched, not during creation
     });
   });
 });

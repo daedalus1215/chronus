@@ -1,7 +1,7 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { CalendarEventService } from '../../../domain/services/calendar-event.service';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
-import { AuthUser, GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FetchCalendarEventsSwagger } from './fetch-calendar-events.swagger';
@@ -47,7 +47,24 @@ export class FetchCalendarEventsAction {
       user,
     };
     const events = await this.calendarEventService.fetchCalendarEvents(command);
-    return events.map((event) => new CalendarEventResponseDto(event));
+    // @TODO: Can move this to a responder
+    return events.map((event: {
+      id: number;
+      userId: number;
+      recurringEventId?: number;
+      instanceDate?: Date;
+      title: string;
+      description?: string;
+      startDate: Date;
+      endDate: Date;
+      isModified?: boolean;
+      titleOverride?: string;
+      descriptionOverride?: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }) => {
+      return new CalendarEventResponseDto(event, event.recurringEventId !== undefined, event.recurringEventId);
+    });
   }
 }
 

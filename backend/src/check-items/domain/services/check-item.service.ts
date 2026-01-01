@@ -8,7 +8,7 @@ import { DeleteCheckItemTransactionScript } from "../transaction-scripts/delete-
 import { UpdateCheckItemTransactionScript } from "../transaction-scripts/update-check-item/update-check-item.transaction.script";
 import { GetCheckItemsByNoteTransactionScript } from "../transaction-scripts/get-check-items-by-note/get-check-items-by-note.transaction.script";
 import { ReorderCheckItemsTransactionScript } from "../transaction-scripts/reorder-check-items/reorder-check-items.transaction.script";
-import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
+import { AuthUser } from "src/shared-kernel/apps/decorators/get-auth-user.decorator";
 import { CreateCheckItemDto } from "../../apps/dtos/requests/create-check-item.dto";
 import { UpdateCheckItemDto } from "../../apps/dtos/requests/update-check-item.dto";
 import { ReorderCheckItemsDto } from "../../apps/dtos/requests/reorder-check-items.dto";

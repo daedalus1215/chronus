@@ -1,8 +1,8 @@
 import { Controller, Patch, Param, ParseIntPipe } from "@nestjs/common";
 import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-action.decorator";
 import { ArchiveNoteSwagger } from "./archive-note.swagger";
-import { GetAuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
-import { AuthUser } from "src/auth/app/decorators/get-auth-user.decorator";
+import { GetAuthUser } from "src/shared-kernel/apps/decorators/get-auth-user.decorator";
+import { AuthUser } from "src/shared-kernel/apps/decorators/get-auth-user.decorator";
 import { Note } from "src/notes/domain/entities/notes/note.entity";
 import { NoteService } from "src/notes/domain/services/note.service";
 

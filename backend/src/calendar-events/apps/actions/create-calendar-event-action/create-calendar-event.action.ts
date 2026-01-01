@@ -1,7 +1,7 @@
 import { Post, Body, Controller, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { CalendarEventService } from '../../../domain/services/calendar-event.service';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
-import { AuthUser, GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateCalendarEventSwagger } from './create-calendar-event.swagger';

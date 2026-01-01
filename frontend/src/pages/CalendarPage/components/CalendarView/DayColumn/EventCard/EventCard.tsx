@@ -1,5 +1,6 @@
 import React from 'react';
-import { Paper, Typography } from '@mui/material';
+import { Paper, Typography, Box } from '@mui/material';
+import { Repeat as RepeatIcon } from '@mui/icons-material';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { EventLayout } from '../../../../hooks/useEventLayouts';
@@ -58,15 +59,22 @@ export const EventCard: React.FC<EventCardProps> = ({ layout, onSelect }) => {
   return (
     <Paper
       ref={setNodeRef}
-      className={`${styles.eventCard} ${isDragging ? styles.dragging : ''}`}
+      className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${
+        layout.event.isRecurring ? styles.recurring : ''
+      }`}
       onClick={handleClick}
       style={style}
       {...listeners}
       {...attributes}
     >
-      <Typography variant="caption" className={styles.eventTitle}>
-        {layout.event.title}
-      </Typography>
+      <Box className={styles.eventContent}>
+        {layout.event.isRecurring && (
+          <RepeatIcon className={styles.recurringIcon} fontSize="inherit" />
+        )}
+        <Typography variant="caption" className={styles.eventTitle}>
+          {layout.event.title}
+        </Typography>
+      </Box>
       {layout.event.description && heightPixels > 30 && (
         <Typography variant="caption" className={styles.eventDescription}>
           {layout.event.description}

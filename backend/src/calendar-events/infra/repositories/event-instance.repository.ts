@@ -38,6 +38,27 @@ export class EventInstanceRepository {
   }
 
   /**
+   * Find event instances by recurring event ID and date range.
+   * Returns instances that overlap with the date range for a specific recurring event.
+   */
+  async findByRecurringEventIdAndDateRange(
+    recurringEventId: number,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<EventInstance[]> {
+    const entities = await this.repository
+      .createQueryBuilder('event_instance')
+      .where('event_instance.recurring_event_id = :recurringEventId', {
+        recurringEventId,
+      })
+      .andWhere('event_instance.start_date <= :endDate', { endDate })
+      .andWhere('event_instance.end_date >= :startDate', { startDate })
+      .orderBy('event_instance.start_date', 'ASC')
+      .getMany();
+    return entities.map((entity) => this.infrastructureToDomain(entity));
+  }
+
+  /**
    * Find event instances by date range.
    * Returns instances that overlap with the date range.
    */

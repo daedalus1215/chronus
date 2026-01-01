@@ -54,6 +54,16 @@ export class RecurringEventRepository {
   }
 
   /**
+   * Find all recurring events for a user.
+   */
+  async findByUserId(userId: number): Promise<RecurringEventEntity[]> {
+    return await this.repository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
    * Delete a recurring event by ID and user ID.
    */
   async delete(id: number, userId: number): Promise<void> {

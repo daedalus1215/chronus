@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateEventInstancesTransactionScript } from '../generate-event-instances.transaction.script';
-import { EventInstanceRepository } from '../../../../infra/repositories/event-instance.repository';
+import { CalendarEventRepository } from '../../../../infra/repositories/calendar-event.repository';
 import { RecurrenceExceptionRepository } from '../../../../infra/repositories/recurrence-exception.repository';
 import { generateInstanceDates } from '../../../../domain/utils/rrule-pattern.utils';
 import { RecurringEvent } from '../../../../domain/entities/recurring-event.entity';
-import { EventInstance } from '../../../../domain/entities/event-instance.entity';
+import { CalendarEvent } from '../../../../domain/entities/calendar-event.entity';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { startOfDay, addDays, addMonths, addYears } from 'date-fns';
 
@@ -12,7 +12,7 @@ jest.mock('../../../../domain/utils/rrule-pattern.utils');
 
 describe('GenerateEventInstancesTransactionScript', () => {
   let target: GenerateEventInstancesTransactionScript;
-  let mockEventInstanceRepository: jest.Mocked<EventInstanceRepository>;
+  let mockCalendarEventRepository: jest.Mocked<CalendarEventRepository>;
   let mockRecurrenceExceptionRepository: jest.Mocked<RecurrenceExceptionRepository>;
 
   const mockRecurringEvent: RecurringEvent = {
@@ -34,10 +34,12 @@ describe('GenerateEventInstancesTransactionScript', () => {
   };
 
   beforeEach(async () => {
-    mockEventInstanceRepository = {
+    mockCalendarEventRepository = {
       create: jest.fn(),
+      createInstance: jest.fn(),
       findByRecurringEventId: jest.fn(),
       findByDateRange: jest.fn(),
+      findByRecurringEventIdAndDateRange: jest.fn(),
       findById: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
@@ -53,8 +55,8 @@ describe('GenerateEventInstancesTransactionScript', () => {
       providers: [
         GenerateEventInstancesTransactionScript,
         {
-          provide: EventInstanceRepository,
-          useValue: mockEventInstanceRepository,
+          provide: CalendarEventRepository,
+          useValue: mockCalendarEventRepository,
         },
         {
           provide: RecurrenceExceptionRepository,
@@ -98,14 +100,15 @@ describe('GenerateEventInstancesTransactionScript', () => {
       mockRecurrenceExceptionRepository.findByRecurringEventId.mockResolvedValue(
         [],
       );
-      mockEventInstanceRepository.create.mockImplementation(
-        async (instance: Partial<EventInstance>) => {
+      mockCalendarEventRepository.findByRecurringEventId.mockResolvedValue([]);
+      mockCalendarEventRepository.createInstance.mockImplementation(
+        async (instance: Partial<CalendarEvent>) => {
           return {
             id: generateRandomNumbers(),
             ...instance,
             createdAt: new Date(),
             updatedAt: new Date(),
-          } as EventInstance;
+          } as CalendarEvent;
         },
       );
 
@@ -122,7 +125,7 @@ describe('GenerateEventInstancesTransactionScript', () => {
         rangeStart,
         rangeEnd,
       );
-      expect(mockEventInstanceRepository.create).toHaveBeenCalledTimes(7);
+      expect(mockCalendarEventRepository.createInstance).toHaveBeenCalledTimes(7);
     });
 
     it('should generate weekly recurrence with specific days correctly', async () => {
@@ -150,21 +153,22 @@ describe('GenerateEventInstancesTransactionScript', () => {
       mockRecurrenceExceptionRepository.findByRecurringEventId.mockResolvedValue(
         [],
       );
-      mockEventInstanceRepository.create.mockImplementation(
-        async (instance: Partial<EventInstance>) => {
+      mockCalendarEventRepository.findByRecurringEventId.mockResolvedValue([]);
+      mockCalendarEventRepository.createInstance.mockImplementation(
+        async (instance: Partial<CalendarEvent>) => {
           return {
             id: generateRandomNumbers(),
             ...instance,
             createdAt: new Date(),
             updatedAt: new Date(),
-          } as EventInstance;
+          } as CalendarEvent;
         },
       );
 
       const result = await target.apply(recurringEvent, rangeStart, rangeEnd);
 
       expect(result).toHaveLength(6);
-      expect(mockEventInstanceRepository.create).toHaveBeenCalledTimes(6);
+      expect(mockCalendarEventRepository.createInstance).toHaveBeenCalledTimes(6);
     });
 
     it('should generate monthly recurrence instances correctly', async () => {
@@ -190,21 +194,22 @@ describe('GenerateEventInstancesTransactionScript', () => {
       mockRecurrenceExceptionRepository.findByRecurringEventId.mockResolvedValue(
         [],
       );
-      mockEventInstanceRepository.create.mockImplementation(
-        async (instance: Partial<EventInstance>) => {
+      mockCalendarEventRepository.findByRecurringEventId.mockResolvedValue([]);
+      mockCalendarEventRepository.createInstance.mockImplementation(
+        async (instance: Partial<CalendarEvent>) => {
           return {
             id: generateRandomNumbers(),
             ...instance,
             createdAt: new Date(),
             updatedAt: new Date(),
-          } as EventInstance;
+          } as CalendarEvent;
         },
       );
 
       const result = await target.apply(recurringEvent, rangeStart, rangeEnd);
 
       expect(result).toHaveLength(4);
-      expect(mockEventInstanceRepository.create).toHaveBeenCalledTimes(4);
+      expect(mockCalendarEventRepository.createInstance).toHaveBeenCalledTimes(4);
     });
 
     it('should generate yearly recurrence instances correctly', async () => {
@@ -231,21 +236,22 @@ describe('GenerateEventInstancesTransactionScript', () => {
       mockRecurrenceExceptionRepository.findByRecurringEventId.mockResolvedValue(
         [],
       );
-      mockEventInstanceRepository.create.mockImplementation(
-        async (instance: Partial<EventInstance>) => {
+      mockCalendarEventRepository.findByRecurringEventId.mockResolvedValue([]);
+      mockCalendarEventRepository.createInstance.mockImplementation(
+        async (instance: Partial<CalendarEvent>) => {
           return {
             id: generateRandomNumbers(),
             ...instance,
             createdAt: new Date(),
             updatedAt: new Date(),
-          } as EventInstance;
+          } as CalendarEvent;
         },
       );
 
       const result = await target.apply(recurringEvent, rangeStart, rangeEnd);
 
       expect(result).toHaveLength(4);
-      expect(mockEventInstanceRepository.create).toHaveBeenCalledTimes(4);
+      expect(mockCalendarEventRepository.createInstance).toHaveBeenCalledTimes(4);
     });
 
     it('should generate instances up to 2 years ahead for "no end date" series', async () => {
@@ -270,14 +276,15 @@ describe('GenerateEventInstancesTransactionScript', () => {
       mockRecurrenceExceptionRepository.findByRecurringEventId.mockResolvedValue(
         [],
       );
-      mockEventInstanceRepository.create.mockImplementation(
-        async (instance: Partial<EventInstance>) => {
+      mockCalendarEventRepository.findByRecurringEventId.mockResolvedValue([]);
+      mockCalendarEventRepository.createInstance.mockImplementation(
+        async (instance: Partial<CalendarEvent>) => {
           return {
             id: generateRandomNumbers(),
             ...instance,
             createdAt: new Date(),
             updatedAt: new Date(),
-          } as EventInstance;
+          } as CalendarEvent;
         },
       );
 
@@ -320,28 +327,44 @@ describe('GenerateEventInstancesTransactionScript', () => {
         ],
       );
 
+      // generateInstanceDates should exclude the exception date (2024-01-17)
+      // So the mock should return dates WITHOUT the exception date
       const instanceDates = [
         new Date('2024-01-15T10:00:00Z'),
         new Date('2024-01-16T10:00:00Z'),
-        new Date('2024-01-17T10:00:00Z'), // Should be excluded
+        // 2024-01-17 is excluded by generateInstanceDates when given exception dates
         new Date('2024-01-18T10:00:00Z'),
       ];
 
       (generateInstanceDates as jest.Mock).mockReturnValue(instanceDates);
-      mockEventInstanceRepository.create.mockImplementation(
-        async (instance: Partial<EventInstance>) => {
+      mockCalendarEventRepository.findByRecurringEventId.mockResolvedValue([]);
+      mockCalendarEventRepository.createInstance.mockImplementation(
+        async (instance: Partial<CalendarEvent>) => {
           return {
             id: generateRandomNumbers(),
             ...instance,
             createdAt: new Date(),
             updatedAt: new Date(),
-          } as EventInstance;
+          } as CalendarEvent;
         },
       );
 
       const result = await target.apply(recurringEvent, rangeStart, rangeEnd);
 
-      expect(result.length).toBeLessThan(instanceDates.length);
+      // Verify that generateInstanceDates was called with the exception dates
+      expect(generateInstanceDates).toHaveBeenCalledWith(
+        recurringEvent.recurrencePattern,
+        recurringEvent.startDate,
+        recurringEvent.endDate,
+        recurringEvent.recurrenceEndDate,
+        recurringEvent.noEndDate,
+        [exceptionDate], // Exception dates should be passed to generateInstanceDates
+        rangeStart,
+        rangeEnd,
+      );
+      // Result should have 3 instances (exception date excluded)
+      expect(result).toHaveLength(3);
+      expect(mockCalendarEventRepository.createInstance).toHaveBeenCalledTimes(3);
     });
   });
 });

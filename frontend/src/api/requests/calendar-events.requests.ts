@@ -3,6 +3,8 @@ import {
   CalendarEventResponseDto,
   CreateCalendarEventRequest,
   UpdateCalendarEventRequest,
+  CreateRecurringEventRequest,
+  RecurringEventResponseDto,
 } from '../dtos/calendar-events.dtos';
 
 export const fetchCalendarEvents = async (
@@ -56,6 +58,16 @@ export const deleteCalendarEvent = async (
 ): Promise<{ success: boolean }> => {
   const { data } = await api.delete<{ success: boolean }>(
     `/calendar-events/${id}`,
+  );
+  return data;
+};
+
+export const createRecurringEvent = async (
+  event: CreateRecurringEventRequest,
+): Promise<RecurringEventResponseDto> => {
+  const { data } = await api.post<RecurringEventResponseDto>(
+    '/calendar-events/recurring',
+    event,
   );
   return data;
 };

@@ -2,11 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CalendarEventEntity } from './infra/entities/calendar-event.entity';
 import { RecurringEventEntity } from './infra/entities/recurring-event.entity';
-import { EventInstanceEntity } from './infra/entities/event-instance.entity';
 import { RecurrenceExceptionEntity } from './infra/entities/recurrence-exception.entity';
 import { CalendarEventRepository } from './infra/repositories/calendar-event.repository';
 import { RecurringEventRepository } from './infra/repositories/recurring-event.repository';
-import { EventInstanceRepository } from './infra/repositories/event-instance.repository';
 import { RecurrenceExceptionRepository } from './infra/repositories/recurrence-exception.repository';
 import { FetchCalendarEventsTransactionScript } from './domain/transaction-scripts/fetch-calendar-events-TS/fetch-calendar-events.transaction.script';
 import { CreateCalendarEventTransactionScript } from './domain/transaction-scripts/create-calendar-event-TS/create-calendar-event.transaction.script';
@@ -20,7 +18,9 @@ import { FetchCalendarEventAction } from './apps/actions/fetch-calendar-event-ac
 import { UpdateCalendarEventAction } from './apps/actions/update-calendar-event-action/update-calendar-event.action';
 import { DeleteCalendarEventAction } from './apps/actions/delete-calendar-event-action/delete-calendar-event.action';
 import { CreateRecurringEventAction } from './apps/actions/create-recurring-event-action/create-recurring-event.action';
+import { DeleteRecurringEventAction } from './apps/actions/delete-recurring-event-action/delete-recurring-event.action';
 import { CreateRecurringEventTransactionScript } from './domain/transaction-scripts/create-recurring-event-TS/create-recurring-event.transaction.script';
+import { DeleteRecurringEventTransactionScript } from './domain/transaction-scripts/delete-recurring-event-TS/delete-recurring-event.transaction.script';
 import { GenerateEventInstancesTransactionScript } from './domain/transaction-scripts/generate-event-instances-TS/generate-event-instances.transaction.script';
 import { RecurringEventService } from './domain/services/recurring-event.service';
 import { RecurringEventToInfrastructureConverter } from './domain/transaction-scripts/create-recurring-event-TS/recurring-event-to-infrastructure.converter';
@@ -34,14 +34,12 @@ import { RecurringEventToDomainConverter } from './domain/transaction-scripts/cr
     TypeOrmModule.forFeature([
       CalendarEventEntity,
       RecurringEventEntity,
-      EventInstanceEntity,
       RecurrenceExceptionEntity,
     ]),
   ],
   providers: [
     CalendarEventRepository,
     RecurringEventRepository,
-    EventInstanceRepository,
     RecurrenceExceptionRepository,
     FetchCalendarEventsTransactionScript,
     CreateCalendarEventTransactionScript,
@@ -50,6 +48,7 @@ import { RecurringEventToDomainConverter } from './domain/transaction-scripts/cr
     DeleteCalendarEventTransactionScript,
     CalendarEventService,
     CreateRecurringEventTransactionScript,
+    DeleteRecurringEventTransactionScript,
     GenerateEventInstancesTransactionScript,
     RecurringEventService,
     RecurringEventToInfrastructureConverter,
@@ -62,11 +61,11 @@ import { RecurringEventToDomainConverter } from './domain/transaction-scripts/cr
     UpdateCalendarEventAction,
     DeleteCalendarEventAction,
     CreateRecurringEventAction,
+    DeleteRecurringEventAction,
   ],
   exports: [
     CalendarEventRepository,
     RecurringEventRepository,
-    EventInstanceRepository,
     RecurrenceExceptionRepository,
   ],
 })

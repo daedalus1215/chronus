@@ -1,7 +1,7 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { TagService } from '../../../domain/services/tag.service';
 import { TagResponseDto } from '../../dtos/responses/tag.response.dto';
-import { AuthUser, GetAuthUser } from 'src/auth/app/decorators/get-auth-user.decorator';
+import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetTagsByNoteIdSwagger } from './get-tags-by-note-id.swagger';
 

@@ -9,6 +9,9 @@ import { UpdateCalendarEventTransactionScript } from '../transaction-scripts/upd
 import { UpdateCalendarEventCommand } from '../transaction-scripts/update-calendar-event-TS/update-calendar-event.command';
 import { DeleteCalendarEventTransactionScript } from '../transaction-scripts/delete-calendar-event-TS/delete-calendar-event.transaction.script';
 import { DeleteCalendarEventCommand } from '../transaction-scripts/delete-calendar-event-TS/delete-calendar-event.command';
+import { GenerateEventInstancesTransactionScript } from '../transaction-scripts/generate-event-instances-TS/generate-event-instances.transaction.script';
+import { RecurringEventRepository } from '../../infra/repositories/recurring-event.repository';
+import { RecurringEventToDomainConverter } from '../transaction-scripts/create-recurring-event-TS/recurring-event-to-domain.converter';
 import { CalendarEvent } from '../entities/calendar-event.entity';
 
 /**
@@ -23,14 +26,38 @@ export class CalendarEventService {
     private readonly fetchCalendarEventTransactionScript: FetchCalendarEventTransactionScript,
     private readonly updateCalendarEventTransactionScript: UpdateCalendarEventTransactionScript,
     private readonly deleteCalendarEventTransactionScript: DeleteCalendarEventTransactionScript,
+    private readonly generateEventInstancesTransactionScript: GenerateEventInstancesTransactionScript,
+    private readonly recurringEventRepository: RecurringEventRepository,
+    private readonly recurringEventToDomainConverter: RecurringEventToDomainConverter,
   ) {}
 
   /**
    * Fetch calendar events for a user within a date range.
+   * Orchestrates instance generation for recurring events before fetching.
    */
   async fetchCalendarEvents(
     command: FetchCalendarEventsCommand,
   ): Promise<CalendarEvent[]> {
+    // Fetch recurring events for the user
+    const recurringEventEntities =
+      await this.recurringEventRepository.findByUserId(command.userId);
+
+    // Convert recurring events to domain entities
+    const recurringEvents = recurringEventEntities.map((entity) =>
+      this.recurringEventToDomainConverter.apply(entity),
+    );
+
+    // Generate instances for each recurring event in the date range
+    // Instances are generated lazily - the generator will skip any that already exist
+    for (const recurringEvent of recurringEvents) {
+      await this.generateEventInstancesTransactionScript.apply(
+        recurringEvent,
+        command.startDate,
+        command.endDate,
+      );
+    }
+
+    // Now fetch all calendar events (one-time and instances) for the user in date range
     return await this.fetchCalendarEventsTransactionScript.apply(command);
   }
 
