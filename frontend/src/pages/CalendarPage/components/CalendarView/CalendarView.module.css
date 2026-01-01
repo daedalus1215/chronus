@@ -122,6 +122,7 @@
   flex-direction: column;
   height: 1560px; /* 24 hours * 60px per hour + extra buffer */
   flex-shrink: 0;
+  position: relative;
 }
 
 .timeSlotCell {
@@ -135,10 +136,6 @@
 
 .eventCard {
   position: absolute;
-  left: 2px;
-  right: 2px;
-  top: 2px;
-  bottom: 2px;
   padding: 4px;
   background-color: var(--color-primary, #1976d2);
   color: white;
@@ -146,6 +143,7 @@
   border-radius: 4px;
   overflow: hidden;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 .eventCard:hover {
