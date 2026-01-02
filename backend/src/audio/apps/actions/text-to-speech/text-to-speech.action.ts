@@ -1,5 +1,5 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../../auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { AudioService } from 'src/audio/domain/services/audio.service';
 import { TextToSpeechRequestDto } from '../../dtos/requests/text-to-speech.dto';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';

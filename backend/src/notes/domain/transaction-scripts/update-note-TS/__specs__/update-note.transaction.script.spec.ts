@@ -1,16 +1,17 @@
 import { Test } from '@nestjs/testing';
 import { UpdateNoteTransactionScript } from '../update-note.transaction.script';
 import { NoteMemoTagRepository } from '../../../../infra/repositories/note-memo-tag.repository';
-import { NoteDtoToEntityConverter } from '../note-dto-to-entity.converter';
+import { UpdateNoteParamsToEntityConverter } from '../update-note-params-to-entity.converter';
 import { NotFoundException } from '@nestjs/common';
 import { createMock, createMockNote, createMockUpdateNoteDto } from 'src/notes/test-utils/mock-factories';
 import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
+import { UpdateNoteParams } from '../update-note.params';
 
 describe('UpdateNoteTransactionScript', () => {
   let target: UpdateNoteTransactionScript;
   let mockRepository: jest.Mocked<NoteMemoTagRepository>;
-  let mockConverter: jest.Mocked<NoteDtoToEntityConverter>;
+  let mockConverter: jest.Mocked<UpdateNoteParamsToEntityConverter>;
 
   beforeEach(async () => {
     // Arrange
@@ -19,7 +20,7 @@ describe('UpdateNoteTransactionScript', () => {
       save: jest.fn()
     });
 
-    mockConverter = createMock<NoteDtoToEntityConverter>({
+    mockConverter = createMock<UpdateNoteParamsToEntityConverter>({
       apply: jest.fn()
     });
 
@@ -31,7 +32,7 @@ describe('UpdateNoteTransactionScript', () => {
           useValue: mockRepository,
         },
         {
-          provide: NoteDtoToEntityConverter,
+          provide: UpdateNoteParamsToEntityConverter,
           useValue: mockConverter,
         },
       ],
@@ -58,7 +59,12 @@ describe('UpdateNoteTransactionScript', () => {
 
         // Assert
         expect(mockRepository.findById).toHaveBeenCalledWith(noteId, userId);
-        expect(mockConverter.apply).toHaveBeenCalledWith(updateDto, existingNote);
+        const expectedParams: UpdateNoteParams = {
+          name: updateDto.name,
+          description: updateDto.description,
+          tags: updateDto.tags,
+        };
+        expect(mockConverter.apply).toHaveBeenCalledWith(expectedParams, existingNote);
         expect(mockRepository.save).toHaveBeenCalledWith(updatedNote);
       });
     });

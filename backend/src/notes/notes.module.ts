@@ -11,7 +11,7 @@ import { GetNoteByIdAction } from "./apps/actions/notes/get-note-by-id-action/ge
 import { GetNoteByIdTransactionScript } from "./domain/transaction-scripts/get-note-by-id.transaction.script";
 import { UpdateNoteAction } from "./apps/actions/notes/update-note-action/update-note.action";
 import { UpdateNoteTransactionScript } from "./domain/transaction-scripts/update-note-TS/update-note.transaction.script";
-import { NoteDtoToEntityConverter } from "./domain/transaction-scripts/update-note-TS/note-dto-to-entity.converter";
+import { UpdateNoteParamsToEntityConverter } from "./domain/transaction-scripts/update-note-TS/update-note-params-to-entity.converter";
 import { NoteAggregator } from "./domain/aggregators/note.aggregator";
 import { UpdateNoteTimestampAction } from "./apps/actions/update-note-timestamp.action";
 import { UpdateNoteTitleAction } from "./apps/actions/notes/update-note-title-action/update-note-title.action";
@@ -39,7 +39,7 @@ import { GetNoteDetailsListener } from "./apps/listeners/get-note-details.listen
     UpdateNoteTransactionScript,
     UpdateNoteTitleTransactionScript,
     ArchiveNoteTransactionScript,
-    NoteDtoToEntityConverter,
+    UpdateNoteParamsToEntityConverter,
     NoteService,
     GetNoteNamesByIdsTransactionScript,
     VerifyNoteAccessListener,

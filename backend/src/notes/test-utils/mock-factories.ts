@@ -1,5 +1,5 @@
 import { NoteMemoTagRepository } from '../infra/repositories/note-memo-tag.repository';
-import { NoteDtoToEntityConverter } from '../domain/transaction-scripts/update-note-TS/note-dto-to-entity.converter';
+import { UpdateNoteParamsToEntityConverter } from '../domain/transaction-scripts/update-note-TS/update-note-params-to-entity.converter';
 import { Note } from '../domain/entities/notes/note.entity';
 import { UpdateNoteDto } from '../apps/dtos/requests/update-note.dto';
 import { Repository } from 'typeorm';
@@ -61,6 +61,6 @@ export const createMockRepository = (): jest.Mocked<NoteMemoTagRepository> => {
   } as unknown as jest.Mocked<NoteMemoTagRepository>;
 };
 
-export const createMockConverter = (): jest.Mocked<NoteDtoToEntityConverter> => ({
+export const createMockConverter = (): jest.Mocked<UpdateNoteParamsToEntityConverter> => ({
   apply: jest.fn()
 }); 

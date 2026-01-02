@@ -1,14 +1,15 @@
 import { Memo } from 'src/notes/domain/entities/notes/memo.entity';
-import { NoteDtoToEntityConverter } from '../note-dto-to-entity.converter';
-import { createMockNote, createMockUpdateNoteDto } from 'src/notes/test-utils';
+import { UpdateNoteParamsToEntityConverter } from '../update-note-params-to-entity.converter';
+import { createMockNote } from 'src/notes/test-utils';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
+import { UpdateNoteParams } from '../update-note.params';
 
-describe('NoteDtoToEntityConverter', () => {
-  let converter: NoteDtoToEntityConverter;
+describe('UpdateNoteParamsToEntityConverter', () => {
+  let converter: UpdateNoteParamsToEntityConverter;
 
   beforeEach(() => {
     // Arrange
-    converter = new NoteDtoToEntityConverter();
+    converter = new UpdateNoteParamsToEntityConverter();
   });
 
   describe('apply', () => {
@@ -16,13 +17,13 @@ describe('NoteDtoToEntityConverter', () => {
       it('should create a new memo with the provided description', () => {
         // Arrange
         const note = createMockNote({ memo: null });
-        const updateDto = createMockUpdateNoteDto({
+        const updateParams: UpdateNoteParams = {
           name: 'New Note',
           description: 'New Description'
-        });
+        };
 
         // Act
-        const result = converter.apply(updateDto, note);
+        const result = converter.apply(updateParams, note);
 
         // Assert
         expect(result.name).toBe('New Note');
@@ -42,13 +43,13 @@ describe('NoteDtoToEntityConverter', () => {
           updatedAt: new Date().toISOString()
         };
         const note = createMockNote({ memo: existingMemo });
-        const updateDto = createMockUpdateNoteDto({
+        const updateParams: UpdateNoteParams = {
           name: 'Updated Note',
           description: 'Updated Description'
-        });
+        };
 
         // Act
-        const result = converter.apply(updateDto, note);
+        const result = converter.apply(updateParams, note);
 
         // Assert
         expect(result.name).toBe('Updated Note');
@@ -64,13 +65,13 @@ describe('NoteDtoToEntityConverter', () => {
       it('should only update the provided fields', () => {
         // Arrange
         const note = createMockNote();
-        const updateDto = createMockUpdateNoteDto({
+        const updateParams: UpdateNoteParams = {
           name: 'Only Name Update',
           description: undefined
-        });
+        };
 
         // Act
-        const result = converter.apply(updateDto, note);
+        const result = converter.apply(updateParams, note);
 
         // Assert
         expect(result.name).toBe('Only Name Update');
@@ -86,10 +87,10 @@ describe('NoteDtoToEntityConverter', () => {
             userId: generateRandomNumbers(),
           archivedAt: new Date(),
         });
-        const updateDto = createMockUpdateNoteDto();
+        const updateParams: UpdateNoteParams = {};
 
         // Act
-        const result = converter.apply(updateDto, originalNote);
+        const result = converter.apply(updateParams, originalNote);
 
         // Assert
         expect(result.id).toBe(originalNote.id);
@@ -100,4 +101,5 @@ describe('NoteDtoToEntityConverter', () => {
       });
     });
   });
-}); 
+});
+
