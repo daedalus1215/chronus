@@ -22,6 +22,7 @@ import { DeleteRecurringEventAction } from './apps/actions/delete-recurring-even
 import { CreateRecurringEventTransactionScript } from './domain/transaction-scripts/create-recurring-event-TS/create-recurring-event.transaction.script';
 import { DeleteRecurringEventTransactionScript } from './domain/transaction-scripts/delete-recurring-event-TS/delete-recurring-event.transaction.script';
 import { GenerateEventInstancesTransactionScript } from './domain/transaction-scripts/generate-event-instances-TS/generate-event-instances.transaction.script';
+import { FetchRecurringEventsTransactionScript } from './domain/transaction-scripts/fetch-recurring-events-TS/fetch-recurring-events.transaction.script';
 import { RecurringEventService } from './domain/services/recurring-event.service';
 import { RecurringEventToInfrastructureConverter } from './domain/transaction-scripts/create-recurring-event-TS/recurring-event-to-infrastructure.converter';
 import { RecurringEventToDomainConverter } from './domain/transaction-scripts/create-recurring-event-TS/recurring-event-to-domain.converter';
@@ -50,6 +51,7 @@ import { RecurringEventToDomainConverter } from './domain/transaction-scripts/cr
     CreateRecurringEventTransactionScript,
     DeleteRecurringEventTransactionScript,
     GenerateEventInstancesTransactionScript,
+    FetchRecurringEventsTransactionScript,
     RecurringEventService,
     RecurringEventToInfrastructureConverter,
     RecurringEventToDomainConverter,
