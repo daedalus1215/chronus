@@ -3,6 +3,7 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  min-height: 0;
 }
 
 .header {
@@ -49,6 +50,7 @@
   border-radius: 8px;
   background-color: var(--color-card-bg, #1e1e1e);
   min-height: 0;
+  /* min-width: fit-content; */
   position: relative;
   align-items: flex-start;
   -webkit-overflow-scrolling: touch;
@@ -62,7 +64,7 @@
 }
 
 .timeColumn {
-  min-width: 80px;
+  min-width: 100px;
   background-color: var(--color-card-bg, #1e1e1e);
   position: sticky;
   left: 0;

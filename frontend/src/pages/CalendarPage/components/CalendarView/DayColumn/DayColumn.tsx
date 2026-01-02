@@ -11,6 +11,7 @@ type DayColumnProps = {
   layoutMap: EventLayoutMap;
   timeSlots: number[];
   onEventSelect: (eventId: number) => void;
+  onTimeSlotClick?: (date: Date, hour: number) => void;
 };
 
 /**
@@ -28,6 +29,7 @@ export const DayColumn: React.FC<DayColumnProps> = ({
   layoutMap,
   timeSlots,
   onEventSelect,
+  onTimeSlotClick,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: `day-${day.toISOString()}`,
@@ -35,6 +37,15 @@ export const DayColumn: React.FC<DayColumnProps> = ({
       day,
     },
   });
+
+  const handleTimeSlotClick = (hour: number, event: React.MouseEvent) => {
+    // Only trigger if clicking directly on the time slot cell (not on an event)
+    // Stop propagation to prevent event selection when clicking on empty space
+    event.stopPropagation();
+    if (event.target === event.currentTarget && onTimeSlotClick) {
+      onTimeSlotClick(day, hour);
+    }
+  };
 
   return (
     <Box
@@ -56,7 +67,12 @@ export const DayColumn: React.FC<DayColumnProps> = ({
       </Paper>
       <Box className={styles.dayContent}>
         {timeSlots.map((hour) => (
-          <Box key={`${day.toISOString()}-${hour}`} className={styles.timeSlotCell} />
+          <Box
+            key={`${day.toISOString()}-${hour}`}
+            className={styles.timeSlotCell}
+            onClick={(e) => handleTimeSlotClick(hour, e)}
+            sx={{ cursor: onTimeSlotClick ? 'pointer' : 'default' }}
+          />
         ))}
         {Array.from(layoutMap.values()).map((layout) => (
           <EventCard
