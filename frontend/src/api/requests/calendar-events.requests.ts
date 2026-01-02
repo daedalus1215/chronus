@@ -72,3 +72,12 @@ export const createRecurringEvent = async (
   return data;
 };
 
+export const deleteRecurringEvent = async (
+  id: number,
+): Promise<{ success: boolean }> => {
+  const { data } = await api.delete<{ success: boolean }>(
+    `/calendar-events/recurring/${id}`,
+  );
+  return data;
+};
+

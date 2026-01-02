@@ -38,7 +38,7 @@ export const useCalendarEvents = (
     queryFn: async () => {
       return await fetchCalendarEvents(startDateStr, endDateStr);
     },
-    staleTime: 30000,
+    staleTime: 0, // Always refetch when invalidated to ensure fresh data
   });
 
   return {

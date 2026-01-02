@@ -63,7 +63,8 @@ export class FetchCalendarEventsAction {
       createdAt: Date;
       updatedAt: Date;
     }) => {
-      return new CalendarEventResponseDto(event, event.recurringEventId !== undefined, event.recurringEventId);
+      console.log('Fetching calendar event:', event);
+      return new CalendarEventResponseDto(event);
     });
   }
 }

@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CalendarEventRepository } from '../../../infra/repositories/calendar-event.repository';
-import { RecurringEventRepository } from '../../../infra/repositories/recurring-event.repository';
 import { FetchCalendarEventsCommand } from './fetch-calendar-events.command';
 import { CalendarEvent } from '../../entities/calendar-event.entity';
-import { RecurringEventToDomainConverter } from '../create-recurring-event-TS/recurring-event-to-domain.converter';
 
 /**
  * Transaction script for fetching calendar events within a date range.
@@ -14,8 +12,6 @@ import { RecurringEventToDomainConverter } from '../create-recurring-event-TS/re
 export class FetchCalendarEventsTransactionScript {
   constructor(
     private readonly calendarEventRepository: CalendarEventRepository,
-    private readonly recurringEventRepository: RecurringEventRepository,
-    private readonly recurringEventToDomainConverter: RecurringEventToDomainConverter,
   ) {}
 
   /**
@@ -39,15 +35,6 @@ export class FetchCalendarEventsTransactionScript {
       throw new Error('Unauthorized: Cannot access other users events');
     }
 
-    // Fetch recurring events for the user (needed for metadata enrichment)
-    const recurringEventEntities =
-      await this.recurringEventRepository.findByUserId(command.userId);
-
-    // Convert recurring events to domain entities
-    const recurringEvents = recurringEventEntities.map((entity) =>
-      this.recurringEventToDomainConverter.apply(entity),
-    );
-
     // Fetch all calendar events (one-time and instances) for the user in date range
     // Note: Instance generation is handled by the service layer before calling this script
     const allEvents = await this.calendarEventRepository.findByDateRange(
@@ -56,28 +43,8 @@ export class FetchCalendarEventsTransactionScript {
       command.endDate,
     );
 
-    // Add metadata for response DTO conversion and ensure instances have correct title/description
-    const eventsWithMetadata = allEvents.map((event) => {
-      const isRecurring = event.recurringEventId !== undefined;
-      if (isRecurring) {
-        (event as any).__isRecurring = true;
-        (event as any).__recurringEventId = event.recurringEventId;
-        
-        // Use override if present, otherwise use base title/description
-        const recurringEvent = recurringEvents.find(
-          (re) => re.id === event.recurringEventId,
-        );
-        if (recurringEvent) {
-          event.title = event.titleOverride || recurringEvent.title;
-          event.description =
-            event.descriptionOverride || recurringEvent.description;
-        }
-      }
-      return event;
-    });
-
     // Sort by start date
-    return eventsWithMetadata.sort(
+    return allEvents.sort(
       (a, b) => a.startDate.getTime() - b.startDate.getTime(),
     );
   }

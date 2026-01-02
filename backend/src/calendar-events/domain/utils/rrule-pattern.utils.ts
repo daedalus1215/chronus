@@ -163,9 +163,11 @@ export const generateInstanceDates = (
   const instances = rrule.between(rangeStart, rangeEnd, true);
 
   // Filter out exception dates
-  const exceptionDateStrings = exceptionDates.map((date) =>
-    date.toISOString().split('T')[0],
-  );
+  // Ensure all exception dates are Date objects (handle both Date and string)
+  const exceptionDateStrings = exceptionDates.map((date) => {
+    const dateObj = date instanceof Date ? date : new Date(date);
+    return dateObj.toISOString().split('T')[0];
+  });
   return instances.filter((date) => {
     const dateString = date.toISOString().split('T')[0];
     return !exceptionDateStrings.includes(dateString);
