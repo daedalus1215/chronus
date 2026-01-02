@@ -17,6 +17,7 @@ export const CalendarPage: React.FC = () => {
     startOfWeek(new Date(), { weekStartsOn: 1 }),
   );
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createEventDate, setCreateEventDate] = useState<Date | undefined>(undefined);
   const { events, isLoading, error, refetch } = useCalendarEvents(currentWeek);
 
   const handlePreviousWeek = () => {
@@ -32,11 +33,21 @@ export const CalendarPage: React.FC = () => {
   };
 
   const handleCreateEvent = () => {
+    setCreateEventDate(undefined);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleTimeSlotClick = (date: Date, hour: number) => {
+    // Create a date with the clicked hour
+    const clickedDate = new Date(date);
+    clickedDate.setHours(hour, 0, 0, 0);
+    setCreateEventDate(clickedDate);
     setIsCreateModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsCreateModalOpen(false);
+    setCreateEventDate(undefined);
     refetch();
   };
 
@@ -59,6 +70,7 @@ export const CalendarPage: React.FC = () => {
         onPreviousWeek={handlePreviousWeek}
         onNextWeek={handleNextWeek}
         onToday={handleToday}
+        onTimeSlotClick={handleTimeSlotClick}
       />
       <Fab
         color="primary"
@@ -76,7 +88,7 @@ export const CalendarPage: React.FC = () => {
       <CreateEventModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseModal}
-        defaultDate={new Date()}
+        defaultDate={createEventDate || new Date()}
       />
     </Box>
   );

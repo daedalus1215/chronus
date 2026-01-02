@@ -72,11 +72,19 @@ export class RecurrenceExceptionRepository {
   private infrastructureToDomain(
     infra: RecurrenceExceptionEntity,
   ): RecurrenceException {
+    // Ensure exceptionDate is a Date object (TypeORM may return string from SQLite)
+    const exceptionDate =
+      infra.exceptionDate instanceof Date
+        ? infra.exceptionDate
+        : new Date(infra.exceptionDate);
+    
     return {
       id: infra.id,
       recurringEventId: infra.recurringEventId,
-      exceptionDate: infra.exceptionDate,
-      createdAt: infra.createdAt,
+      exceptionDate,
+      createdAt: infra.createdAt instanceof Date
+        ? infra.createdAt
+        : new Date(infra.createdAt),
     };
   }
 }

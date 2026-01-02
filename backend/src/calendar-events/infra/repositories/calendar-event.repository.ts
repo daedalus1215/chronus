@@ -21,8 +21,11 @@ export class CalendarEventRepository {
    */
   async create(event: Partial<CalendarEvent>): Promise<CalendarEvent> {
     const entity = this.domainToInfrastructure(event);
+    console.log('Creating calendar event:', entity);
     const saved = await this.repository.save(entity);
-    return this.infrastructureToDomain(saved);
+    const domain = this.infrastructureToDomain(saved);
+    console.log('Created calendar event:', domain);
+    return domain;
   }
 
   /**

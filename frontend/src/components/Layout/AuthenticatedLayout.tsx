@@ -15,9 +15,9 @@ export const AuthenticatedLayout: React.FC = () => {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          marginTop: '64px',
-          height: 'calc(100vh - 64px)',
-          overflow: 'hidden',
+          marginTop: '64px', // this is for the header
+          height: 'calc(100vh - 64px)', // this is for the sidebar
+          // overflow: 'hidden',
           width: '100%',
         }}
       >

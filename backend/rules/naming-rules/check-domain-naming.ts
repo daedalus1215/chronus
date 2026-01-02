@@ -7,7 +7,7 @@
  * - "Params" for transaction script inputs
  * - "Projection" for outputs
  *
- * Usage: npx ts-node fitness-functions-rules/naming-rules/check-domain-naming.ts
+ * Usage: npx ts-node -r tsconfig-paths/register rules/naming-rules/check-domain-naming.ts
  */
 
 import { execSync } from 'child_process';

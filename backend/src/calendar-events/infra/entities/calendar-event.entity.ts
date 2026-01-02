@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
   Index,
+  Unique,
 } from 'typeorm';
 import { RecurringEventEntity } from './recurring-event.entity';
 
@@ -18,6 +19,7 @@ import { RecurringEventEntity } from './recurring-event.entity';
  * - If recurring_event_id is NOT NULL: instance of a recurring event
  */
 @Entity({ name: 'calendar_events' })
+@Unique(['recurringEventId', 'instanceDate'])
 @Index(['recurringEventId'])
 @Index(['instanceDate'])
 export class CalendarEventEntity {

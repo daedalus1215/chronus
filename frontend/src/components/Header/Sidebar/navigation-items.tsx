@@ -3,6 +3,7 @@ import NoteIcon from '@mui/icons-material/Note';
 import ChecklistIcon from '@mui/icons-material/CheckBox';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 export const navigationItems = [
   {
@@ -29,5 +30,10 @@ export const navigationItems = [
     label: 'Activity',
     path: '/activity',
     icon: TimelineIcon,
+  },
+  {
+    label: 'Calendar',
+    path: '/calendar',
+    icon: CalendarTodayIcon,
   },
 ];

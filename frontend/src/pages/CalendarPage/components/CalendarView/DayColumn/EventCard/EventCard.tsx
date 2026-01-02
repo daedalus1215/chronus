@@ -60,7 +60,7 @@ export const EventCard: React.FC<EventCardProps> = ({ layout, onSelect }) => {
     <Paper
       ref={setNodeRef}
       className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${
-        layout.event.isRecurring ? styles.recurring : ''
+        styles.recurring
       }`}
       onClick={handleClick}
       style={style}
@@ -69,7 +69,11 @@ export const EventCard: React.FC<EventCardProps> = ({ layout, onSelect }) => {
     >
       <Box className={styles.eventContent}>
         {layout.event.isRecurring && (
-          <RepeatIcon className={styles.recurringIcon} fontSize="inherit" />
+          <RepeatIcon 
+            className={styles.recurringIcon} 
+            fontSize="inherit"
+            titleAccess="Recurring event"
+          />
         )}
         <Typography variant="caption" className={styles.eventTitle}>
           {layout.event.title}

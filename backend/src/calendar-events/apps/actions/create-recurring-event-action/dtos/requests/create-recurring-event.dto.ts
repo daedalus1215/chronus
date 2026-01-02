@@ -98,6 +98,8 @@ export class RecurrencePatternDto {
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(7, { each: true })
   @ArrayMinSize(1)
   daysOfWeek?: number[];
 

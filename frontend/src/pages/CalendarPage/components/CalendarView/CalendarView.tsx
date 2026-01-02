@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Box, Typography, Button, CircularProgress, IconButton, Snackbar, Alert } from '@mui/material';
-import { ArrowBack, ArrowForward, Today } from '@mui/icons-material';
+import { ArrowBack, ArrowForward, Today, WbSunny, Nightlight } from '@mui/icons-material';
 import {
   format,
   eachDayOfInterval,
@@ -36,6 +36,7 @@ type CalendarViewProps = {
   onPreviousWeek: () => void;
   onNextWeek: () => void;
   onToday: () => void;
+  onTimeSlotClick?: (date: Date, hour: number) => void;
 };
 
 /**
@@ -58,6 +59,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   onPreviousWeek,
   onNextWeek,
   onToday,
+  onTimeSlotClick,
 }) => {
   const weekEndDate = endOfWeek(weekStartDate, { weekStartsOn: 1 });
   const days = eachDayOfInterval({
@@ -68,6 +70,19 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
   const calendarGridRef = useRef<HTMLDivElement>(null);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+
+  // Format hour in 12-hour format with AM/PM
+  const formatHour = (hour: number): { hour: number; period: 'AM' | 'PM'; isDay: boolean } => {
+    if (hour === 0) {
+      return { hour: 12, period: 'AM', isDay: false };
+    } else if (hour < 12) {
+      return { hour, period: 'AM', isDay: hour >= 6 };
+    } else if (hour === 12) {
+      return { hour: 12, period: 'PM', isDay: true };
+    } else {
+      return { hour: hour - 12, period: 'PM', isDay: hour < 18 };
+    }
+  };
   const [draggedEvent, setDraggedEvent] = useState<CalendarEventResponseDto | null>(null);
   const dayLayoutMaps = useEventLayouts(weekStartDate, events);
   const isMobile = useIsMobile();
@@ -160,6 +175,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       });
     } catch (error) {
       console.error('Error moving calendar event:', error);
+      setToastSeverity('error');
+      setToastMessage(
+        error instanceof Error
+          ? error.message || 'Failed to move event'
+          : 'Failed to move event',
+      );
     }
   };
 
@@ -246,11 +267,23 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <Box className={styles.calendarGrid} ref={calendarGridRef}>
           <Box className={styles.timeColumn}>
             <Box className={styles.timeSlotHeader}></Box>
-            {timeSlots.map((hour) => (
-              <Box key={hour} className={styles.timeSlot}>
-                {hour.toString().padStart(2, '0')}:00
-              </Box>
-            ))}
+            {timeSlots.map((hour) => {
+              const { hour: displayHour, period, isDay } = formatHour(hour);
+              return (
+                <Box key={hour} className={styles.timeSlot}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {isDay ? (
+                      <WbSunny sx={{ fontSize: '0.875rem', color: '#f59e0b' }} />
+                    ) : (
+                      <Nightlight sx={{ fontSize: '0.875rem', color: '#6366f1' }} />
+                    )}
+                    <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
+                      {displayHour}:00 {period}
+                    </Typography>
+                  </Box>
+                </Box>
+              );
+            })}
           </Box>
 
           {days.map((day) => (
@@ -260,6 +293,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               layoutMap={dayLayoutMaps.get(day.toISOString()) || new Map()}
               timeSlots={timeSlots}
               onEventSelect={setSelectedEventId}
+              onTimeSlotClick={onTimeSlotClick}
             />
           ))}
         </Box>

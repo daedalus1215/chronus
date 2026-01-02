@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -71,6 +71,21 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
     recurrencePattern?: string;
     recurrenceEndDate?: string;
   }>({});
+
+  // Update form data when defaultDate changes (e.g., when clicking a time slot)
+  useEffect(() => {
+    if (isOpen && defaultDate) {
+      setFormData({
+        title: '',
+        description: '',
+        startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
+        endDate: format(
+          new Date(defaultDate.getTime() + 60 * 60 * 1000),
+          "yyyy-MM-dd'T'HH:mm",
+        ),
+      });
+    }
+  }, [isOpen, defaultDate]);
 
   const validateForm = (): boolean => {
     const errors: {

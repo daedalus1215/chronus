@@ -74,6 +74,13 @@ export class GenerateEventInstancesTransactionScript {
         recurringEvent.id,
       );
     const exceptionDates = exceptions.map((ex) => ex.exceptionDate);
+    console.log('Generating instances for recurring event:', {
+      recurringEventId: recurringEvent.id,
+      exceptionCount: exceptions.length,
+      exceptionDates: exceptionDates.map((d) => d.toISOString().split('T')[0]),
+      rangeStart: rangeStart.toISOString().split('T')[0],
+      rangeEnd: rangeEnd.toISOString().split('T')[0],
+    });
 
     // Generate instance dates using rrule
     const instanceStartDates = generateInstanceDates(
@@ -86,6 +93,10 @@ export class GenerateEventInstancesTransactionScript {
       rangeStart,
       rangeEnd,
     );
+    console.log('Generated instance dates:', {
+      count: instanceStartDates.length,
+      dates: instanceStartDates.map((d) => d.toISOString().split('T')[0]),
+    });
 
     // Calculate duration from original event
     const durationMinutes = differenceInMinutes(
