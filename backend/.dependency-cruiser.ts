@@ -60,6 +60,10 @@ const config: IConfiguration = {
 		// Enable TypeScript parsing - this tells dependency-cruiser to parse
 		// TypeScript files and resolve imports using the TypeScript compiler
 		tsPreCompilationDeps: true,
+		// Point to TypeScript config for path resolution
+		tsConfig: {
+			fileName: 'tsconfig.json',
+		},
 	},
 };
 

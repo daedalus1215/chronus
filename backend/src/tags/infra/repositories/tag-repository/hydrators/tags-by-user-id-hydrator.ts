@@ -1,4 +1,4 @@
-import { TagWithCount } from "src/tags/domain/transaction-scripts/get-tags-by-user-id.transaction.script";
+import { GetTagsByUserIdProjection } from "src/tags/domain/transaction-scripts/get-tags-by-user-id.projection";
 
 export const tagsByUserIdHydrator = (
   rows: [
@@ -8,7 +8,7 @@ export const tagsByUserIdHydrator = (
       noteCount: string;
     },
   ]
-): TagWithCount[] =>
+): GetTagsByUserIdProjection[] =>
   rows.map((row) => ({
     id: row.tag_id,
     name: row.tag_name,
