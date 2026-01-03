@@ -15,23 +15,24 @@ export const calendarEventKeys = {
 };
 
 /**
- * Hook to fetch calendar events for a given week.
- * Automatically calculates the week's date range and fetches overlapping events.
+ * Hook to fetch calendar events for a given date range.
+ * Fetches all events that overlap with the specified date range.
  *
- * @param weekStartDate - The start date of the week (Monday)
+ * @param startDate - The start date of the range (inclusive)
+ * @param endDate - The end date of the range (inclusive)
  * @returns Object containing events, loading state, error, and refetch function
  */
 export const useCalendarEvents = (
-  weekStartDate: Date,
+  startDate: Date,
+  endDate: Date,
 ): {
   events: CalendarEventResponseDto[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
 } => {
-  const weekEndDate = endOfWeek(weekStartDate, { weekStartsOn: 1 });
-  const startDateStr = format(weekStartDate, 'yyyy-MM-dd');
-  const endDateStr = format(addDays(weekEndDate, 1), 'yyyy-MM-dd');
+  const startDateStr = format(startDate, 'yyyy-MM-dd');
+  const endDateStr = format(addDays(endDate, 1), 'yyyy-MM-dd');
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: calendarEventKeys.list(startDateStr, endDateStr),

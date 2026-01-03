@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Tag } from '../../../domain/entities/tag.entity';
 import { TagNote } from '../../../../shared-kernel/domain/entities/tag-note.entity';
-import { TagWithCount } from 'src/tags/domain/transaction-scripts/get-tags-by-user-id.transaction.script';
+import { GetTagsByUserIdProjection } from 'src/tags/domain/transaction-scripts/get-tags-by-user-id.projection';
 import { tagsByUserIdHydrator } from './hydrators/tags-by-user-id-hydrator';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class TagRepository {
     return this.tagRepository.remove(tag);
   }
   
-  async getTagsByUserId(userId: number): Promise<TagWithCount[]> {
+  async getTagsByUserId(userId: number): Promise<GetTagsByUserIdProjection[]> {
     return await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoin('tag_notes', 'tag_note', 'tag_note.tag_id = tag.id')

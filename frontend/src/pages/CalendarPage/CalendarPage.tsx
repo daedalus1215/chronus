@@ -1,36 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Box, Fab } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { CalendarView } from './components/CalendarView/CalendarView';
 import { CreateEventModal } from './components/CreateEventModal/CreateEventModal';
 import { useCalendarEvents } from './hooks/useCalendarEvents';
-import { startOfWeek, addWeeks } from 'date-fns';
+import { subDays, addDays } from 'date-fns';
 import styles from './CalendarPage.module.css';
+
+type DayRange = {
+  startDate: Date;
+  endDate: Date;
+};
 
 /**
  * Main calendar page component.
- * Displays a weekly calendar view with events and provides functionality to create new events.
- * Handles week navigation and event creation through a modal.
+ * Displays an infinite scrolling calendar view with events and provides functionality to create new events.
+ * Handles day range management and event creation through a modal.
  */
 export const CalendarPage: React.FC = () => {
-  const [currentWeek, setCurrentWeek] = useState<Date>(
-    startOfWeek(new Date(), { weekStartsOn: 1 }),
-  );
+  const today = new Date();
+  const initialStartDate = subDays(today, 30); // Load 30 days before today
+  const initialEndDate = addDays(today, 30); // Load 30 days after today
+
+  const [dayRange, setDayRange] = useState<DayRange>({
+    startDate: initialStartDate,
+    endDate: initialEndDate,
+  });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createEventDate, setCreateEventDate] = useState<Date | undefined>(undefined);
-  const { events, isLoading, error, refetch } = useCalendarEvents(currentWeek);
+  const { events, isLoading, error, refetch } = useCalendarEvents(
+    dayRange.startDate,
+    dayRange.endDate,
+  );
 
-  const handlePreviousWeek = () => {
-    setCurrentWeek((prev) => addWeeks(prev, -1));
-  };
+  const handleLoadMoreDays = useCallback((direction: 'left' | 'right') => {
+    setDayRange((prev) => {
+      if (direction === 'left') {
+        const newStartDate = subDays(prev.startDate, 30);
+        return {
+          ...prev,
+          startDate: newStartDate,
+        };
+      } else {
+        const newEndDate = addDays(prev.endDate, 30);
+        return {
+          ...prev,
+          endDate: newEndDate,
+        };
+      }
+    });
+  }, []);
 
-  const handleNextWeek = () => {
-    setCurrentWeek((prev) => addWeeks(prev, 1));
-  };
+  const handleToday = useCallback(() => {
+    const today = new Date();
+    setDayRange((prev) => {
+      let newRange = { ...prev };
 
-  const handleToday = () => {
-    setCurrentWeek(startOfWeek(new Date(), { weekStartsOn: 1 }));
-  };
+      // Ensure today is in the range, expand if needed
+      if (today < prev.startDate) {
+        newRange.startDate = subDays(today, 30);
+      } else if (today > prev.endDate) {
+        newRange.endDate = addDays(today, 30);
+      }
+
+      return newRange;
+    });
+  }, []);
 
   const handleCreateEvent = () => {
     setCreateEventDate(undefined);
@@ -64,11 +99,11 @@ export const CalendarPage: React.FC = () => {
   return (
     <Box className={styles.calendarPage}>
       <CalendarView
-        weekStartDate={currentWeek}
+        startDate={dayRange.startDate}
+        endDate={dayRange.endDate}
         events={events}
         isLoading={isLoading}
-        onPreviousWeek={handlePreviousWeek}
-        onNextWeek={handleNextWeek}
+        onLoadMoreDays={handleLoadMoreDays}
         onToday={handleToday}
         onTimeSlotClick={handleTimeSlotClick}
       />
