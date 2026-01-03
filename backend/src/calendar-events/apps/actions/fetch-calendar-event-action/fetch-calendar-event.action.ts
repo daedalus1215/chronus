@@ -3,7 +3,7 @@ import { CalendarEventService } from '../../../domain/services/calendar-event.se
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
 import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { FetchCalendarEventSwagger } from './fetch-calendar-event.swagger';
 import { FetchCalendarEventCommand } from '../../../domain/transaction-scripts/fetch-calendar-event-TS/fetch-calendar-event.command';
 import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.response.dto';

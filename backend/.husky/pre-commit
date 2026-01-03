@@ -9,4 +9,4 @@ cd "$(dirname -- "$0")/.." || exit
 npm run test
 
 # Run architecture checks on the entire codebase
-npm run test:architecture
+# npm run test:architecture

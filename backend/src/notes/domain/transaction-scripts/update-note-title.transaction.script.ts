@@ -9,7 +9,7 @@ export class UpdateNoteTitleTransactionScript {
     private readonly noteRepository: NoteMemoTagRepository
   ) {}
 
-  async apply(id: number, updateNoteTitleDto: UpdateNoteTitleDto, userId: number): Promise<NoteResponseDto> {
+  async apply(id: number, updateNoteTitleDto: UpdateNoteTitleDto, userId: number): Promise<{id: number, name: string}> {
     const note = await this.noteRepository.findById(id, userId);
     if (!note) {
       throw new NotFoundException('Note not found');
@@ -18,8 +18,6 @@ export class UpdateNoteTitleTransactionScript {
     const updatedNote = await this.noteRepository.save(note);
     return {
       ...updatedNote,
-      checkItems: updatedNote.checkItems,
-      isMemo: updatedNote.memo !== null,
     };
   }
 } 

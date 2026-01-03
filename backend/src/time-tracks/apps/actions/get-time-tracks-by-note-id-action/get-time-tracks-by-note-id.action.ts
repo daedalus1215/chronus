@@ -3,7 +3,7 @@ import { TimeTrackService } from '../../../domain/services/time-track-service/ti
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
 import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { GetTimeTracksByNoteIdSwagger } from './get-time-tracks-by-note-id.swagger';
 
 @Controller('time-tracks')

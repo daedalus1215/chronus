@@ -1,5 +1,4 @@
 import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
-import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
 import { Tag } from 'src/tags/domain/entities/tag.entity';
 
 export const AddTagToNoteSwagger: ProtectedActionOptions = {

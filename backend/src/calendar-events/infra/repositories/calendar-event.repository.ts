@@ -4,6 +4,7 @@ import { Repository, QueryFailedError } from 'typeorm';
 import { startOfDay } from 'date-fns';
 import { CalendarEventEntity } from '../entities/calendar-event.entity';
 import { CalendarEvent } from '../../domain/entities/calendar-event.entity';
+import { Logger } from 'nestjs-pino';
 
 /**
  * Repository for calendar events.
@@ -12,6 +13,7 @@ import { CalendarEvent } from '../../domain/entities/calendar-event.entity';
 @Injectable()
 export class CalendarEventRepository {
   constructor(
+    private readonly logger: Logger,
     @InjectRepository(CalendarEventEntity)
     private readonly repository: Repository<CalendarEventEntity>,
   ) {}
@@ -21,10 +23,10 @@ export class CalendarEventRepository {
    */
   async create(event: Partial<CalendarEvent>): Promise<CalendarEvent> {
     const entity = this.domainToInfrastructure(event);
-    console.log('Creating calendar event:', entity);
+    this.logger.debug('Creating calendar event:', entity);
     const saved = await this.repository.save(entity);
     const domain = this.infrastructureToDomain(saved);
-    console.log('Created calendar event:', domain);
+    this.logger.debug('Created calendar event:', domain);
     return domain;
   }
 

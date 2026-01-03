@@ -3,7 +3,7 @@ import { RecurringEventService } from '../../../domain/services/recurring-event.
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
 import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { DeleteRecurringEventSwagger } from './delete-recurring-event.swagger';
 import { DeleteRecurringEventCommand } from '../../../domain/transaction-scripts/delete-recurring-event-TS/delete-recurring-event.command';
 

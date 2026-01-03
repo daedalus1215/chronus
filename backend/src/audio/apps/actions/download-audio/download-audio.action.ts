@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
-import { JwtAuthGuard } from "../../../../auth/jwt-auth.guard";
+import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { AudioService } from "src/audio/domain/services/audio.service";
 import { DownloadAudioSwagger } from "./download-audio.swagger";
 import { ProtectedAction } from "src/shared-kernel/apps/decorators/protected-action.decorator";

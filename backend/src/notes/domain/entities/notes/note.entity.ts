@@ -3,17 +3,16 @@ import {
   Column,
   JoinColumn,
   OneToOne,
-  OneToMany,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   DeleteDateColumn,
 } from "typeorm";
 import { Memo } from "./memo.entity";
-import { CheckItem } from "src/check-items/domain/entities/check-item.entity";
 
 /**
  * Note entity decoupled from Tag entity.
+ * CheckItems are accessed via CheckItemsAggregator, not through a direct relation.
  */
 @Entity("notes")
 export class Note {
@@ -42,7 +41,4 @@ export class Note {
 
   @DeleteDateColumn({ name: "archived_at", nullable: true })
   archivedAt: Date | null;
-
-  @OneToMany(() => CheckItem, (checkItem) => checkItem.noteId)
-  checkItems: CheckItem[];
 }

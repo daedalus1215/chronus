@@ -1,28 +1,33 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateNoteDto } from "src/notes/apps/dtos/requests/update-note.dto";
 import { NoteMemoTagRepository } from "../../../infra/repositories/note-memo-tag.repository";
-import { NoteResponseDto } from "../../../apps/dtos/responses/note.response.dto";
-import { NoteDtoToEntityConverter } from "./note-dto-to-entity.converter";
+import { Note } from "../../entities/notes/note.entity";
+import { UpdateNoteParamsToEntityConverter } from "./update-note-params-to-entity.converter";
+import { UpdateNoteParams } from "./update-note.params";
 
 @Injectable()
 export class UpdateNoteTransactionScript {
   constructor(
     private readonly noteRepository: NoteMemoTagRepository,
-    private readonly noteDtoToEntityConverter: NoteDtoToEntityConverter
+    private readonly updateNoteParamsToEntityConverter: UpdateNoteParamsToEntityConverter,
   ) {}
 
-  async apply(id: number, updateNoteDto: UpdateNoteDto, userId: number): Promise<NoteResponseDto> {
+  async apply(id: number, updateNoteDto: UpdateNoteDto, userId: number): Promise<Note> {
     const note = await this.noteRepository.findById(id, userId);
 
     if (!note) {
       throw new NotFoundException("Note not found");
     }
 
-    const updatedNote = await this.noteRepository.save(this.noteDtoToEntityConverter.apply(updateNoteDto, note));
-    return {
-      ...updatedNote,
-      checkItems: updatedNote.checkItems,
-      isMemo: updatedNote.memo !== null,
+    // Convert DTO to Params (domain layer boundary)
+    const updateNoteParams: UpdateNoteParams = {
+      name: updateNoteDto.name,
+      description: updateNoteDto.description,
+      tags: updateNoteDto.tags,
     };
+
+    return await this.noteRepository.save(
+      this.updateNoteParamsToEntityConverter.apply(updateNoteParams, note)
+    );
   }
 }

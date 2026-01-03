@@ -1,15 +1,17 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { GetNoteByIdTransactionScript } from '../../../../domain/transaction-scripts/get-note-by-id.transaction.script';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetNoteByIdSwagger } from './get-note-by-id.swagger';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator'; 
-import { CheckItem } from 'src/check-items/domain/entities/check-item.entity';
+import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
+import { NoteService } from '../../../../domain/services/note.service';
+import { GetNoteByIdResponder } from './get-note-by-id.responder';
+import { NoteResponseDto } from '../../../dtos/responses/note.response.dto';
 
 @Controller('notes')
 export class GetNoteByIdAction {
   constructor(
-    private readonly getNoteByIdTransactionScript: GetNoteByIdTransactionScript
+    private readonly noteService: NoteService,
+    private readonly getNoteByIdResponder: GetNoteByIdResponder,
   ) {}
 
   @Get('/detail/:id')
@@ -17,18 +19,9 @@ export class GetNoteByIdAction {
   async apply(
     @Param('id') id: string,
     @GetAuthUser() authUser: AuthUser
-  ): Promise<{
-    id: number;
-    name: string;
-    description?: string;
-    checkItems: CheckItem[];
-    isMemo: boolean;
-  }> {
-    const note = await this.getNoteByIdTransactionScript.apply(parseInt(id, 10), authUser.userId);
-    return {
-      ...note,
-      description: note.memo?.description || '',
-      isMemo: note.memo !== null,
-    };
+  ): Promise<NoteResponseDto> {
+    const noteId = parseInt(id, 10);
+    const noteWithCheckItems = await this.noteService.getNoteByIdWithCheckItems(noteId, authUser.userId);
+    return this.getNoteByIdResponder.apply(noteWithCheckItems);
   }
 } 

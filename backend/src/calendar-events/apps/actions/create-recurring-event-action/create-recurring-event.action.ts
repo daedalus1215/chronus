@@ -10,7 +10,7 @@ import { RecurringEventService } from '../../../domain/services/recurring-event.
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
 import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { CreateRecurringEventSwagger } from './create-recurring-event.swagger';
 import { CreateRecurringEventRequestDto } from './dtos/requests/create-recurring-event.dto';
 import { CreateRecurringEventCommand } from '../../../domain/transaction-scripts/create-recurring-event-TS/create-recurring-event.command';
