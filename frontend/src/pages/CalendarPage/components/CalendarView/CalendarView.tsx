@@ -5,6 +5,7 @@ import {
   format,
   eachDayOfInterval,
   endOfWeek,
+  isToday,
 } from 'date-fns';
 import {
   DndContext,
@@ -89,6 +90,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const updateMutation = useUpdateCalendarEvent();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -114,6 +116,33 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       calendarGridRef.current.scrollTop = 0;
     }
   }, [weekStartDate]);
+
+  // Update current time every minute
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date());
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  // Calculate if today is in the visible week and get the current time position
+  const isTodayInWeek = days.some((day) => isToday(day));
+  const getCurrentTimePosition = (): number | null => {
+    if (!isTodayInWeek) {
+      return null;
+    }
+    const now = currentTime;
+    const headerHeight = isMobile ? 55 : 60;
+    const slotHeight = 60;
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const position = headerHeight + hours * slotHeight + (minutes / 60) * slotHeight;
+    return position;
+  };
+
+  const currentTimePosition = getCurrentTimePosition();
 
   const handleDragStart = (event: DragStartEvent) => {
     const eventData = event.active.data.current?.event as
@@ -285,6 +314,31 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               );
             })}
           </Box>
+          {currentTimePosition !== null && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: `${currentTimePosition}px`,
+                left: isMobile ? '50px' : '100px',
+                right: 0,
+                height: '2px',
+                backgroundColor: '#ef4444',
+                zIndex: 15,
+                pointerEvents: 'none',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  left: '-8px',
+                  top: '-4px',
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  backgroundColor: '#ef4444',
+                  border: '2px solid var(--color-card-bg, #1e1e1e)',
+                },
+              }}
+            />
+          )}
 
           {days.map((day) => (
             <DayColumn
