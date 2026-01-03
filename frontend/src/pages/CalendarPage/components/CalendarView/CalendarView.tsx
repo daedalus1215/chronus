@@ -1,10 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Box, Typography, Button, CircularProgress, IconButton, Snackbar, Alert } from '@mui/material';
-import { ArrowBack, ArrowForward, Today, WbSunny, Nightlight } from '@mui/icons-material';
+import { Today, WbSunny, Nightlight } from '@mui/icons-material';
 import {
   format,
   eachDayOfInterval,
-  endOfWeek,
   isToday,
 } from 'date-fns';
 import {
@@ -24,6 +23,7 @@ import { useEventLayouts } from '../../hooks/useEventLayouts';
 import { DayColumn } from './DayColumn/DayColumn';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { useUpdateCalendarEvent } from '../../hooks/useUpdateCalendarEvent';
+import { useInfiniteScrollDays } from '../../hooks/useInfiniteScrollDays';
 import {
   calculateDropPosition,
   calculateNewEventTimes,
@@ -31,46 +31,48 @@ import {
 import styles from './CalendarView.module.css';
 
 type CalendarViewProps = {
-  weekStartDate: Date;
+  startDate: Date;
+  endDate: Date;
   events: CalendarEventResponseDto[];
   isLoading: boolean;
-  onPreviousWeek: () => void;
-  onNextWeek: () => void;
+  onLoadMoreDays: (direction: 'left' | 'right') => void;
   onToday: () => void;
   onTimeSlotClick?: (date: Date, hour: number) => void;
 };
 
 /**
- * Calendar view component displaying a weekly calendar grid with hourly time slots.
+ * Calendar view component displaying an infinite scrolling calendar grid with hourly time slots.
  * Shows events in their respective time slots and days.
- * Supports clicking events to view/edit details.
+ * Supports clicking events to view/edit details and infinite horizontal scrolling.
  *
  * @param props - Component props
- * @param props.weekStartDate - The start date of the week (Monday)
+ * @param props.startDate - The start date of the visible range (inclusive)
+ * @param props.endDate - The end date of the visible range (inclusive)
  * @param props.events - Array of calendar events to display
  * @param props.isLoading - Whether events are currently loading
- * @param props.onPreviousWeek - Callback to navigate to previous week
- * @param props.onNextWeek - Callback to navigate to next week
- * @param props.onToday - Callback to navigate to current week
+ * @param props.onLoadMoreDays - Callback to load more days when scrolling near edges
+ * @param props.onToday - Callback to navigate to current day
  */
 export const CalendarView: React.FC<CalendarViewProps> = ({
-  weekStartDate,
+  startDate,
+  endDate,
   events,
   isLoading,
-  onPreviousWeek,
-  onNextWeek,
+  onLoadMoreDays,
   onToday,
   onTimeSlotClick,
 }) => {
-  const weekEndDate = endOfWeek(weekStartDate, { weekStartsOn: 1 });
-  const days = eachDayOfInterval({
-    start: weekStartDate,
-    end: weekEndDate,
-  });
+  const days = useMemo(() => {
+    return eachDayOfInterval({
+      start: startDate,
+      end: endDate,
+    });
+  }, [startDate, endDate]);
 
   const timeSlots = Array.from({ length: 24 }, (_, i) => i);
   const calendarGridRef = useRef<HTMLDivElement>(null);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [hasScrolledToToday, setHasScrolledToToday] = useState(false);
 
   // Format hour in 12-hour format with AM/PM
   const formatHour = (hour: number): { hour: number; period: 'AM' | 'PM'; isDay: boolean } => {
@@ -85,11 +87,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
   };
   const [draggedEvent, setDraggedEvent] = useState<CalendarEventResponseDto | null>(null);
-  const dayLayoutMaps = useEventLayouts(weekStartDate, events);
+  const dayLayoutMaps = useEventLayouts(startDate, endDate, events);
   const isMobile = useIsMobile();
+
+  // Infinite scrolling
+  useInfiniteScrollDays({
+    containerRef: calendarGridRef,
+    dayRange: { startDate, endDate },
+    onLoadMoreDays,
+  });
   const updateMutation = useUpdateCalendarEvent();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
+  const [visibleStartDate, setVisibleStartDate] = useState<Date>(startDate);
+  const [visibleEndDate, setVisibleEndDate] = useState<Date>(endDate);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
   const sensors = useSensors(
@@ -111,38 +122,107 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }),
   );
 
+  // Auto-scroll to current day on initial mount
   useEffect(() => {
-    if (calendarGridRef.current) {
-      calendarGridRef.current.scrollTop = 0;
+    if (hasScrolledToToday || !calendarGridRef.current) {
+      return;
     }
-  }, [weekStartDate]);
 
-  // Update current time every minute
-  useEffect(() => {
-    const updateTime = () => {
-      setCurrentTime(new Date());
+    const container = calendarGridRef.current;
+    const todayDay = days.find((day) => isToday(day));
+
+    if (!todayDay) {
+      return;
+    }
+
+    // Wait for layout to be ready - use multiple attempts for mobile
+    const scrollToToday = (attempt = 0) => {
+      const todayElement = container.querySelector(
+        `[data-day-id="${todayDay.toISOString()}"]`,
+      ) as HTMLElement;
+
+      if (!todayElement || !container) {
+        // Retry if element not found yet (especially on mobile)
+        if (attempt < 5) {
+          setTimeout(() => scrollToToday(attempt + 1), 150);
+        }
+        return;
+      }
+
+      // Calculate scroll position more reliably
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = todayElement.getBoundingClientRect();
+      const scrollLeft = container.scrollLeft;
+      const elementLeft = elementRect.left - containerRect.left + scrollLeft;
+      const elementWidth = todayElement.offsetWidth;
+      const containerWidth = container.clientWidth;
+
+      // Center the today column in the viewport
+      const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2;
+
+      container.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth',
+      });
+      setHasScrolledToToday(true);
     };
-    updateTime();
-    const interval = setInterval(updateTime, 60000); // Update every minute
-    return () => clearInterval(interval);
-  }, []);
 
-  // Calculate if today is in the visible week and get the current time position
-  const isTodayInWeek = days.some((day) => isToday(day));
-  const getCurrentTimePosition = (): number | null => {
-    if (!isTodayInWeek) {
-      return null;
+    // Use multiple delays for mobile devices which may need more time
+    const delay = isMobile ? 300 : 150;
+    requestAnimationFrame(() => {
+      setTimeout(() => scrollToToday(), delay);
+    });
+  }, [hasScrolledToToday, days, isMobile]);
+
+  // Scroll to today when Today button is clicked
+  const handleTodayClick = () => {
+    onToday();
+    if (!calendarGridRef.current) {
+      return;
     }
-    const now = currentTime;
-    const headerHeight = isMobile ? 55 : 60;
-    const slotHeight = 60;
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const position = headerHeight + hours * slotHeight + (minutes / 60) * slotHeight;
-    return position;
+
+    const container = calendarGridRef.current;
+    const todayDay = days.find((day) => isToday(day));
+
+    if (!todayDay) {
+      return;
+    }
+
+    // Wait a bit for the day range to update if needed
+    const scrollToToday = (attempt = 0) => {
+      const todayElement = container.querySelector(
+        `[data-day-id="${todayDay.toISOString()}"]`,
+      ) as HTMLElement;
+
+      if (!todayElement || !container) {
+        // Retry if element not found yet
+        if (attempt < 5) {
+          setTimeout(() => scrollToToday(attempt + 1), 150);
+        }
+        return;
+      }
+
+      // Calculate scroll position more reliably
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = todayElement.getBoundingClientRect();
+      const scrollLeft = container.scrollLeft;
+      const elementLeft = elementRect.left - containerRect.left + scrollLeft;
+      const elementWidth = todayElement.offsetWidth;
+      const containerWidth = container.clientWidth;
+
+      // Center the today column in the viewport
+      const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2;
+
+      container.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth',
+      });
+    };
+
+    const delay = isMobile ? 300 : 150;
+    setTimeout(() => scrollToToday(), delay);
   };
 
-  const currentTimePosition = getCurrentTimePosition();
 
   const handleDragStart = (event: DragStartEvent) => {
     const eventData = event.active.data.current?.event as
@@ -188,7 +268,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     if (!dropPosition) {
       return;
     }
-    const { startDate, endDate } = calculateNewEventTimes(
+    const { startDate: newStartDate, endDate: newEndDate } = calculateNewEventTimes(
       eventToMove,
       dropPosition,
     );
@@ -198,8 +278,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         event: {
           title: eventToMove.title,
           description: eventToMove.description,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate: newStartDate.toISOString(),
+          endDate: newEndDate.toISOString(),
         },
       });
     } catch (error) {
@@ -213,6 +293,69 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
   };
 
+  // Update current time every minute
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date());
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  // Calculate if today is in the visible range and get the current time position
+  const isTodayInRange = days.some((day) => isToday(day));
+  const getCurrentTimePosition = (): number | null => {
+    if (!isTodayInRange) {
+      return null;
+    }
+    const now = currentTime;
+    const headerHeight = isMobile ? 55 : 60;
+    const slotHeight = 60;
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const position = headerHeight + hours * slotHeight + (minutes / 60) * slotHeight;
+    return position;
+  };
+
+  const currentTimePosition = getCurrentTimePosition();
+
+  // Calculate visible date range from scroll position
+  useEffect(() => {
+    const container = calendarGridRef.current;
+    if (!container) {
+      return;
+    }
+
+    const updateVisibleRange = () => {
+      const scrollLeft = container.scrollLeft;
+      const containerWidth = container.clientWidth;
+      const dayWidth = isMobile ? 100 : 150; // Approximate day width
+
+      const firstVisibleDayIndex = Math.max(0, Math.floor(scrollLeft / dayWidth));
+      const lastVisibleDayIndex = Math.min(
+        days.length - 1,
+        Math.ceil((scrollLeft + containerWidth) / dayWidth),
+      );
+
+      if (days[firstVisibleDayIndex] && days[lastVisibleDayIndex]) {
+        setVisibleStartDate(days[firstVisibleDayIndex]);
+        setVisibleEndDate(days[lastVisibleDayIndex]);
+      }
+    };
+
+    const handleScroll = () => {
+      requestAnimationFrame(updateVisibleRange);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    updateVisibleRange(); // Initial calculation
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [days, isMobile]);
+
   if (isLoading) {
     return (
       <Box className={styles.loadingContainer}>
@@ -224,67 +367,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   return (
     <Box className={styles.calendarView}>
       <Box className={styles.header}>
-        {isMobile ? (
-          <>
-            <IconButton
-              onClick={onPreviousWeek}
-              aria-label="Previous week"
-              size="small"
-            >
-              <ArrowBack />
-            </IconButton>
-            <Typography variant="subtitle1" className={styles.weekTitle}>
-              {format(weekStartDate, 'MMM d')} - {format(weekEndDate, 'MMM d')}
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 0.5 }}>
-              <IconButton
-                onClick={onToday}
-                aria-label="Today"
-                size="small"
-              >
-                <Today />
-              </IconButton>
-              <IconButton
-                onClick={onNextWeek}
-                aria-label="Next week"
-                size="small"
-              >
-                <ArrowForward />
-              </IconButton>
-            </Box>
-          </>
-        ) : (
-          <>
-            <Button
-              startIcon={<ArrowBack />}
-              onClick={onPreviousWeek}
-              variant="outlined"
-            >
-              Previous
-            </Button>
-            <Typography variant="h5" className={styles.weekTitle}>
-              {format(weekStartDate, 'MMM d')} - {format(weekEndDate, 'MMM d, yyyy')}
-            </Typography>
-            
-            <Box>
-              <Button
-                startIcon={<Today />}
-                onClick={onToday}
-                variant="outlined"
-                sx={{ mr: 1 }}
-              >
-                Today
-              </Button>
-              <Button
-                endIcon={<ArrowForward />}
-                onClick={onNextWeek}
-                variant="outlined"
-              >
-                Next
-              </Button>
-            </Box>
-          </>
-        )}
+        <Typography
+          variant={isMobile ? 'subtitle1' : 'h5'}
+          className={styles.weekTitle}
+        >
+          {format(visibleStartDate, 'MMM d')} - {format(visibleEndDate, 'MMM d, yyyy')}
+        </Typography>
+        <Button
+          startIcon={<Today />}
+          onClick={handleTodayClick}
+          variant="outlined"
+          size={isMobile ? 'small' : 'medium'}
+        >
+          Today
+        </Button>
       </Box>
 
       <DndContext
@@ -323,8 +419,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 right: 0,
                 height: '2px',
                 backgroundColor: '#ef4444',
-                zIndex: 15,
+                zIndex: 25,
                 pointerEvents: 'none',
+                boxShadow: '0 0 4px rgba(239, 68, 68, 0.5)',
                 '&::before': {
                   content: '""',
                   position: 'absolute',
@@ -335,6 +432,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   borderRadius: '50%',
                   backgroundColor: '#ef4444',
                   border: '2px solid var(--color-card-bg, #1e1e1e)',
+                  boxShadow: '0 0 4px rgba(239, 68, 68, 0.5)',
                 },
               }}
             />

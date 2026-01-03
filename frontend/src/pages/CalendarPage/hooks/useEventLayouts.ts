@@ -54,28 +54,29 @@ const calculateEventLayouts = (
 };
 
 /**
- * Hook to calculate event layouts for all days in a week.
+ * Hook to calculate event layouts for all days in a date range.
  * Memoized to avoid recalculating on every render.
  *
- * @param weekStartDate - The start date of the week (Monday)
+ * @param startDate - The start date of the range (inclusive)
+ * @param endDate - The end date of the range (inclusive)
  * @param events - Array of calendar events to layout
  * @returns Map of day ISO strings to event layout maps
  */
 export const useEventLayouts = (
-  weekStartDate: Date,
+  startDate: Date,
+  endDate: Date,
   events: CalendarEventResponseDto[],
 ): Map<string, EventLayoutMap> => {
   return useMemo(() => {
-    const weekEndDate = endOfWeek(weekStartDate, { weekStartsOn: 1 });
-    const weekDays = eachDayOfInterval({
-      start: weekStartDate,
-      end: weekEndDate,
+    const days = eachDayOfInterval({
+      start: startDate,
+      end: endDate,
     });
     const maps = new Map<string, EventLayoutMap>();
-    weekDays.forEach((day) => {
+    days.forEach((day) => {
       maps.set(day.toISOString(), calculateEventLayouts(events, day));
     });
     return maps;
-  }, [weekStartDate, events]);
+  }, [startDate, endDate, events]);
 };
 
