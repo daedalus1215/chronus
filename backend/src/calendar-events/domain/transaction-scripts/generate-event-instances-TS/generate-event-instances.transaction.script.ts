@@ -8,6 +8,7 @@ import {
   patternToRruleString,
 } from '../../utils/rrule-pattern.utils';
 import { startOfDay, differenceInMinutes } from 'date-fns';
+import { Logger } from 'nestjs-pino';
 
 /**
  * Transaction script for generating event instances from a recurring event.
@@ -17,6 +18,7 @@ import { startOfDay, differenceInMinutes } from 'date-fns';
 @Injectable()
 export class GenerateEventInstancesTransactionScript {
   constructor(
+    private readonly logger: Logger,
     private readonly calendarEventRepository: CalendarEventRepository,
     private readonly recurrenceExceptionRepository: RecurrenceExceptionRepository,
   ) {}
@@ -74,7 +76,7 @@ export class GenerateEventInstancesTransactionScript {
         recurringEvent.id,
       );
     const exceptionDates = exceptions.map((ex) => ex.exceptionDate);
-    console.log('Generating instances for recurring event:', {
+    this.logger.debug('Generating instances for recurring event:', {
       recurringEventId: recurringEvent.id,
       exceptionCount: exceptions.length,
       exceptionDates: exceptionDates.map((d) => d.toISOString().split('T')[0]),
@@ -93,7 +95,7 @@ export class GenerateEventInstancesTransactionScript {
       rangeStart,
       rangeEnd,
     );
-    console.log('Generated instance dates:', {
+    this.logger.debug('Generated instance dates:', {
       count: instanceStartDates.length,
       dates: instanceStartDates.map((d) => d.toISOString().split('T')[0]),
     });

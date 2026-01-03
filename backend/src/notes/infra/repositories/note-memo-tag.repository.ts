@@ -61,7 +61,6 @@ export class NoteMemoTagRepository {
             qb.andWhere("LOWER(note.name) LIKE LOWER(:query)", { query: `%${query}%` });
         }
 
-        console.log('type', type);
         if (type === 'memo') {
             qb.andWhere('note.memo_id IS NOT NULL');
         } else if (type === 'checklist') {

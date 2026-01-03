@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Note } from '../../../domain/entities/notes/note.entity';
-import { CheckItem } from 'src/check-items/domain/entities/check-item.entity';
+import { CheckItemProjection } from 'src/check-items/domain/aggregators/check-items.aggregator';
 
 export class NoteResponseDto {
   @ApiProperty()
@@ -10,8 +10,11 @@ export class NoteResponseDto {
   name: Note['name'];
 
   @ApiProperty()
-  checkItems: CheckItem[];
+  checkItems: CheckItemProjection[];
 
   @ApiProperty()
   isMemo: boolean;
+
+  @ApiProperty()
+  description?: string;
 }

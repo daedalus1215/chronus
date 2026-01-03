@@ -6,14 +6,28 @@ import { Memo } from "../../entities/notes/memo.entity";
 @Injectable()
 export class UpdateNoteParamsToEntityConverter {
   apply(updateNoteParams: UpdateNoteParams, note: Note): Note {
-    return {
+    const updatedNote: Note = {
       ...note,
       name: updateNoteParams.name,
-      memo: {
-        ...(note.memo || new Memo()),
-        description: updateNoteParams.description
-      }
     };
+
+    // Handle memo/description update
+    if (updateNoteParams.description !== undefined) {
+      if (note.memo) {
+        // Update existing memo
+        updatedNote.memo = {
+          ...note.memo,
+          description: updateNoteParams.description,
+        };
+      } else {
+        // Create new memo if description is provided
+        const newMemo = new Memo();
+        newMemo.description = updateNoteParams.description;
+        updatedNote.memo = newMemo;
+      }
+    }
+
+    return updatedNote;
   }
 }
 

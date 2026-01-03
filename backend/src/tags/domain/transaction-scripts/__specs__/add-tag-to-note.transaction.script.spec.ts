@@ -4,7 +4,6 @@ import { TagRepository } from '../../../infra/repositories/tag-repository/tag.re
 import { NotFoundException } from '@nestjs/common';
 import { Tag } from '../../../domain/entities/tag.entity';
 import { AddTagToNoteDto } from '../../../app/dtos/requests/add-tag-to-note.dto';
-import { NoteResponseDto } from '../../../../notes/apps/dtos/responses/note.response.dto';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 
 describe('AddTagToNoteTransactionScript', () => {

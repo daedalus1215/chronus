@@ -6,6 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { ServerOptions } from "https";
+import { Logger } from "nestjs-pino";
 
 async function bootstrap() {
   // Configure HTTPS if certificates are provided
@@ -43,13 +44,15 @@ async function bootstrap() {
   SwaggerModule.setup("api", app, document);
 
   const configService = app.get(ConfigService);
+  const logger = app.get(Logger);
   const port = configService.get<number>("PORT") || 3000;
+  
   await app.listen(port);
   
   if (httpsOptions) {
-    console.log(`🔒 HTTPS enabled on port ${port}`);
+    logger.log(`🔒 HTTPS enabled on port ${port}`);
   } else {
-    console.log(`🌐 HTTP enabled on port ${port}`);
+    logger.log(`🌐 HTTP enabled on port ${port}`);
   }
 }
 
@@ -62,6 +65,7 @@ function getHttpsOptions(): ServerOptions | undefined {
   if (sslKeyPath && sslCertPath) {
     try {
       if (!existsSync(sslKeyPath) || !existsSync(sslCertPath)) {
+        // Note: Logger not available here, using console
         console.warn(`⚠️  SSL certificate files not found at specified paths`);
         return undefined;
       }
@@ -70,6 +74,7 @@ function getHttpsOptions(): ServerOptions | undefined {
         cert: readFileSync(sslCertPath),
       };
     } catch (error) {
+      // Note: Logger not available here, using console
       console.warn(`⚠️  Failed to load SSL certificates: ${error instanceof Error ? error.message : String(error)}`);
       console.warn("⚠️  Falling back to HTTP");
       return undefined;
@@ -90,9 +95,11 @@ function getHttpsOptions(): ServerOptions | undefined {
     try {
       const key = readFileSync(defaultKeyPath);
       const cert = readFileSync(defaultCertPath);
+      // Note: Logger not available here, using console
       console.log(`🔒 Using SSL certificates from: ${defaultSharedCertsPath}`);
       return { key, cert };
     } catch (error) {
+      // Note: Logger not available here, using console
       console.warn(`⚠️  Failed to read SSL certificates: ${error instanceof Error ? error.message : String(error)}`);
       return undefined;
     }

@@ -65,9 +65,10 @@ describe('UpdateNoteParamsToEntityConverter', () => {
       it('should only update the provided fields', () => {
         // Arrange
         const note = createMockNote();
+        const originalMemo = note.memo;
         const updateParams: UpdateNoteParams = {
           name: 'Only Name Update',
-          description: undefined
+          // description is undefined - should not touch memo
         };
 
         // Act
@@ -75,8 +76,8 @@ describe('UpdateNoteParamsToEntityConverter', () => {
 
         // Assert
         expect(result.name).toBe('Only Name Update');
-        expect(result.memo).toBeDefined();
-        expect(result.memo.description).toBe(undefined);
+        // Memo should remain unchanged when description is not provided
+        expect(result.memo).toBe(originalMemo);
       });
     });
 

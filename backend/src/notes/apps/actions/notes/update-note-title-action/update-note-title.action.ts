@@ -29,7 +29,7 @@ export class UpdateNoteTitleAction {
     @Param('id') id: string,
     @Body() updateNoteTitleDto: UpdateNoteTitleDto,
     @GetAuthUser() authUser: AuthUser
-  ): Promise<NoteResponseDto> {
+  ): Promise<{id: number, name: string}> {
     return await this.updateNoteTitleTransactionScript.apply(parseInt(id, 10), updateNoteTitleDto, authUser.userId);
   }
 } 

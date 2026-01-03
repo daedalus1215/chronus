@@ -7,6 +7,7 @@ import { RecurringEvent } from '../../../../domain/entities/recurring-event.enti
 import { CalendarEvent } from '../../../../domain/entities/calendar-event.entity';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { startOfDay, addDays, addMonths, addYears } from 'date-fns';
+import { Logger } from 'nestjs-pino';
 
 jest.mock('../../../../domain/utils/rrule-pattern.utils');
 
@@ -51,9 +52,20 @@ describe('GenerateEventInstancesTransactionScript', () => {
       delete: jest.fn(),
     } as any;
 
+    const mockLogger = {
+      log: jest.fn(),
+      debug: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+    } as any;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GenerateEventInstancesTransactionScript,
+        {
+          provide: Logger,
+          useValue: mockLogger,
+        },
         {
           provide: CalendarEventRepository,
           useValue: mockCalendarEventRepository,

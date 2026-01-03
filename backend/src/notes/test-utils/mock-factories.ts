@@ -4,8 +4,16 @@ import { Note } from '../domain/entities/notes/note.entity';
 import { UpdateNoteDto } from '../apps/dtos/requests/update-note.dto';
 import { Repository } from 'typeorm';
 import { Memo } from '../domain/entities/notes/memo.entity';
-//@TODO: Remove this import
-import { Tag } from '../../tags/domain/entities/tag.entity';
+
+// Local mock type for Tag - avoids cross-domain import
+type MockTag = {
+  id: number;
+  name: string;
+  description?: string;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+};
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
@@ -20,7 +28,6 @@ export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
   userId: 1,
   archivedAt: null,
   memo: null,
-  checkItems: [],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   ...overrides
@@ -45,7 +52,7 @@ export const createMockTypeormRepository = <T>(): jest.Mocked<Repository<T>> => 
 
 export const createMockRepository = (): jest.Mocked<NoteMemoTagRepository> => {
   const repository = createMockTypeormRepository<Note>();
-  const tagRepository = createMockTypeormRepository<Tag>();
+  const tagRepository = createMockTypeormRepository<MockTag>();
   const memoRepository = createMockTypeormRepository<Memo>();
 
   return {

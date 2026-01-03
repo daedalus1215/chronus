@@ -11,6 +11,7 @@ import * as Joi from "joi";
 import { AudioModule } from "./audio/audio.module";
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CalendarEventsModule } from "./calendar-events/calendar-events.module";
+import { LoggingModule } from "./shared-kernel/apps/logging/logging.module";
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { CalendarEventsModule } from "./calendar-events/calendar-events.module";
     AudioModule,
     CalendarEventsModule,
     EventEmitterModule.forRoot(),
+    LoggingModule,
   ],
   controllers: [],
   providers: [],

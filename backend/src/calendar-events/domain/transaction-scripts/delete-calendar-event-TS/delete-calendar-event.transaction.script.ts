@@ -4,6 +4,7 @@ import { RecurrenceExceptionRepository } from '../../../infra/repositories/recur
 import { RecurringEventRepository } from '../../../infra/repositories/recurring-event.repository';
 import { DeleteCalendarEventCommand } from './delete-calendar-event.command';
 import { startOfDay } from 'date-fns';
+import { Logger } from 'nestjs-pino';
 
 /**
  * Transaction script for deleting calendar events.
@@ -13,6 +14,7 @@ import { startOfDay } from 'date-fns';
 @Injectable()
 export class DeleteCalendarEventTransactionScript {
   constructor(
+    private readonly logger: Logger,
     private readonly calendarEventRepository: CalendarEventRepository,
     private readonly recurrenceExceptionRepository: RecurrenceExceptionRepository,
     private readonly recurringEventRepository: RecurringEventRepository,
@@ -66,7 +68,7 @@ export class DeleteCalendarEventTransactionScript {
               recurringEventId: calendarEvent.recurringEventId,
               exceptionDate,
             });
-            console.log('Created recurrence exception:', {
+            this.logger.debug('Created recurrence exception:', {
               id: createdException.id,
               recurringEventId: createdException.recurringEventId,
               exceptionDate: createdException.exceptionDate,
@@ -79,16 +81,16 @@ export class DeleteCalendarEventTransactionScript {
               (error.message.includes('UNIQUE constraint') ||
                error.message.includes('FOREIGN KEY constraint'))
             ) {
-              console.log('Exception creation skipped:', error.message);
+              this.logger.debug('Exception creation skipped:', error.message);
             } else {
               throw error;
             }
           }
         } else {
-          console.log('Exception already exists, skipping creation');
+          this.logger.debug('Exception already exists, skipping creation');
         }
       } else {
-        console.log('Parent recurring event does not exist, skipping exception creation');
+        this.logger.debug('Parent recurring event does not exist, skipping exception creation');
       }
     }
 
@@ -97,7 +99,7 @@ export class DeleteCalendarEventTransactionScript {
       command.eventId,
       command.user.userId,
     );
-    console.log('Deleted calendar event:', {
+    this.logger.debug('Deleted calendar event:', {
       eventId: command.eventId,
       userId: command.user.userId,
       wasRecurringInstance: calendarEvent.recurringEventId !== undefined,

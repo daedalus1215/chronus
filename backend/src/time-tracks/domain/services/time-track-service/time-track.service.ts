@@ -64,13 +64,11 @@ export class TimeTrackService {
 
   async getWeeklyMostActiveNote(userId: number) {
     const result = await this.getWeeklyMostActiveNoteTS.apply(userId);
-    console.log('result', result);
     const note = await this.eventEmitter.emitAsync(GET_NOTE_DETAILS_COMMAND, {
       noteId: result.noteId,
       userId,
     });
 
-    console.log('note', note);
     return { ...result, noteName: note[0].name };
   }
 } 

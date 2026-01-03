@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { RecurringEventRepository } from '../../../infra/repositories/recurring-event.repository';
 import { CalendarEventRepository } from '../../../infra/repositories/calendar-event.repository';
 import { DeleteRecurringEventCommand } from './delete-recurring-event.command';
+import { Logger } from 'nestjs-pino';
 
 /**
  * Transaction script for deleting recurring events.
@@ -11,6 +12,7 @@ import { DeleteRecurringEventCommand } from './delete-recurring-event.command';
 @Injectable()
 export class DeleteRecurringEventTransactionScript {
   constructor(
+    private readonly logger: Logger,
     private readonly recurringEventRepository: RecurringEventRepository,
     private readonly calendarEventRepository: CalendarEventRepository,
   ) {}
@@ -41,7 +43,7 @@ export class DeleteRecurringEventTransactionScript {
         }
       }
       
-      console.log('Recurring event not found, cleaned up orphaned instances:', {
+      this.logger.debug('Recurring event not found, cleaned up orphaned instances:', {
         recurringEventId: command.recurringEventId,
         userId: command.user.userId,
         instancesDeleted: orphanedInstances.length,
@@ -68,7 +70,7 @@ export class DeleteRecurringEventTransactionScript {
       command.user.userId,
     );
     
-    console.log('Deleted recurring event and instances:', {
+    this.logger.debug('Deleted recurring event and instances:', {
       recurringEventId: command.recurringEventId,
       userId: command.user.userId,
       instancesDeleted: instances.length,

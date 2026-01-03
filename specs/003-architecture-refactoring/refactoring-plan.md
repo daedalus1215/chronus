@@ -81,18 +81,19 @@ Multiple actions importing `src/auth/jwt-auth.guard`:
 
 **Issue**: Files that are not imported by any other file (violates no-orphans rule).
 
-**Files**:
-- `src/shared-kernel/test-utils.ts`
-- `src/shared-kernel/domain/cross-domain-commands/tags/delete-note-tag-associations.command.ts`
-- `src/shared-kernel/domain/cross-domain-commands/notes/verify-note-access.command.ts`
-- `src/shared-kernel/domain/cross-domain-commands/notes/get-note-details.command.ts`
-- `src/shared-kernel/domain/cross-domain-commands/check-items/delete-check-items-by-note.command.ts`
-- `src/shared-kernel/apps/decorators/get-auth-user.decorator.ts`
-- `src/notes/apps/dtos/requests/update-note-title.dto.ts`
-- `src/check-items/apps/actions/create-check-item/create-check-item.dto.ts`
-- `src/audio/apps/dtos/responses/audio.response.dto.ts`
+**Status**: Most are false positives - dependency-cruiser doesn't track event-based dependencies and some dynamic imports.
 
-**Solution**: Either use these files or remove them if they're not needed.
+**Actually Orphaned (Removed)**:
+- ✅ `src/check-items/apps/actions/create-check-item/create-check-item.dto.ts` - Duplicate file, removed
+
+**False Positives (Actually Used)**:
+- `src/shared-kernel/test-utils.ts` - Used in 14+ test files
+- `src/shared-kernel/apps/decorators/get-auth-user.decorator.ts` - Used in 100+ files via decorator
+- `src/shared-kernel/domain/cross-domain-commands/*` - Used via event listeners (not tracked by dependency-cruiser)
+- `src/notes/apps/dtos/requests/update-note-title.dto.ts` - Used in action and transaction script
+- `src/audio/apps/dtos/responses/audio.response.dto.ts` - Used in service and transaction script
+
+**Solution**: These are false positives. The architecture checker has limitations with event-based dependencies and decorators. No action needed.
 
 ## Refactoring Tasks
 

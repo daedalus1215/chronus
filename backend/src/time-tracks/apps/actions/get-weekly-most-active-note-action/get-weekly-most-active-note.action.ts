@@ -15,7 +15,6 @@ export class GetWeeklyMostActiveNoteAction {
   async apply(
     @GetAuthUser() user: AuthUser
   ): Promise<WeeklyMostActiveNoteResponseDto> {
-    console.log('user', user);
     return await this.timeTrackService.getWeeklyMostActiveNote(user.userId);
   }
 }

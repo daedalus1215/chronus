@@ -63,7 +63,6 @@ export class FetchCalendarEventsAction {
       createdAt: Date;
       updatedAt: Date;
     }) => {
-      console.log('Fetching calendar event:', event);
       return new CalendarEventResponseDto(event);
     });
   }
