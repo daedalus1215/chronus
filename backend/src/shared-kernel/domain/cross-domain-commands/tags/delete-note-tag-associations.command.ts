@@ -3,4 +3,5 @@ export type DeleteNoteTagAssociationsCommand = {
   userId: number;
 };
 
-export const DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND = 'tags.delete-note-associations';
+export const DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND =
+  'tags.delete-note-associations';

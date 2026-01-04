@@ -6,4 +6,3 @@ export type FetchCalendarEventsCommand = {
   endDate: Date;
   user: AuthUser;
 };
-

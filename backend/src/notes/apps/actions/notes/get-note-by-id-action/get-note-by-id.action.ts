@@ -11,7 +11,7 @@ import { NoteResponseDto } from '../../../dtos/responses/note.response.dto';
 export class GetNoteByIdAction {
   constructor(
     private readonly noteService: NoteService,
-    private readonly getNoteByIdResponder: GetNoteByIdResponder,
+    private readonly getNoteByIdResponder: GetNoteByIdResponder
   ) {}
 
   @Get('/detail/:id')
@@ -21,7 +21,10 @@ export class GetNoteByIdAction {
     @GetAuthUser() authUser: AuthUser
   ): Promise<NoteResponseDto> {
     const noteId = parseInt(id, 10);
-    const noteWithCheckItems = await this.noteService.getNoteByIdWithCheckItems(noteId, authUser.userId);
+    const noteWithCheckItems = await this.noteService.getNoteByIdWithCheckItems(
+      noteId,
+      authUser.userId
+    );
     return this.getNoteByIdResponder.apply(noteWithCheckItems);
   }
-} 
+}

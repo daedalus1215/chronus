@@ -36,7 +36,7 @@ export const useEventForm = ({
     endDate: '',
   });
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
-    {},
+    {}
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,25 +54,29 @@ export const useEventForm = ({
 
   const updateField = useCallback(
     (field: keyof UpdateCalendarEventRequest, value: string) => {
-      setFormData((prev) => ({ ...prev, [field]: value }));
+      setFormData(prev => ({ ...prev, [field]: value }));
       if (validationErrors[field as keyof ValidationErrors]) {
-        setValidationErrors((prev) => ({
+        setValidationErrors(prev => ({
           ...prev,
           [field]: undefined,
         }));
       }
-      if (field === 'startDate' && validationErrors.endDate && formData.endDate) {
+      if (
+        field === 'startDate' &&
+        validationErrors.endDate &&
+        formData.endDate
+      ) {
         const start = new Date(value);
         const end = new Date(formData.endDate);
         if (start < end) {
-          setValidationErrors((prev) => ({
+          setValidationErrors(prev => ({
             ...prev,
             endDate: undefined,
           }));
         }
       }
     },
-    [validationErrors, formData.endDate],
+    [validationErrors, formData.endDate]
   );
 
   const resetForm = useCallback(() => {
@@ -115,7 +119,7 @@ export const useEventForm = ({
         setIsSubmitting(false);
       }
     },
-    [formData, validate, onUpdate, onSuccess, resetForm],
+    [formData, validate, onUpdate, onSuccess, resetForm]
   );
 
   return {
@@ -127,4 +131,3 @@ export const useEventForm = ({
     handleSubmit,
   };
 };
-

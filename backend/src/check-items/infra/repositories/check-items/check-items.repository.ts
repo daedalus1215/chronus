@@ -40,7 +40,10 @@ export class CheckItemsRepository {
     return this.findById(id);
   }
 
-  async findByIdWithNoteValidation(id: number, userId: number): Promise<CheckItem | null> {
+  async findByIdWithNoteValidation(
+    id: number,
+    userId: number
+  ): Promise<CheckItem | null> {
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
       .select('checkItem.*')
@@ -56,7 +59,11 @@ export class CheckItemsRepository {
     return this.hydrator.fromRawResult(result);
   }
 
-  async findByIdWithNoteValidationForUpdate(id: number, noteId: number, userId: number): Promise<CheckItem | null> {
+  async findByIdWithNoteValidationForUpdate(
+    id: number,
+    noteId: number,
+    userId: number
+  ): Promise<CheckItem | null> {
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
       .select('checkItem.*')
@@ -71,7 +78,10 @@ export class CheckItemsRepository {
     return this.hydrator.fromRawResult(result);
   }
 
-  async findByNoteIdWithUserValidation(noteId: number, userId: number): Promise<CheckItem[]> {
+  async findByNoteIdWithUserValidation(
+    noteId: number,
+    userId: number
+  ): Promise<CheckItem[]> {
     const results = await this.checkItemRepository
       .createQueryBuilder('checkItem')
       .select('checkItem.*')
@@ -103,4 +113,4 @@ export class CheckItemsRepository {
 
     return result?.minOrder ?? 0;
   }
-} 
+}

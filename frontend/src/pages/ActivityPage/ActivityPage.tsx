@@ -59,7 +59,10 @@ export const ActivityPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.activityPage} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div
+      className={styles.activityPage}
+      style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+    >
       <div style={{ flex: 1, overflow: 'auto', padding: '1rem' }}>
         {/* Top Cards Section */}
         <div className={styles.cardsContainer}>

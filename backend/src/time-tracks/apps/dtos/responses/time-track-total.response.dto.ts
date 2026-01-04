@@ -10,4 +10,4 @@ export class TimeTrackTotalResponseDto {
     this.totalHours = Math.floor((totalMinutes % (24 * 60)) / 60);
     this.totalMinutesRemainder = totalMinutes % 60;
   }
-} 
+}

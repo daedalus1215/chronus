@@ -54,9 +54,7 @@ export const DayColumn: React.FC<DayColumnProps> = ({
       className={`${styles.dayColumn} ${isOver ? styles.dropOver : ''}`}
     >
       <Paper
-        className={`${styles.dayHeader} ${
-          isToday(day) ? styles.today : ''
-        }`}
+        className={`${styles.dayHeader} ${isToday(day) ? styles.today : ''}`}
       >
         <Typography variant="subtitle2" sx={{ lineHeight: 1.2 }}>
           {format(day, 'EEE')}
@@ -66,15 +64,15 @@ export const DayColumn: React.FC<DayColumnProps> = ({
         </Typography>
       </Paper>
       <Box className={styles.dayContent}>
-        {timeSlots.map((hour) => (
+        {timeSlots.map(hour => (
           <Box
             key={`${day.toISOString()}-${hour}`}
             className={styles.timeSlotCell}
-            onClick={(e) => handleTimeSlotClick(hour, e)}
+            onClick={e => handleTimeSlotClick(hour, e)}
             sx={{ cursor: onTimeSlotClick ? 'pointer' : 'default' }}
           />
         ))}
-        {Array.from(layoutMap.values()).map((layout) => (
+        {Array.from(layoutMap.values()).map(layout => (
           <EventCard
             key={layout.event.id}
             layout={layout}
@@ -85,4 +83,3 @@ export const DayColumn: React.FC<DayColumnProps> = ({
     </Box>
   );
 };
-

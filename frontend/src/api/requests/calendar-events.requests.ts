@@ -9,7 +9,7 @@ import {
 
 export const fetchCalendarEvents = async (
   startDate: string,
-  endDate: string,
+  endDate: string
 ): Promise<CalendarEventResponseDto[]> => {
   const { data } = await api.get<CalendarEventResponseDto[]>(
     '/calendar-events',
@@ -18,66 +18,65 @@ export const fetchCalendarEvents = async (
         startDate,
         endDate,
       },
-    },
+    }
   );
   return data;
 };
 
 export const createCalendarEvent = async (
-  event: CreateCalendarEventRequest,
+  event: CreateCalendarEventRequest
 ): Promise<CalendarEventResponseDto> => {
   const { data } = await api.post<CalendarEventResponseDto>(
     '/calendar-events',
-    event,
+    event
   );
   return data;
 };
 
 export const fetchCalendarEvent = async (
-  id: number,
+  id: number
 ): Promise<CalendarEventResponseDto> => {
   const { data } = await api.get<CalendarEventResponseDto>(
-    `/calendar-events/${id}`,
+    `/calendar-events/${id}`
   );
   return data;
 };
 
 export const updateCalendarEvent = async (
   id: number,
-  event: UpdateCalendarEventRequest,
+  event: UpdateCalendarEventRequest
 ): Promise<CalendarEventResponseDto> => {
   const { data } = await api.put<CalendarEventResponseDto>(
     `/calendar-events/${id}`,
-    event,
+    event
   );
   return data;
 };
 
 export const deleteCalendarEvent = async (
-  id: number,
+  id: number
 ): Promise<{ success: boolean }> => {
   const { data } = await api.delete<{ success: boolean }>(
-    `/calendar-events/${id}`,
+    `/calendar-events/${id}`
   );
   return data;
 };
 
 export const createRecurringEvent = async (
-  event: CreateRecurringEventRequest,
+  event: CreateRecurringEventRequest
 ): Promise<RecurringEventResponseDto> => {
   const { data } = await api.post<RecurringEventResponseDto>(
     '/calendar-events/recurring',
-    event,
+    event
   );
   return data;
 };
 
 export const deleteRecurringEvent = async (
-  id: number,
+  id: number
 ): Promise<{ success: boolean }> => {
   const { data } = await api.delete<{ success: boolean }>(
-    `/calendar-events/recurring/${id}`,
+    `/calendar-events/recurring/${id}`
   );
   return data;
 };
-

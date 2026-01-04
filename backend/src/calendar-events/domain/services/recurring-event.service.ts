@@ -13,14 +13,14 @@ import { RecurringEvent } from '../entities/recurring-event.entity';
 export class RecurringEventService {
   constructor(
     private readonly createRecurringEventTransactionScript: CreateRecurringEventTransactionScript,
-    private readonly deleteRecurringEventTransactionScript: DeleteRecurringEventTransactionScript,
+    private readonly deleteRecurringEventTransactionScript: DeleteRecurringEventTransactionScript
   ) {}
 
   /**
    * Create a new recurring event.
    */
   async createRecurringEvent(
-    command: CreateRecurringEventCommand,
+    command: CreateRecurringEventCommand
   ): Promise<RecurringEvent> {
     return await this.createRecurringEventTransactionScript.apply(command);
   }
@@ -30,9 +30,8 @@ export class RecurringEventService {
    * Event instances are automatically deleted via CASCADE foreign key constraint.
    */
   async deleteRecurringEvent(
-    command: DeleteRecurringEventCommand,
+    command: DeleteRecurringEventCommand
   ): Promise<void> {
     return await this.deleteRecurringEventTransactionScript.apply(command);
   }
 }
-

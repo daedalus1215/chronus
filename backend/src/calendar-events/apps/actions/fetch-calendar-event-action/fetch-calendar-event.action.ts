@@ -1,7 +1,16 @@
-import { Get, Param, Controller, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Get,
+  Param,
+  Controller,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { CalendarEventService } from '../../../domain/services/calendar-event.service';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
-import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
+import {
+  AuthUser,
+  GetAuthUser,
+} from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { FetchCalendarEventSwagger } from './fetch-calendar-event.swagger';
@@ -17,9 +26,7 @@ import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.re
 @ApiTags('Calendar Events')
 @ApiBearerAuth()
 export class FetchCalendarEventAction {
-  constructor(
-    private readonly calendarEventService: CalendarEventService,
-  ) {}
+  constructor(private readonly calendarEventService: CalendarEventService) {}
 
   /**
    * Fetch a specific calendar event by ID for the authenticated user.
@@ -33,14 +40,14 @@ export class FetchCalendarEventAction {
   @ProtectedAction(FetchCalendarEventSwagger)
   async apply(
     @Param('id', ParseIntPipe) id: number,
-    @GetAuthUser() user: AuthUser,
+    @GetAuthUser() user: AuthUser
   ): Promise<CalendarEventResponseDto> {
     const command: FetchCalendarEventCommand = {
       eventId: id,
       user,
     };
-    const event = await this.calendarEventService.fetchCalendarEventById(command);
+    const event =
+      await this.calendarEventService.fetchCalendarEventById(command);
     return new CalendarEventResponseDto(event);
   }
 }
-

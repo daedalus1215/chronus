@@ -1,7 +1,16 @@
-import { Delete, Param, Controller, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Delete,
+  Param,
+  Controller,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { CalendarEventService } from '../../../domain/services/calendar-event.service';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
-import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
+import {
+  AuthUser,
+  GetAuthUser,
+} from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { DeleteCalendarEventSwagger } from './delete-calendar-event.swagger';
@@ -16,9 +25,7 @@ import { DeleteCalendarEventCommand } from '../../../domain/transaction-scripts/
 @ApiTags('Calendar Events')
 @ApiBearerAuth()
 export class DeleteCalendarEventAction {
-  constructor(
-    private readonly calendarEventService: CalendarEventService,
-  ) {}
+  constructor(private readonly calendarEventService: CalendarEventService) {}
 
   /**
    * Delete a calendar event for the authenticated user.
@@ -32,7 +39,7 @@ export class DeleteCalendarEventAction {
   @ProtectedAction(DeleteCalendarEventSwagger)
   async apply(
     @Param('id', ParseIntPipe) id: number,
-    @GetAuthUser() user: AuthUser,
+    @GetAuthUser() user: AuthUser
   ): Promise<{ success: boolean }> {
     const command: DeleteCalendarEventCommand = {
       eventId: id,
@@ -42,4 +49,3 @@ export class DeleteCalendarEventAction {
     return { success: true };
   }
 }
-

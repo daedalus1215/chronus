@@ -1,7 +1,10 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { CalendarEventService } from '../../../domain/services/calendar-event.service';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
-import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
+import {
+  AuthUser,
+  GetAuthUser,
+} from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { FetchCalendarEventsSwagger } from './fetch-calendar-events.swagger';
@@ -19,9 +22,7 @@ import { parseISO, startOfWeek, endOfWeek } from 'date-fns';
 @ApiTags('Calendar Events')
 @ApiBearerAuth()
 export class FetchCalendarEventsAction {
-  constructor(
-    private readonly calendarEventService: CalendarEventService,
-  ) {}
+  constructor(private readonly calendarEventService: CalendarEventService) {}
 
   /**
    * Fetch calendar events for the authenticated user within a date range.
@@ -35,11 +36,15 @@ export class FetchCalendarEventsAction {
   @ProtectedAction(FetchCalendarEventsSwagger)
   async apply(
     @Query() dto: FetchCalendarEventsRequestDto,
-    @GetAuthUser() user: AuthUser,
+    @GetAuthUser() user: AuthUser
   ): Promise<CalendarEventResponseDto[]> {
     const now = new Date();
-    const startDate = dto.startDate ? parseISO(dto.startDate) : startOfWeek(now, { weekStartsOn: 1 });
-    const endDate = dto.endDate ? parseISO(dto.endDate) : endOfWeek(now, { weekStartsOn: 1 });
+    const startDate = dto.startDate
+      ? parseISO(dto.startDate)
+      : startOfWeek(now, { weekStartsOn: 1 });
+    const endDate = dto.endDate
+      ? parseISO(dto.endDate)
+      : endOfWeek(now, { weekStartsOn: 1 });
     const command: FetchCalendarEventsCommand = {
       userId: user.userId,
       startDate,
@@ -48,23 +53,24 @@ export class FetchCalendarEventsAction {
     };
     const events = await this.calendarEventService.fetchCalendarEvents(command);
     // @TODO: Can move this to a responder
-    return events.map((event: {
-      id: number;
-      userId: number;
-      recurringEventId?: number;
-      instanceDate?: Date;
-      title: string;
-      description?: string;
-      startDate: Date;
-      endDate: Date;
-      isModified?: boolean;
-      titleOverride?: string;
-      descriptionOverride?: string;
-      createdAt: Date;
-      updatedAt: Date;
-    }) => {
-      return new CalendarEventResponseDto(event);
-    });
+    return events.map(
+      (event: {
+        id: number;
+        userId: number;
+        recurringEventId?: number;
+        instanceDate?: Date;
+        title: string;
+        description?: string;
+        startDate: Date;
+        endDate: Date;
+        isModified?: boolean;
+        titleOverride?: string;
+        descriptionOverride?: string;
+        createdAt: Date;
+        updatedAt: Date;
+      }) => {
+        return new CalendarEventResponseDto(event);
+      }
+    );
   }
 }
-

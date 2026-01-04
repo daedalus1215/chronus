@@ -12,22 +12,22 @@ import { UpdateNoteResponder } from './update-note.responder';
 export class UpdateNoteAction {
   constructor(
     private readonly noteService: NoteService,
-    private readonly updateNoteResponder: UpdateNoteResponder,
+    private readonly updateNoteResponder: UpdateNoteResponder
   ) {}
 
   @Patch('detail/:id')
   @ProtectedAction(UpdateNoteSwagger)
   async apply(
     @Param('id') id: string,
-    @Body() updateNoteDto: UpdateNoteDto, 
+    @Body() updateNoteDto: UpdateNoteDto,
     @GetAuthUser() authUser: AuthUser
   ): Promise<NoteResponseDto> {
     const noteId = parseInt(id, 10);
     const noteWithCheckItems = await this.noteService.updateNoteWithCheckItems(
       noteId,
       updateNoteDto,
-      authUser.userId,
+      authUser.userId
     );
     return this.updateNoteResponder.apply(noteWithCheckItems);
   }
-} 
+}

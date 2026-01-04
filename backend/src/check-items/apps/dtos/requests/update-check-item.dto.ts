@@ -4,4 +4,4 @@ export class UpdateCheckItemDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-} 
+}

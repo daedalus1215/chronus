@@ -7,4 +7,3 @@ export type DeleteRecurringEventCommand = {
   recurringEventId: number;
   user: AuthUser;
 };
-

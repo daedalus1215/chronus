@@ -89,19 +89,22 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
     return () => scrollContainer.removeEventListener('scroll', scrollHandler);
   }, [handleScroll]);
 
-  const handleNoteClick = useCallback(async (noteId: number) => {
-    moveNoteToTop(noteId);
-    try {
-      await updateNoteTimestamp(noteId);
-    } catch (error) {
-      console.error('Failed to update note timestamp:', error);
-    }
-    if (onNoteSelect) {
-      onNoteSelect(noteId);
-    } else {
-      navigate(`/notes/${noteId}`);
-    }
-  }, [moveNoteToTop, onNoteSelect, navigate]);
+  const handleNoteClick = useCallback(
+    async (noteId: number) => {
+      moveNoteToTop(noteId);
+      try {
+        await updateNoteTimestamp(noteId);
+      } catch (error) {
+        console.error('Failed to update note timestamp:', error);
+      }
+      if (onNoteSelect) {
+        onNoteSelect(noteId);
+      } else {
+        navigate(`/notes/${noteId}`);
+      }
+    },
+    [moveNoteToTop, onNoteSelect, navigate]
+  );
 
   if (isLoading && notes.length === 0) {
     return <div className={styles.noteListLoading}>Loading notes...</div>;

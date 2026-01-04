@@ -34,36 +34,36 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
       <List className={styles.nav}>
         {navigationItems.map((item, index) => {
           // Improved route matching to handle nested routes
-          const isActive = React.useMemo(() => {
-            const pathname = location.pathname;
+          const pathname = location.pathname;
+          let isActive = false;
 
-            // Special handling for Home route (/)
-            if (item.path === '/') {
-              // Home is active if:
-              // 1. Exact match: /
-              // 2. Nested note route: /notes/:id
-              // 3. But NOT if it's /memo, /checklist, /tags, /activity, or /tag-notes
-              if (pathname === '/') return true;
-              if (pathname.startsWith('/notes/')) {
-                // Check if it's not under another route
-                const basePath = pathname.split('/notes/')[0];
-                return basePath === '' || basePath === '/';
-              }
-              return false;
+          // Special handling for Home route (/)
+          if (item.path === '/') {
+            // Home is active if:
+            // 1. Exact match: /
+            // 2. Nested note route: /notes/:id
+            // 3. But NOT if it's /memo, /checklist, /tags, /activity, or /tag-notes
+            if (pathname === '/') {
+              isActive = true;
+            } else if (pathname.startsWith('/notes/')) {
+              // Check if it's not under another route
+              const basePath = pathname.split('/notes/')[0];
+              isActive = basePath === '' || basePath === '/';
             }
-
+          } else {
             // For other routes, check if pathname starts with the route path
             // This handles nested routes like /memo/notes/:id
-            if (pathname === item.path) return true;
-            if (pathname.startsWith(`${item.path}/`)) return true;
+            if (pathname === item.path) {
+              isActive = true;
+            } else if (pathname.startsWith(`${item.path}/`)) {
+              isActive = true;
+            }
 
             // Special case for Tags: also match /tag-notes/:tagId
             if (item.path === '/tags' && pathname.startsWith('/tag-notes/')) {
-              return true;
+              isActive = true;
             }
-
-            return false;
-          }, [location.pathname, item.path]);
+          }
 
           return (
             <Fade
@@ -82,9 +82,13 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
                     className={`${styles.navItem} ${isActive ? styles.active : ''}`}
                     sx={{
                       justifyContent: 'center',
-                      backgroundColor: isActive ? 'action.selected' : 'transparent',
+                      backgroundColor: isActive
+                        ? 'action.selected'
+                        : 'transparent',
                       '&:hover': {
-                        backgroundColor: isActive ? 'action.selected' : 'action.hover',
+                        backgroundColor: isActive
+                          ? 'action.selected'
+                          : 'action.hover',
                       },
                     }}
                   >

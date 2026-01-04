@@ -19,4 +19,4 @@ export const AddTagToNoteSwagger: ProtectedActionOptions = {
       description: 'Invalid request body.',
     },
   ],
-}; 
+};

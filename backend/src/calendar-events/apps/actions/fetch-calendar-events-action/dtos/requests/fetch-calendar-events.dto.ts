@@ -9,4 +9,3 @@ export class FetchCalendarEventsRequestDto {
   @IsOptional()
   endDate?: string;
 }
-

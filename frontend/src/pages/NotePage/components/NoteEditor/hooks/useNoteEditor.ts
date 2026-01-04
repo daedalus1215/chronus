@@ -108,12 +108,14 @@ export const useNoteEditor = ({
       const currentDescription = contentRef.current.description || '';
       const separator = currentDescription ? ' ' : '';
       const newDescription = `${currentDescription}${separator}${text.trim()}`;
-      console.log(`Appending to description. Current length: ${currentDescription.length}, New length: ${newDescription.length}`);
+      console.log(
+        `Appending to description. Current length: ${currentDescription.length}, New length: ${newDescription.length}`
+      );
       handleContentChange({
         description: newDescription,
       });
     },
-    [handleContentChange],
+    [handleContentChange]
   );
 
   return {

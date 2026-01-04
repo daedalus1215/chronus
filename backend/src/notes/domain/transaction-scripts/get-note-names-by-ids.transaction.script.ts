@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { NoteMemoTagRepository } from "../../infra/repositories/note-memo-tag.repository";
+import { Injectable } from '@nestjs/common';
+import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
 
 type NoteNameReference = {
   id: number;
@@ -13,4 +13,4 @@ export class GetNoteNamesByIdsTransactionScript {
   async apply(noteIds: number[], userId: number): Promise<NoteNameReference[]> {
     return await this.noteRepository.getNoteNamesByIds(noteIds, userId);
   }
-} 
+}

@@ -16,4 +16,3 @@ export const GetTagByIdSwagger: ProtectedActionOptions = {
     },
   ],
 };
-

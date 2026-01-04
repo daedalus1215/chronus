@@ -8,7 +8,10 @@ import {
 } from '@nestjs/common';
 import { RecurringEventService } from '../../../domain/services/recurring-event.service';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
-import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
+import {
+  AuthUser,
+  GetAuthUser,
+} from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { CreateRecurringEventSwagger } from './create-recurring-event.swagger';
@@ -25,9 +28,7 @@ import { RecurringEventResponseDtoClass } from '../../dtos/responses/recurring-e
 @ApiTags('Recurring Events')
 @ApiBearerAuth()
 export class CreateRecurringEventAction {
-  constructor(
-    private readonly recurringEventService: RecurringEventService,
-  ) {}
+  constructor(private readonly recurringEventService: RecurringEventService) {}
 
   /**
    * Create a new recurring calendar event for the authenticated user.
@@ -41,7 +42,7 @@ export class CreateRecurringEventAction {
   @ProtectedAction(CreateRecurringEventSwagger)
   async apply(
     @Body() dto: CreateRecurringEventRequestDto,
-    @GetAuthUser() user: AuthUser,
+    @GetAuthUser() user: AuthUser
   ): Promise<RecurringEventResponseDtoClass> {
     const command: CreateRecurringEventCommand = {
       title: dto.title,
@@ -61,10 +62,8 @@ export class CreateRecurringEventAction {
       noEndDate: dto.noEndDate,
       user,
     };
-    const event = await this.recurringEventService.createRecurringEvent(
-      command,
-    );
+    const event =
+      await this.recurringEventService.createRecurringEvent(command);
     return new RecurringEventResponseDtoClass(event);
   }
 }
-

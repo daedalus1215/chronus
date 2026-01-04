@@ -6,4 +6,4 @@ export const DeleteTimeTrackSwagger: ProtectedActionOptions = {
   additionalResponses: [
     { status: 404, description: 'Time track not found or not owned by user' },
   ],
-}; 
+};

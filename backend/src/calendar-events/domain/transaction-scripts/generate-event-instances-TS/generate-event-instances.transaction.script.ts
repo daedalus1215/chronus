@@ -3,10 +3,7 @@ import { CalendarEventRepository } from '../../../infra/repositories/calendar-ev
 import { RecurrenceExceptionRepository } from '../../../infra/repositories/recurrence-exception.repository';
 import { RecurringEvent } from '../../entities/recurring-event.entity';
 import { CalendarEvent } from '../../entities/calendar-event.entity';
-import {
-  generateInstanceDates,
-  patternToRruleString,
-} from '../../utils/rrule-pattern.utils';
+import { generateInstanceDates } from '../../utils/rrule-pattern.utils';
 import { startOfDay, differenceInMinutes } from 'date-fns';
 import { Logger } from 'nestjs-pino';
 
@@ -20,7 +17,7 @@ export class GenerateEventInstancesTransactionScript {
   constructor(
     private readonly logger: Logger,
     private readonly calendarEventRepository: CalendarEventRepository,
-    private readonly recurrenceExceptionRepository: RecurrenceExceptionRepository,
+    private readonly recurrenceExceptionRepository: RecurrenceExceptionRepository
   ) {}
 
   /**
@@ -35,28 +32,26 @@ export class GenerateEventInstancesTransactionScript {
   async apply(
     recurringEvent: RecurringEvent,
     rangeStart: Date,
-    rangeEnd: Date,
+    rangeEnd: Date
   ): Promise<CalendarEvent[]> {
     // Get ALL existing instances for this recurring event (not just in date range)
     // This ensures we don't create duplicates even if date ranges overlap
     const allExistingInstances =
       await this.calendarEventRepository.findByRecurringEventId(
-        recurringEvent.id,
+        recurringEvent.id
       );
 
     // Filter to only instances in the requested date range for return value
     const rangeStartNormalized = startOfDay(rangeStart);
     const rangeEndNormalized = startOfDay(rangeEnd);
-    const existingInstancesInRange = allExistingInstances.filter(
-      (instance) => {
-        if (!instance.instanceDate) return false;
-        const instanceDateNormalized = startOfDay(instance.instanceDate);
-        return (
-          instanceDateNormalized >= rangeStartNormalized &&
-          instanceDateNormalized <= rangeEndNormalized
-        );
-      },
-    );
+    const existingInstancesInRange = allExistingInstances.filter(instance => {
+      if (!instance.instanceDate) return false;
+      const instanceDateNormalized = startOfDay(instance.instanceDate);
+      return (
+        instanceDateNormalized >= rangeStartNormalized &&
+        instanceDateNormalized <= rangeEndNormalized
+      );
+    });
 
     // Create a set of existing instance dates for quick lookup
     // Normalize all dates to start of day and compare using timestamp
@@ -73,13 +68,13 @@ export class GenerateEventInstancesTransactionScript {
     // Get exception dates for this recurring event
     const exceptions =
       await this.recurrenceExceptionRepository.findByRecurringEventId(
-        recurringEvent.id,
+        recurringEvent.id
       );
-    const exceptionDates = exceptions.map((ex) => ex.exceptionDate);
+    const exceptionDates = exceptions.map(ex => ex.exceptionDate);
     this.logger.debug('Generating instances for recurring event:', {
       recurringEventId: recurringEvent.id,
       exceptionCount: exceptions.length,
-      exceptionDates: exceptionDates.map((d) => d.toISOString().split('T')[0]),
+      exceptionDates: exceptionDates.map(d => d.toISOString().split('T')[0]),
       rangeStart: rangeStart.toISOString().split('T')[0],
       rangeEnd: rangeEnd.toISOString().split('T')[0],
     });
@@ -93,17 +88,17 @@ export class GenerateEventInstancesTransactionScript {
       recurringEvent.noEndDate,
       exceptionDates,
       rangeStart,
-      rangeEnd,
+      rangeEnd
     );
     this.logger.debug('Generated instance dates:', {
       count: instanceStartDates.length,
-      dates: instanceStartDates.map((d) => d.toISOString().split('T')[0]),
+      dates: instanceStartDates.map(d => d.toISOString().split('T')[0]),
     });
 
     // Calculate duration from original event
     const durationMinutes = differenceInMinutes(
       recurringEvent.endDate,
-      recurringEvent.startDate,
+      recurringEvent.startDate
     );
 
     // Create CalendarEvent for each generated date that doesn't already exist
@@ -119,7 +114,7 @@ export class GenerateEventInstancesTransactionScript {
       }
 
       const instanceEndDate = new Date(
-        instanceStartDate.getTime() + durationMinutes * 60 * 1000,
+        instanceStartDate.getTime() + durationMinutes * 60 * 1000
       );
 
       const instance = await this.calendarEventRepository.createInstance({
@@ -142,4 +137,3 @@ export class GenerateEventInstancesTransactionScript {
     return [...existingInstancesInRange, ...newInstances];
   }
 }
-

@@ -1,7 +1,6 @@
 import { Controller, Patch, Param, Body } from '@nestjs/common';
 import { UpdateNoteTitleTransactionScript } from 'src/notes/domain/transaction-scripts/update-note-title.transaction.script';
 import { UpdateNoteTitleDto } from 'src/notes/apps/dtos/requests/update-note-title.dto';
-import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { UpdateNoteTitleSwagger } from './update-note-title.swagger';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
@@ -29,7 +28,11 @@ export class UpdateNoteTitleAction {
     @Param('id') id: string,
     @Body() updateNoteTitleDto: UpdateNoteTitleDto,
     @GetAuthUser() authUser: AuthUser
-  ): Promise<{id: number, name: string}> {
-    return await this.updateNoteTitleTransactionScript.apply(parseInt(id, 10), updateNoteTitleDto, authUser.userId);
+  ): Promise<{ id: number; name: string }> {
+    return await this.updateNoteTitleTransactionScript.apply(
+      parseInt(id, 10),
+      updateNoteTitleDto,
+      authUser.userId
+    );
   }
-} 
+}

@@ -72,4 +72,3 @@ import { RecurringEventToDomainConverter } from './domain/transaction-scripts/cr
   ],
 })
 export class CalendarEventsModule {}
-

@@ -1,4 +1,4 @@
-import { IsDate, IsNumber, IsString, IsOptional, Min, Max } from 'class-validator';
+import { IsNumber, IsString, IsOptional, Min, Max } from 'class-validator';
 
 export class CreateTimeTrackDto {
   @IsString()
@@ -18,4 +18,4 @@ export class CreateTimeTrackDto {
   @IsString()
   @IsOptional()
   note: string;
-} 
+}

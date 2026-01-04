@@ -1,6 +1,6 @@
 import { CheckItemProjection } from 'src/check-items/domain/aggregators/check-items.aggregator';
 
-//@TODO We need to remove constructor conversion and move towards a separate class that does the conversion. 
+//@TODO We need to remove constructor conversion and move towards a separate class that does the conversion.
 export class CheckItemResponseDto {
   id: number;
   name: string;
@@ -19,4 +19,4 @@ export class CheckItemResponseDto {
     this.createdAt = checkItem.createdAt;
     this.updatedAt = checkItem.updatedAt;
   }
-} 
+}

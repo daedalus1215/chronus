@@ -8,7 +8,7 @@ type UseTranscriptionCallbackReturn = {
 
 /**
  * Custom hook that manages the transcription callback chain.
- * 
+ *
  * Handles:
  * - Storing the appendToDescription callback from the editor
  * - Providing a wrapper callback that either uses the stored callback
@@ -39,8 +39,11 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
   const onTranscription = useCallback(
     (text: string) => {
       console.log('🔵 onTranscriptionCallback called with:', text);
-      
-      if (appendToDescriptionFn && typeof appendToDescriptionFn === 'function') {
+
+      if (
+        appendToDescriptionFn &&
+        typeof appendToDescriptionFn === 'function'
+      ) {
         console.log('✅ Calling appendToDescriptionFn with:', text);
         try {
           appendToDescriptionFn(text);
@@ -50,27 +53,34 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
           console.error('❌ Error calling appendToDescriptionFn:', err);
         }
       }
-      
+
       // Fallback: directly update the textarea if callback isn't set
-      console.warn('⚠️ appendToDescriptionFn not set, trying direct textarea update');
-      const textarea = document.getElementById('note-description') as HTMLTextAreaElement;
+      console.warn(
+        '⚠️ appendToDescriptionFn not set, trying direct textarea update'
+      );
+      const textarea = document.getElementById(
+        'note-description'
+      ) as HTMLTextAreaElement;
       if (textarea) {
         const currentValue = textarea.value || '';
         const separator = currentValue ? ' ' : '';
         const newValue = `${currentValue}${separator}${text.trim()}`;
-        console.log('📝 Directly updating textarea:', { currentLength: currentValue.length, newLength: newValue.length });
-        
+        console.log('📝 Directly updating textarea:', {
+          currentLength: currentValue.length,
+          newLength: newValue.length,
+        });
+
         // Update the textarea value
         textarea.value = newValue;
-        
+
         // Trigger input event to notify React
         const event = new Event('input', { bubbles: true });
         textarea.dispatchEvent(event);
-        
+
         // Also trigger change event
         const changeEvent = new Event('change', { bubbles: true });
         textarea.dispatchEvent(changeEvent);
-        
+
         console.log('✅ Textarea updated directly');
       } else {
         console.error('❌ Textarea not found!');
@@ -93,4 +103,3 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
     onTranscription,
   };
 };
-

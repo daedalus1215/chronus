@@ -16,18 +16,18 @@ export type NoteNameReference = {
 
 @Injectable()
 export class TimeTrackWithNoteNamesResponder {
-  apply(
-    projection: {
-      trackTimeTracks: TimeTrackWithNoteNamesInput[],
-      noteNames: NoteNameReference[]
-    }
-  ): TimeTrackWithNoteNamesDto[] {
+  apply(projection: {
+    trackTimeTracks: TimeTrackWithNoteNamesInput[];
+    noteNames: NoteNameReference[];
+  }): TimeTrackWithNoteNamesDto[] {
     return projection.trackTimeTracks.map(track => {
-      const noteName = projection.noteNames.find(note => note.id === track.noteId);
+      const noteName = projection.noteNames.find(
+        note => note.id === track.noteId
+      );
       return {
         ...track,
-        noteName: noteName?.name || 'Unknown Note'
+        noteName: noteName?.name || 'Unknown Note',
       };
     });
   }
-} 
+}

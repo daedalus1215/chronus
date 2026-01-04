@@ -16,11 +16,11 @@ export class CreateNoteAction {
   @ProtectedAction(CreateNoteSwagger)
   async apply(
     @GetAuthUser('userId') userId: number,
-    @Body() createNoteDto: CreateNoteDto,
+    @Body() createNoteDto: CreateNoteDto
   ): Promise<Note> {
     return this.createNoteTransactionScript.apply({
       ...createNoteDto,
       userId,
     });
   }
-} 
+}

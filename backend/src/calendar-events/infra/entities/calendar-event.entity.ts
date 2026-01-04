@@ -47,10 +47,20 @@ export class CalendarEventEntity {
   @Column({ name: 'end_date', type: 'datetime' })
   endDate: Date;
 
-  @Column({ name: 'is_modified', type: 'boolean', default: false, nullable: true })
+  @Column({
+    name: 'is_modified',
+    type: 'boolean',
+    default: false,
+    nullable: true,
+  })
   isModified?: boolean; // True if this instance has been individually modified
 
-  @Column({ name: 'title_override', type: 'varchar', length: 255, nullable: true })
+  @Column({
+    name: 'title_override',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
   titleOverride?: string; // Override title for this instance
 
   @Column({ name: 'description_override', type: 'text', nullable: true })
@@ -62,8 +72,10 @@ export class CalendarEventEntity {
   @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
   updatedAt: Date;
 
-  @ManyToOne(() => RecurringEventEntity, { onDelete: 'CASCADE', nullable: true })
+  @ManyToOne(() => RecurringEventEntity, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @JoinColumn({ name: 'recurring_event_id' })
   recurringEvent?: RecurringEventEntity;
 }
-

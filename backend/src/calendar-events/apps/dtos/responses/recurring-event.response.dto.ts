@@ -1,5 +1,4 @@
 import { RecurringEvent } from '../../../domain/entities/recurring-event.entity';
-import { RecurrencePattern } from '../../../domain/entities/recurrence-pattern.value-object';
 
 export type RecurrencePatternResponseDto = {
   type: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
@@ -56,7 +55,3 @@ export class RecurringEventResponseDtoClass {
     this.updatedAt = event.updatedAt;
   }
 }
-
-
-
-

@@ -20,4 +20,3 @@ export const UpdateCalendarEventSwagger: ProtectedActionOptions = {
     },
   ],
 };
-

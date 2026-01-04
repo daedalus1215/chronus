@@ -3,4 +3,3 @@ export type GetTagsByUserIdProjection = {
   name: string;
   noteCount: number;
 };
-

@@ -3,11 +3,13 @@ import { CreateRecurringEventTransactionScript } from '../create-recurring-event
 import { RecurringEventRepository } from '../../../../infra/repositories/recurring-event.repository';
 import { CreateRecurringEventCommand } from '../create-recurring-event.command';
 import { RecurringEvent } from '../../../../domain/entities/recurring-event.entity';
-import { CalendarEvent } from '../../../../domain/entities/calendar-event.entity';
 import { RecurringEventToInfrastructureConverter } from '../recurring-event-to-infrastructure.converter';
 import { RecurringEventToDomainConverter } from '../recurring-event-to-domain.converter';
 import { RecurringEventEntity } from '../../../../infra/entities/recurring-event.entity';
-import { generateRandomNumbers, createMock } from 'src/shared-kernel/test-utils';
+import {
+  generateRandomNumbers,
+  createMock,
+} from 'src/shared-kernel/test-utils';
 
 describe('CreateRecurringEventTransactionScript', () => {
   let target: CreateRecurringEventTransactionScript;
@@ -43,9 +45,10 @@ describe('CreateRecurringEventTransactionScript', () => {
       delete: jest.fn(),
     });
 
-    mockToInfrastructureConverter = createMock<RecurringEventToInfrastructureConverter>({
-      apply: jest.fn(),
-    });
+    mockToInfrastructureConverter =
+      createMock<RecurringEventToInfrastructureConverter>({
+        apply: jest.fn(),
+      });
 
     mockToDomainConverter = createMock<RecurringEventToDomainConverter>({
       apply: jest.fn(),
@@ -70,7 +73,7 @@ describe('CreateRecurringEventTransactionScript', () => {
     }).compile();
 
     target = module.get<CreateRecurringEventTransactionScript>(
-      CreateRecurringEventTransactionScript,
+      CreateRecurringEventTransactionScript
     );
   });
 
@@ -114,10 +117,10 @@ describe('CreateRecurringEventTransactionScript', () => {
       } as RecurringEventEntity;
 
       mockToInfrastructureConverter.apply.mockReturnValue(
-        mockInfrastructureEntity as Partial<RecurringEventEntity>,
+        mockInfrastructureEntity as Partial<RecurringEventEntity>
       );
       mockRecurringEventRepository.create.mockResolvedValue(
-        mockInfrastructureEntity,
+        mockInfrastructureEntity
       );
       mockToDomainConverter.apply.mockReturnValue(mockDomainEvent);
 
@@ -126,13 +129,12 @@ describe('CreateRecurringEventTransactionScript', () => {
       expect(result).toEqual(mockDomainEvent);
       expect(mockToInfrastructureConverter.apply).toHaveBeenCalled();
       expect(mockRecurringEventRepository.create).toHaveBeenCalledWith(
-        mockInfrastructureEntity,
+        mockInfrastructureEntity
       );
       expect(mockToDomainConverter.apply).toHaveBeenCalledWith(
-        mockInfrastructureEntity,
+        mockInfrastructureEntity
       );
     });
-
 
     it('should generate instances for "no end date" series up to 2 years ahead', async () => {
       const noEndDateCommand: CreateRecurringEventCommand = {
@@ -175,10 +177,10 @@ describe('CreateRecurringEventTransactionScript', () => {
       } as RecurringEventEntity;
 
       mockToInfrastructureConverter.apply.mockReturnValue(
-        mockInfrastructureEntity as Partial<RecurringEventEntity>,
+        mockInfrastructureEntity as Partial<RecurringEventEntity>
       );
       mockRecurringEventRepository.create.mockResolvedValue(
-        mockInfrastructureEntity,
+        mockInfrastructureEntity
       );
       mockToDomainConverter.apply.mockReturnValue(mockDomainEvent);
 
@@ -189,4 +191,3 @@ describe('CreateRecurringEventTransactionScript', () => {
     });
   });
 });
-

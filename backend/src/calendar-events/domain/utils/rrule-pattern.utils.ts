@@ -14,7 +14,7 @@ export const patternToRruleString = (
   pattern: RecurrencePattern,
   startDate: Date,
   endDate?: Date,
-  noEndDate: boolean = false,
+  noEndDate: boolean = false
 ): string => {
   const frequencyMap: Record<RecurrencePattern['type'], Frequency> = {
     DAILY: RRule.DAILY,
@@ -30,9 +30,13 @@ export const patternToRruleString = (
   };
 
   // Handle weekly recurrence with specific days
-  if (pattern.type === 'WEEKLY' && pattern.daysOfWeek && pattern.daysOfWeek.length > 0) {
+  if (
+    pattern.type === 'WEEKLY' &&
+    pattern.daysOfWeek &&
+    pattern.daysOfWeek.length > 0
+  ) {
     // RRule uses 0=Monday, 6=Sunday, but our pattern uses 1=Monday, 7=Sunday
-    options.byweekday = pattern.daysOfWeek.map((day) => day - 1);
+    options.byweekday = pattern.daysOfWeek.map(day => day - 1);
   }
 
   // Handle monthly recurrence with day of month
@@ -68,7 +72,7 @@ export const patternToRruleString = (
  */
 export const rruleStringToPattern = (
   rruleString: string,
-  startDate: Date,
+  _startDate: Date
 ): RecurrencePattern => {
   const rrule = RRule.fromString(rruleString);
 
@@ -95,7 +99,7 @@ export const rruleStringToPattern = (
     // RRule uses 0=Monday, 6=Sunday, but our pattern uses 1=Monday, 7=Sunday
     const byweekday = rrule.options.byweekday;
     if (Array.isArray(byweekday)) {
-      pattern.daysOfWeek = byweekday.map((day) => {
+      pattern.daysOfWeek = byweekday.map(day => {
         if (typeof day === 'number') {
           return day + 1;
         }
@@ -149,13 +153,13 @@ export const generateInstanceDates = (
   noEndDate: boolean,
   exceptionDates: Date[],
   rangeStart: Date,
-  rangeEnd: Date,
+  rangeEnd: Date
 ): Date[] => {
   const rruleString = patternToRruleString(
     pattern,
     startDate,
     recurrenceEndDate,
-    noEndDate,
+    noEndDate
   );
   const rrule = RRule.fromString(rruleString);
 
@@ -164,13 +168,12 @@ export const generateInstanceDates = (
 
   // Filter out exception dates
   // Ensure all exception dates are Date objects (handle both Date and string)
-  const exceptionDateStrings = exceptionDates.map((date) => {
+  const exceptionDateStrings = exceptionDates.map(date => {
     const dateObj = date instanceof Date ? date : new Date(date);
     return dateObj.toISOString().split('T')[0];
   });
-  return instances.filter((date) => {
+  return instances.filter(date => {
     const dateString = date.toISOString().split('T')[0];
     return !exceptionDateStrings.includes(dateString);
   });
 };
-

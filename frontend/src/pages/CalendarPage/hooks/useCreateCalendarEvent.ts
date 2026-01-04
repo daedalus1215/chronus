@@ -17,7 +17,7 @@ export const useCreateCalendarEvent = () => {
 
   return useMutation({
     mutationFn: async (
-      event: CreateCalendarEventRequest,
+      event: CreateCalendarEventRequest
     ): Promise<CalendarEventResponseDto> => {
       return await createCalendarEvent(event);
     },
@@ -26,4 +26,3 @@ export const useCreateCalendarEvent = () => {
     },
   });
 };
-

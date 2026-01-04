@@ -11,7 +11,3 @@ export type CreateRecurringEventCommand = {
   noEndDate: boolean;
   user: AuthUser;
 };
-
-
-
-

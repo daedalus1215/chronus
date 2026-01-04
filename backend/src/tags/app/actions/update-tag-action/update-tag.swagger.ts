@@ -20,4 +20,3 @@ export const UpdateTagSwagger: ProtectedActionOptions = {
     },
   ],
 };
-

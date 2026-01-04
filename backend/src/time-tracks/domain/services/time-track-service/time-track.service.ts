@@ -29,20 +29,22 @@ export class TimeTrackService {
     private readonly getDailyTimeTracksAggregationTS: GetDailyTimeTracksAggregationTransactionScript,
     private readonly timeTrackWithNoteNamesConverter: TimeTrackWithNoteNamesResponder,
     private readonly getWeeklyMostActiveNoteTS: GetWeeklyMostActiveNoteTransactionScript,
-    private readonly eventEmitter: EventEmitter2,
-  ) { }
+    private readonly eventEmitter: EventEmitter2
+  ) {}
 
   async createTimeTrack(command: CreateTimeTrackCommand) {
     await this.validateTimeTrackCreation(command);
     return this.createTimeTrackTS.apply(command);
   }
 
-  private async validateTimeTrackCreation(command: ValidateTimeTrackCreationCommand) {
+  private async validateTimeTrackCreation(
+    command: ValidateTimeTrackCreationCommand
+  ) {
     await this.noteAggregator.belongsToUser({
       noteId: command.noteId,
       user: {
-        id: command.user.userId
-      }
+        id: command.user.userId,
+      },
     });
   }
 
@@ -56,9 +58,15 @@ export class TimeTrackService {
     return this.getTimeTracksTotalByNoteIdTS.apply(command);
   }
 
-  async getDailyTimeTracksAggregation(command: GetDailyTimeTracksAggregationCommand) {
-    const trackTimeTracks = await this.getDailyTimeTracksAggregationTS.apply(command);
-    const noteNames = await this.noteAggregator.getNoteNamesByIds(trackTimeTracks.map(track => track.noteId), command.user.userId);
+  async getDailyTimeTracksAggregation(
+    command: GetDailyTimeTracksAggregationCommand
+  ) {
+    const trackTimeTracks =
+      await this.getDailyTimeTracksAggregationTS.apply(command);
+    const noteNames = await this.noteAggregator.getNoteNamesByIds(
+      trackTimeTracks.map(track => track.noteId),
+      command.user.userId
+    );
     return { trackTimeTracks, noteNames };
   }
 
@@ -71,4 +79,4 @@ export class TimeTrackService {
 
     return { ...result, noteName: note[0].name };
   }
-} 
+}

@@ -3,4 +3,4 @@ import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decora
 export type GetDailyTimeTracksAggregationCommand = {
   user: AuthUser;
   date?: string;
-}; 
+};

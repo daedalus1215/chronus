@@ -60,4 +60,3 @@ export class RecurringEventEntity {
   @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
   updatedAt: Date;
 }
-

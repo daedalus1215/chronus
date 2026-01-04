@@ -41,9 +41,10 @@ export const NotePage: React.FC = () => {
     error: allTagsError,
   } = useAllTags();
   const [isAddTagOpen, setAddTagOpen] = useState(false);
-  
+
   // Use custom hook to manage transcription callback chain
-  const { setAppendToDescriptionFn, onTranscription: onTranscriptionCallback } = useTranscriptionCallback();
+  const { setAppendToDescriptionFn, onTranscription: onTranscriptionCallback } =
+    useTranscriptionCallback();
 
   if (isLoading) {
     return (
@@ -146,7 +147,14 @@ export const NotePage: React.FC = () => {
             {titleError}
           </Alert>
         )}
-        <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           {note?.isMemo ? (
             <>
               <TranscriptionRecorder

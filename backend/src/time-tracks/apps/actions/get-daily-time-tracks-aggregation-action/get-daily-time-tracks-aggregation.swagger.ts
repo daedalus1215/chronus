@@ -7,16 +7,18 @@ export const GetDailyTimeTracksAggregationSwagger: ProtectedActionOptions = {
   additionalResponses: [
     {
       status: 200,
-      description: 'List of time track aggregations grouped by note ID, sorted by most recent activity.',
-      type: [TimeTrackAggregationResponseDto]
+      description:
+        'List of time track aggregations grouped by note ID, sorted by most recent activity.',
+      type: [TimeTrackAggregationResponseDto],
     },
     {
       status: 401,
-      description: 'Unauthorized - Invalid or missing authentication token.'
+      description: 'Unauthorized - Invalid or missing authentication token.',
     },
     {
       status: 403,
-      description: 'Forbidden - User not authorized to access the requested notes.'
-    }
-  ]
-}; 
+      description:
+        'Forbidden - User not authorized to access the requested notes.',
+    },
+  ],
+};

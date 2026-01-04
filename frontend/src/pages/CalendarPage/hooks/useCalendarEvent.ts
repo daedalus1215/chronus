@@ -22,4 +22,3 @@ export const useCalendarEvent = (id: number | null) => {
     staleTime: 30000,
   });
 };
-

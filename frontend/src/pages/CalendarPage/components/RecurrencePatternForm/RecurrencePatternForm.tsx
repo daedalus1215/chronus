@@ -67,26 +67,30 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
   errors,
 }) => {
   const [pattern, setPattern] = useState<RecurrencePatternDto>(
-    value.recurrencePattern,
+    value.recurrencePattern
   );
   const [noEndDate, setNoEndDate] = useState(value.noEndDate);
   const [recurrenceEndDate, setRecurrenceEndDate] = useState(
-    value.recurrenceEndDate || '',
+    value.recurrenceEndDate || ''
   );
 
   const notifyChange = (
     newPattern: RecurrencePatternDto,
     newNoEndDate: boolean,
-    newRecurrenceEndDate: string,
+    newRecurrenceEndDate: string
   ) => {
     onChange({
       recurrencePattern: newPattern,
-      recurrenceEndDate: newNoEndDate ? undefined : newRecurrenceEndDate || undefined,
+      recurrenceEndDate: newNoEndDate
+        ? undefined
+        : newRecurrenceEndDate || undefined,
       noEndDate: newNoEndDate,
     });
   };
 
-  const handleTypeChange = (newType: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY') => {
+  const handleTypeChange = (
+    newType: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'
+  ) => {
     const newPattern: RecurrencePatternDto = {
       type: newType,
       interval: 1,
@@ -111,7 +115,7 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
   const handleDayOfWeekToggle = (day: number) => {
     const currentDays = pattern.daysOfWeek || [];
     const newDays = currentDays.includes(day)
-      ? currentDays.filter((d) => d !== day)
+      ? currentDays.filter(d => d !== day)
       : [...currentDays, day].sort();
     const newPattern = { ...pattern, daysOfWeek: newDays };
     setPattern(newPattern);
@@ -148,9 +152,9 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
         <FormLabel component="legend">Recurrence Pattern</FormLabel>
         <RadioGroup
           value={pattern.type}
-          onChange={(e) =>
+          onChange={e =>
             handleTypeChange(
-              e.target.value as 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY',
+              e.target.value as 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'
             )
           }
           row
@@ -170,7 +174,7 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
         label="Repeat Every"
         type="number"
         value={pattern.interval}
-        onChange={(e) => handleIntervalChange(parseInt(e.target.value) || 1)}
+        onChange={e => handleIntervalChange(parseInt(e.target.value) || 1)}
         inputProps={{ min: 1 }}
         fullWidth
         margin="normal"
@@ -183,16 +187,20 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
             Select days of the week:
           </Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-            {DAYS_OF_WEEK.map((day) => (
+            {DAYS_OF_WEEK.map(day => (
               <Chip
                 key={day.value}
                 label={day.label}
                 onClick={() => handleDayOfWeekToggle(day.value)}
                 color={
-                  pattern.daysOfWeek?.includes(day.value) ? 'primary' : 'default'
+                  pattern.daysOfWeek?.includes(day.value)
+                    ? 'primary'
+                    : 'default'
                 }
                 variant={
-                  pattern.daysOfWeek?.includes(day.value) ? 'filled' : 'outlined'
+                  pattern.daysOfWeek?.includes(day.value)
+                    ? 'filled'
+                    : 'outlined'
                 }
               />
             ))}
@@ -210,9 +218,7 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
           label="Day of Month"
           type="number"
           value={pattern.dayOfMonth || ''}
-          onChange={(e) =>
-            handleDayOfMonthChange(parseInt(e.target.value) || 1)
-          }
+          onChange={e => handleDayOfMonthChange(parseInt(e.target.value) || 1)}
           inputProps={{ min: 1, max: 31 }}
           fullWidth
           margin="normal"
@@ -225,12 +231,10 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
           <FormLabel>Month</FormLabel>
           <RadioGroup
             value={pattern.monthOfYear || ''}
-            onChange={(e) =>
-              handleMonthOfYearChange(parseInt(e.target.value))
-            }
+            onChange={e => handleMonthOfYearChange(parseInt(e.target.value))}
             row
           >
-            {MONTHS.map((month) => (
+            {MONTHS.map(month => (
               <FormControlLabel
                 key={month.value}
                 value={month.value}
@@ -247,7 +251,7 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
           control={
             <Checkbox
               checked={noEndDate}
-              onChange={(e) => handleNoEndDateChange(e.target.checked)}
+              onChange={e => handleNoEndDateChange(e.target.checked)}
             />
           }
           label="No end date"
@@ -257,7 +261,7 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
             label="End Date"
             type="date"
             value={recurrenceEndDate}
-            onChange={(e) => handleRecurrenceEndDateChange(e.target.value)}
+            onChange={e => handleRecurrenceEndDateChange(e.target.value)}
             fullWidth
             margin="normal"
             InputLabelProps={{ shrink: true }}
@@ -269,4 +273,3 @@ export const RecurrencePatternForm: React.FC<RecurrencePatternFormProps> = ({
     </Box>
   );
 };
-

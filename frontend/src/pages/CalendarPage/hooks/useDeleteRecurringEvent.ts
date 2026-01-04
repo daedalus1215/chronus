@@ -17,11 +17,10 @@ export const useDeleteRecurringEvent = () => {
     },
     onSuccess: () => {
       // Invalidate and refetch all calendar event queries
-      queryClient.invalidateQueries({ 
+      queryClient.invalidateQueries({
         queryKey: calendarEventKeys.all,
         refetchType: 'active',
       });
     },
   });
 };
-

@@ -11,7 +11,7 @@ export type ValidationErrors = {
  * Returns validation errors object (empty if valid).
  */
 export const validateEventForm = (
-  formData: UpdateCalendarEventRequest,
+  formData: UpdateCalendarEventRequest
 ): ValidationErrors => {
   const errors: ValidationErrors = {};
   if (!formData.title.trim()) {
@@ -41,4 +41,3 @@ export const validateEventForm = (
 export const isFormValid = (errors: ValidationErrors): boolean => {
   return Object.keys(errors).length === 0;
 };
-

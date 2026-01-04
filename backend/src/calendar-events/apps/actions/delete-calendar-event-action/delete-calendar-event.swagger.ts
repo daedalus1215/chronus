@@ -1,4 +1,4 @@
-import {  ProtectedActionOptions } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
+import { ProtectedActionOptions } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
 
 /**
  * Swagger configuration for delete calendar event endpoint.
@@ -17,4 +17,3 @@ export const DeleteCalendarEventSwagger: ProtectedActionOptions = {
     },
   ],
 };
-

@@ -33,7 +33,9 @@ export const AuthenticatedLayout: React.FC = () => {
             <Outlet />
           </Box>
         ) : (
-          <Box sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}>
+          <Box
+            sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}
+          >
             {/* Sidebar - persists across all pages */}
             <Paper
               elevation={0}
@@ -61,4 +63,3 @@ export const AuthenticatedLayout: React.FC = () => {
     </>
   );
 };
-

@@ -12,12 +12,12 @@ export type EventSlotRange = {
  */
 export const getEventsForDay = (
   events: CalendarEventResponseDto[],
-  day: Date,
+  day: Date
 ): CalendarEventResponseDto[] => {
   const dayStart = startOfDay(day);
   const dayEnd = new Date(dayStart);
   dayEnd.setHours(23, 59, 59, 999);
-  return events.filter((event) => {
+  return events.filter(event => {
     const eventStart = new Date(event.startDate);
     const eventEnd = new Date(event.endDate);
     return eventStart <= dayEnd && eventEnd >= dayStart;
@@ -30,7 +30,7 @@ export const getEventsForDay = (
  */
 export const getEventSlotRange = (
   event: CalendarEventResponseDto,
-  day: Date,
+  day: Date
 ): EventSlotRange => {
   const dayStart = startOfDay(day);
   const eventStart = new Date(event.startDate);
@@ -39,8 +39,7 @@ export const getEventSlotRange = (
   dayEnd.setHours(23, 59, 59, 999);
   const clampedStart = eventStart < dayStart ? dayStart : eventStart;
   const clampedEnd = eventEnd > dayEnd ? dayEnd : eventEnd;
-  const startSlot =
-    clampedStart.getHours() + clampedStart.getMinutes() / 60;
+  const startSlot = clampedStart.getHours() + clampedStart.getMinutes() / 60;
   const endSlot = clampedEnd.getHours() + clampedEnd.getMinutes() / 60;
   return { startSlot, endSlot };
 };
@@ -51,13 +50,11 @@ export const getEventSlotRange = (
 export const eventsOverlap = (
   event1: CalendarEventResponseDto,
   event2: CalendarEventResponseDto,
-  day: Date,
+  day: Date
 ): boolean => {
   const range1 = getEventSlotRange(event1, day);
   const range2 = getEventSlotRange(event2, day);
-  return (
-    range1.startSlot < range2.endSlot && range2.startSlot < range1.endSlot
-  );
+  return range1.startSlot < range2.endSlot && range2.startSlot < range1.endSlot;
 };
 
 /**
@@ -66,7 +63,7 @@ export const eventsOverlap = (
  */
 export const findOverlapGroups = (
   dayEvents: CalendarEventResponseDto[],
-  day: Date,
+  day: Date
 ): CalendarEventResponseDto[][] => {
   if (dayEvents.length === 0) {
     return [];
@@ -105,4 +102,3 @@ export const findOverlapGroups = (
   }
   return Array.from(groupsMap.values());
 };
-

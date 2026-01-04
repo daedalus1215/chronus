@@ -35,4 +35,3 @@ export class RecurrenceExceptionEntity {
   @JoinColumn({ name: 'recurring_event_id' })
   recurringEvent: RecurringEventEntity;
 }
-

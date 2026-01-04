@@ -5,16 +5,16 @@ import { TimeTrackTotalResponseDto } from '../../../apps/dtos/responses/time-tra
 
 @Injectable()
 export class GetTimeTracksTotalByNoteIdTransactionScript {
-  constructor(
-    private readonly timeTrackRepository: TimeTrackRepository
-  ) {}
+  constructor(private readonly timeTrackRepository: TimeTrackRepository) {}
 
-  async apply(command: GetTimeTracksTotalByNoteIdCommand): Promise<TimeTrackTotalResponseDto> {
+  async apply(
+    command: GetTimeTracksTotalByNoteIdCommand
+  ): Promise<TimeTrackTotalResponseDto> {
     const totalMinutes = await this.timeTrackRepository.getTotalTimeForNote(
       command.user.userId,
       command.noteId
     );
-    
+
     return new TimeTrackTotalResponseDto(totalMinutes);
   }
-} 
+}

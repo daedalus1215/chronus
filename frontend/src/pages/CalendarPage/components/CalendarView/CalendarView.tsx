@@ -1,11 +1,14 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { Box, Typography, Button, CircularProgress, IconButton, Snackbar, Alert } from '@mui/material';
-import { Today, WbSunny, Nightlight } from '@mui/icons-material';
 import {
-  format,
-  eachDayOfInterval,
-  isToday,
-} from 'date-fns';
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from '@mui/material';
+import { Today, WbSunny, Nightlight } from '@mui/icons-material';
+import { format, eachDayOfInterval, isToday } from 'date-fns';
 import {
   DndContext,
   DragEndEvent,
@@ -75,7 +78,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const [hasScrolledToToday, setHasScrolledToToday] = useState(false);
 
   // Format hour in 12-hour format with AM/PM
-  const formatHour = (hour: number): { hour: number; period: 'AM' | 'PM'; isDay: boolean } => {
+  const formatHour = (
+    hour: number
+  ): { hour: number; period: 'AM' | 'PM'; isDay: boolean } => {
     if (hour === 0) {
       return { hour: 12, period: 'AM', isDay: false };
     } else if (hour < 12) {
@@ -86,19 +91,21 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       return { hour: hour - 12, period: 'PM', isDay: hour < 18 };
     }
   };
-  const [draggedEvent, setDraggedEvent] = useState<CalendarEventResponseDto | null>(null);
+  const [draggedEvent, setDraggedEvent] =
+    useState<CalendarEventResponseDto | null>(null);
   const dayLayoutMaps = useEventLayouts(startDate, endDate, events);
   const isMobile = useIsMobile();
 
   // Infinite scrolling
   useInfiniteScrollDays({
     containerRef: calendarGridRef,
-    dayRange: { startDate, endDate },
     onLoadMoreDays,
   });
   const updateMutation = useUpdateCalendarEvent();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>(
+    'success'
+  );
   const [visibleStartDate, setVisibleStartDate] = useState<Date>(startDate);
   const [visibleEndDate, setVisibleEndDate] = useState<Date>(endDate);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
@@ -119,7 +126,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         delay: 100,
         tolerance: 8,
       },
-    }),
+    })
   );
 
   // Auto-scroll to current day on initial mount
@@ -129,7 +136,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
 
     const container = calendarGridRef.current;
-    const todayDay = days.find((day) => isToday(day));
+    const todayDay = days.find(day => isToday(day));
 
     if (!todayDay) {
       return;
@@ -138,7 +145,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     // Wait for layout to be ready - use multiple attempts for mobile
     const scrollToToday = (attempt = 0) => {
       const todayElement = container.querySelector(
-        `[data-day-id="${todayDay.toISOString()}"]`,
+        `[data-day-id="${todayDay.toISOString()}"]`
       ) as HTMLElement;
 
       if (!todayElement || !container) {
@@ -158,7 +165,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       const containerWidth = container.clientWidth;
 
       // Center the today column in the viewport
-      const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2;
+      const targetScrollLeft =
+        elementLeft - containerWidth / 2 + elementWidth / 2;
 
       container.scrollTo({
         left: targetScrollLeft,
@@ -182,7 +190,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
 
     const container = calendarGridRef.current;
-    const todayDay = days.find((day) => isToday(day));
+    const todayDay = days.find(day => isToday(day));
 
     if (!todayDay) {
       return;
@@ -191,7 +199,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     // Wait a bit for the day range to update if needed
     const scrollToToday = (attempt = 0) => {
       const todayElement = container.querySelector(
-        `[data-day-id="${todayDay.toISOString()}"]`,
+        `[data-day-id="${todayDay.toISOString()}"]`
       ) as HTMLElement;
 
       if (!todayElement || !container) {
@@ -211,7 +219,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       const containerWidth = container.clientWidth;
 
       // Center the today column in the viewport
-      const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2;
+      const targetScrollLeft =
+        elementLeft - containerWidth / 2 + elementWidth / 2;
 
       container.scrollTo({
         left: targetScrollLeft,
@@ -222,7 +231,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const delay = isMobile ? 300 : 150;
     setTimeout(() => scrollToToday(), delay);
   };
-
 
   const handleDragStart = (event: DragStartEvent) => {
     const eventData = event.active.data.current?.event as
@@ -246,32 +254,29 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
     const dropDay = dropDayData.day as Date;
     const dayElement = document.querySelector(
-      `[data-day-id="${dropDay.toISOString()}"]`,
+      `[data-day-id="${dropDay.toISOString()}"]`
     ) as HTMLElement;
     if (!dayElement) {
       return;
     }
-    const dayContent = dayElement.querySelector('[class*="dayContent"]') as HTMLElement;
+    const dayContent = dayElement.querySelector(
+      '[class*="dayContent"]'
+    ) as HTMLElement;
     if (!dayContent) {
       return;
     }
-    const activeRect = active.rect.current.translated ?? active.rect.current.initial;
+    const activeRect =
+      active.rect.current.translated ?? active.rect.current.initial;
     if (!activeRect) {
       return;
     }
     const dropTopY = activeRect.top;
-    const dropPosition = calculateDropPosition(
-      dropTopY,
-      dayElement,
-      dropDay,
-    );
+    const dropPosition = calculateDropPosition(dropTopY, dayElement, dropDay);
     if (!dropPosition) {
       return;
     }
-    const { startDate: newStartDate, endDate: newEndDate } = calculateNewEventTimes(
-      eventToMove,
-      dropPosition,
-    );
+    const { startDate: newStartDate, endDate: newEndDate } =
+      calculateNewEventTimes(eventToMove, dropPosition);
     try {
       await updateMutation.mutateAsync({
         id: eventToMove.id,
@@ -288,7 +293,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       setToastMessage(
         error instanceof Error
           ? error.message || 'Failed to move event'
-          : 'Failed to move event',
+          : 'Failed to move event'
       );
     }
   };
@@ -304,7 +309,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   }, []);
 
   // Calculate if today is in the visible range and get the current time position
-  const isTodayInRange = days.some((day) => isToday(day));
+  const isTodayInRange = days.some(day => isToday(day));
   const getCurrentTimePosition = (): number | null => {
     if (!isTodayInRange) {
       return null;
@@ -314,7 +319,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const slotHeight = 60;
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    const position = headerHeight + hours * slotHeight + (minutes / 60) * slotHeight;
+    const position =
+      headerHeight + hours * slotHeight + (minutes / 60) * slotHeight;
     return position;
   };
 
@@ -332,10 +338,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       const containerWidth = container.clientWidth;
       const dayWidth = isMobile ? 100 : 150; // Approximate day width
 
-      const firstVisibleDayIndex = Math.max(0, Math.floor(scrollLeft / dayWidth));
+      const firstVisibleDayIndex = Math.max(
+        0,
+        Math.floor(scrollLeft / dayWidth)
+      );
       const lastVisibleDayIndex = Math.min(
         days.length - 1,
-        Math.ceil((scrollLeft + containerWidth) / dayWidth),
+        Math.ceil((scrollLeft + containerWidth) / dayWidth)
       );
 
       if (days[firstVisibleDayIndex] && days[lastVisibleDayIndex]) {
@@ -371,7 +380,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           variant={isMobile ? 'subtitle1' : 'h5'}
           className={styles.weekTitle}
         >
-          {format(visibleStartDate, 'MMM d')} - {format(visibleEndDate, 'MMM d, yyyy')}
+          {format(visibleStartDate, 'MMM d')} -{' '}
+          {format(visibleEndDate, 'MMM d, yyyy')}
         </Typography>
         <Button
           startIcon={<Today />}
@@ -392,15 +402,19 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <Box className={styles.calendarGrid} ref={calendarGridRef}>
           <Box className={styles.timeColumn}>
             <Box className={styles.timeSlotHeader}></Box>
-            {timeSlots.map((hour) => {
+            {timeSlots.map(hour => {
               const { hour: displayHour, period, isDay } = formatHour(hour);
               return (
                 <Box key={hour} className={styles.timeSlot}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     {isDay ? (
-                      <WbSunny sx={{ fontSize: '0.875rem', color: '#f59e0b' }} />
+                      <WbSunny
+                        sx={{ fontSize: '0.875rem', color: '#f59e0b' }}
+                      />
                     ) : (
-                      <Nightlight sx={{ fontSize: '0.875rem', color: '#6366f1' }} />
+                      <Nightlight
+                        sx={{ fontSize: '0.875rem', color: '#6366f1' }}
+                      />
                     )}
                     <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
                       {displayHour}:00 {period}
@@ -416,7 +430,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 position: 'absolute',
                 top: `${currentTimePosition}px`,
                 left: isMobile ? '50px' : '100px',
-                right: 0,
+                width: '99999px', // Large width to span all day columns when scrolling
                 height: '2px',
                 backgroundColor: '#ef4444',
                 zIndex: 25,
@@ -437,8 +451,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               }}
             />
           )}
-
-          {days.map((day) => (
+          {days.map(day => (
             <DayColumn
               key={day.toISOString()}
               day={day}
@@ -463,7 +476,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
               }}
             >
-              <Typography variant="caption" sx={{ fontWeight: 600, display: 'block' }}>
+              <Typography
+                variant="caption"
+                sx={{ fontWeight: 600, display: 'block' }}
+              >
                 {draggedEvent.title}
               </Typography>
             </Box>
@@ -478,7 +494,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           setToastSeverity('success');
           setToastMessage('Event deleted successfully');
         }}
-        onDeleteError={(error) => {
+        onDeleteError={error => {
           setToastSeverity('error');
           setToastMessage(error.message || 'Failed to delete event');
         }}
@@ -501,4 +517,3 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     </Box>
   );
 };
-

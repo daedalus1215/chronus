@@ -15,7 +15,7 @@ export class CalendarEventRepository {
   constructor(
     private readonly logger: Logger,
     @InjectRepository(CalendarEventEntity)
-    private readonly repository: Repository<CalendarEventEntity>,
+    private readonly repository: Repository<CalendarEventEntity>
   ) {}
 
   /**
@@ -88,7 +88,7 @@ export class CalendarEventRepository {
   async findByDateRange(
     userId: number,
     startDate: Date,
-    endDate: Date,
+    endDate: Date
   ): Promise<CalendarEvent[]> {
     const entities = await this.repository
       .createQueryBuilder('calendar_event')
@@ -97,7 +97,7 @@ export class CalendarEventRepository {
       .andWhere('calendar_event.end_date >= :startDate', { startDate })
       .orderBy('calendar_event.start_date', 'ASC')
       .getMany();
-    return entities.map((entity) => this.infrastructureToDomain(entity));
+    return entities.map(entity => this.infrastructureToDomain(entity));
   }
 
   /**
@@ -105,13 +105,13 @@ export class CalendarEventRepository {
    * Returns all instances for a specific recurring event.
    */
   async findByRecurringEventId(
-    recurringEventId: number,
+    recurringEventId: number
   ): Promise<CalendarEvent[]> {
     const entities = await this.repository.find({
       where: { recurringEventId },
       order: { instanceDate: 'ASC' },
     });
-    return entities.map((entity) => this.infrastructureToDomain(entity));
+    return entities.map(entity => this.infrastructureToDomain(entity));
   }
 
   /**
@@ -121,7 +121,7 @@ export class CalendarEventRepository {
   async findByRecurringEventIdAndDateRange(
     recurringEventId: number,
     startDate: Date,
-    endDate: Date,
+    endDate: Date
   ): Promise<CalendarEvent[]> {
     const entities = await this.repository
       .createQueryBuilder('calendar_event')
@@ -132,7 +132,7 @@ export class CalendarEventRepository {
       .andWhere('calendar_event.end_date >= :startDate', { startDate })
       .orderBy('calendar_event.start_date', 'ASC')
       .getMany();
-    return entities.map((entity) => this.infrastructureToDomain(entity));
+    return entities.map(entity => this.infrastructureToDomain(entity));
   }
 
   /**
@@ -154,7 +154,7 @@ export class CalendarEventRepository {
   async update(
     id: number,
     userId: number,
-    updates: Partial<CalendarEvent>,
+    updates: Partial<CalendarEvent>
   ): Promise<CalendarEvent> {
     const entity = await this.repository.findOne({
       where: { id, userId },
@@ -164,7 +164,7 @@ export class CalendarEventRepository {
     }
     const updatedEntity = this.repository.merge(
       entity,
-      this.domainToInfrastructure(updates),
+      this.domainToInfrastructure(updates)
     );
     const saved = await this.repository.save(updatedEntity);
     return this.infrastructureToDomain(saved);
@@ -184,7 +184,7 @@ export class CalendarEventRepository {
    * Map domain entity to infrastructure entity.
    */
   private domainToInfrastructure(
-    domain: Partial<CalendarEvent>,
+    domain: Partial<CalendarEvent>
   ): Partial<CalendarEventEntity> {
     return {
       id: domain.id,
@@ -206,9 +206,7 @@ export class CalendarEventRepository {
   /**
    * Map infrastructure entity to domain entity.
    */
-  private infrastructureToDomain(
-    infra: CalendarEventEntity,
-  ): CalendarEvent {
+  private infrastructureToDomain(infra: CalendarEventEntity): CalendarEvent {
     return {
       id: infra.id,
       userId: infra.userId,
@@ -226,4 +224,3 @@ export class CalendarEventRepository {
     };
   }
 }
-

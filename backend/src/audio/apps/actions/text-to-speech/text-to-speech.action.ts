@@ -13,7 +13,10 @@ export class TextToSpeechAction {
 
   @Post('text-to-speech')
   @ProtectedAction(TextToSpeechSwagger)
-  async execute(@Body() request: TextToSpeechRequestDto, @GetAuthUser('userId') userId) {
-    return this.audioService.convertTextToSpeech({...request, userId});
+  async execute(
+    @Body() request: TextToSpeechRequestDto,
+    @GetAuthUser('userId') userId
+  ) {
+    return this.audioService.convertTextToSpeech({ ...request, userId });
   }
 }

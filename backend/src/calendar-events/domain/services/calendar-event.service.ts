@@ -26,7 +26,7 @@ export class CalendarEventService {
     private readonly updateCalendarEventTransactionScript: UpdateCalendarEventTransactionScript,
     private readonly deleteCalendarEventTransactionScript: DeleteCalendarEventTransactionScript,
     private readonly generateEventInstancesTransactionScript: GenerateEventInstancesTransactionScript,
-    private readonly fetchRecurringEventsTransactionScript: FetchRecurringEventsTransactionScript,
+    private readonly fetchRecurringEventsTransactionScript: FetchRecurringEventsTransactionScript
   ) {}
 
   /**
@@ -34,7 +34,7 @@ export class CalendarEventService {
    * Orchestrates instance generation for recurring events before fetching.
    */
   async fetchCalendarEvents(
-    command: FetchCalendarEventsCommand,
+    command: FetchCalendarEventsCommand
   ): Promise<CalendarEvent[]> {
     // Fetch recurring events for the user (converted to domain entities)
     const recurringEvents =
@@ -46,7 +46,7 @@ export class CalendarEventService {
       await this.generateEventInstancesTransactionScript.apply(
         recurringEvent,
         command.startDate,
-        command.endDate,
+        command.endDate
       );
     }
 
@@ -58,7 +58,7 @@ export class CalendarEventService {
    * Create a new calendar event.
    */
   async createCalendarEvent(
-    command: CreateCalendarEventCommand,
+    command: CreateCalendarEventCommand
   ): Promise<CalendarEvent> {
     return await this.createCalendarEventTransactionScript.apply(command);
   }
@@ -67,7 +67,7 @@ export class CalendarEventService {
    * Fetch a calendar event by ID.
    */
   async fetchCalendarEventById(
-    command: FetchCalendarEventCommand,
+    command: FetchCalendarEventCommand
   ): Promise<CalendarEvent> {
     return await this.fetchCalendarEventTransactionScript.apply(command);
   }
@@ -76,7 +76,7 @@ export class CalendarEventService {
    * Update a calendar event.
    */
   async updateCalendarEvent(
-    command: UpdateCalendarEventCommand,
+    command: UpdateCalendarEventCommand
   ): Promise<CalendarEvent> {
     return await this.updateCalendarEventTransactionScript.apply(command);
   }
@@ -84,8 +84,9 @@ export class CalendarEventService {
   /**
    * Delete a calendar event.
    */
-  async deleteCalendarEvent(command: DeleteCalendarEventCommand): Promise<void> {
+  async deleteCalendarEvent(
+    command: DeleteCalendarEventCommand
+  ): Promise<void> {
     return await this.deleteCalendarEventTransactionScript.apply(command);
   }
 }
-

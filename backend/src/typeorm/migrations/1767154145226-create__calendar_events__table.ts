@@ -1,7 +1,9 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Create_calendar_events_table1767154145226 implements MigrationInterface {
-  name = 'Create_calendar_events_table1767154145226'
+export class Create_calendar_events_table1767154145226
+  implements MigrationInterface
+{
+  name = 'Create_calendar_events_table1767154145226';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -44,13 +46,16 @@ export class Create_calendar_events_table1767154145226 implements MigrationInter
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX "UQ_calendar_events_recurring_event_id_instance_date"`);
+    await queryRunner.query(
+      `DROP INDEX "UQ_calendar_events_recurring_event_id_instance_date"`
+    );
     await queryRunner.query(`DROP INDEX "IDX_calendar_events_instance_date"`);
-    await queryRunner.query(`DROP INDEX "IDX_calendar_events_recurring_event_id"`);
+    await queryRunner.query(
+      `DROP INDEX "IDX_calendar_events_recurring_event_id"`
+    );
     await queryRunner.query(`DROP INDEX "IDX_calendar_events_date_range"`);
     await queryRunner.query(`DROP INDEX "IDX_calendar_events_start_date"`);
     await queryRunner.query(`DROP INDEX "IDX_calendar_events_user_id"`);
     await queryRunner.query(`DROP TABLE "calendar_events"`);
   }
 }
-

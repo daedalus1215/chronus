@@ -1,4 +1,4 @@
-import { applyDecorators, UseGuards } from '@nestjs/common';
+import { applyDecorators, Type, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
@@ -8,22 +8,29 @@ export type ProtectedActionOptions = {
   additionalResponses?: Array<{
     status: number;
     description: string;
-    type?: any;
+    type?: unknown;
   }>;
-}
+};
 
 export const ProtectedAction = (options: ProtectedActionOptions) => {
   const commonResponses = [
-    { status: 401, description: 'Unauthorized - Invalid or missing JWT token.' },
-    { status: 403, description: 'Forbidden - User does not have permission for this resource.' },
-    ...(options.additionalResponses || [])
+    {
+      status: 401,
+      description: 'Unauthorized - Invalid or missing JWT token.',
+    },
+    {
+      status: 403,
+      description:
+        'Forbidden - User does not have permission for this resource.',
+    },
+    ...(options.additionalResponses || []),
   ];
 
-  const responseDecorators = commonResponses.map(response => 
+  const responseDecorators = commonResponses.map(response =>
     ApiResponse({
       status: response.status,
       description: response.description,
-      type: response.type
+      type: response.type as Type<unknown>,
     })
   );
 
@@ -31,7 +38,9 @@ export const ProtectedAction = (options: ProtectedActionOptions) => {
     ApiTags(options.tag),
     ApiBearerAuth(),
     UseGuards(JwtAuthGuard),
-    ...(options.summary ? [ApiResponse({ status: 200, description: options.summary })] : []),
+    ...(options.summary
+      ? [ApiResponse({ status: 200, description: options.summary })]
+      : []),
     ...responseDecorators
   );
-}; 
+};

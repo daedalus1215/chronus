@@ -16,7 +16,7 @@ export class CreateRecurringEventTransactionScript {
   constructor(
     private readonly recurringEventRepository: RecurringEventRepository,
     private readonly toInfrastructureConverter: RecurringEventToInfrastructureConverter,
-    private readonly toDomainConverter: RecurringEventToDomainConverter,
+    private readonly toDomainConverter: RecurringEventToDomainConverter
   ) {}
 
   /**
@@ -30,7 +30,7 @@ export class CreateRecurringEventTransactionScript {
       command.recurrencePattern,
       command.startDate,
       command.recurrenceEndDate,
-      command.noEndDate,
+      command.noEndDate
     );
 
     // Convert domain entity to infrastructure entity
@@ -44,13 +44,14 @@ export class CreateRecurringEventTransactionScript {
       recurrenceEndDate: command.recurrenceEndDate,
       noEndDate: command.noEndDate,
     };
-    const infrastructureEntity =
-      this.toInfrastructureConverter.apply(domainEvent, rruleString);
+    const infrastructureEntity = this.toInfrastructureConverter.apply(
+      domainEvent,
+      rruleString
+    );
 
     // Save infrastructure entity
-    const savedEntity = await this.recurringEventRepository.create(
-      infrastructureEntity,
-    );
+    const savedEntity =
+      await this.recurringEventRepository.create(infrastructureEntity);
 
     // Convert back to domain entity
     const recurringEvent = this.toDomainConverter.apply(savedEntity);
@@ -58,4 +59,3 @@ export class CreateRecurringEventTransactionScript {
     return recurringEvent;
   }
 }
-

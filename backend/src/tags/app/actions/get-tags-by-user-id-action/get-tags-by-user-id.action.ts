@@ -11,7 +11,9 @@ export class GetTagsByUserIdAction {
 
   @Get()
   @ProtectedAction(GetTagsByUserIdSwagger)
-  async apply(@GetAuthUser('userId') userId: number): Promise<GetTagsByUserIdProjection[]> {
+  async apply(
+    @GetAuthUser('userId') userId: number
+  ): Promise<GetTagsByUserIdProjection[]> {
     return this.tagService.getTagsByUserId(userId);
   }
-} 
+}

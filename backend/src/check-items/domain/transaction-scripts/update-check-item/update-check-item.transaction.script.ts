@@ -6,12 +6,20 @@ import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decora
 
 @Injectable()
 export class UpdateCheckItemTransactionScript {
-  constructor(
-    private readonly checkItemsRepository: CheckItemsRepository
-  ) {}
+  constructor(private readonly checkItemsRepository: CheckItemsRepository) {}
 
-  async apply(id: number, noteId: number, dto: UpdateCheckItemDto, authUser: AuthUser): Promise<CheckItem> {
-    const checkItem = await this.checkItemsRepository.findByIdWithNoteValidationForUpdate(id, noteId, authUser.userId);
+  async apply(
+    id: number,
+    noteId: number,
+    dto: UpdateCheckItemDto,
+    authUser: AuthUser
+  ): Promise<CheckItem> {
+    const checkItem =
+      await this.checkItemsRepository.findByIdWithNoteValidationForUpdate(
+        id,
+        noteId,
+        authUser.userId
+      );
 
     if (!checkItem) {
       throw new NotFoundException('Check item not found');
@@ -20,4 +28,4 @@ export class UpdateCheckItemTransactionScript {
     checkItem.name = dto.name;
     return this.checkItemsRepository.save(checkItem);
   }
-} 
+}

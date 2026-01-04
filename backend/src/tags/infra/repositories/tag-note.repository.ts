@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { DataSource, Repository } from "typeorm";
-import { TagNote } from "src/shared-kernel/domain/entities/tag-note.entity";
+import { Injectable } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
+import { TagNote } from 'src/shared-kernel/domain/entities/tag-note.entity';
 
 @Injectable()
 export class TagNoteRepository {
@@ -10,8 +10,11 @@ export class TagNoteRepository {
     this.repo = this.dataSource.getRepository(TagNote);
   }
 
-  async deleteByNoteIdAndTagId(noteId: number, tagId: number, userId: number): Promise<boolean> {
-
+  async deleteByNoteIdAndTagId(
+    noteId: number,
+    tagId: number,
+    userId: number
+  ): Promise<boolean> {
     const tagNote = await this.repo
       .createQueryBuilder('tag_note')
       .innerJoin('notes', 'note', 'note.id = tag_note.notes_id')
@@ -20,9 +23,9 @@ export class TagNoteRepository {
       .andWhere('note.user_id = :userId', { userId })
       .select('tag_note.id')
       .getOne();
-  
+
     if (!tagNote) return false;
-  
+
     await this.repo.delete(tagNote.id);
     return true;
   }

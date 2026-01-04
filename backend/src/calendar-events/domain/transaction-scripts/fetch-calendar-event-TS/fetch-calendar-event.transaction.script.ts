@@ -11,7 +11,7 @@ import { CalendarEvent } from '../../entities/calendar-event.entity';
 @Injectable()
 export class FetchCalendarEventTransactionScript {
   constructor(
-    private readonly calendarEventRepository: CalendarEventRepository,
+    private readonly calendarEventRepository: CalendarEventRepository
   ) {}
 
   /**
@@ -22,7 +22,7 @@ export class FetchCalendarEventTransactionScript {
   async apply(command: FetchCalendarEventCommand): Promise<CalendarEvent> {
     const calendarEvent = await this.calendarEventRepository.findById(
       command.eventId,
-      command.user.userId,
+      command.user.userId
     );
     // @TODO: Can be moved to a validator
     if (!calendarEvent) {
@@ -31,11 +31,20 @@ export class FetchCalendarEventTransactionScript {
 
     // Add metadata for response DTO conversion if it's a recurring instance
     if (calendarEvent.recurringEventId !== undefined) {
-      (calendarEvent as any).__isRecurring = true;
-      (calendarEvent as any).__recurringEventId = calendarEvent.recurringEventId;
+      (
+        calendarEvent as CalendarEvent & {
+          __isRecurring: boolean;
+          __recurringEventId: number;
+        }
+      ).__isRecurring = true;
+      (
+        calendarEvent as CalendarEvent & {
+          __isRecurring: boolean;
+          __recurringEventId: number;
+        }
+      ).__recurringEventId = calendarEvent.recurringEventId;
     }
 
     return calendarEvent;
   }
 }
-

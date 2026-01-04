@@ -1,14 +1,14 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { GetNoteNamesByUserIdSwagger } from './get-note-names-by-userId.swagger';
 
 type GetNoteNamesResponse = {
-  notes: {name: string, id: number, isMemo: number}[];
+  notes: { name: string; id: number; isMemo: number }[];
   hasMore: boolean;
   nextCursor: number | null;
-}
+};
 
 @Controller('notes')
 export class GetNoteNamesByUserIdAction {
@@ -24,15 +24,22 @@ export class GetNoteNamesByUserIdAction {
     @Query('type') type?: 'memo' | 'checklist',
     @Query('tagId') tagId?: string
   ): Promise<GetNoteNamesResponse> {
-    const notes = await this.noteRepository.getNoteNamesByUserId(userId, cursor, limit, query, type, tagId);
+    const notes = await this.noteRepository.getNoteNamesByUserId(
+      userId,
+      cursor,
+      limit,
+      query,
+      type,
+      tagId
+    );
     const hasMore = notes.length === limit;
-    
+
     const nextCursor = cursor + limit + 1;
 
     return {
       notes,
       hasMore,
-      nextCursor
+      nextCursor,
     };
   }
 }

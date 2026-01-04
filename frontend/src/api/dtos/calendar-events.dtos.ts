@@ -56,4 +56,3 @@ export type RecurringEventResponseDto = {
   createdAt: string;
   updatedAt: string;
 };
-

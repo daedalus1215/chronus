@@ -12,7 +12,7 @@ export class RecurringEventToInfrastructureConverter {
    */
   apply(
     domain: Partial<RecurringEvent>,
-    rruleString: string,
+    rruleString: string
   ): Partial<RecurringEventEntity> {
     const pattern = domain.recurrencePattern;
     return {
@@ -35,7 +35,3 @@ export class RecurringEventToInfrastructureConverter {
     };
   }
 }
-
-
-
-

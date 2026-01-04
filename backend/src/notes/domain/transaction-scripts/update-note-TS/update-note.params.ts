@@ -3,4 +3,3 @@ export type UpdateNoteParams = {
   description?: string;
   tags?: { id: string; name: string; description: string }[];
 };
-

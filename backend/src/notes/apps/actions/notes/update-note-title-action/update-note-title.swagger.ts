@@ -19,4 +19,4 @@ export const UpdateNoteTitleSwagger: ProtectedActionOptions = {
       description: 'Invalid request body.',
     },
   ],
-}; 
+};

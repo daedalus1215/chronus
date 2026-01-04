@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { TimeTrack } from "../../domain/entities/time-track-entity/time-track.entity";
-import { getWeekDateRange } from "../../../shared-kernel/utils/date.utils";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TimeTrack } from '../../domain/entities/time-track-entity/time-track.entity';
+import { getWeekDateRange } from '../../../shared-kernel/utils/date.utils';
 
 @Injectable()
 export class TimeTrackRepository {
@@ -19,7 +19,7 @@ export class TimeTrackRepository {
   async findByUserId(userId: number): Promise<TimeTrack[]> {
     return this.repository.find({
       where: { userId },
-      order: { date: "DESC", startTime: "DESC" },
+      order: { date: 'DESC', startTime: 'DESC' },
     });
   }
 
@@ -29,7 +29,7 @@ export class TimeTrackRepository {
   ): Promise<TimeTrack[]> {
     return this.repository.find({
       where: { userId, noteId },
-      order: { date: "DESC", startTime: "DESC" },
+      order: { date: 'DESC', startTime: 'DESC' },
     });
   }
 
@@ -39,10 +39,10 @@ export class TimeTrackRepository {
 
   async getTotalTimeForNote(userId: number, noteId: number): Promise<number> {
     const result = await this.repository
-      .createQueryBuilder("timeTrack")
-      .select("SUM(timeTrack.durationMinutes)", "total")
-      .where("timeTrack.userId = :userId", { userId })
-      .andWhere("timeTrack.noteId = :noteId", { noteId })
+      .createQueryBuilder('timeTrack')
+      .select('SUM(timeTrack.durationMinutes)', 'total')
+      .where('timeTrack.userId = :userId', { userId })
+      .andWhere('timeTrack.noteId = :noteId', { noteId })
       .getRawOne();
 
     return result?.total || 0;
@@ -50,10 +50,10 @@ export class TimeTrackRepository {
 
   async getDailyTotal(userId: number, date: string): Promise<number> {
     const result = await this.repository
-      .createQueryBuilder("timeTrack")
-      .select("SUM(timeTrack.durationMinutes)", "total")
-      .where("timeTrack.userId = :userId", { userId })
-      .andWhere("timeTrack.date = :date", { date })
+      .createQueryBuilder('timeTrack')
+      .select('SUM(timeTrack.durationMinutes)', 'total')
+      .where('timeTrack.userId = :userId', { userId })
+      .andWhere('timeTrack.date = :date', { date })
       .getRawOne();
 
     return result?.total || 0;
@@ -77,25 +77,25 @@ export class TimeTrackRepository {
     }>
   > {
     const aggregations = await this.repository
-      .createQueryBuilder("timeTrack")
+      .createQueryBuilder('timeTrack')
       .select([
-        "timeTrack.noteId as noteId",
-        "SUM(timeTrack.durationMinutes) as totalTimeMinutes",
-        "SUM(CASE WHEN timeTrack.date = :date THEN timeTrack.durationMinutes ELSE 0 END) as dailyTimeMinutes",
-        "MAX(CASE WHEN timeTrack.date = :date THEN timeTrack.startTime END) as mostRecentStartTime",
-        "MAX(CASE WHEN timeTrack.date = :date THEN timeTrack.date END) as mostRecentDate",
+        'timeTrack.noteId as noteId',
+        'SUM(timeTrack.durationMinutes) as totalTimeMinutes',
+        'SUM(CASE WHEN timeTrack.date = :date THEN timeTrack.durationMinutes ELSE 0 END) as dailyTimeMinutes',
+        'MAX(CASE WHEN timeTrack.date = :date THEN timeTrack.startTime END) as mostRecentStartTime',
+        'MAX(CASE WHEN timeTrack.date = :date THEN timeTrack.date END) as mostRecentDate',
       ])
-      .where("timeTrack.userId = :userId", { userId })
-      .groupBy("timeTrack.noteId")
+      .where('timeTrack.userId = :userId', { userId })
+      .groupBy('timeTrack.noteId')
       .having(
-        "SUM(CASE WHEN timeTrack.date = :date THEN timeTrack.durationMinutes ELSE 0 END) > 0",
+        'SUM(CASE WHEN timeTrack.date = :date THEN timeTrack.durationMinutes ELSE 0 END) > 0',
         { date }
       )
-      .orderBy("mostRecentDate", "DESC")
-      .addOrderBy("mostRecentStartTime", "DESC")
+      .orderBy('mostRecentDate', 'DESC')
+      .addOrderBy('mostRecentStartTime', 'DESC')
       .getRawMany();
 
-    return aggregations.map((agg) => ({
+    return aggregations.map(agg => ({
       noteId: parseInt(agg.noteId),
       totalTimeMinutes: parseInt(agg.totalTimeMinutes) || 0,
       dailyTimeMinutes: parseInt(agg.dailyTimeMinutes) || 0,
@@ -105,11 +105,11 @@ export class TimeTrackRepository {
   }
 
   private calculateEndTime(startTime: string, durationMinutes: number): string {
-    const [hours, minutes] = startTime.split(":").map(Number);
+    const [hours, minutes] = startTime.split(':').map(Number);
     const totalMinutes = hours * 60 + minutes + durationMinutes;
     const endHours = Math.floor(totalMinutes / 60) % 24;
     const endMinutes = totalMinutes % 60;
-    return `${endHours.toString().padStart(2, "0")}:${endMinutes.toString().padStart(2, "0")}`;
+    return `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
   }
 
   async getWeeklyMostActiveNote(userId: number): Promise<{
@@ -120,32 +120,32 @@ export class TimeTrackRepository {
   } | null> {
     // Get the start and end of the current week using local timezone
     const { weekStartDate, weekEndDate } = getWeekDateRange();
-  
+
     const result = await this.repository
       .createQueryBuilder('time_track')
       .select([
         "time_track.noteId as 'noteId'",
         "SUM(time_track.durationMinutes) as 'totalTimeMinutes'",
         "MIN(time_track.date) as 'weekStartDate'",
-        "MAX(time_track.date) as 'weekEndDate'"
+        "MAX(time_track.date) as 'weekEndDate'",
       ])
-      .where("time_track.userId = :userId", { userId })
+      .where('time_track.userId = :userId', { userId })
       .andWhere('time_track.date BETWEEN :startDate AND :endDate', {
         startDate: weekStartDate,
-        endDate: weekEndDate
+        endDate: weekEndDate,
       })
       .groupBy('time_track.noteId')
       .orderBy('totalTimeMinutes', 'DESC')
       .limit(1)
       .getRawOne();
-  
+
     if (!result) return null;
-  
+
     return {
       noteId: parseInt(result.noteId),
       totalTimeMinutes: parseInt(result.totalTimeMinutes),
       weekStartDate: result.weekStartDate,
-      weekEndDate: result.weekEndDate
+      weekEndDate: result.weekEndDate,
     };
   }
 }

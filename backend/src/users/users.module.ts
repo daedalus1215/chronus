@@ -8,12 +8,9 @@ import { UserRepository } from './infra/repositories/user.repository';
 import { UserAggregator } from './domain/aggregators/user.aggregator';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    ConfigModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User]), ConfigModule],
   providers: [UsersService, UserRepository, UserAggregator],
   controllers: [UsersController],
   exports: [UsersService, UserAggregator],
 })
-export class UsersModule { }
+export class UsersModule {}

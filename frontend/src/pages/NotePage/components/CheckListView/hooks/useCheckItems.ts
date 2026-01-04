@@ -170,7 +170,9 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
     },
     onMutate: async (checkItemIds: number[]) => {
       // Cancel any outgoing refetches to avoid overwriting optimistic update
-      await queryClient.cancelQueries({ queryKey: checkItemKeys.list(note.id) });
+      await queryClient.cancelQueries({
+        queryKey: checkItemKeys.list(note.id),
+      });
       await queryClient.cancelQueries({ queryKey: ['note', note.id] });
 
       // Snapshot the previous values

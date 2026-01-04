@@ -12,25 +12,31 @@ type TimeTrackAggregation = {
 
 @Injectable()
 export class GetDailyTimeTracksAggregationTransactionScript {
-  constructor(
-    private readonly timeTrackRepository: TimeTrackRepository
-  ) {}
+  constructor(private readonly timeTrackRepository: TimeTrackRepository) {}
 
-  async apply(command: GetDailyTimeTracksAggregationCommand): Promise<TimeTrackAggregation[]> {
+  async apply(
+    command: GetDailyTimeTracksAggregationCommand
+  ): Promise<TimeTrackAggregation[]> {
     const date = command.date || new Date().toISOString().split('T')[0];
 
-    const aggregations = await this.timeTrackRepository.getDailyTimeTracksAggregation(
-      command.user.userId,
-      date
-    );
+    const aggregations =
+      await this.timeTrackRepository.getDailyTimeTracksAggregation(
+        command.user.userId,
+        date
+      );
 
     return aggregations.sort(this.sortByMostRecentDateAndTime);
   }
 
-  private sortByMostRecentDateAndTime(a: TimeTrackAggregation, b: TimeTrackAggregation) {
-    const dateComparison = new Date(b.mostRecentDate).getTime() - new Date(a.mostRecentDate).getTime();
+  private sortByMostRecentDateAndTime(
+    a: TimeTrackAggregation,
+    b: TimeTrackAggregation
+  ) {
+    const dateComparison =
+      new Date(b.mostRecentDate).getTime() -
+      new Date(a.mostRecentDate).getTime();
     if (dateComparison !== 0) return dateComparison;
-    
+
     return b.mostRecentStartTime.localeCompare(a.mostRecentStartTime);
   }
-} 
+}
