@@ -7,9 +7,13 @@ import { Tag } from '../../domain/entities/tag.entity';
 export class UpdateTagTransactionScript {
   constructor(private readonly tagRepository: TagRepository) {}
 
-  async apply(tagId: number, userId: number, updateTagDto: UpdateTagDto): Promise<Tag> {
+  async apply(
+    tagId: number,
+    userId: number,
+    updateTagDto: UpdateTagDto
+  ): Promise<Tag> {
     const tag = await this.tagRepository.findTagByIdAndUserId(tagId, userId);
-    
+
     if (!tag) {
       throw new NotFoundException('Tag not found');
     }
@@ -25,4 +29,3 @@ export class UpdateTagTransactionScript {
     return this.tagRepository.updateTag(tag);
   }
 }
-

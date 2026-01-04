@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NoteNameReference, TimeTrackWithNoteNamesInput, TimeTrackWithNoteNamesResponder } from '../../../../../apps/actions/get-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
+import {
+  NoteNameReference,
+  TimeTrackWithNoteNamesInput,
+  TimeTrackWithNoteNamesResponder,
+} from '../../../../../apps/actions/get-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
 
 describe('TimeTrackWithNoteNamesConverter', () => {
   let target: TimeTrackWithNoteNamesResponder;
@@ -9,7 +13,9 @@ describe('TimeTrackWithNoteNamesConverter', () => {
       providers: [TimeTrackWithNoteNamesResponder],
     }).compile();
 
-    target = module.get<TimeTrackWithNoteNamesResponder>(TimeTrackWithNoteNamesResponder);
+    target = module.get<TimeTrackWithNoteNamesResponder>(
+      TimeTrackWithNoteNamesResponder
+    );
   });
 
   describe('apply', () => {
@@ -21,20 +27,20 @@ describe('TimeTrackWithNoteNamesConverter', () => {
           totalTimeMinutes: 120,
           dailyTimeMinutes: 60,
           mostRecentStartTime: '10:00',
-          mostRecentDate: '2024-01-01'
+          mostRecentDate: '2024-01-01',
         },
         {
           noteId: 2,
           totalTimeMinutes: 180,
           dailyTimeMinutes: 90,
           mostRecentStartTime: '14:00',
-          mostRecentDate: '2024-01-01'
-        }
+          mostRecentDate: '2024-01-01',
+        },
       ];
 
       const noteNames = [
         { id: 1, name: 'Note 1' },
-        { id: 2, name: 'Note 2' }
+        { id: 2, name: 'Note 2' },
       ];
 
       // Act
@@ -48,7 +54,7 @@ describe('TimeTrackWithNoteNamesConverter', () => {
           totalTimeMinutes: 120,
           dailyTimeMinutes: 60,
           mostRecentStartTime: '10:00',
-          mostRecentDate: '2024-01-01'
+          mostRecentDate: '2024-01-01',
         },
         {
           noteId: 2,
@@ -56,8 +62,8 @@ describe('TimeTrackWithNoteNamesConverter', () => {
           totalTimeMinutes: 180,
           dailyTimeMinutes: 90,
           mostRecentStartTime: '14:00',
-          mostRecentDate: '2024-01-01'
-        }
+          mostRecentDate: '2024-01-01',
+        },
       ]);
     });
 
@@ -69,12 +75,12 @@ describe('TimeTrackWithNoteNamesConverter', () => {
           totalTimeMinutes: 120,
           dailyTimeMinutes: 60,
           mostRecentStartTime: '10:00',
-          mostRecentDate: '2024-01-01'
-        }
+          mostRecentDate: '2024-01-01',
+        },
       ];
 
       const noteNames = [
-        { id: 2, name: 'Note 2' } // Note 1 not in the list
+        { id: 2, name: 'Note 2' }, // Note 1 not in the list
       ];
 
       // Act
@@ -104,8 +110,8 @@ describe('TimeTrackWithNoteNamesConverter', () => {
           totalTimeMinutes: 120,
           dailyTimeMinutes: 60,
           mostRecentStartTime: '10:00',
-          mostRecentDate: '2024-01-01'
-        }
+          mostRecentDate: '2024-01-01',
+        },
       ];
       const noteNames: NoteNameReference[] = [];
 
@@ -116,4 +122,4 @@ describe('TimeTrackWithNoteNamesConverter', () => {
       expect(result[0].noteName).toBe('Unknown Note');
     });
   });
-}); 
+});

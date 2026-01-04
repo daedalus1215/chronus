@@ -21,18 +21,13 @@ type EventCardProps = {
  * @param props.onSelect - Callback when event is clicked
  */
 export const EventCard: React.FC<EventCardProps> = ({ layout, onSelect }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    isDragging,
-  } = useDraggable({
-    id: `event-${layout.event.id}`,
-    data: {
-      event: layout.event,
-    },
-  });
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: `event-${layout.event.id}`,
+      data: {
+        event: layout.event,
+      },
+    });
 
   const widthPercent = 100 / layout.columnCount;
   const leftPercent = (layout.columnIndex * 100) / layout.columnCount;
@@ -69,8 +64,8 @@ export const EventCard: React.FC<EventCardProps> = ({ layout, onSelect }) => {
     >
       <Box className={styles.eventContent}>
         {layout.event.isRecurring && (
-          <RepeatIcon 
-            className={styles.recurringIcon} 
+          <RepeatIcon
+            className={styles.recurringIcon}
             fontSize="inherit"
             titleAccess="Recurring event"
           />
@@ -87,4 +82,3 @@ export const EventCard: React.FC<EventCardProps> = ({ layout, onSelect }) => {
     </Paper>
   );
 };
-

@@ -10,7 +10,7 @@ import { CalendarEvent } from '../../entities/calendar-event.entity';
 @Injectable()
 export class CreateCalendarEventTransactionScript {
   constructor(
-    private readonly calendarEventRepository: CalendarEventRepository,
+    private readonly calendarEventRepository: CalendarEventRepository
   ) {}
 
   /**
@@ -37,4 +37,3 @@ export class CreateCalendarEventTransactionScript {
     return event;
   }
 }
-

@@ -27,14 +27,16 @@ export const CalendarPage: React.FC = () => {
     endDate: initialEndDate,
   });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [createEventDate, setCreateEventDate] = useState<Date | undefined>(undefined);
+  const [createEventDate, setCreateEventDate] = useState<Date | undefined>(
+    undefined
+  );
   const { events, isLoading, error, refetch } = useCalendarEvents(
     dayRange.startDate,
-    dayRange.endDate,
+    dayRange.endDate
   );
 
   const handleLoadMoreDays = useCallback((direction: 'left' | 'right') => {
-    setDayRange((prev) => {
+    setDayRange(prev => {
       if (direction === 'left') {
         const newStartDate = subDays(prev.startDate, 30);
         return {
@@ -53,8 +55,8 @@ export const CalendarPage: React.FC = () => {
 
   const handleToday = useCallback(() => {
     const today = new Date();
-    setDayRange((prev) => {
-      let newRange = { ...prev };
+    setDayRange(prev => {
+      const newRange = { ...prev };
 
       // Ensure today is in the range, expand if needed
       if (today < prev.startDate) {
@@ -128,4 +130,3 @@ export const CalendarPage: React.FC = () => {
     </Box>
   );
 };
-

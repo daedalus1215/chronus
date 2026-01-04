@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { eachDayOfInterval, endOfWeek } from 'date-fns';
+import { eachDayOfInterval } from 'date-fns';
 import { CalendarEventResponseDto } from '../../../api/dtos/calendar-events.dtos';
 import {
   getEventsForDay,
@@ -25,7 +25,7 @@ export type EventLayoutMap = Map<number, EventLayout>;
  */
 const calculateEventLayouts = (
   events: CalendarEventResponseDto[],
-  day: Date,
+  day: Date
 ): EventLayoutMap => {
   const dayEvents = getEventsForDay(events, day);
   const layoutMap = new Map<number, EventLayout>();
@@ -65,7 +65,7 @@ const calculateEventLayouts = (
 export const useEventLayouts = (
   startDate: Date,
   endDate: Date,
-  events: CalendarEventResponseDto[],
+  events: CalendarEventResponseDto[]
 ): Map<string, EventLayoutMap> => {
   return useMemo(() => {
     const days = eachDayOfInterval({
@@ -73,10 +73,9 @@ export const useEventLayouts = (
       end: endDate,
     });
     const maps = new Map<string, EventLayoutMap>();
-    days.forEach((day) => {
+    days.forEach(day => {
       maps.set(day.toISOString(), calculateEventLayouts(events, day));
     });
     return maps;
   }, [startDate, endDate, events]);
 };
-

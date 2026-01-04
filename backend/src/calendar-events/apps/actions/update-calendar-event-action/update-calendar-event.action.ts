@@ -1,7 +1,17 @@
-import { Put, Body, Param, Controller, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Put,
+  Body,
+  Param,
+  Controller,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { CalendarEventService } from '../../../domain/services/calendar-event.service';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
-import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
+import {
+  AuthUser,
+  GetAuthUser,
+} from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { UpdateCalendarEventSwagger } from './update-calendar-event.swagger';
@@ -18,9 +28,7 @@ import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.re
 @ApiTags('Calendar Events')
 @ApiBearerAuth()
 export class UpdateCalendarEventAction {
-  constructor(
-    private readonly calendarEventService: CalendarEventService,
-  ) {}
+  constructor(private readonly calendarEventService: CalendarEventService) {}
 
   /**
    * Update an existing calendar event for the authenticated user.
@@ -36,7 +44,7 @@ export class UpdateCalendarEventAction {
   async apply(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateCalendarEventRequestDto,
-    @GetAuthUser() user: AuthUser,
+    @GetAuthUser() user: AuthUser
   ): Promise<CalendarEventResponseDto> {
     const command: UpdateCalendarEventCommand = {
       eventId: id,
@@ -50,4 +58,3 @@ export class UpdateCalendarEventAction {
     return new CalendarEventResponseDto(event);
   }
 }
-

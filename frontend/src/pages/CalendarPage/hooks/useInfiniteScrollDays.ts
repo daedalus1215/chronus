@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 
-type DayRange = {
-  startDate: Date;
-  endDate: Date;
-};
-
 type UseInfiniteScrollDaysOptions = {
   containerRef: React.RefObject<HTMLDivElement>;
-  dayRange: DayRange;
   onLoadMoreDays: (direction: 'left' | 'right') => void;
   loadThreshold?: number; // Number of days from edge to trigger loading
 };
@@ -24,7 +18,6 @@ type UseInfiniteScrollDaysOptions = {
  */
 export const useInfiniteScrollDays = ({
   containerRef,
-  dayRange,
   onLoadMoreDays,
   loadThreshold = 5,
 }: UseInfiniteScrollDaysOptions): void => {
@@ -84,7 +77,9 @@ export const useInfiniteScrollDays = ({
 
     // Update day width when container size changes
     const updateDayWidth = () => {
-      const firstDayElement = container.querySelector('[data-day-id]') as HTMLElement;
+      const firstDayElement = container.querySelector(
+        '[data-day-id]'
+      ) as HTMLElement;
       if (firstDayElement) {
         dayWidthRef.current = firstDayElement.offsetWidth;
       }
@@ -109,4 +104,3 @@ export const useInfiniteScrollDays = ({
     };
   }, [containerRef, handleScroll]);
 };
-

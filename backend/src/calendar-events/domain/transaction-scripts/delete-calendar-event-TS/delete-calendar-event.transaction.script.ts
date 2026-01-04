@@ -17,7 +17,7 @@ export class DeleteCalendarEventTransactionScript {
     private readonly logger: Logger,
     private readonly calendarEventRepository: CalendarEventRepository,
     private readonly recurrenceExceptionRepository: RecurrenceExceptionRepository,
-    private readonly recurringEventRepository: RecurringEventRepository,
+    private readonly recurringEventRepository: RecurringEventRepository
   ) {}
 
   /**
@@ -29,7 +29,7 @@ export class DeleteCalendarEventTransactionScript {
   async apply(command: DeleteCalendarEventCommand): Promise<void> {
     const calendarEvent = await this.calendarEventRepository.findById(
       command.eventId,
-      command.user.userId,
+      command.user.userId
     );
     if (!calendarEvent) {
       throw new NotFoundException('Calendar event not found');
@@ -47,27 +47,29 @@ export class DeleteCalendarEventTransactionScript {
       // (the instance can't be regenerated if the parent is gone)
       const parentRecurringEvent = await this.recurringEventRepository.findById(
         calendarEvent.recurringEventId,
-        command.user.userId,
+        command.user.userId
       );
 
       if (parentRecurringEvent) {
         const exceptionDate = startOfDay(calendarEvent.instanceDate);
-        
+
         // Check if exception already exists (idempotent)
         const existingExceptions =
           await this.recurrenceExceptionRepository.findByRecurringEventId(
-            calendarEvent.recurringEventId,
+            calendarEvent.recurringEventId
           );
         const exceptionExists = existingExceptions.some(
-          (ex) => startOfDay(ex.exceptionDate).getTime() === exceptionDate.getTime(),
+          ex =>
+            startOfDay(ex.exceptionDate).getTime() === exceptionDate.getTime()
         );
 
         if (!exceptionExists) {
           try {
-            const createdException = await this.recurrenceExceptionRepository.create({
-              recurringEventId: calendarEvent.recurringEventId,
-              exceptionDate,
-            });
+            const createdException =
+              await this.recurrenceExceptionRepository.create({
+                recurringEventId: calendarEvent.recurringEventId,
+                exceptionDate,
+              });
             this.logger.debug('Created recurrence exception:', {
               id: createdException.id,
               recurringEventId: createdException.recurringEventId,
@@ -79,7 +81,7 @@ export class DeleteCalendarEventTransactionScript {
             if (
               error instanceof Error &&
               (error.message.includes('UNIQUE constraint') ||
-               error.message.includes('FOREIGN KEY constraint'))
+                error.message.includes('FOREIGN KEY constraint'))
             ) {
               this.logger.debug('Exception creation skipped:', error.message);
             } else {
@@ -90,14 +92,16 @@ export class DeleteCalendarEventTransactionScript {
           this.logger.debug('Exception already exists, skipping creation');
         }
       } else {
-        this.logger.debug('Parent recurring event does not exist, skipping exception creation');
+        this.logger.debug(
+          'Parent recurring event does not exist, skipping exception creation'
+        );
       }
     }
 
     // Delete the calendar event instance
-    const deleteResult = await this.calendarEventRepository.delete(
+    await this.calendarEventRepository.delete(
       command.eventId,
-      command.user.userId,
+      command.user.userId
     );
     this.logger.debug('Deleted calendar event:', {
       eventId: command.eventId,
@@ -106,4 +110,3 @@ export class DeleteCalendarEventTransactionScript {
     });
   }
 }
-

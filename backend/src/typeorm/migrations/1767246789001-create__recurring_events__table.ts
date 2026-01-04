@@ -32,4 +32,3 @@ export class Create_RecurringEventsTable1767246789001
     await queryRunner.query(`DROP TABLE "recurring_events"`);
   }
 }
-

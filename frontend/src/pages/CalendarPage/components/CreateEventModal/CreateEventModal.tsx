@@ -50,7 +50,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
     startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
     endDate: format(
       new Date(defaultDate.getTime() + 60 * 60 * 1000),
-      "yyyy-MM-dd'T'HH:mm",
+      "yyyy-MM-dd'T'HH:mm"
     ),
   });
   const [recurrenceData, setRecurrenceData] = useState<{
@@ -81,7 +81,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
         startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
         endDate: format(
           new Date(defaultDate.getTime() + 60 * 60 * 1000),
-          "yyyy-MM-dd'T'HH:mm",
+          "yyyy-MM-dd'T'HH:mm"
         ),
       });
     }
@@ -122,7 +122,8 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
         errors.recurrencePattern = 'Please select at least one day of the week';
       }
       if (!recurrenceData.noEndDate && !recurrenceData.recurrenceEndDate) {
-        errors.recurrenceEndDate = 'Please select an end date or choose "No end date"';
+        errors.recurrenceEndDate =
+          'Please select an end date or choose "No end date"';
       }
       if (
         !recurrenceData.noEndDate &&
@@ -174,7 +175,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
         startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
         endDate: format(
           new Date(defaultDate.getTime() + 60 * 60 * 1000),
-          "yyyy-MM-dd'T'HH:mm",
+          "yyyy-MM-dd'T'HH:mm"
         ),
       });
       setRecurrenceData({
@@ -200,7 +201,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
         startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
         endDate: format(
           new Date(defaultDate.getTime() + 60 * 60 * 1000),
-          "yyyy-MM-dd'T'HH:mm",
+          "yyyy-MM-dd'T'HH:mm"
         ),
       });
       setRecurrenceData({
@@ -226,10 +227,13 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
             <TextField
               label="Title"
               value={formData.title}
-              onChange={(e) => {
+              onChange={e => {
                 setFormData({ ...formData, title: e.target.value });
                 if (validationErrors.title) {
-                  setValidationErrors({ ...validationErrors, title: undefined });
+                  setValidationErrors({
+                    ...validationErrors,
+                    title: undefined,
+                  });
                 }
               }}
               required
@@ -241,7 +245,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
             <TextField
               label="Description"
               value={formData.description}
-              onChange={(e) =>
+              onChange={e =>
                 setFormData({ ...formData, description: e.target.value })
               }
               multiline
@@ -253,16 +257,22 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
               label="Start Date & Time"
               type="datetime-local"
               value={formData.startDate}
-              onChange={(e) => {
+              onChange={e => {
                 setFormData({ ...formData, startDate: e.target.value });
                 if (validationErrors.startDate) {
-                  setValidationErrors({ ...validationErrors, startDate: undefined });
+                  setValidationErrors({
+                    ...validationErrors,
+                    startDate: undefined,
+                  });
                 }
                 if (validationErrors.endDate && formData.endDate) {
                   const start = new Date(e.target.value);
                   const end = new Date(formData.endDate);
                   if (start < end) {
-                    setValidationErrors({ ...validationErrors, endDate: undefined });
+                    setValidationErrors({
+                      ...validationErrors,
+                      endDate: undefined,
+                    });
                   }
                 }
               }}
@@ -277,10 +287,13 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
               label="End Date & Time"
               type="datetime-local"
               value={formData.endDate}
-              onChange={(e) => {
+              onChange={e => {
                 setFormData({ ...formData, endDate: e.target.value });
                 if (validationErrors.endDate) {
-                  setValidationErrors({ ...validationErrors, endDate: undefined });
+                  setValidationErrors({
+                    ...validationErrors,
+                    endDate: undefined,
+                  });
                 }
               }}
               required
@@ -295,9 +308,10 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
               control={
                 <Checkbox
                   checked={isRecurring}
-                  onChange={(e) => setIsRecurring(e.target.checked)}
+                  onChange={e => setIsRecurring(e.target.checked)}
                   disabled={
-                    createMutation.isPending || createRecurringMutation.isPending
+                    createMutation.isPending ||
+                    createRecurringMutation.isPending
                   }
                 />
               }
@@ -315,9 +329,10 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
             )}
             {(createMutation.error || createRecurringMutation.error) && (
               <Typography color="error" variant="body2">
-                {(createMutation.error || createRecurringMutation.error) instanceof
-                Error
-                  ? (createMutation.error || createRecurringMutation.error)?.message
+                {(createMutation.error ||
+                  createRecurringMutation.error) instanceof Error
+                  ? (createMutation.error || createRecurringMutation.error)
+                      ?.message
                   : 'Failed to create event'}
               </Typography>
             )}
@@ -341,7 +356,8 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
                   !formData.title.trim()
                 }
               >
-                {createMutation.isPending || createRecurringMutation.isPending ? (
+                {createMutation.isPending ||
+                createRecurringMutation.isPending ? (
                   <CircularProgress size={24} />
                 ) : (
                   'Create Event'
@@ -354,4 +370,3 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
     </BottomSheet>
   );
 };
-

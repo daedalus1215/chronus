@@ -24,9 +24,7 @@ import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-
  * Tags module: encapsulates all tag-related logic, actions, and persistence.
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Tag, TagNote]),
-  ],
+  imports: [TypeOrmModule.forFeature([Tag, TagNote])],
   providers: [
     TagRepository,
     TagNoteRepository,
@@ -49,13 +47,13 @@ import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-
     RemoveTagFromNoteAction,
   ],
   exports: [
-    TagRepository, 
+    TagRepository,
     TagNoteRepository,
-    AddTagToNoteTransactionScript, 
-    GetTagsByNoteIdTransactionScript, 
-    GetTagsByUserIdTransactionScript, 
+    AddTagToNoteTransactionScript,
+    GetTagsByNoteIdTransactionScript,
+    GetTagsByUserIdTransactionScript,
     TagService,
     DeleteNoteTagAssociationsListener,
   ],
 })
-export class TagsModule {} 
+export class TagsModule {}

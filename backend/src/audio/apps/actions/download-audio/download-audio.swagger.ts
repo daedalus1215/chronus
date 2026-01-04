@@ -7,15 +7,15 @@ export const DownloadAudioSwagger: ProtectedActionOptions = {
     {
       status: 200,
       description: 'The audio file stream.',
-      type: 'application/octet-stream'
+      type: 'application/octet-stream',
     },
     {
       status: 404,
-      description: 'Audio file not found.'
+      description: 'Audio file not found.',
     },
     {
       status: 500,
-      description: 'Internal server error - Failed to download audio file.'
-    }
-  ]
+      description: 'Internal server error - Failed to download audio file.',
+    },
+  ],
 };

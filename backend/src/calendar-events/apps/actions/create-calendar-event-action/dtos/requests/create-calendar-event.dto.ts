@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsDateString, IsOptional, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsDateString,
+  IsOptional,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateCalendarEventRequestDto {
   @IsString()
@@ -18,4 +24,3 @@ export class CreateCalendarEventRequestDto {
   @IsNotEmpty()
   endDate: string;
 }
-

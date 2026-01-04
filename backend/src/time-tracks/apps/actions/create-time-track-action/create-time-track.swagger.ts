@@ -8,15 +8,15 @@ export const CreateTimeTrackSwagger: ProtectedActionOptions = {
     {
       status: 201,
       description: 'Time track entry created successfully.',
-      type: TimeTrack
+      type: TimeTrack,
     },
     {
       status: 404,
-      description: 'Note not found.'
+      description: 'Note not found.',
     },
     {
       status: 400,
-      description: 'Invalid time track data.'
-    }
-  ]
-}; 
+      description: 'Invalid time track data.',
+    },
+  ],
+};

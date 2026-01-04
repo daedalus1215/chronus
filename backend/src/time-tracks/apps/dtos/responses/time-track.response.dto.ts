@@ -30,4 +30,4 @@ export class TimeTrackResponseDto {
     this.createdAt = timeTrack.createdAt;
     this.updatedAt = timeTrack.updatedAt;
   }
-} 
+}

@@ -1,7 +1,17 @@
-import { Post, Body, Controller, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Post,
+  Body,
+  Controller,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { CalendarEventService } from '../../../domain/services/calendar-event.service';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
-import { AuthUser, GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
+import {
+  AuthUser,
+  GetAuthUser,
+} from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { CreateCalendarEventSwagger } from './create-calendar-event.swagger';
@@ -18,9 +28,7 @@ import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.re
 @ApiTags('Calendar Events')
 @ApiBearerAuth()
 export class CreateCalendarEventAction {
-  constructor(
-    private readonly calendarEventService: CalendarEventService,
-  ) {}
+  constructor(private readonly calendarEventService: CalendarEventService) {}
 
   /**
    * Create a new calendar event for the authenticated user.
@@ -34,7 +42,7 @@ export class CreateCalendarEventAction {
   @ProtectedAction(CreateCalendarEventSwagger)
   async apply(
     @Body() dto: CreateCalendarEventRequestDto,
-    @GetAuthUser() user: AuthUser,
+    @GetAuthUser() user: AuthUser
   ): Promise<CalendarEventResponseDto> {
     const command: CreateCalendarEventCommand = {
       title: dto.title,
@@ -47,4 +55,3 @@ export class CreateCalendarEventAction {
     return new CalendarEventResponseDto(event);
   }
 }
-

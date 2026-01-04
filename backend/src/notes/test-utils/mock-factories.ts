@@ -15,11 +15,7 @@ type MockTag = {
   updatedAt: string;
 };
 
-type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-};
-
-export const createMock = <T>(overrides: Partial<T> = {}): jest.Mocked<T> => 
+export const createMock = <T>(overrides: Partial<T> = {}): jest.Mocked<T> =>
   overrides as unknown as jest.Mocked<T>;
 
 export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
@@ -30,25 +26,28 @@ export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
   memo: null,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
-  ...overrides
+  ...overrides,
 });
 
-export const createMockUpdateNoteDto = (overrides: Partial<UpdateNoteDto> = {}): UpdateNoteDto => ({
+export const createMockUpdateNoteDto = (
+  overrides: Partial<UpdateNoteDto> = {}
+): UpdateNoteDto => ({
   name: 'Updated Note',
   description: 'Updated Description',
   tags: [],
-  ...overrides
+  ...overrides,
 });
 
-export const createMockTypeormRepository = <T>(): jest.Mocked<Repository<T>> => ({
-  find: jest.fn(),
-  findOne: jest.fn(),
-  save: jest.fn(),
-  create: jest.fn(),
-  remove: jest.fn(),
-  createQueryBuilder: jest.fn(),
-  // Add other Repository methods as needed
-} as unknown as jest.Mocked<Repository<T>>);
+export const createMockTypeormRepository = <T>(): jest.Mocked<Repository<T>> =>
+  ({
+    find: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    create: jest.fn(),
+    remove: jest.fn(),
+    createQueryBuilder: jest.fn(),
+    // Add other Repository methods as needed
+  }) as unknown as jest.Mocked<Repository<T>>;
 
 export const createMockRepository = (): jest.Mocked<NoteMemoTagRepository> => {
   const repository = createMockTypeormRepository<Note>();
@@ -64,10 +63,11 @@ export const createMockRepository = (): jest.Mocked<NoteMemoTagRepository> => {
     findTagByName: jest.fn(),
     createTag: jest.fn(),
     removeTag: jest.fn(),
-    getNoteNamesByUserId: jest.fn()
+    getNoteNamesByUserId: jest.fn(),
   } as unknown as jest.Mocked<NoteMemoTagRepository>;
 };
 
-export const createMockConverter = (): jest.Mocked<UpdateNoteParamsToEntityConverter> => ({
-  apply: jest.fn()
-}); 
+export const createMockConverter =
+  (): jest.Mocked<UpdateNoteParamsToEntityConverter> => ({
+    apply: jest.fn(),
+  });

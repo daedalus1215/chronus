@@ -21,4 +21,4 @@ export class TimeTrackAggregationResponseDto {
     this.mostRecentStartTime = aggregation.mostRecentStartTime;
     this.mostRecentDate = aggregation.mostRecentDate;
   }
-} 
+}

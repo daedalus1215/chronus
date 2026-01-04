@@ -5,14 +5,14 @@ export const GetNoteByIdSwagger: ProtectedActionOptions = {
   tag: 'Notes',
   summary: 'Get a note by ID',
   additionalResponses: [
-    { 
-      status: 200, 
-      description: 'Returns the note.', 
-      type: NoteResponseDto 
+    {
+      status: 200,
+      description: 'Returns the note.',
+      type: NoteResponseDto,
     },
-    { 
-      status: 404, 
-      description: 'Note not found.' 
-    }
-  ]
-}; 
+    {
+      status: 404,
+      description: 'Note not found.',
+    },
+  ],
+};

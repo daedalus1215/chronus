@@ -23,4 +23,4 @@ export class AddTagToNoteAction {
       ...body,
     });
   }
-} 
+}

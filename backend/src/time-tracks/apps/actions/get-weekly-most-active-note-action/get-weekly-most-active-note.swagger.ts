@@ -8,11 +8,11 @@ export const GetWeeklyMostActiveNoteSwagger: ProtectedActionOptions = {
     {
       status: 200,
       description: 'The most active note for the current week.',
-      type: [TimeTrack]
+      type: [TimeTrack],
     },
     {
       status: 404,
-      description: 'No time tracks found for the current week.'
-    }
-  ]
-}; 
+      description: 'No time tracks found for the current week.',
+    },
+  ],
+};

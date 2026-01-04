@@ -72,66 +72,87 @@ export const HomePage: React.FC = () => {
   const isNoteRoute = !!routeNoteId;
 
   return (
-    <div className={styles.homePage} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div
+      className={styles.homePage}
+      style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+    >
       {isMobile ? (
+        <Box
+          sx={{
+            height: '100%',
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <Box
             sx={{
-              height: '100%',
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
+              display: isNoteRoute ? 'none' : 'block',
+              flex: 1,
             }}
           >
+            <MobileNoteListView type={noteTypeParam} tagId={tagId} />
+          </Box>
+          {isNoteRoute && (
             <Box
               sx={{
-                display: isNoteRoute ? 'none' : 'block',
-                flex: 1,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'background.paper',
+                zIndex: 1,
               }}
             >
-              <MobileNoteListView type={noteTypeParam} tagId={tagId} />
+              <Outlet />
             </Box>
-            {isNoteRoute && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'background.paper',
-                  zIndex: 1,
-                }}
-              >
-                <Outlet />
-              </Box>
-            )}
-          </Box>
-        ) : (
+          )}
+        </Box>
+      ) : (
+        <Box
+          sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}
+        >
+          {/* Note list and content */}
           <Box
-            sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}
+            sx={{ display: 'flex', flex: 1, overflow: 'hidden', minWidth: 0 }}
           >
-            {/* Note list and content */}
+            <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
+              <DesktopNoteListView
+                type={noteTypeParam}
+                tagId={tagId}
+                onNoteSelect={handleNoteSelect}
+                selectedNoteId={selectedNoteId}
+              />
+            </Box>
             <Box
-              sx={{ display: 'flex', flex: 1, overflow: 'hidden', minWidth: 0 }}
+              sx={{
+                flex: 1,
+                height: '100%',
+                minWidth: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
             >
-              <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
-                <DesktopNoteListView
-                  type={noteTypeParam}
-                  tagId={tagId}
-                  onNoteSelect={handleNoteSelect}
-                  selectedNoteId={selectedNoteId}
-                />
-              </Box>
-              <Box sx={{ flex: 1, height: '100%', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                {selectedNoteId && (
-                  <Box sx={{ p: 2, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                    <Outlet />
-                  </Box>
-                )}
-              </Box>
+              {selectedNoteId && (
+                <Box
+                  sx={{
+                    p: 2,
+                    flex: 1,
+                    minHeight: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Outlet />
+                </Box>
+              )}
             </Box>
           </Box>
-        )}
+        </Box>
+      )}
       {!isNoteRoute && (
         <Fab
           color="primary"

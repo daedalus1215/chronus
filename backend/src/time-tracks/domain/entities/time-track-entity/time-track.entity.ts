@@ -1,14 +1,20 @@
-import { Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class TimeTrack {
-  @PrimaryGeneratedColumn({ type: "integer" })
+  @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @CreateDateColumn({ name: "created_at", type: "text" })
+  @CreateDateColumn({ name: 'created_at', type: 'text' })
   createdAt: string;
 
-  @UpdateDateColumn({ name: "updated_at", type: "text" })
+  @UpdateDateColumn({ name: 'updated_at', type: 'text' })
   updatedAt: string;
 
   @Column({ name: 'user_id' })
@@ -25,4 +31,4 @@ export class TimeTrack {
 
   @Column({ name: 'duration_minutes' })
   durationMinutes: number;
-} 
+}

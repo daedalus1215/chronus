@@ -8,15 +8,15 @@ export const TextToSpeechSwagger: ProtectedActionOptions = {
     {
       status: 200,
       description: 'The text has been successfully converted to speech.',
-      type: TextToSpeechResponseDto
+      type: TextToSpeechResponseDto,
     },
     {
       status: 400,
-      description: 'Bad request - Invalid input parameters.'
+      description: 'Bad request - Invalid input parameters.',
     },
     {
       status: 500,
-      description: 'Internal server error - Failed to convert text to speech.'
-    }
-  ]
+      description: 'Internal server error - Failed to convert text to speech.',
+    },
+  ],
 };

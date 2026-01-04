@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { TagRepository } from "../../infra/repositories/tag-repository/tag.repository";
-import { AddTagToNoteDto } from "../../app/dtos/requests/add-tag-to-note.dto";
-import { Tag } from "../../domain/entities/tag.entity";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
+import { AddTagToNoteDto } from '../../app/dtos/requests/add-tag-to-note.dto';
+import { Tag } from '../../domain/entities/tag.entity';
 
 /**
  * Transaction script to add a tag to a note.
@@ -17,9 +17,15 @@ export class AddTagToNoteTransactionScript {
     return tag;
   }
 
-  private async fetchTagByIdOrName(dto: AddTagToNoteDto, userId: number): Promise<Tag> {
+  private async fetchTagByIdOrName(
+    dto: AddTagToNoteDto,
+    userId: number
+  ): Promise<Tag> {
     if (dto.tagId) {
-      const tag = await this.tagRepository.findTagByIdAndUserId(dto.tagId, userId);
+      const tag = await this.tagRepository.findTagByIdAndUserId(
+        dto.tagId,
+        userId
+      );
       if (tag) return tag;
     }
     if (dto.tagName) {
@@ -28,6 +34,6 @@ export class AddTagToNoteTransactionScript {
       tag = await this.tagRepository.createTag({ name: dto.tagName, userId });
       if (tag) return tag;
     }
-    throw new NotFoundException("Tag not found or could not be created");
+    throw new NotFoundException('Tag not found or could not be created');
   }
-} 
+}

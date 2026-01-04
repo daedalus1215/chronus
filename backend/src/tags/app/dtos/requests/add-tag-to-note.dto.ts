@@ -15,4 +15,4 @@ export class AddTagToNoteDto {
   @IsString()
   @IsOptional()
   tagName?: string;
-} 
+}

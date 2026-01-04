@@ -7,7 +7,3 @@ export type DeleteCalendarEventCommand = {
   eventId: number;
   user: AuthUser;
 };
-
-
-
-

@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { CreateNoteDto } from "src/notes/apps/dtos/requests/create-note.dto";
-import { Memo } from "src/notes/domain/entities/notes/memo.entity";
-import { Note } from "src/notes/domain/entities/notes/note.entity";
-import { NoteMemoTagRepository } from "src/notes/infra/repositories/note-memo-tag.repository";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateNoteDto } from 'src/notes/apps/dtos/requests/create-note.dto';
+import { Memo } from 'src/notes/domain/entities/notes/memo.entity';
+import { Note } from 'src/notes/domain/entities/notes/note.entity';
+import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CreateNoteTransactionScript {
@@ -15,7 +15,9 @@ export class CreateNoteTransactionScript {
     private memoRepository: Repository<Memo>
   ) {}
 
-  async apply(createNoteDto: CreateNoteDto & {userId:number}): Promise<Note> {
+  async apply(
+    createNoteDto: CreateNoteDto & { userId: number }
+  ): Promise<Note> {
     const { name, userId, isMemo } = createNoteDto;
 
     const note = new Note();
@@ -23,11 +25,11 @@ export class CreateNoteTransactionScript {
     note.userId = userId;
     if (isMemo) {
       const memo = new Memo();
-      memo.description = "";
+      memo.description = '';
       const savedMemo = await this.memoRepository.save(memo);
       note.memo = savedMemo;
     }
 
-     return await this.noteTagRepository.save(note);
+    return await this.noteTagRepository.save(note);
   }
 }

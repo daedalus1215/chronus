@@ -7,11 +7,11 @@ export const GetTimeTracksTotalByNoteIdSwagger: ProtectedActionOptions = {
     {
       status: 200,
       description: 'Total time tracked in minutes for the note.',
-      type: Number
+      type: Number,
     },
     {
       status: 404,
-      description: 'Note not found.'
-    }
-  ]
-}; 
+      description: 'Note not found.',
+    },
+  ],
+};

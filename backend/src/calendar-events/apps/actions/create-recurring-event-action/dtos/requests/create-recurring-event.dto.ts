@@ -11,7 +11,6 @@ import {
   IsArray,
   IsBoolean,
   ArrayMinSize,
-  MinLength,
   MaxLength,
   Max,
   ValidationArguments,
@@ -40,7 +39,7 @@ export class IsEndDateAfterStartDateConstraint
 }
 
 export const IsEndDateAfterStartDate = (
-  validationOptions?: ValidationOptions,
+  validationOptions?: ValidationOptions
 ) => {
   return function (object: object, propertyName: string): void {
     registerDecorator({
@@ -59,7 +58,7 @@ export class IsMutuallyExclusiveRecurrenceEndConstraint
 {
   validate(
     recurrenceEndDate: string | undefined,
-    args: ValidationArguments,
+    args: ValidationArguments
   ): boolean {
     const noEndDate = (args.object as CreateRecurringEventRequestDto).noEndDate;
     if (noEndDate && recurrenceEndDate) {
@@ -74,7 +73,7 @@ export class IsMutuallyExclusiveRecurrenceEndConstraint
 }
 
 export const IsMutuallyExclusiveRecurrenceEnd = (
-  validationOptions?: ValidationOptions,
+  validationOptions?: ValidationOptions
 ) => {
   return function (object: object, propertyName: string): void {
     registerDecorator({
@@ -146,4 +145,3 @@ export class CreateRecurringEventRequestDto {
   @IsBoolean()
   noEndDate: boolean;
 }
-

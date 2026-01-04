@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { UpdateNoteParams } from "./update-note.params";
-import { Note } from "../../entities/notes/note.entity";
-import { Memo } from "../../entities/notes/memo.entity";
+import { Injectable } from '@nestjs/common';
+import { UpdateNoteParams } from './update-note.params';
+import { Note } from '../../entities/notes/note.entity';
+import { Memo } from '../../entities/notes/memo.entity';
 
 @Injectable()
 export class UpdateNoteParamsToEntityConverter {
@@ -30,4 +30,3 @@ export class UpdateNoteParamsToEntityConverter {
     return updatedNote;
   }
 }
-

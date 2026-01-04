@@ -72,7 +72,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
     handleSubmit: handleFormSubmit,
   } = useEventForm({
     event,
-    onUpdate: async (data) => {
+    onUpdate: async data => {
       if (!eventId) {
         return;
       }
@@ -127,7 +127,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
     }
     try {
       const isRecurringInstance = !!event.recurringEventId;
-      
+
       if (isRecurringInstance && deleteSeries) {
         // Delete entire recurring series
         await deleteRecurringMutation.mutateAsync(event.recurringEventId!);
@@ -140,7 +140,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
       onClose();
     } catch (error) {
       console.error('Error deleting calendar event:', error);
-      onDeleteError?.(error instanceof Error ? error : new Error('Failed to delete event'));
+      onDeleteError?.(
+        error instanceof Error ? error : new Error('Failed to delete event')
+      );
       setIsDeleteDialogOpen(false);
     }
   };
@@ -186,191 +188,207 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
     <>
       <BottomSheet isOpen={isOpen} onClose={handleClose}>
         <Box>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 2,
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="h6">
-              {isEditing ? 'Edit Event' : 'Event Details'}
-            </Typography>
-            {event.isRecurring && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
-                  color: 'text.secondary',
-                }}
-              >
-                <RepeatIcon fontSize="small" />
-                <Typography variant="caption" color="text.secondary">
-                  Recurring
-                </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 2,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6">
+                {isEditing ? 'Edit Event' : 'Event Details'}
+              </Typography>
+              {event.isRecurring && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    color: 'text.secondary',
+                  }}
+                >
+                  <RepeatIcon fontSize="small" />
+                  <Typography variant="caption" color="text.secondary">
+                    Recurring
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+            {!isEditing && (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton
+                  onClick={handleDeleteClick}
+                  disabled={
+                    updateMutation.isPending ||
+                    deleteMutation.isPending ||
+                    deleteRecurringMutation.isPending
+                  }
+                  aria-label="delete event"
+                  color="error"
+                >
+                  <DeleteIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => setIsEditing(true)}
+                  disabled={
+                    updateMutation.isPending || deleteMutation.isPending
+                  }
+                  aria-label="edit event"
+                >
+                  <EditIcon />
+                </IconButton>
               </Box>
             )}
           </Box>
-          {!isEditing && (
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <IconButton
-                onClick={handleDeleteClick}
-                disabled={
-                  updateMutation.isPending ||
-                  deleteMutation.isPending ||
-                  deleteRecurringMutation.isPending
-                }
-                aria-label="delete event"
-                color="error"
+          <form onSubmit={handleSubmit}>
+            <EventFormFields
+              formData={formData}
+              validationErrors={validationErrors}
+              isEditing={isEditing}
+              isSubmitting={isSubmitting || updateMutation.isPending}
+              updateMutationError={updateMutation.error as Error | null}
+              onFieldChange={updateField}
+            />
+            {isEditing ? (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 2,
+                  mt: 2,
+                }}
               >
-                <DeleteIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => setIsEditing(true)}
-                disabled={updateMutation.isPending || deleteMutation.isPending}
-                aria-label="edit event"
-              >
-                <EditIcon />
-              </IconButton>
-            </Box>
-          )}
-        </Box>
-        <form onSubmit={handleSubmit}>
-          <EventFormFields
-            formData={formData}
-            validationErrors={validationErrors}
-            isEditing={isEditing}
-            isSubmitting={isSubmitting || updateMutation.isPending}
-            updateMutationError={updateMutation.error as Error | null}
-            onFieldChange={updateField}
-          />
-          {isEditing ? (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-              <Button
-                type="button"
-                onClick={handleCancel}
-                variant="outlined"
-                startIcon={<CancelIcon />}
-                disabled={isSubmitting || updateMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={<SaveIcon />}
-                disabled={isSubmitting || updateMutation.isPending || !formData.title.trim()}
-              >
-                {isSubmitting || updateMutation.isPending ? (
-                  <CircularProgress size={24} />
-                ) : (
-                  'Save'
-                )}
-              </Button>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-              <Button
-                type="button"
-                onClick={handleClose}
-                variant="outlined"
-                disabled={
-                  isSubmitting ||
-                  updateMutation.isPending ||
-                  deleteMutation.isPending ||
-                  deleteRecurringMutation.isPending
-                }
-              >
-                Close
-              </Button>
-            </Box>
-          )}
-        </form>
-      </Box>
-      <Dialog
-        open={isDeleteDialogOpen}
-        onClose={handleDeleteCancel}
-        aria-labelledby="delete-dialog-title"
-        aria-describedby="delete-dialog-description"
-      >
-        <DialogTitle id="delete-dialog-title">
-          {event?.recurringEventId
-            ? 'Delete Recurring Event'
-            : 'Delete Event'}
-        </DialogTitle>
-        <DialogContent>
-          {event?.recurringEventId ? (
-            <>
-              <DialogContentText id="delete-dialog-description" sx={{ mb: 2 }}>
-                This is a recurring event. What would you like to delete?
-              </DialogContentText>
-              <FormControl component="fieldset" sx={{ mt: 2 }}>
-                <RadioGroup
-                  value={deleteSeries ? 'series' : 'instance'}
-                  onChange={(e) => setDeleteSeries(e.target.value === 'series')}
+                <Button
+                  type="button"
+                  onClick={handleCancel}
+                  variant="outlined"
+                  startIcon={<CancelIcon />}
+                  disabled={isSubmitting || updateMutation.isPending}
                 >
-                  <FormControlLabel
-                    value="instance"
-                    control={<Radio />}
-                    label="Delete this occurrence only"
-                    disabled={
-                      deleteMutation.isPending ||
-                      deleteRecurringMutation.isPending
-                    }
-                  />
-                  <FormControlLabel
-                    value="series"
-                    control={<Radio />}
-                    label="Delete entire series (all occurrences)"
-                    disabled={
-                      deleteMutation.isPending ||
-                      deleteRecurringMutation.isPending
-                    }
-                  />
-                </RadioGroup>
-              </FormControl>
-            </>
-          ) : (
-            <DialogContentText id="delete-dialog-description">
-              Are you sure you want to delete "{event?.title}"? This action
-              cannot be undone.
-            </DialogContentText>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleDeleteCancel}
-            disabled={
-              deleteMutation.isPending || deleteRecurringMutation.isPending
-            }
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDeleteConfirm}
-            disabled={
-              deleteMutation.isPending || deleteRecurringMutation.isPending
-            }
-            variant="contained"
-            color="error"
-            startIcon={
-              deleteMutation.isPending || deleteRecurringMutation.isPending ? (
-                <CircularProgress size={20} />
-              ) : (
-                <DeleteIcon />
-              )
-            }
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<SaveIcon />}
+                  disabled={
+                    isSubmitting ||
+                    updateMutation.isPending ||
+                    !formData.title.trim()
+                  }
+                >
+                  {isSubmitting || updateMutation.isPending ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    'Save'
+                  )}
+                </Button>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button
+                  type="button"
+                  onClick={handleClose}
+                  variant="outlined"
+                  disabled={
+                    isSubmitting ||
+                    updateMutation.isPending ||
+                    deleteMutation.isPending ||
+                    deleteRecurringMutation.isPending
+                  }
+                >
+                  Close
+                </Button>
+              </Box>
+            )}
+          </form>
+        </Box>
+        <Dialog
+          open={isDeleteDialogOpen}
+          onClose={handleDeleteCancel}
+          aria-labelledby="delete-dialog-title"
+          aria-describedby="delete-dialog-description"
+        >
+          <DialogTitle id="delete-dialog-title">
+            {event?.recurringEventId
+              ? 'Delete Recurring Event'
+              : 'Delete Event'}
+          </DialogTitle>
+          <DialogContent>
+            {event?.recurringEventId ? (
+              <>
+                <DialogContentText
+                  id="delete-dialog-description"
+                  sx={{ mb: 2 }}
+                >
+                  This is a recurring event. What would you like to delete?
+                </DialogContentText>
+                <FormControl component="fieldset" sx={{ mt: 2 }}>
+                  <RadioGroup
+                    value={deleteSeries ? 'series' : 'instance'}
+                    onChange={e => setDeleteSeries(e.target.value === 'series')}
+                  >
+                    <FormControlLabel
+                      value="instance"
+                      control={<Radio />}
+                      label="Delete this occurrence only"
+                      disabled={
+                        deleteMutation.isPending ||
+                        deleteRecurringMutation.isPending
+                      }
+                    />
+                    <FormControlLabel
+                      value="series"
+                      control={<Radio />}
+                      label="Delete entire series (all occurrences)"
+                      disabled={
+                        deleteMutation.isPending ||
+                        deleteRecurringMutation.isPending
+                      }
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </>
+            ) : (
+              <DialogContentText id="delete-dialog-description">
+                Are you sure you want to delete "{event?.title}"? This action
+                cannot be undone.
+              </DialogContentText>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleDeleteCancel}
+              disabled={
+                deleteMutation.isPending || deleteRecurringMutation.isPending
+              }
+              variant="outlined"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteConfirm}
+              disabled={
+                deleteMutation.isPending || deleteRecurringMutation.isPending
+              }
+              variant="contained"
+              color="error"
+              startIcon={
+                deleteMutation.isPending ||
+                deleteRecurringMutation.isPending ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  <DeleteIcon />
+                )
+              }
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </BottomSheet>
     </>
   );
 };
-

@@ -24,15 +24,20 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
   const [isInitializing, setIsInitializing] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'warning'>('error');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'warning'>(
+    'error'
+  );
 
   // Log when onTranscription changes to verify it's being passed correctly
   useEffect(() => {
     const callbackStr = onTranscription?.toString() || '';
-    const isEmpty = callbackStr.includes('appendToDescription called but appendToDescriptionFn is not set yet') ||
-                   callbackStr.trim() === '() => {\n          }' ||
-                   callbackStr.trim() === '() => {}';
-    
+    const isEmpty =
+      callbackStr.includes(
+        'appendToDescription called but appendToDescriptionFn is not set yet'
+      ) ||
+      callbackStr.trim() === '() => {\n          }' ||
+      callbackStr.trim() === '() => {}';
+
     console.log('🎤 TranscriptionRecorder: onTranscription callback updated', {
       isFunction: typeof onTranscription === 'function',
       isNull: onTranscription === null,
@@ -40,11 +45,13 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
       isEmpty,
       callbackPreview: callbackStr.substring(0, 150),
     });
-    
+
     if (!isEmpty && typeof onTranscription === 'function') {
       console.log('✅ TranscriptionRecorder: Got real callback!');
     } else {
-      console.warn('⚠️ TranscriptionRecorder: Still using empty function fallback');
+      console.warn(
+        '⚠️ TranscriptionRecorder: Still using empty function fallback'
+      );
     }
   }, [onTranscription]);
 
@@ -106,15 +113,15 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
       // Start recording
       try {
         setIsInitializing(true);
-        
+
         // First connect WebSocket if not connected
         // Use startWs which handles connection and sets isRecording
         // Don't check isConnected state as it may not have updated yet
         console.log('Starting WebSocket connection...');
         startWs();
         // Wait a bit for connection to establish and gateway to send 'connected' event
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         // Then start audio recording
         console.log('Starting audio recording...');
         await startAudio();
@@ -201,4 +208,3 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
     </>
   );
 };
-

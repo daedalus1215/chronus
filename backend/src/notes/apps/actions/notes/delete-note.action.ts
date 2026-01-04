@@ -13,8 +13,8 @@ export class DeleteNoteAction {
     summary: 'Delete a note by ID',
     additionalResponses: [
       { status: 204, description: 'Note deleted successfully.' },
-      { status: 404, description: 'Note not found.' }
-    ]
+      { status: 404, description: 'Note not found.' },
+    ],
   })
   async apply(
     @Param('id', ParseIntPipe) id: number,
@@ -22,4 +22,4 @@ export class DeleteNoteAction {
   ): Promise<void> {
     await this.noteService.deleteNote(id, userId);
   }
-} 
+}

@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+
+# Database files
+*.sqlite
+*.sqlite.old
+
+# Logs
+*.log
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated files
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+
+# Configuration files
+.eslintrc.js
+load-depcruise-config.js
+generate-migration.js
+
+# Test coverage
+coverage
+

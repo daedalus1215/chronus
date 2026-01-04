@@ -4,4 +4,3 @@ export type FetchCalendarEventCommand = {
   eventId: number;
   user: AuthUser;
 };
-

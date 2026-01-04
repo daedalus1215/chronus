@@ -6,4 +6,3 @@ export class ReorderCheckItemsDto {
   @IsInt({ each: true })
   checkItemIds: number[];
 }
-

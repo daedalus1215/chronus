@@ -20,4 +20,3 @@ export type CalendarEvent = {
   createdAt: Date;
   updatedAt: Date;
 };
-

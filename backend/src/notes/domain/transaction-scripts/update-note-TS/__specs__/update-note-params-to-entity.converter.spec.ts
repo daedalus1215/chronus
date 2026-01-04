@@ -19,7 +19,7 @@ describe('UpdateNoteParamsToEntityConverter', () => {
         const note = createMockNote({ memo: null });
         const updateParams: UpdateNoteParams = {
           name: 'New Note',
-          description: 'New Description'
+          description: 'New Description',
         };
 
         // Act
@@ -40,12 +40,12 @@ describe('UpdateNoteParamsToEntityConverter', () => {
           description: 'Old Description',
           note: null,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
         const note = createMockNote({ memo: existingMemo });
         const updateParams: UpdateNoteParams = {
           name: 'Updated Note',
-          description: 'Updated Description'
+          description: 'Updated Description',
         };
 
         // Act
@@ -85,7 +85,7 @@ describe('UpdateNoteParamsToEntityConverter', () => {
       it('should preserve all unmodified properties', () => {
         // Arrange
         const originalNote = createMockNote({
-            userId: generateRandomNumbers(),
+          userId: generateRandomNumbers(),
           archivedAt: new Date(),
         });
         const updateParams: UpdateNoteParams = {};
@@ -103,4 +103,3 @@ describe('UpdateNoteParamsToEntityConverter', () => {
     });
   });
 });
-

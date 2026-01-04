@@ -17,24 +17,20 @@ export class Create_recurrenceExceptions_table1735600000003
       )
     `);
     await queryRunner.query(
-      `CREATE INDEX "IDX_recurrence_exceptions_recurring_event_id" ON "recurrence_exceptions" ("recurring_event_id")`,
+      `CREATE INDEX "IDX_recurrence_exceptions_recurring_event_id" ON "recurrence_exceptions" ("recurring_event_id")`
     );
     await queryRunner.query(
-      `CREATE INDEX "IDX_recurrence_exceptions_exception_date" ON "recurrence_exceptions" ("exception_date")`,
+      `CREATE INDEX "IDX_recurrence_exceptions_exception_date" ON "recurrence_exceptions" ("exception_date")`
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `DROP INDEX "IDX_recurrence_exceptions_exception_date"`,
+      `DROP INDEX "IDX_recurrence_exceptions_exception_date"`
     );
     await queryRunner.query(
-      `DROP INDEX "IDX_recurrence_exceptions_recurring_event_id"`,
+      `DROP INDEX "IDX_recurrence_exceptions_recurring_event_id"`
     );
     await queryRunner.query(`DROP TABLE "recurrence_exceptions"`);
   }
 }
-
-
-
-

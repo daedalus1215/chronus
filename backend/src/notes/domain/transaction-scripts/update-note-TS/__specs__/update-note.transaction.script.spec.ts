@@ -3,8 +3,11 @@ import { UpdateNoteTransactionScript } from '../update-note.transaction.script';
 import { NoteMemoTagRepository } from '../../../../infra/repositories/note-memo-tag.repository';
 import { UpdateNoteParamsToEntityConverter } from '../update-note-params-to-entity.converter';
 import { NotFoundException } from '@nestjs/common';
-import { createMock, createMockNote, createMockUpdateNoteDto } from 'src/notes/test-utils/mock-factories';
-import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
+import {
+  createMock,
+  createMockNote,
+  createMockUpdateNoteDto,
+} from 'src/notes/test-utils/mock-factories';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { UpdateNoteParams } from '../update-note.params';
 
@@ -17,11 +20,11 @@ describe('UpdateNoteTransactionScript', () => {
     // Arrange
     mockRepository = createMock<NoteMemoTagRepository>({
       findById: jest.fn(),
-      save: jest.fn()
+      save: jest.fn(),
     });
 
     mockConverter = createMock<UpdateNoteParamsToEntityConverter>({
-      apply: jest.fn()
+      apply: jest.fn(),
     });
 
     const moduleRef = await Test.createTestingModule({
@@ -38,7 +41,9 @@ describe('UpdateNoteTransactionScript', () => {
       ],
     }).compile();
 
-    target = moduleRef.get<UpdateNoteTransactionScript>(UpdateNoteTransactionScript);
+    target = moduleRef.get<UpdateNoteTransactionScript>(
+      UpdateNoteTransactionScript
+    );
   });
 
   describe('apply', () => {
@@ -55,7 +60,7 @@ describe('UpdateNoteTransactionScript', () => {
         mockRepository.save.mockResolvedValue(updatedNote);
 
         // Act
-        const result = await target.apply(noteId, updateDto, userId);
+        await target.apply(noteId, updateDto, userId);
 
         // Assert
         expect(mockRepository.findById).toHaveBeenCalledWith(noteId, userId);
@@ -64,7 +69,10 @@ describe('UpdateNoteTransactionScript', () => {
           description: updateDto.description,
           tags: updateDto.tags,
         };
-        expect(mockConverter.apply).toHaveBeenCalledWith(expectedParams, existingNote);
+        expect(mockConverter.apply).toHaveBeenCalledWith(
+          expectedParams,
+          existingNote
+        );
         expect(mockRepository.save).toHaveBeenCalledWith(updatedNote);
       });
     });
@@ -79,9 +87,9 @@ describe('UpdateNoteTransactionScript', () => {
         mockRepository.findById.mockResolvedValue(null);
 
         // Act & Assert
-        await expect(target.apply(noteId, updateDto, userId))
-          .rejects
-          .toThrow(NotFoundException);
+        await expect(target.apply(noteId, updateDto, userId)).rejects.toThrow(
+          NotFoundException
+        );
 
         expect(mockRepository.findById).toHaveBeenCalledWith(noteId, userId);
         expect(mockConverter.apply).not.toHaveBeenCalled();
@@ -100,13 +108,13 @@ describe('UpdateNoteTransactionScript', () => {
         mockRepository.findById.mockRejectedValue(dbError);
 
         // Act & Assert
-        await expect(target.apply(noteId, updateDto, userId))
-          .rejects
-          .toThrow(dbError);
+        await expect(target.apply(noteId, updateDto, userId)).rejects.toThrow(
+          dbError
+        );
 
         expect(mockConverter.apply).not.toHaveBeenCalled();
         expect(mockRepository.save).not.toHaveBeenCalled();
       });
     });
   });
-}); 
+});

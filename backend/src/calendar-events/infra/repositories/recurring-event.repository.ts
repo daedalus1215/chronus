@@ -11,14 +11,14 @@ import { RecurringEventEntity } from '../entities/recurring-event.entity';
 export class RecurringEventRepository {
   constructor(
     @InjectRepository(RecurringEventEntity)
-    private readonly repository: Repository<RecurringEventEntity>,
+    private readonly repository: Repository<RecurringEventEntity>
   ) {}
 
   /**
    * Create a new recurring event.
    */
   async create(
-    entity: Partial<RecurringEventEntity>,
+    entity: Partial<RecurringEventEntity>
   ): Promise<RecurringEventEntity> {
     return await this.repository.save(entity);
   }
@@ -28,7 +28,7 @@ export class RecurringEventRepository {
    */
   async findById(
     id: number,
-    userId: number,
+    userId: number
   ): Promise<RecurringEventEntity | null> {
     return await this.repository.findOne({
       where: { id, userId },
@@ -41,7 +41,7 @@ export class RecurringEventRepository {
   async update(
     id: number,
     userId: number,
-    updates: Partial<RecurringEventEntity>,
+    updates: Partial<RecurringEventEntity>
   ): Promise<RecurringEventEntity> {
     const entity = await this.repository.findOne({
       where: { id, userId },
@@ -72,6 +72,4 @@ export class RecurringEventRepository {
       throw new Error('Recurring event not found');
     }
   }
-
 }
-

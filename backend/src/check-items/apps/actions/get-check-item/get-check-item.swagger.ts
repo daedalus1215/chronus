@@ -1,18 +1,18 @@
-import { CheckItemResponseDto } from "../../dtos/responses/check-item.response.dto";
-import { ProtectedActionOptions } from "src/shared-kernel/apps/decorators/protected-action.decorator";
+import { CheckItemResponseDto } from '../../dtos/responses/check-item.response.dto';
+import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 
 export const GetCheckItemSwagger: ProtectedActionOptions = {
   tag: 'Check Items',
   summary: 'Get a check item by ID',
   additionalResponses: [
-    { 
-      status: 200, 
+    {
+      status: 200,
       description: 'The check item has been successfully retrieved.',
-      type: CheckItemResponseDto
+      type: CheckItemResponseDto,
     },
     {
       status: 404,
-      description: 'Check item not found.'
-    }
-  ]     
+      description: 'Check item not found.',
+    },
+  ],
 };

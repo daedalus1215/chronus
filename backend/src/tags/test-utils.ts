@@ -1,5 +1,5 @@
-import { createMock } from "src/shared-kernel/test-utils";
-import { TagRepository } from "./infra/repositories/tag-repository/tag.repository";
+import { createMock } from 'src/shared-kernel/test-utils';
+import { TagRepository } from './infra/repositories/tag-repository/tag.repository';
 
 export const createTagRepositoryMock = () =>
   createMock<TagRepository>({

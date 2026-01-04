@@ -11,9 +11,9 @@ export class Tag {
   @Column({ name: 'name' })
   name: string;
 
-  @Column('text', {default: ''})
+  @Column('text', { default: '' })
   description: string;
 
-  @Column({name: 'user_id'})
+  @Column({ name: 'user_id' })
   userId: number;
-} 
+}

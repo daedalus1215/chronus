@@ -25,36 +25,39 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
   const location = useLocation();
 
   // Helper function to determine if a route is active
-  const isRouteActive = React.useCallback((itemPath: string) => {
-    const pathname = location.pathname;
-    
-    // Special handling for Home route (/)
-    if (itemPath === '/') {
-      // Home is active if:
-      // 1. Exact match: /
-      // 2. Nested note route: /notes/:id
-      // 3. But NOT if it's /memo, /checklist, /tags, /activity, or /tag-notes
-      if (pathname === '/') return true;
-      if (pathname.startsWith('/notes/')) {
-        // Check if it's not under another route
-        const basePath = pathname.split('/notes/')[0];
-        return basePath === '' || basePath === '/';
+  const isRouteActive = React.useCallback(
+    (itemPath: string) => {
+      const pathname = location.pathname;
+
+      // Special handling for Home route (/)
+      if (itemPath === '/') {
+        // Home is active if:
+        // 1. Exact match: /
+        // 2. Nested note route: /notes/:id
+        // 3. But NOT if it's /memo, /checklist, /tags, /activity, or /tag-notes
+        if (pathname === '/') return true;
+        if (pathname.startsWith('/notes/')) {
+          // Check if it's not under another route
+          const basePath = pathname.split('/notes/')[0];
+          return basePath === '' || basePath === '/';
+        }
+        return false;
       }
+
+      // For other routes, check if pathname starts with the route path
+      // This handles nested routes like /memo/notes/:id
+      if (pathname === itemPath) return true;
+      if (pathname.startsWith(`${itemPath}/`)) return true;
+
+      // Special case for Tags: also match /tag-notes/:tagId
+      if (itemPath === '/tags' && pathname.startsWith('/tag-notes/')) {
+        return true;
+      }
+
       return false;
-    }
-    
-    // For other routes, check if pathname starts with the route path
-    // This handles nested routes like /memo/notes/:id
-    if (pathname === itemPath) return true;
-    if (pathname.startsWith(`${itemPath}/`)) return true;
-    
-    // Special case for Tags: also match /tag-notes/:tagId
-    if (itemPath === '/tags' && pathname.startsWith('/tag-notes/')) {
-      return true;
-    }
-    
-    return false;
-  }, [location.pathname]);
+    },
+    [location.pathname]
+  );
 
   return (
     <Drawer
@@ -101,7 +104,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
         {navigationItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = isRouteActive(item.path);
-          
+
           return (
             <Fade
               key={item.path}
@@ -118,9 +121,13 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                   onClick={onClose}
                   selected={isActive}
                   sx={{
-                    backgroundColor: isActive ? 'action.selected' : 'transparent',
+                    backgroundColor: isActive
+                      ? 'action.selected'
+                      : 'transparent',
                     '&:hover': {
-                      backgroundColor: isActive ? 'action.selected' : 'action.hover',
+                      backgroundColor: isActive
+                        ? 'action.selected'
+                        : 'action.hover',
                     },
                     borderRadius: '8px',
                     margin: '0 8px',
@@ -134,7 +141,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                   >
                     <Icon />
                   </ListItemIcon>
-                  <ListItemText 
+                  <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
                       fontWeight: isActive ? 600 : 400,

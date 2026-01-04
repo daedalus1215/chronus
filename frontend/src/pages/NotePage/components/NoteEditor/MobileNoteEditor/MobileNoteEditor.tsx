@@ -22,10 +22,11 @@ export const MobileNoteEditor: React.FC<NoteEditorProps> = ({
   onSave,
   onAppendToDescription,
 }) => {
-  const { content, handleDescriptionChange, appendToDescription } = useNoteEditor({
-    note,
-    onSave,
-  });
+  const { content, handleDescriptionChange, appendToDescription } =
+    useNoteEditor({
+      note,
+      onSave,
+    });
 
   React.useEffect(() => {
     if (onAppendToDescription) {

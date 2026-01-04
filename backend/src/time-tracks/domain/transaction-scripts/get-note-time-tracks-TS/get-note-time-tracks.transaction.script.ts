@@ -5,16 +5,16 @@ import { TimeTrackResponseDto } from '../../../apps/dtos/responses/time-track.re
 
 @Injectable()
 export class GetNoteTimeTracksTransactionScript {
-  constructor(
-    private readonly timeTrackRepository: TimeTrackRepository
-  ) {}
+  constructor(private readonly timeTrackRepository: TimeTrackRepository) {}
 
-  async apply(command: GetNoteTimeTracksCommand): Promise<TimeTrackResponseDto[]> {
+  async apply(
+    command: GetNoteTimeTracksCommand
+  ): Promise<TimeTrackResponseDto[]> {
     const timeTracks = await this.timeTrackRepository.findByUserIdAndNoteId(
       command.user.userId,
       command.noteId
     );
-    
+
     return timeTracks.map(timeTrack => new TimeTrackResponseDto(timeTrack));
   }
-} 
+}

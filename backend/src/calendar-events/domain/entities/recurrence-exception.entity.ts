@@ -8,4 +8,3 @@ export type RecurrenceException = {
   exceptionDate: Date; // Date of the skipped/deleted instance
   createdAt: Date;
 };
-

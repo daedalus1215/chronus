@@ -26,57 +26,60 @@ export const TagPage: React.FC = () => {
   const isTagRoute = !!routeTagId;
 
   return (
-    <div className={styles.tagPage} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div
+      className={styles.tagPage}
+      style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+    >
       {isMobile ? (
+        <Box
+          sx={{
+            height: '100%',
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <Box
             sx={{
-              height: '100%',
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
+              display: isTagRoute ? 'none' : 'block',
+              flex: 1,
             }}
           >
+            <MobileTagListView />
+          </Box>
+          {isTagRoute && (
             <Box
               sx={{
-                display: isTagRoute ? 'none' : 'block',
-                flex: 1,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'background.paper',
+                zIndex: 1,
               }}
             >
-              <MobileTagListView />
+              <Outlet />
             </Box>
-            {isTagRoute && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'background.paper',
-                  zIndex: 1,
-                }}
-              >
+          )}
+        </Box>
+      ) : (
+        <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
+          <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
+            <DesktopTagListView
+              onTagSelect={handleTagSelect}
+              selectedTagId={selectedTagId}
+            />
+          </Box>
+          <Box sx={{ flex: 1, height: '100%' }}>
+            {selectedTagId && (
+              <Box sx={{ p: 2 }}>
                 <Outlet />
               </Box>
             )}
           </Box>
-        ) : (
-          <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-            <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
-              <DesktopTagListView
-                onTagSelect={handleTagSelect}
-                selectedTagId={selectedTagId}
-              />
-            </Box>
-            <Box sx={{ flex: 1, height: '100%' }}>
-              {selectedTagId && (
-                <Box sx={{ p: 2 }}>
-                  <Outlet />
-                </Box>
-              )}
-            </Box>
-          </Box>
-        )}
+        </Box>
+      )}
     </div>
   );
 };

@@ -15,4 +15,4 @@ export const GetTagsByUserIdSwagger: ProtectedActionOptions = {
       description: 'Unauthorized.',
     },
   ],
-}; 
+};

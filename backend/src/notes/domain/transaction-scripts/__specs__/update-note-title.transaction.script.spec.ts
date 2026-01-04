@@ -1,12 +1,17 @@
 import { Test } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { NoteResponseDto } from 'src/notes/apps/dtos/responses/note.response.dto';
-import { createMock, createMockNote } from 'src/notes/test-utils/mock-factories';
+import {
+  createMock,
+  createMockNote,
+} from 'src/notes/test-utils/mock-factories';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { UpdateNoteTitleTransactionScript } from '../update-note-title.transaction.script';
 import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
 
-const createMockUpdateNoteTitleDto = (overrides = {}) => ({ name: 'New Title', ...overrides });
+const createMockUpdateNoteTitleDto = (overrides = {}) => ({
+  name: 'New Title',
+  ...overrides,
+});
 
 describe('UpdateNoteTitleTransactionScript', () => {
   let target: UpdateNoteTitleTransactionScript;
@@ -25,7 +30,9 @@ describe('UpdateNoteTitleTransactionScript', () => {
       ],
     }).compile();
 
-    target = moduleRef.get<UpdateNoteTitleTransactionScript>(UpdateNoteTitleTransactionScript);
+    target = moduleRef.get<UpdateNoteTitleTransactionScript>(
+      UpdateNoteTitleTransactionScript
+    );
   });
 
   describe('apply', () => {
@@ -39,10 +46,13 @@ describe('UpdateNoteTitleTransactionScript', () => {
       mockRepository.findById.mockResolvedValue(existingNote);
       mockRepository.save.mockResolvedValue(updatedNote);
 
-      const result = await target.apply(noteId, updateDto, userId);
+      await target.apply(noteId, updateDto, userId);
 
       expect(mockRepository.findById).toHaveBeenCalledWith(noteId, userId);
-      expect(mockRepository.save).toHaveBeenCalledWith({ ...existingNote, name: updateDto.name });
+      expect(mockRepository.save).toHaveBeenCalledWith({
+        ...existingNote,
+        name: updateDto.name,
+      });
     });
 
     it('should throw NotFoundException if note does not exist', async () => {
@@ -51,7 +61,9 @@ describe('UpdateNoteTitleTransactionScript', () => {
       const updateDto = createMockUpdateNoteTitleDto();
       mockRepository.findById.mockResolvedValue(null);
 
-      await expect(target.apply(noteId, updateDto, userId)).rejects.toThrow(NotFoundException);
+      await expect(target.apply(noteId, updateDto, userId)).rejects.toThrow(
+        NotFoundException
+      );
       expect(mockRepository.findById).toHaveBeenCalledWith(noteId, userId);
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
@@ -63,8 +75,10 @@ describe('UpdateNoteTitleTransactionScript', () => {
       const dbError = new Error('Database error');
       mockRepository.findById.mockRejectedValue(dbError);
 
-      await expect(target.apply(noteId, updateDto, userId)).rejects.toThrow(dbError);
+      await expect(target.apply(noteId, updateDto, userId)).rejects.toThrow(
+        dbError
+      );
       expect(mockRepository.save).not.toHaveBeenCalled();
     });
   });
-}); 
+});

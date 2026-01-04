@@ -8,17 +8,17 @@ import { CreateTagDto } from '../../app/actions/create-tag-action/dtos/create-ta
 export class CreateTagTransactionScript {
   constructor(
     @InjectRepository(Tag)
-    private tagsRepository: Repository<Tag>,
+    private tagsRepository: Repository<Tag>
   ) {}
 
-    async apply(createTagDto: CreateTagDto): Promise<Tag> {
-        const { name, description, userId } = createTagDto;
-    
-        const tag = new Tag();
-        tag.name = name;
-        tag.description = description;
-        tag.userId = userId;
-    
-        return this.tagsRepository.save(tag);
-      }
+  async apply(createTagDto: CreateTagDto): Promise<Tag> {
+    const { name, description, userId } = createTagDto;
+
+    const tag = new Tag();
+    tag.name = name;
+    tag.description = description;
+    tag.userId = userId;
+
+    return this.tagsRepository.save(tag);
+  }
 }

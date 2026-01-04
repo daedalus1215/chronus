@@ -19,10 +19,7 @@ import { GetWeeklyMostActiveNoteAction } from './apps/actions/get-weekly-most-ac
 import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([TimeTrack]),
-    NotesModule,
-  ],
+  imports: [TypeOrmModule.forFeature([TimeTrack]), NotesModule],
   providers: [
     TimeTrackRepository,
     CreateTimeTrackTransactionScript,
@@ -40,8 +37,8 @@ import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-s
     GetTimeTracksTotalByNoteIdAction,
     GetDailyTimeTracksAction,
     DeleteTimeTrackAction,
-    GetWeeklyMostActiveNoteAction
+    GetWeeklyMostActiveNoteAction,
   ],
-  exports: [TimeTrackRepository]
+  exports: [TimeTrackRepository],
 })
-export class TimeTracksModule {} 
+export class TimeTracksModule {}

@@ -9,7 +9,8 @@ export const DeleteRecurringEventSwagger: ProtectedActionOptions = {
   additionalResponses: [
     {
       status: 200,
-      description: 'The recurring event and all its instances have been successfully deleted.',
+      description:
+        'The recurring event and all its instances have been successfully deleted.',
     },
     {
       status: 404,
@@ -17,4 +18,3 @@ export const DeleteRecurringEventSwagger: ProtectedActionOptions = {
     },
   ],
 };
-

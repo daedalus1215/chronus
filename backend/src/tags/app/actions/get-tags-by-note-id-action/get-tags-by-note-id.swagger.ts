@@ -15,4 +15,4 @@ export const GetTagsByNoteIdSwagger: ProtectedActionOptions = {
       description: 'No tags found for this note or note not found.',
     },
   ],
-}; 
+};

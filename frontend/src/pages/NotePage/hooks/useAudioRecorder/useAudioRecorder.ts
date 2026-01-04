@@ -45,7 +45,7 @@ export const useAudioRecorder = ({
 
       const devices = await navigator.mediaDevices.enumerateDevices();
       const audioInputs = devices.filter(
-        (device) => device.kind === 'audioinput',
+        device => device.kind === 'audioinput'
       );
 
       if (audioInputs.length === 0) {
@@ -60,7 +60,9 @@ export const useAudioRecorder = ({
       return {
         available: false,
         error:
-          err instanceof Error ? err.message : 'Unknown error checking microphone',
+          err instanceof Error
+            ? err.message
+            : 'Unknown error checking microphone',
       };
     }
   }, []);
@@ -88,11 +90,18 @@ export const useAudioRecorder = ({
       try {
         stream = await navigator.mediaDevices.getUserMedia(basicConstraints);
       } catch (firstError) {
-        console.warn('First attempt failed, trying fallback constraints:', firstError);
+        console.warn(
+          'First attempt failed, trying fallback constraints:',
+          firstError
+        );
         try {
-          stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+          stream =
+            await navigator.mediaDevices.getUserMedia(fallbackConstraints);
         } catch (secondError) {
-          console.warn('Fallback attempt failed, trying basic audio:', secondError);
+          console.warn(
+            'Fallback attempt failed, trying basic audio:',
+            secondError
+          );
           stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         }
       }
@@ -107,22 +116,23 @@ export const useAudioRecorder = ({
       } catch (contextError) {
         console.warn(
           `Failed to create AudioContext with ${AUDIO_SAMPLE_RATE}Hz, using default:`,
-          contextError,
+          contextError
         );
         audioContextRef.current = new AudioContext();
       }
 
       // Create source from stream
-      sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
+      sourceRef.current =
+        audioContextRef.current.createMediaStreamSource(stream);
 
       // Create script processor for raw audio data
       processorRef.current = audioContextRef.current.createScriptProcessor(
         BUFFER_SIZE,
         1,
-        1,
+        1
       );
 
-      processorRef.current.onaudioprocess = (e) => {
+      processorRef.current.onaudioprocess = e => {
         // Only process and send audio if enabled AND we're actually recording
         // Use ref to get current recording state (state variable might be stale in closure)
         if (enabled && isRecordingRef.current) {
@@ -133,20 +143,24 @@ export const useAudioRecorder = ({
             sumSquares += inputData[i] * inputData[i];
           }
           const rms = Math.sqrt(sumSquares / inputData.length);
-          
+
           // Only send if not silence (above threshold)
           if (rms >= SILENCE_THRESHOLD) {
             // Send the raw Float32Array buffer directly, just like thoth-frontend does
             // Thoth expects Float32Array format, not 16-bit PCM
             // Log occasionally to avoid spam
             if (Math.random() < 0.01) {
-              console.log(`Sending audio chunk (Float32Array), size: ${inputData.buffer.byteLength} bytes, RMS: ${rms.toFixed(4)}`);
+              console.log(
+                `Sending audio chunk (Float32Array), size: ${inputData.buffer.byteLength} bytes, RMS: ${rms.toFixed(4)}`
+              );
             }
             onAudioChunk(inputData.buffer);
           } else {
             // Log silence detection occasionally
             if (Math.random() < 0.01) {
-              console.debug(`Skipping silent audio chunk, RMS: ${rms.toFixed(4)}`);
+              console.debug(
+                `Skipping silent audio chunk, RMS: ${rms.toFixed(4)}`
+              );
             }
           }
         }
@@ -161,13 +175,17 @@ export const useAudioRecorder = ({
       setIsRecording(true);
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Unknown error accessing microphone';
+        err instanceof Error
+          ? err.message
+          : 'Unknown error accessing microphone';
       setError(errorMessage);
 
       // Provide user-friendly error messages
       if (err instanceof Error) {
         if (err.name === 'NotFoundError') {
-          setError('No microphone found. Please check your microphone connection.');
+          setError(
+            'No microphone found. Please check your microphone connection.'
+          );
         } else if (err.name === 'NotAllowedError') {
           setError('Microphone access denied. Please allow microphone access.');
         } else if (err.name === 'NotSupportedError') {
@@ -198,7 +216,7 @@ export const useAudioRecorder = ({
     }
 
     if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
       mediaStreamRef.current = null;
     }
 
@@ -222,4 +240,3 @@ export const useAudioRecorder = ({
     checkMicrophoneAvailability,
   };
 };
-

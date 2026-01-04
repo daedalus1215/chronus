@@ -17,7 +17,7 @@ export type DropPosition = {
  */
 export const calculateNewEventTimes = (
   event: CalendarEventResponseDto,
-  dropPosition: DropPosition,
+  dropPosition: DropPosition
 ): { startDate: Date; endDate: Date } => {
   const dayStart = startOfDay(dropPosition.day);
   const newStartDate = new Date(dayStart);
@@ -47,9 +47,11 @@ export const calculateNewEventTimes = (
 export const calculateDropPosition = (
   clientY: number,
   dayElement: HTMLElement,
-  day: Date,
+  day: Date
 ): DropPosition | null => {
-  const dayContent = dayElement.querySelector('[class*="dayContent"]') as HTMLElement;
+  const dayContent = dayElement.querySelector(
+    '[class*="dayContent"]'
+  ) as HTMLElement;
   if (!dayContent) {
     return null;
   }
@@ -86,4 +88,3 @@ export const calculateDropPosition = (
     minutes: clampedMinutes,
   };
 };
-

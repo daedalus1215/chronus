@@ -11,7 +11,7 @@ import { CalendarEvent } from '../../entities/calendar-event.entity';
 @Injectable()
 export class FetchCalendarEventsTransactionScript {
   constructor(
-    private readonly calendarEventRepository: CalendarEventRepository,
+    private readonly calendarEventRepository: CalendarEventRepository
   ) {}
 
   /**
@@ -19,9 +19,7 @@ export class FetchCalendarEventsTransactionScript {
    * Includes both regular calendar events and instances from recurring events.
    * Validates date range and ensures user can only access their own events.
    */
-  async apply(
-    command: FetchCalendarEventsCommand,
-  ): Promise<CalendarEvent[]> {
+  async apply(command: FetchCalendarEventsCommand): Promise<CalendarEvent[]> {
     if (command.startDate > command.endDate) {
       throw new Error('Start date must be before end date');
     }
@@ -40,13 +38,12 @@ export class FetchCalendarEventsTransactionScript {
     const allEvents = await this.calendarEventRepository.findByDateRange(
       command.userId,
       command.startDate,
-      command.endDate,
+      command.endDate
     );
 
     // Sort by start date
     return allEvents.sort(
-      (a, b) => a.startDate.getTime() - b.startDate.getTime(),
+      (a, b) => a.startDate.getTime() - b.startDate.getTime()
     );
   }
 }
-

@@ -21,7 +21,9 @@ describe('GetNoteNamesByIdsTransactionScript', () => {
       ],
     }).compile();
 
-    target = module.get<GetNoteNamesByIdsTransactionScript>(GetNoteNamesByIdsTransactionScript);
+    target = module.get<GetNoteNamesByIdsTransactionScript>(
+      GetNoteNamesByIdsTransactionScript
+    );
     mockNoteRepository = module.get(NoteMemoTagRepository);
   });
 
@@ -42,7 +44,10 @@ describe('GetNoteNamesByIdsTransactionScript', () => {
       const result = await target.apply(noteIds, userId);
 
       // Assert
-      expect(mockNoteRepository.getNoteNamesByIds).toHaveBeenCalledWith(noteIds, userId);
+      expect(mockNoteRepository.getNoteNamesByIds).toHaveBeenCalledWith(
+        noteIds,
+        userId
+      );
       expect(result).toEqual(expectedNotes);
     });
 
@@ -57,8 +62,11 @@ describe('GetNoteNamesByIdsTransactionScript', () => {
       const result = await target.apply(noteIds, userId);
 
       // Assert
-      expect(mockNoteRepository.getNoteNamesByIds).toHaveBeenCalledWith(noteIds, userId);
+      expect(mockNoteRepository.getNoteNamesByIds).toHaveBeenCalledWith(
+        noteIds,
+        userId
+      );
       expect(result).toEqual([]);
     });
   });
-}); 
+});

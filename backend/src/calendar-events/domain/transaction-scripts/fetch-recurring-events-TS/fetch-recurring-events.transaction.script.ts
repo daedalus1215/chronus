@@ -11,7 +11,7 @@ import { RecurringEvent } from '../../entities/recurring-event.entity';
 export class FetchRecurringEventsTransactionScript {
   constructor(
     private readonly recurringEventRepository: RecurringEventRepository,
-    private readonly recurringEventToDomainConverter: RecurringEventToDomainConverter,
+    private readonly recurringEventToDomainConverter: RecurringEventToDomainConverter
   ) {}
 
   /**
@@ -21,9 +21,8 @@ export class FetchRecurringEventsTransactionScript {
     const recurringEventEntities =
       await this.recurringEventRepository.findByUserId(userId);
 
-    return recurringEventEntities.map((entity) =>
-      this.recurringEventToDomainConverter.apply(entity),
+    return recurringEventEntities.map(entity =>
+      this.recurringEventToDomainConverter.apply(entity)
     );
   }
 }
-

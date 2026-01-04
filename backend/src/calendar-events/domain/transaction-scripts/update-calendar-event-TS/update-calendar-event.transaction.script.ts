@@ -10,7 +10,7 @@ import { CalendarEvent } from '../../entities/calendar-event.entity';
 @Injectable()
 export class UpdateCalendarEventTransactionScript {
   constructor(
-    private readonly calendarEventRepository: CalendarEventRepository,
+    private readonly calendarEventRepository: CalendarEventRepository
   ) {}
 
   /**
@@ -20,7 +20,7 @@ export class UpdateCalendarEventTransactionScript {
   async apply(command: UpdateCalendarEventCommand): Promise<CalendarEvent> {
     const existingEvent = await this.calendarEventRepository.findById(
       command.eventId,
-      command.user.userId,
+      command.user.userId
     );
     if (!existingEvent) {
       throw new NotFoundException('Calendar event not found');
@@ -42,9 +42,8 @@ export class UpdateCalendarEventTransactionScript {
         description: command.description?.trim(),
         startDate: command.startDate,
         endDate: command.endDate,
-      },
+      }
     );
     return updatedEvent;
   }
 }
-

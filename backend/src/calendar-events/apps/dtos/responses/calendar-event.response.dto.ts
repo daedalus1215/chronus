@@ -12,9 +12,7 @@ export class CalendarEventResponseDto {
   isRecurring?: boolean;
   recurringEventId?: number;
 
-  constructor(
-    event: CalendarEvent,
-  ) {
+  constructor(event: CalendarEvent) {
     this.id = event.id;
     this.userId = event.userId;
     this.title = event.title;
@@ -27,4 +25,3 @@ export class CalendarEventResponseDto {
     this.recurringEventId = event.recurringEventId;
   }
 }
-

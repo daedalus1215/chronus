@@ -35,32 +35,33 @@ export class TagRepository {
   async removeTag(tag: Tag): Promise<Tag> {
     return this.tagRepository.remove(tag);
   }
-  
+
   async getTagsByUserId(userId: number): Promise<GetTagsByUserIdProjection[]> {
     return await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoin('tag_notes', 'tag_note', 'tag_note.tag_id = tag.id')
       .where('tag.user_id = :userId', { userId })
-      .andWhere('tag_note.archived_date IS NULL')  // Only count non-archived associations
-      .select([
-        'tag.id',
-        'tag.name',
-        'COUNT(tag_note.id) as "noteCount"'
-      ])
+      .andWhere('tag_note.archived_date IS NULL') // Only count non-archived associations
+      .select(['tag.id', 'tag.name', 'COUNT(tag_note.id) as "noteCount"'])
       .groupBy('tag.id')
       .getRawMany()
       .then(tagsByUserIdHydrator);
   }
 
   async addTagToNote(noteId: number, tagId: number): Promise<TagNote> {
-    const tagNote = this.tagNoteRepository.create({ notes: { id: noteId }, tag: { id: tagId } });
+    const tagNote = this.tagNoteRepository.create({
+      notes: { id: noteId },
+      tag: { id: tagId },
+    });
     return this.tagNoteRepository.save(tagNote);
   }
 
   async findTagsByNoteId(noteId: number): Promise<Tag[]> {
-    const tagNotes = await this.tagNoteRepository.find({ where: { notes: { id: noteId } } });
+    const tagNotes = await this.tagNoteRepository.find({
+      where: { notes: { id: noteId } },
+    });
     const tagIds = tagNotes.map(tn => tn.tagId);
     if (!tagIds.length) return [];
     return this.tagRepository.find({ where: { id: In(tagIds) } });
   }
-} 
+}

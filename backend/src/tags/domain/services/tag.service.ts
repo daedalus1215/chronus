@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AddTagToNoteTransactionScript } from '../transaction-scripts/add-tag-to-note.transaction.script';
 import { GetTagsByNoteIdTransactionScript } from '../transaction-scripts/get-tags-by-note-id.transaction.script';
-import { GetTagsByUserIdTransactionScript} from '../transaction-scripts/get-tags-by-user-id.transaction.script';
+import { GetTagsByUserIdTransactionScript } from '../transaction-scripts/get-tags-by-user-id.transaction.script';
 import { AddTagToNoteDto } from '../../app/dtos/requests/add-tag-to-note.dto';
 import { TagResponseDto } from '../../app/dtos/responses/tag.response.dto';
 import { Tag } from '../entities/tag.entity';
@@ -12,7 +12,7 @@ export class TagService {
   constructor(
     private readonly addTagToNoteTS: AddTagToNoteTransactionScript,
     private readonly getTagsByNoteIdTS: GetTagsByNoteIdTransactionScript,
-    private readonly getTagsByUserIdTS: GetTagsByUserIdTransactionScript,
+    private readonly getTagsByUserIdTS: GetTagsByUserIdTransactionScript
   ) {}
 
   addTagToNote(dto: AddTagToNoteDto & { userId: number }): Promise<Tag> {
@@ -26,4 +26,4 @@ export class TagService {
   getTagsByUserId(userId: number): Promise<GetTagsByUserIdProjection[]> {
     return this.getTagsByUserIdTS.apply(userId);
   }
-} 
+}

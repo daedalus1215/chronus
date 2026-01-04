@@ -8,4 +8,3 @@ export type UpdateCalendarEventCommand = {
   endDate: Date;
   user: AuthUser;
 };
-

@@ -10,15 +10,8 @@ import { HermesRemoteCaller } from './infrastructure/remote-callers/hermes.remot
 import { NotesModule } from 'src/notes/notes.module';
 
 @Module({
-  imports: [
-    HttpModule,
-    ConfigModule,
-    NotesModule
-  ],
-  controllers: [
-    TextToSpeechAction,
-    DownloadAudioAction,
-  ],
+  imports: [HttpModule, ConfigModule, NotesModule],
+  controllers: [TextToSpeechAction, DownloadAudioAction],
   providers: [
     AudioService,
     TextToSpeechTransactionScript,

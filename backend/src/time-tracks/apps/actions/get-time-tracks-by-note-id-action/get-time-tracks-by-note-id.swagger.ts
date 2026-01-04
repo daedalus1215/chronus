@@ -8,11 +8,11 @@ export const GetTimeTracksByNoteIdSwagger: ProtectedActionOptions = {
     {
       status: 200,
       description: 'List of time track entries for the note.',
-      type: [TimeTrack]
+      type: [TimeTrack],
     },
     {
       status: 404,
-      description: 'Note not found.'
-    }
-  ]
-}; 
+      description: 'Note not found.',
+    },
+  ],
+};

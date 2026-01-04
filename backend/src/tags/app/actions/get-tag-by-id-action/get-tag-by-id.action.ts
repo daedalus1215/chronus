@@ -17,7 +17,7 @@ export class GetTagByIdAction {
     @GetAuthUser('userId') userId: number
   ): Promise<TagResponseDto> {
     const tag = await this.tagRepository.findTagByIdAndUserId(tagId, userId);
-    
+
     if (!tag) {
       throw new NotFoundException('Tag not found');
     }
@@ -25,4 +25,3 @@ export class GetTagByIdAction {
     return new TagResponseDto(tag);
   }
 }
-

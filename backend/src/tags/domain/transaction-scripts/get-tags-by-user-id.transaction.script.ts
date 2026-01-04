@@ -9,4 +9,4 @@ export class GetTagsByUserIdTransactionScript {
   async apply(userId: number): Promise<GetTagsByUserIdProjection[]> {
     return await this.tagRepository.getTagsByUserId(userId);
   }
-} 
+}

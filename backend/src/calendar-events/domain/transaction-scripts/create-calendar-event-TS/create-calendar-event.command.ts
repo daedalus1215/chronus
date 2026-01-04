@@ -7,4 +7,3 @@ export type CreateCalendarEventCommand = {
   endDate: Date;
   user: AuthUser;
 };
-

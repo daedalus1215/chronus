@@ -21,7 +21,9 @@ describe('GetDailyTimeTracksAggregationTransactionScript', () => {
       ],
     }).compile();
 
-    target = module.get<GetDailyTimeTracksAggregationTransactionScript>(GetDailyTimeTracksAggregationTransactionScript);
+    target = module.get<GetDailyTimeTracksAggregationTransactionScript>(
+      GetDailyTimeTracksAggregationTransactionScript
+    );
     timeTrackRepository = module.get(TimeTrackRepository);
   });
 
@@ -53,11 +55,15 @@ describe('GetDailyTimeTracksAggregationTransactionScript', () => {
     ];
 
     it('should return aggregated time tracks without note titles', async () => {
-      timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue(mockAggregations);
+      timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue(
+        mockAggregations
+      );
 
       const result = await target.apply(mockCommand);
 
-      expect(timeTrackRepository.getDailyTimeTracksAggregation).toHaveBeenCalledWith(1, '2024-01-15');
+      expect(
+        timeTrackRepository.getDailyTimeTracksAggregation
+      ).toHaveBeenCalledWith(1, '2024-01-15');
 
       expect(result).toHaveLength(2);
       expect(result[0].noteId).toBe(1);
@@ -71,12 +77,14 @@ describe('GetDailyTimeTracksAggregationTransactionScript', () => {
     it('should use current date when no date is provided', async () => {
       const commandWithoutDate = { user: { userId: 1, username: 'testuser' } };
       const today = new Date().toISOString().split('T')[0];
-      
+
       timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue([]);
 
       await target.apply(commandWithoutDate);
 
-      expect(timeTrackRepository.getDailyTimeTracksAggregation).toHaveBeenCalledWith(1, today);
+      expect(
+        timeTrackRepository.getDailyTimeTracksAggregation
+      ).toHaveBeenCalledWith(1, today);
     });
 
     it('should sort results by most recent date and time', async () => {
@@ -104,7 +112,9 @@ describe('GetDailyTimeTracksAggregationTransactionScript', () => {
         },
       ];
 
-      timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue(mockAggregationsWithDifferentDates);
+      timeTrackRepository.getDailyTimeTracksAggregation.mockResolvedValue(
+        mockAggregationsWithDifferentDates
+      );
 
       const result = await target.apply(mockCommand);
 
@@ -120,7 +130,9 @@ describe('GetDailyTimeTracksAggregationTransactionScript', () => {
       const result = await target.apply(mockCommand);
 
       expect(result).toEqual([]);
-      expect(timeTrackRepository.getDailyTimeTracksAggregation).toHaveBeenCalledWith(1, '2024-01-15');
+      expect(
+        timeTrackRepository.getDailyTimeTracksAggregation
+      ).toHaveBeenCalledWith(1, '2024-01-15');
     });
   });
-}); 
+});

@@ -12,4 +12,3 @@ export class UpdateTagDto {
   @IsOptional()
   description?: string;
 }
-

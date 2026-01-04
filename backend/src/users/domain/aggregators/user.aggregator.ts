@@ -39,6 +39,3 @@ export class UserAggregator {
     return projection;
   }
 }
-
-
-

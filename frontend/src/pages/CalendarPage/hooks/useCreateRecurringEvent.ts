@@ -17,7 +17,7 @@ export const useCreateRecurringEvent = () => {
 
   return useMutation({
     mutationFn: async (
-      event: CreateRecurringEventRequest,
+      event: CreateRecurringEventRequest
     ): Promise<RecurringEventResponseDto> => {
       return await createRecurringEvent(event);
     },
@@ -26,4 +26,3 @@ export const useCreateRecurringEvent = () => {
     },
   });
 };
-

@@ -9,4 +9,3 @@ export type RecurrencePattern = {
   dayOfMonth?: number; // For MONTHLY type: day of month (1-31). Note: "Same day of week" patterns (e.g., first Monday) are post-MVP
   monthOfYear?: number; // For YEARLY type: month (1-12)
 };
-

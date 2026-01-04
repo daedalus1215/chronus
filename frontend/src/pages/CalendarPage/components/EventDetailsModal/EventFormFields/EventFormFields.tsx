@@ -9,7 +9,10 @@ type EventFormFieldsProps = {
   isEditing: boolean;
   isSubmitting: boolean;
   updateMutationError: Error | null;
-  onFieldChange: (field: keyof UpdateCalendarEventRequest, value: string) => void;
+  onFieldChange: (
+    field: keyof UpdateCalendarEventRequest,
+    value: string
+  ) => void;
 };
 
 /**
@@ -37,7 +40,7 @@ export const EventFormFields: React.FC<EventFormFieldsProps> = ({
       <TextField
         label="Title"
         value={formData.title}
-        onChange={(e) => onFieldChange('title', e.target.value)}
+        onChange={e => onFieldChange('title', e.target.value)}
         required
         fullWidth
         disabled={!isEditing || isSubmitting}
@@ -47,7 +50,7 @@ export const EventFormFields: React.FC<EventFormFieldsProps> = ({
       <TextField
         label="Description"
         value={formData.description}
-        onChange={(e) => onFieldChange('description', e.target.value)}
+        onChange={e => onFieldChange('description', e.target.value)}
         multiline
         rows={3}
         fullWidth
@@ -57,7 +60,7 @@ export const EventFormFields: React.FC<EventFormFieldsProps> = ({
         label="Start Date & Time"
         type="datetime-local"
         value={formData.startDate}
-        onChange={(e) => onFieldChange('startDate', e.target.value)}
+        onChange={e => onFieldChange('startDate', e.target.value)}
         required
         fullWidth
         InputLabelProps={{ shrink: true }}
@@ -69,7 +72,7 @@ export const EventFormFields: React.FC<EventFormFieldsProps> = ({
         label="End Date & Time"
         type="datetime-local"
         value={formData.endDate}
-        onChange={(e) => onFieldChange('endDate', e.target.value)}
+        onChange={e => onFieldChange('endDate', e.target.value)}
         required
         fullWidth
         InputLabelProps={{ shrink: true }}
@@ -87,4 +90,3 @@ export const EventFormFields: React.FC<EventFormFieldsProps> = ({
     </Stack>
   );
 };
-
