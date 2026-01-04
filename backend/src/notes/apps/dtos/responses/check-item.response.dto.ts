@@ -7,8 +7,8 @@ export class CheckItemResponseDto {
   doneDate: Date | null;
   archiveDate: Date | null;
   noteId: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor(checkItem: CheckItemProjection) {
     this.id = checkItem.id;
