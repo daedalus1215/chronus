@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
@@ -6,7 +6,8 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import api from '../../../../api/axios.interceptor';
-import { Stack, Tooltip } from '@mui/material';
+import { Stack, Tooltip, Typography } from '@mui/material';
+import Fuse from 'fuse.js';
 
 export type Tag = { id: string; name: string };
 
@@ -27,6 +28,27 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Set up fuzzy search with Fuse.js
+  const fuse = useMemo(
+    () =>
+      new Fuse(tags, {
+        keys: ['name'],
+        threshold: 0.3, // 0 = exact match, 1 = match anything
+        ignoreLocation: true,
+        includeScore: true,
+      }),
+    [tags]
+  );
+
+  // Filter tags based on input using fuzzy search
+  const filteredTags = useMemo(() => {
+    if (!newTagName.trim()) {
+      return tags;
+    }
+    const results = fuse.search(newTagName);
+    return results.map(result => result.item);
+  }, [fuse, newTagName, tags]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -149,34 +171,49 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
         </Alert>
       )}
       <Box className="overflow-y-auto flex-1" aria-label="Tag list">
-        <Stack
-          role="list"
-          direction="row"
-          flexWrap="wrap"
-          spacing={1} // or spacing={2} for more space
-          className="py-2"
-          aria-label="Available tags"
-        >
-          {tags.map(tag => (
-            <Tooltip title={tag.name} key={tag.id}>
-              <Chip
-                role="listitem"
-                label={tag.name}
-                color="primary"
-                variant="outlined"
-                tabIndex={0}
-                aria-label={`Add tag: ${tag.name}`}
-                onClick={() => handleAddExistingTag(tag.id)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ')
-                    handleAddExistingTag(tag.id);
-                }}
-                disabled={isLoading}
-                className="cursor-pointer"
-              />
-            </Tooltip>
-          ))}
-        </Stack>
+        {filteredTags.length === 0 ? (
+          <Box className="flex flex-col items-center justify-center py-8">
+            <Typography variant="body2" color="text.secondary">
+              {newTagName.trim()
+                ? `No tags found matching "${newTagName}"`
+                : 'No tags available'}
+            </Typography>
+            {newTagName.trim() && (
+              <Typography variant="caption" color="text.secondary" className="mt-2">
+                Press "Add" to create a new tag
+              </Typography>
+            )}
+          </Box>
+        ) : (
+          <Stack
+            role="list"
+            direction="row"
+            flexWrap="wrap"
+            spacing={1}
+            className="py-2"
+            aria-label="Available tags"
+          >
+            {filteredTags.map(tag => (
+              <Tooltip title={tag.name} key={tag.id}>
+                <Chip
+                  role="listitem"
+                  label={tag.name}
+                  color="primary"
+                  variant="outlined"
+                  tabIndex={0}
+                  aria-label={`Add tag: ${tag.name}`}
+                  onClick={() => handleAddExistingTag(tag.id)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ')
+                      handleAddExistingTag(tag.id);
+                  }}
+                  disabled={isLoading}
+                  className="cursor-pointer"
+                />
+              </Tooltip>
+            ))}
+          </Stack>
+        )}
       </Box>
     </form>
   );
