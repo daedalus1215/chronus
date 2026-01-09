@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
@@ -6,7 +6,8 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import api from '../../../../api/axios.interceptor';
-import { Stack, Tooltip } from '@mui/material';
+import { Stack, Tooltip, Typography } from '@mui/material';
+import Fuse from 'fuse.js';
 
 export type Tag = { id: string; name: string };
 
@@ -26,7 +27,46 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
   const [newTagName, setNewTagName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const tagRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Set up fuzzy search with Fuse.js
+  const fuse = useMemo(
+    () =>
+      new Fuse(tags, {
+        keys: ['name'],
+        threshold: 0.3, // 0 = exact match, 1 = match anything
+        ignoreLocation: true,
+        includeScore: true,
+      }),
+    [tags]
+  );
+
+  // Filter tags based on input using fuzzy search
+  const filteredTags = useMemo(() => {
+    if (!newTagName.trim()) {
+      return tags;
+    }
+    const results = fuse.search(newTagName);
+    return results.map(result => result.item);
+  }, [fuse, newTagName, tags]);
+
+  // Reset selected index when filtered tags change
+  useEffect(() => {
+    setSelectedIndex(-1);
+    tagRefs.current = [];
+  }, [filteredTags]);
+
+  // Scroll selected tag into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && tagRefs.current[selectedIndex]) {
+      tagRefs.current[selectedIndex]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [selectedIndex]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -35,6 +75,42 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTagName(e.target.value);
     setError(null);
+  };
+
+  const handleKeyNavigation = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Only handle navigation if there are filtered tags
+    if (filteredTags.length === 0) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleAddTag();
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev < filteredTags.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > -1 ? prev - 1 : -1));
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < filteredTags.length) {
+          handleAddExistingTag(filteredTags[selectedIndex].id);
+        } else {
+          handleAddTag();
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setSelectedIndex(-1);
+        break;
+    }
   };
 
   const handleAddTag = async (e?: React.FormEvent) => {
@@ -114,16 +190,14 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
           value={newTagName}
           onChange={handleInputChange}
           label="New Tag"
-          placeholder="Enter tag name"
+          placeholder="Enter tag name or use ↑↓ to navigate"
           variant="outlined"
           size="small"
           className="flex-1"
           autoFocus
           aria-label="New tag name"
           disabled={isLoading}
-          onKeyDown={e => {
-            if (e.key === 'Enter') handleAddTag();
-          }}
+          onKeyDown={handleKeyNavigation}
         />
         <Button
           type="submit"
@@ -149,34 +223,64 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
         </Alert>
       )}
       <Box className="overflow-y-auto flex-1" aria-label="Tag list">
-        <Stack
-          role="list"
-          direction="row"
-          flexWrap="wrap"
-          spacing={1} // or spacing={2} for more space
-          className="py-2"
-          aria-label="Available tags"
-        >
-          {tags.map(tag => (
-            <Tooltip title={tag.name} key={tag.id}>
-              <Chip
-                role="listitem"
-                label={tag.name}
-                color="primary"
-                variant="outlined"
-                tabIndex={0}
-                aria-label={`Add tag: ${tag.name}`}
-                onClick={() => handleAddExistingTag(tag.id)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ')
-                    handleAddExistingTag(tag.id);
-                }}
-                disabled={isLoading}
-                className="cursor-pointer"
-              />
-            </Tooltip>
-          ))}
-        </Stack>
+        {filteredTags.length === 0 ? (
+          <Box className="flex flex-col items-center justify-center py-8">
+            <Typography variant="body2" color="text.secondary">
+              {newTagName.trim()
+                ? `No tags found matching "${newTagName}"`
+                : 'No tags available'}
+            </Typography>
+            {newTagName.trim() && (
+              <Typography variant="caption" color="text.secondary" className="mt-2">
+                Press "Add" to create a new tag
+              </Typography>
+            )}
+          </Box>
+        ) : (
+          <Stack
+            role="list"
+            direction="row"
+            flexWrap="wrap"
+            spacing={1}
+            className="py-2"
+            aria-label="Available tags"
+          >
+            {filteredTags.map((tag, index) => (
+              <Tooltip title={tag.name} key={tag.id}>
+                <Box
+                  ref={(el: HTMLDivElement | null) => {
+                    tagRefs.current[index] = el;
+                  }}
+                >
+                  <Chip
+                    role="listitem"
+                    label={tag.name}
+                    color={selectedIndex === index ? 'secondary' : 'primary'}
+                    variant={selectedIndex === index ? 'filled' : 'outlined'}
+                    tabIndex={0}
+                    aria-label={`Add tag: ${tag.name}`}
+                    aria-selected={selectedIndex === index}
+                    onClick={() => handleAddExistingTag(tag.id)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ')
+                        handleAddExistingTag(tag.id);
+                    }}
+                    disabled={isLoading}
+                    className="cursor-pointer"
+                    sx={
+                      selectedIndex === index
+                        ? {
+                            transform: 'scale(1.05)',
+                            transition: 'all 0.2s ease',
+                          }
+                        : {}
+                    }
+                  />
+                </Box>
+              </Tooltip>
+            ))}
+          </Stack>
+        )}
       </Box>
     </form>
   );
