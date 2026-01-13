@@ -33,6 +33,7 @@ import { useInfiniteScrollDays } from '../../hooks/useInfiniteScrollDays';
 import { useScrollToToday } from '../../hooks/useScrollToToday';
 import { useCurrentTimeIndicator } from '../../hooks/useCurrentTimeIndicator';
 import { useVisibleDateRange } from '../../hooks/useVisibleDateRange';
+import { useVirtualizedDays } from '../../hooks/useVirtualizedDays';
 import {
   calculateDropPosition,
   calculateNewEventTimes,
@@ -128,6 +129,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     isMobile,
     autoScrollOnMount: true,
     scrollToCurrentTime: true,
+  });
+
+  // Virtualization for day columns
+  const virtualizer = useVirtualizedDays({
+    containerRef: calendarGridRef,
+    dayCount: days.length,
+    isMobile,
   });
 
   // Drag and drop sensors
@@ -268,26 +276,89 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             />
           )}
 
-          {isLoadingLeft &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <SkeletonDayColumn key={`skeleton-left-${i}`} timeSlots={timeSlots} />
-            ))}
+          {/* Virtualized day columns container */}
+          <Box
+            className={styles.virtualizedContainer}
+            style={{
+              width: `${virtualizer.getTotalSize()}px`,
+              position: 'relative',
+              height: '100%',
+            }}
+          >
+            {/* Loading skeletons on the left - positioned before the virtualized content */}
+            {isLoadingLeft &&
+              Array.from({ length: 3 }).map((_, i) => {
+                const dayWidth = isMobile
+                  ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
+                  : CALENDAR_CONSTANTS.DAY_WIDTH;
+                const leftOffset = -dayWidth * (3 - i);
+                return (
+                  <Box
+                    key={`skeleton-left-${i}`}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: `${leftOffset}px`,
+                      width: `${dayWidth}px`,
+                      height: '100%',
+                    }}
+                  >
+                    <SkeletonDayColumn timeSlots={timeSlots} />
+                  </Box>
+                );
+              })}
 
-          {days.map(day => (
-            <DayColumn
-              key={day.toISOString()}
-              day={day}
-              layoutMap={dayLayoutMaps.get(day.toISOString()) || new Map()}
-              timeSlots={timeSlots}
-              onEventSelect={setSelectedEventId}
-              onTimeSlotClick={onTimeSlotClick}
-            />
-          ))}
+            {/* Virtualized day columns - only render visible ones */}
+            {virtualizer.getVirtualItems().map(virtualItem => {
+              const day = days[virtualItem.index];
+              if (!day) return null;
 
-          {isLoadingRight &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <SkeletonDayColumn key={`skeleton-right-${i}`} timeSlots={timeSlots} />
-            ))}
+              return (
+                <Box
+                  key={virtualItem.key}
+                  data-virtual-index={virtualItem.index}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: `${virtualItem.start}px`,
+                    width: `${virtualItem.size}px`,
+                    height: '100%',
+                  }}
+                >
+                  <DayColumn
+                    day={day}
+                    layoutMap={dayLayoutMaps.get(day.toISOString()) || new Map()}
+                    timeSlots={timeSlots}
+                    onEventSelect={setSelectedEventId}
+                    onTimeSlotClick={onTimeSlotClick}
+                  />
+                </Box>
+              );
+            })}
+
+            {/* Loading skeletons on the right - positioned after the virtualized content */}
+            {isLoadingRight &&
+              Array.from({ length: 3 }).map((_, i) => {
+                const dayWidth = isMobile
+                  ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
+                  : CALENDAR_CONSTANTS.DAY_WIDTH;
+                const leftOffset = virtualizer.getTotalSize() + dayWidth * i;
+                return (
+                  <Box
+                    key={`skeleton-right-${i}`}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: `${leftOffset}px`,
+                      width: `${dayWidth}px`,
+                      height: '100%',
+                    }}
+                  >
+                    <SkeletonDayColumn timeSlots={timeSlots} />
+                  </Box>
+                );
+              })}
+          </Box>
         </Box>
         <DragOverlay>
           {draggedEvent ? (
