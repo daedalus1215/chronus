@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Box, Fab } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { CalendarView } from './components/CalendarView/CalendarView';
 import { CreateEventModal } from './components/CreateEventModal/CreateEventModal';
 import { useCalendarEvents } from './hooks/useCalendarEvents';
 import { subDays, addDays } from 'date-fns';
+import { CALENDAR_CONSTANTS } from './constants/calendar.constants';
 import styles from './CalendarPage.module.css';
 
 type DayRange = {
@@ -19,8 +20,8 @@ type DayRange = {
  */
 export const CalendarPage: React.FC = () => {
   const today = new Date();
-  const initialStartDate = subDays(today, 30); // Load 30 days before today
-  const initialEndDate = addDays(today, 30); // Load 30 days after today
+  const initialStartDate = subDays(today, CALENDAR_CONSTANTS.DAYS_TO_LOAD);
+  const initialEndDate = addDays(today, CALENDAR_CONSTANTS.DAYS_TO_LOAD);
 
   const [dayRange, setDayRange] = useState<DayRange>({
     startDate: initialStartDate,
@@ -30,27 +31,37 @@ export const CalendarPage: React.FC = () => {
   const [createEventDate, setCreateEventDate] = useState<Date | undefined>(
     undefined
   );
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { events, isLoading, error, refetch } = useCalendarEvents(
     dayRange.startDate,
     dayRange.endDate
   );
 
   const handleLoadMoreDays = useCallback((direction: 'left' | 'right') => {
-    setDayRange(prev => {
-      if (direction === 'left') {
-        const newStartDate = subDays(prev.startDate, 30);
-        return {
-          ...prev,
-          startDate: newStartDate,
-        };
-      } else {
-        const newEndDate = addDays(prev.endDate, 30);
-        return {
-          ...prev,
-          endDate: newEndDate,
-        };
-      }
-    });
+    const container = scrollContainerRef.current;
+
+    if (direction === 'left' && container) {
+      // Preserve scroll position when adding days to the left
+      const previousScrollWidth = container.scrollWidth;
+      const previousScrollLeft = container.scrollLeft;
+
+      setDayRange(prev => ({
+        ...prev,
+        startDate: subDays(prev.startDate, CALENDAR_CONSTANTS.DAYS_TO_LOAD),
+      }));
+
+      // After React re-renders, adjust scroll position
+      requestAnimationFrame(() => {
+        const newScrollWidth = container.scrollWidth;
+        const addedWidth = newScrollWidth - previousScrollWidth;
+        container.scrollLeft = previousScrollLeft + addedWidth;
+      });
+    } else {
+      setDayRange(prev => ({
+        ...prev,
+        endDate: addDays(prev.endDate, CALENDAR_CONSTANTS.DAYS_TO_LOAD),
+      }));
+    }
   }, []);
 
   const handleToday = useCallback(() => {
@@ -60,9 +71,9 @@ export const CalendarPage: React.FC = () => {
 
       // Ensure today is in the range, expand if needed
       if (today < prev.startDate) {
-        newRange.startDate = subDays(today, 30);
+        newRange.startDate = subDays(today, CALENDAR_CONSTANTS.DAYS_TO_LOAD);
       } else if (today > prev.endDate) {
-        newRange.endDate = addDays(today, 30);
+        newRange.endDate = addDays(today, CALENDAR_CONSTANTS.DAYS_TO_LOAD);
       }
 
       return newRange;
@@ -108,6 +119,7 @@ export const CalendarPage: React.FC = () => {
         onLoadMoreDays={handleLoadMoreDays}
         onToday={handleToday}
         onTimeSlotClick={handleTimeSlotClick}
+        scrollContainerRef={scrollContainerRef}
       />
       <Fab
         color="primary"

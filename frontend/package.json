@@ -23,6 +23,7 @@
     "@mui/x-data-grid": "^8.9.1",
     "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-query": "^5.81.5",
+    "@tanstack/react-virtual": "^3.13.18",
     "add": "^2.0.6",
     "axios": "^1.8.3",
     "button": "^1.1.1",
