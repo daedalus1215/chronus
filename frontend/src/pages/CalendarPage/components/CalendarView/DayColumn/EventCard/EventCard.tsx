@@ -124,7 +124,7 @@ export const EventCard: React.FC<EventCardProps> = ({
     top: `${topPixels}px`,
     height: `${heightPixels}px`,
     zIndex: isDragging ? 1000 : layout.columnIndex + 1,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0 : 1, // Hide original when dragging - DragOverlay shows the dragged version
     transform: CSS.Translate.toString(transform),
   };
 

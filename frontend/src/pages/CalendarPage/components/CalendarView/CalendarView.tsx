@@ -8,7 +8,7 @@ import {
   Alert,
 } from '@mui/material';
 import { Today } from '@mui/icons-material';
-import { format, eachDayOfInterval, startOfDay } from 'date-fns';
+import { format, eachDayOfInterval, startOfDay, differenceInMinutes } from 'date-fns';
 import {
   DndContext,
   DragEndEvent,
@@ -583,42 +583,57 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </Box>
         </Box>
         <DragOverlay>
-          {draggedEvent ? (
-            <Box
-              sx={{
-                padding: '4px',
-                backgroundColor: 'var(--color-primary, #6366f1)',
-                color: 'var(--color-text, #fff)',
-                borderRadius: '4px',
-                minWidth: '120px',
-                minHeight: '40px',
-                opacity: 0.8,
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-              }}
-            >
-              <Typography
-                variant="caption"
-                sx={{ fontWeight: 600, display: 'block' }}
+          {draggedEvent ? (() => {
+            // Calculate event height based on duration
+            const startDate = new Date(draggedEvent.startDate);
+            const endDate = new Date(draggedEvent.endDate);
+            const durationMinutes = differenceInMinutes(endDate, startDate);
+            const heightPixels = (durationMinutes / 60) * CALENDAR_CONSTANTS.SLOT_HEIGHT;
+            const minHeight = (CALENDAR_CONSTANTS.DRAG_SNAP_INTERVAL / 60) * CALENDAR_CONSTANTS.SLOT_HEIGHT;
+            
+            return (
+              <Box
+                sx={{
+                  padding: '4px 8px',
+                  backgroundColor: 'var(--color-primary, #6366f1)',
+                  color: 'var(--color-text, #fff)',
+                  borderRadius: '4px',
+                  minWidth: '120px',
+                  width: '150px',
+                  height: `${Math.max(minHeight, heightPixels)}px`,
+                  opacity: 0.8,
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  overflow: 'hidden',
+                }}
               >
-                {draggedEvent.title}
-              </Typography>
-            </Box>
-          ) : resizingEvent ? (
-            <Box
-              sx={{
-                padding: '4px 8px',
-                backgroundColor: 'var(--color-primary, #6366f1)',
-                color: 'var(--color-text, #fff)',
-                borderRadius: '4px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                opacity: 0.9,
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-              }}
-            >
-              Resizing: {resizingEvent.event.title}
-            </Box>
-          ) : null}
+                <Typography
+                  variant="caption"
+                  sx={{ fontWeight: 600, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                >
+                  {draggedEvent.title}
+                </Typography>
+                {draggedEvent.description && (
+                  <Typography
+                    variant="caption"
+                    sx={{ 
+                      fontSize: '0.7rem', 
+                      opacity: 0.9, 
+                      marginTop: '4px',
+                      display: '-webkit-box',
+                      WebkitLineClamp: Math.floor((Math.max(minHeight, heightPixels) - 20) / 16),
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {draggedEvent.description}
+                  </Typography>
+                )}
+              </Box>
+            );
+          })() : null}
         </DragOverlay>
       </DndContext>
       <EventDetailsModal
