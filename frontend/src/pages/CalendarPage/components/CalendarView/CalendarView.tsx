@@ -39,6 +39,7 @@ import {
   calculateNewEventTimes,
 } from '../../utils/event-drag.utils';
 import { snapToTimeSlot } from '../../utils/drag-modifiers.utils';
+import { createDayWidthCalculator } from '../../utils/day-width.utils';
 import { CALENDAR_CONSTANTS } from '../../constants/calendar.constants';
 import styles from './CalendarView.module.css';
 
@@ -103,6 +104,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const isMobile = useIsMobile();
   const updateMutation = useUpdateCalendarEvent();
 
+  // Create day width calculator for variable widths (today wider, weekends narrower)
+  const getDayWidth = useMemo(
+    () => createDayWidthCalculator(days, { isMobile }),
+    [days, isMobile]
+  );
+
   // Infinite scrolling with loading indicators
   const { isLoadingLeft, isLoadingRight } = useInfiniteScrollDays({
     containerRef: calendarGridRef,
@@ -131,11 +138,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     scrollToCurrentTime: true,
   });
 
-  // Virtualization for day columns
+  // Virtualization for day columns with variable widths
   const virtualizer = useVirtualizedDays({
     containerRef: calendarGridRef,
     dayCount: days.length,
     isMobile,
+    getDayWidth, // Pass width calculation function for variable widths
   });
 
   // Drag and drop sensors
@@ -288,10 +296,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             {/* Loading skeletons on the left - positioned before the virtualized content */}
             {isLoadingLeft &&
               Array.from({ length: 3 }).map((_, i) => {
-                const dayWidth = isMobile
+                // Use default width for skeletons (we don't know which days they represent)
+                const skeletonWidth = isMobile
                   ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
                   : CALENDAR_CONSTANTS.DAY_WIDTH;
-                const leftOffset = -dayWidth * (3 - i);
+                const leftOffset = -skeletonWidth * (3 - i);
                 return (
                   <Box
                     key={`skeleton-left-${i}`}
@@ -299,7 +308,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       position: 'absolute',
                       top: 0,
                       left: `${leftOffset}px`,
-                      width: `${dayWidth}px`,
+                      width: `${skeletonWidth}px`,
                       height: '100%',
                     }}
                   >
@@ -341,10 +350,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             {/* Loading skeletons on the right - positioned after the virtualized content */}
             {isLoadingRight &&
               Array.from({ length: 3 }).map((_, i) => {
-                const dayWidth = isMobile
+                // Use default width for skeletons (we don't know which days they represent)
+                const skeletonWidth = isMobile
                   ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
                   : CALENDAR_CONSTANTS.DAY_WIDTH;
-                const leftOffset = virtualizer.getTotalSize() + dayWidth * i;
+                const leftOffset = virtualizer.getTotalSize() + skeletonWidth * i;
                 return (
                   <Box
                     key={`skeleton-right-${i}`}
@@ -352,7 +362,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       position: 'absolute',
                       top: 0,
                       left: `${leftOffset}px`,
-                      width: `${dayWidth}px`,
+                      width: `${skeletonWidth}px`,
                       height: '100%',
                     }}
                   >

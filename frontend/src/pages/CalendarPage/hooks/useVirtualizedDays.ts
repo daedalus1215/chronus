@@ -5,20 +5,23 @@ type UseVirtualizedDaysOptions = {
   containerRef: React.RefObject<HTMLDivElement>;
   dayCount: number;
   isMobile: boolean;
+  getDayWidth?: (index: number) => number; // Optional function to calculate width per day
 };
 
 /**
  * Hook to virtualize day columns for optimal performance
  * Only renders visible columns plus overscan buffer
  * Uses dynamic measurement to get actual rendered widths
+ * Supports variable widths per day (e.g., today wider, weekends narrower)
  */
 export const useVirtualizedDays = ({
   containerRef,
   dayCount,
   isMobile,
+  getDayWidth,
 }: UseVirtualizedDaysOptions) => {
   // Fallback estimate if measurement not available
-  const dayWidth = isMobile
+  const defaultDayWidth = isMobile
     ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
     : CALENDAR_CONSTANTS.DAY_WIDTH;
 
@@ -26,13 +29,17 @@ export const useVirtualizedDays = ({
     horizontal: true,
     count: dayCount,
     getScrollElement: () => containerRef.current,
-    estimateSize: () => dayWidth,
+    estimateSize: (index) => {
+      // Use custom width function if provided, otherwise use default
+      return getDayWidth ? getDayWidth(index) : defaultDayWidth;
+    },
     overscan: CALENDAR_CONSTANTS.VIRTUALIZATION_OVERSCAN,
     // Dynamic measurement: measure actual rendered element width
     // This allows the virtualizer to adapt if CSS changes affect column widths
+    // Also handles variable widths (today wider, weekends narrower)
     measureElement: (element) => {
       if (!element) {
-        return dayWidth; // Fallback to estimate
+        return defaultDayWidth;
       }
       
       // Find the DayColumn element inside the wrapper Box
@@ -73,8 +80,14 @@ export const useVirtualizedDays = ({
         return wrapperRect.width;
       }
       
-      // Final fallback to estimate
-      return dayWidth;
+      // Final fallback: try to use getDayWidth if available
+      const index = parseInt(element.getAttribute('data-index') || '-1', 10);
+      if (index >= 0 && getDayWidth) {
+        return getDayWidth(index);
+      }
+      
+      // Ultimate fallback to default estimate
+      return defaultDayWidth;
     },
     // Enable smooth scrolling
     enableSmoothScroll: true,
