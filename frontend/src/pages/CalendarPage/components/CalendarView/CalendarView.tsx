@@ -316,7 +316,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               return (
                 <Box
                   key={virtualItem.key}
-                  data-virtual-index={virtualItem.index}
+                  data-index={virtualItem.index}
+                  data-virtual-key={virtualItem.key}
+                  ref={virtualizer.measureElement}
                   style={{
                     position: 'absolute',
                     top: 0,
