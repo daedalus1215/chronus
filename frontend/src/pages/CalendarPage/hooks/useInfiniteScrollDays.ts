@@ -1,9 +1,15 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { CALENDAR_CONSTANTS } from '../constants/calendar.constants';
 
 type UseInfiniteScrollDaysOptions = {
   containerRef: React.RefObject<HTMLDivElement>;
   onLoadMoreDays: (direction: 'left' | 'right') => void;
   loadThreshold?: number; // Number of days from edge to trigger loading
+};
+
+type UseInfiniteScrollDaysReturn = {
+  isLoadingLeft: boolean;
+  isLoadingRight: boolean;
 };
 
 /**
@@ -12,26 +18,28 @@ type UseInfiniteScrollDaysOptions = {
  *
  * @param options - Configuration options
  * @param options.containerRef - Ref to the scrollable container
- * @param options.dayRange - Current loaded date range
  * @param options.onLoadMoreDays - Callback to load more days
- * @param options.loadThreshold - Days from edge to trigger loading (default: 5)
+ * @param options.loadThreshold - Days from edge to trigger loading (default from constants)
  */
 export const useInfiniteScrollDays = ({
   containerRef,
   onLoadMoreDays,
-  loadThreshold = 5,
-}: UseInfiniteScrollDaysOptions): void => {
+  loadThreshold = CALENDAR_CONSTANTS.SCROLL_THRESHOLD,
+}: UseInfiniteScrollDaysOptions): UseInfiniteScrollDaysReturn => {
   const isLoadingRef = useRef(false);
   const dayWidthRef = useRef<number | null>(null);
+  const [isLoadingLeft, setIsLoadingLeft] = useState(false);
+  const [isLoadingRight, setIsLoadingRight] = useState(false);
 
   const calculateDayWidth = useCallback((): number => {
     if (dayWidthRef.current !== null) {
       return dayWidthRef.current;
     }
     // Estimate day width based on container or use default
-    // Mobile: ~100px, Desktop: ~150px
     const isMobile = window.innerWidth <= 600;
-    const estimatedWidth = isMobile ? 100 : 150;
+    const estimatedWidth = isMobile
+      ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
+      : CALENDAR_CONSTANTS.DAY_WIDTH;
     dayWidthRef.current = estimatedWidth;
     return estimatedWidth;
   }, []);
@@ -54,18 +62,22 @@ export const useInfiniteScrollDays = ({
     // Load more days if near edges
     if (daysFromStart < loadThreshold) {
       isLoadingRef.current = true;
+      setIsLoadingLeft(true);
       onLoadMoreDays('left');
       // Reset loading flag after a delay to allow for async operations
       setTimeout(() => {
         isLoadingRef.current = false;
-      }, 500);
+        setIsLoadingLeft(false);
+      }, 1000);
     } else if (daysFromEnd < loadThreshold) {
       isLoadingRef.current = true;
+      setIsLoadingRight(true);
       onLoadMoreDays('right');
       // Reset loading flag after a delay to allow for async operations
       setTimeout(() => {
         isLoadingRef.current = false;
-      }, 500);
+        setIsLoadingRight(false);
+      }, 1000);
     }
   }, [containerRef, onLoadMoreDays, loadThreshold, calculateDayWidth]);
 
@@ -103,4 +115,9 @@ export const useInfiniteScrollDays = ({
       clearTimeout(scrollTimeout);
     };
   }, [containerRef, handleScroll]);
+
+  return {
+    isLoadingLeft,
+    isLoadingRight,
+  };
 };

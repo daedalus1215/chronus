@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -7,12 +7,14 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { Today, WbSunny, Nightlight } from '@mui/icons-material';
-import { format, eachDayOfInterval, isToday } from 'date-fns';
+import { Today } from '@mui/icons-material';
+import { format, eachDayOfInterval, startOfDay, differenceInMinutes } from 'date-fns';
 import {
   DndContext,
   DragEndEvent,
   DragStartEvent,
+  DragMoveEvent,
+  DragCancelEvent,
   PointerSensor,
   TouchSensor,
   useSensor,
@@ -24,13 +26,29 @@ import { CalendarEventResponseDto } from '../../../../api/dtos/calendar-events.d
 import { EventDetailsModal } from '../EventDetailsModal/EventDetailsModal';
 import { useEventLayouts } from '../../hooks/useEventLayouts';
 import { DayColumn } from './DayColumn/DayColumn';
+import { TimeColumn } from './TimeColumn/TimeColumn';
+import { CurrentTimeIndicator } from './CurrentTimeIndicator/CurrentTimeIndicator';
+import { SkeletonDayColumn } from './SkeletonDayColumn/SkeletonDayColumn';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { useUpdateCalendarEvent } from '../../hooks/useUpdateCalendarEvent';
 import { useInfiniteScrollDays } from '../../hooks/useInfiniteScrollDays';
+import { useScrollToToday } from '../../hooks/useScrollToToday';
+import { useCurrentTimeIndicator } from '../../hooks/useCurrentTimeIndicator';
+import { useVisibleDateRange } from '../../hooks/useVisibleDateRange';
+import { useVirtualizedDays } from '../../hooks/useVirtualizedDays';
 import {
   calculateDropPosition,
   calculateNewEventTimes,
 } from '../../utils/event-drag.utils';
+import {
+  calculateResizePosition,
+  calculateResizeFromTop,
+  calculateResizeFromBottom,
+  ResizeDirection,
+} from '../../utils/event-resize.utils';
+import { snapToTimeSlot } from '../../utils/drag-modifiers.utils';
+import { createDayWidthCalculator } from '../../utils/day-width.utils';
+import { CALENDAR_CONSTANTS } from '../../constants/calendar.constants';
 import styles from './CalendarView.module.css';
 
 type CalendarViewProps = {
@@ -41,6 +59,7 @@ type CalendarViewProps = {
   onLoadMoreDays: (direction: 'left' | 'right') => void;
   onToday: () => void;
   onTimeSlotClick?: (date: Date, hour: number) => void;
+  scrollContainerRef?: React.RefObject<HTMLDivElement>;
 };
 
 /**
@@ -64,7 +83,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   onLoadMoreDays,
   onToday,
   onTimeSlotClick,
+  scrollContainerRef: externalRef,
 }) => {
+  const internalRef = useRef<HTMLDivElement>(null);
+  const calendarGridRef = externalRef || internalRef;
+
   const days = useMemo(() => {
     return eachDayOfInterval({
       start: startDate,
@@ -72,44 +95,76 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     });
   }, [startDate, endDate]);
 
-  const timeSlots = Array.from({ length: 24 }, (_, i) => i);
-  const calendarGridRef = useRef<HTMLDivElement>(null);
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
-  const [hasScrolledToToday, setHasScrolledToToday] = useState(false);
+  const timeSlots = useMemo(
+    () => Array.from({ length: CALENDAR_CONSTANTS.HOURS_PER_DAY }, (_, i) => i),
+    []
+  );
 
-  // Format hour in 12-hour format with AM/PM
-  const formatHour = (
-    hour: number
-  ): { hour: number; period: 'AM' | 'PM'; isDay: boolean } => {
-    if (hour === 0) {
-      return { hour: 12, period: 'AM', isDay: false };
-    } else if (hour < 12) {
-      return { hour, period: 'AM', isDay: hour >= 6 };
-    } else if (hour === 12) {
-      return { hour: 12, period: 'PM', isDay: true };
-    } else {
-      return { hour: hour - 12, period: 'PM', isDay: hour < 18 };
-    }
-  };
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [draggedEvent, setDraggedEvent] =
     useState<CalendarEventResponseDto | null>(null);
-  const dayLayoutMaps = useEventLayouts(startDate, endDate, events);
-  const isMobile = useIsMobile();
-
-  // Infinite scrolling
-  useInfiniteScrollDays({
-    containerRef: calendarGridRef,
-    onLoadMoreDays,
-  });
-  const updateMutation = useUpdateCalendarEvent();
+  const [resizingEvent, setResizingEvent] = useState<{
+    event: CalendarEventResponseDto;
+    direction: ResizeDirection;
+  } | null>(null);
+  const [resizePreview, setResizePreview] = useState<{
+    eventId: number;
+    startDate: Date;
+    endDate: Date;
+    direction: ResizeDirection;
+  } | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>(
     'success'
   );
-  const [visibleStartDate, setVisibleStartDate] = useState<Date>(startDate);
-  const [visibleEndDate, setVisibleEndDate] = useState<Date>(endDate);
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
+  const dayLayoutMaps = useEventLayouts(startDate, endDate, events);
+  const isMobile = useIsMobile();
+  const updateMutation = useUpdateCalendarEvent();
+
+  // Create day width calculator for variable widths (today wider, weekends narrower)
+  const getDayWidth = useMemo(
+    () => createDayWidthCalculator(days, { isMobile }),
+    [days, isMobile]
+  );
+
+  // Infinite scrolling with loading indicators
+  const { isLoadingLeft, isLoadingRight } = useInfiniteScrollDays({
+    containerRef: calendarGridRef,
+    onLoadMoreDays,
+  });
+
+  // Current time indicator
+  const { currentTimePosition } = useCurrentTimeIndicator({
+    days,
+    isMobile,
+  });
+
+  // Visible date range for header
+  const { visibleStartDate, visibleEndDate } = useVisibleDateRange({
+    containerRef: calendarGridRef,
+    days,
+    isMobile,
+  });
+
+  // Auto-scroll to today on mount
+  const { scrollToToday } = useScrollToToday({
+    containerRef: calendarGridRef,
+    days,
+    isMobile,
+    autoScrollOnMount: true,
+    scrollToCurrentTime: true,
+  });
+
+  // Virtualization for day columns with variable widths
+  const virtualizer = useVirtualizedDays({
+    containerRef: calendarGridRef,
+    dayCount: days.length,
+    isMobile,
+    getDayWidth, // Pass width calculation function for variable widths
+  });
+
+  // Drag and drop sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: isMobile
@@ -129,125 +184,211 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     })
   );
 
-  // Auto-scroll to current day on initial mount
-  useEffect(() => {
-    if (hasScrolledToToday || !calendarGridRef.current) {
-      return;
-    }
-
-    const container = calendarGridRef.current;
-    const todayDay = days.find(day => isToday(day));
-
-    if (!todayDay) {
-      return;
-    }
-
-    // Wait for layout to be ready - use multiple attempts for mobile
-    const scrollToToday = (attempt = 0) => {
-      const todayElement = container.querySelector(
-        `[data-day-id="${todayDay.toISOString()}"]`
-      ) as HTMLElement;
-
-      if (!todayElement || !container) {
-        // Retry if element not found yet (especially on mobile)
-        if (attempt < 5) {
-          setTimeout(() => scrollToToday(attempt + 1), 150);
-        }
-        return;
-      }
-
-      // Calculate scroll position more reliably
-      const containerRect = container.getBoundingClientRect();
-      const elementRect = todayElement.getBoundingClientRect();
-      const scrollLeft = container.scrollLeft;
-      const elementLeft = elementRect.left - containerRect.left + scrollLeft;
-      const elementWidth = todayElement.offsetWidth;
-      const containerWidth = container.clientWidth;
-
-      // Center the today column in the viewport
-      const targetScrollLeft =
-        elementLeft - containerWidth / 2 + elementWidth / 2;
-
-      container.scrollTo({
-        left: targetScrollLeft,
-        behavior: 'smooth',
-      });
-      setHasScrolledToToday(true);
-    };
-
-    // Use multiple delays for mobile devices which may need more time
-    const delay = isMobile ? 300 : 150;
-    requestAnimationFrame(() => {
-      setTimeout(() => scrollToToday(), delay);
-    });
-  }, [hasScrolledToToday, days, isMobile]);
-
-  // Scroll to today when Today button is clicked
+  // Handle Today button click
   const handleTodayClick = () => {
     onToday();
-    if (!calendarGridRef.current) {
-      return;
-    }
-
-    const container = calendarGridRef.current;
-    const todayDay = days.find(day => isToday(day));
-
-    if (!todayDay) {
-      return;
-    }
-
-    // Wait a bit for the day range to update if needed
-    const scrollToToday = (attempt = 0) => {
-      const todayElement = container.querySelector(
-        `[data-day-id="${todayDay.toISOString()}"]`
-      ) as HTMLElement;
-
-      if (!todayElement || !container) {
-        // Retry if element not found yet
-        if (attempt < 5) {
-          setTimeout(() => scrollToToday(attempt + 1), 150);
-        }
-        return;
-      }
-
-      // Calculate scroll position more reliably
-      const containerRect = container.getBoundingClientRect();
-      const elementRect = todayElement.getBoundingClientRect();
-      const scrollLeft = container.scrollLeft;
-      const elementLeft = elementRect.left - containerRect.left + scrollLeft;
-      const elementWidth = todayElement.offsetWidth;
-      const containerWidth = container.clientWidth;
-
-      // Center the today column in the viewport
-      const targetScrollLeft =
-        elementLeft - containerWidth / 2 + elementWidth / 2;
-
-      container.scrollTo({
-        left: targetScrollLeft,
-        behavior: 'smooth',
-      });
-    };
-
-    const delay = isMobile ? 300 : 150;
-    setTimeout(() => scrollToToday(), delay);
+    scrollToToday();
   };
 
+  // Drag and drop handlers
   const handleDragStart = (event: DragStartEvent) => {
-    const eventData = event.active.data.current?.event as
-      | CalendarEventResponseDto
-      | undefined;
+    const data = event.active.data.current;
+    const eventData = data?.event as CalendarEventResponseDto | undefined;
+    const dragType = data?.type as string | undefined;
+
     if (eventData) {
-      setDraggedEvent(eventData);
+      if (dragType === 'resize') {
+        const direction = data.direction as ResizeDirection;
+        setResizingEvent({ event: eventData, direction });
+      } else {
+        setDraggedEvent(eventData);
+      }
     }
+  };
+
+  const handleDragMove = (event: DragMoveEvent) => {
+    // Only handle resize preview updates
+    if (!resizingEvent) {
+      return;
+    }
+
+    const { active } = event;
+    const activeData = active.data.current;
+    
+    if (!activeData?.event) {
+      return;
+    }
+
+    const eventToResize = activeData.event as CalendarEventResponseDto;
+    
+    // Always use the event's original day - constrain resize to same day
+    const eventStart = new Date(eventToResize.startDate);
+    const eventDay = startOfDay(eventStart);
+    
+    // Find the day element for the event's day
+    const dayElement = document.querySelector(
+      `[data-day-id="${eventDay.toISOString()}"]`
+    ) as HTMLElement;
+
+    if (!dayElement) {
+      return;
+    }
+
+    const activeRect =
+      active.rect.current.translated ?? active.rect.current.initial;
+    if (!activeRect) {
+      return;
+    }
+
+    // Calculate resize position - constrain to the event's day
+    const resizeY = resizingEvent.direction === 'top' 
+      ? activeRect.top 
+      : activeRect.top + activeRect.height;
+
+    const resizePosition = calculateResizePosition(
+      resizeY,
+      dayElement,
+      eventDay
+    );
+
+    if (!resizePosition) {
+      return;
+    }
+
+    // Calculate preview times - but clamp to stay within the same day
+    const { startDate, endDate } =
+      resizingEvent.direction === 'top'
+        ? calculateResizeFromTop(eventToResize, resizePosition)
+        : calculateResizeFromBottom(eventToResize, resizePosition);
+
+    // Clamp preview dates to the event's day boundaries
+    const dayStart = startOfDay(eventDay);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    const clampedStartDate = startDate < dayStart ? dayStart : 
+                            startDate > dayEnd ? dayEnd : startDate;
+    const clampedEndDate = endDate < dayStart ? dayStart : 
+                          endDate > dayEnd ? dayEnd : endDate;
+
+    // Update preview state with clamped dates
+    setResizePreview({
+      eventId: eventToResize.id,
+      startDate: clampedStartDate,
+      endDate: clampedEndDate,
+      direction: resizingEvent.direction,
+    });
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
-    setDraggedEvent(null);
     const { active, over } = event;
-    if (!over || !active.data.current?.event) {
+    const activeData = active.data.current;
+    const dragType = activeData?.type as string | undefined;
+
+    // Handle resize operations
+    if (dragType === 'resize' && resizingEvent) {
+      setResizingEvent(null);
+      setResizePreview(null);
+      
+      if (!activeData?.event) {
+        return;
+      }
+
+      const eventToResize = activeData.event as CalendarEventResponseDto;
+      
+      // Always use the event's original day - constrain resize to same day
+      const eventStart = new Date(eventToResize.startDate);
+      const eventDay = startOfDay(eventStart);
+      
+      // Find the day element for the event's day
+      const dayElement = document.querySelector(
+        `[data-day-id="${eventDay.toISOString()}"]`
+      ) as HTMLElement;
+
+      if (!dayElement) {
+        return;
+      }
+
+      const activeRect =
+        active.rect.current.translated ?? active.rect.current.initial;
+      if (!activeRect) {
+        return;
+      }
+
+      // Use the center Y of the resize handle for more accurate positioning
+      const resizeY = resizingEvent.direction === 'top' 
+        ? activeRect.top 
+        : activeRect.top + activeRect.height;
+
+      const resizePosition = calculateResizePosition(
+        resizeY,
+        dayElement,
+        eventDay
+      );
+
+      if (!resizePosition) {
+        return;
+      }
+
+      let { startDate: newStartDate, endDate: newEndDate } =
+        resizingEvent.direction === 'top'
+          ? calculateResizeFromTop(eventToResize, resizePosition)
+          : calculateResizeFromBottom(eventToResize, resizePosition);
+
+      // Clamp to day boundaries to prevent cross-day resizing
+      const dayStart = startOfDay(eventDay);
+      const dayEnd = new Date(dayStart);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      if (newStartDate < dayStart) {
+        newStartDate = new Date(dayStart);
+      }
+      if (newStartDate > dayEnd) {
+        newStartDate = new Date(dayEnd);
+      }
+      if (newEndDate < dayStart) {
+        newEndDate = new Date(dayStart);
+      }
+      if (newEndDate > dayEnd) {
+        newEndDate = new Date(dayEnd);
+      }
+
+      // Ensure end is still after start
+      if (newEndDate <= newStartDate) {
+        newEndDate = new Date(newStartDate.getTime() + CALENDAR_CONSTANTS.DRAG_SNAP_INTERVAL * 60 * 1000);
+      }
+
+      try {
+        await updateMutation.mutateAsync({
+          id: eventToResize.id,
+          event: {
+            title: eventToResize.title,
+            description: eventToResize.description,
+            startDate: newStartDate.toISOString(),
+            endDate: newEndDate.toISOString(),
+          },
+        });
+        setToastSeverity('success');
+        setToastMessage('Event resized successfully');
+      } catch (error) {
+        console.error('Error resizing calendar event:', error);
+        setToastSeverity('error');
+        setToastMessage(
+          error instanceof Error
+            ? error.message || 'Failed to resize event'
+            : 'Failed to resize event'
+        );
+      }
       return;
     }
-    const eventToMove = active.data.current.event as CalendarEventResponseDto;
+
+    // Handle move operations (existing logic)
+    setDraggedEvent(null);
+    setResizePreview(null);
+    if (!over || !activeData?.event) {
+      return;
+    }
+    const eventToMove = activeData.event as CalendarEventResponseDto;
     const dropDayData = over.data.current;
     if (!dropDayData?.day) {
       return;
@@ -298,72 +439,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
   };
 
-  // Update current time every minute
-  useEffect(() => {
-    const updateTime = () => {
-      setCurrentTime(new Date());
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 60000); // Update every minute
-    return () => clearInterval(interval);
-  }, []);
-
-  // Calculate if today is in the visible range and get the current time position
-  const isTodayInRange = days.some(day => isToday(day));
-  const getCurrentTimePosition = (): number | null => {
-    if (!isTodayInRange) {
-      return null;
-    }
-    const now = currentTime;
-    const headerHeight = isMobile ? 55 : 60;
-    const slotHeight = 60;
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const position =
-      headerHeight + hours * slotHeight + (minutes / 60) * slotHeight;
-    return position;
+  const handleDragCancel = () => {
+    // Clear all drag/resize state on cancel
+    setDraggedEvent(null);
+    setResizingEvent(null);
+    setResizePreview(null);
   };
-
-  const currentTimePosition = getCurrentTimePosition();
-
-  // Calculate visible date range from scroll position
-  useEffect(() => {
-    const container = calendarGridRef.current;
-    if (!container) {
-      return;
-    }
-
-    const updateVisibleRange = () => {
-      const scrollLeft = container.scrollLeft;
-      const containerWidth = container.clientWidth;
-      const dayWidth = isMobile ? 100 : 150; // Approximate day width
-
-      const firstVisibleDayIndex = Math.max(
-        0,
-        Math.floor(scrollLeft / dayWidth)
-      );
-      const lastVisibleDayIndex = Math.min(
-        days.length - 1,
-        Math.ceil((scrollLeft + containerWidth) / dayWidth)
-      );
-
-      if (days[firstVisibleDayIndex] && days[lastVisibleDayIndex]) {
-        setVisibleStartDate(days[firstVisibleDayIndex]);
-        setVisibleEndDate(days[lastVisibleDayIndex]);
-      }
-    };
-
-    const handleScroll = () => {
-      requestAnimationFrame(updateVisibleRange);
-    };
-
-    container.addEventListener('scroll', handleScroll);
-    updateVisibleRange(); // Initial calculation
-
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-    };
-  }, [days, isMobile]);
 
   if (isLoading) {
     return (
@@ -397,93 +478,162 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+        modifiers={[snapToTimeSlot]}
       >
         <Box className={styles.calendarGrid} ref={calendarGridRef}>
-          <Box className={styles.timeColumn}>
-            <Box className={styles.timeSlotHeader}></Box>
-            {timeSlots.map(hour => {
-              const { hour: displayHour, period, isDay } = formatHour(hour);
-              return (
-                <Box key={hour} className={styles.timeSlot}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    {isDay ? (
-                      <WbSunny
-                        sx={{ fontSize: '0.875rem', color: '#f59e0b' }}
-                      />
-                    ) : (
-                      <Nightlight
-                        sx={{ fontSize: '0.875rem', color: '#6366f1' }}
-                      />
-                    )}
-                    <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
-                      {displayHour}:00 {period}
-                    </Typography>
+          <TimeColumn timeSlots={timeSlots} />
+          
+          {currentTimePosition !== null && (
+            <CurrentTimeIndicator
+              position={currentTimePosition}
+              isMobile={isMobile}
+            />
+          )}
+
+          {/* Virtualized day columns container */}
+          <Box
+            className={styles.virtualizedContainer}
+            style={{
+              width: `${virtualizer.getTotalSize()}px`,
+              position: 'relative',
+              height: '100%',
+            }}
+          >
+            {/* Loading skeletons on the left - positioned before the virtualized content */}
+            {isLoadingLeft &&
+              Array.from({ length: 3 }).map((_, i) => {
+                // Use default width for skeletons (we don't know which days they represent)
+                const skeletonWidth = isMobile
+                  ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
+                  : CALENDAR_CONSTANTS.DAY_WIDTH;
+                const leftOffset = -skeletonWidth * (3 - i);
+                return (
+                  <Box
+                    key={`skeleton-left-${i}`}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: `${leftOffset}px`,
+                      width: `${skeletonWidth}px`,
+                      height: '100%',
+                    }}
+                  >
+                    <SkeletonDayColumn timeSlots={timeSlots} />
                   </Box>
+                );
+              })}
+
+            {/* Virtualized day columns - only render visible ones */}
+            {virtualizer.getVirtualItems().map(virtualItem => {
+              const day = days[virtualItem.index];
+              if (!day) return null;
+
+              return (
+                <Box
+                  key={virtualItem.key}
+                  data-index={virtualItem.index}
+                  data-virtual-key={virtualItem.key}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: `${virtualItem.start}px`,
+                    width: `${virtualItem.size}px`,
+                    height: '100%',
+                  }}
+                >
+                  <DayColumn
+                    day={day}
+                    layoutMap={dayLayoutMaps.get(day.toISOString()) || new Map()}
+                    timeSlots={timeSlots}
+                    onEventSelect={setSelectedEventId}
+                    onTimeSlotClick={onTimeSlotClick}
+                    resizePreview={resizePreview}
+                  />
                 </Box>
               );
             })}
+
+            {/* Loading skeletons on the right - positioned after the virtualized content */}
+            {isLoadingRight &&
+              Array.from({ length: 3 }).map((_, i) => {
+                // Use default width for skeletons (we don't know which days they represent)
+                const skeletonWidth = isMobile
+                  ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
+                  : CALENDAR_CONSTANTS.DAY_WIDTH;
+                const leftOffset = virtualizer.getTotalSize() + skeletonWidth * i;
+                return (
+                  <Box
+                    key={`skeleton-right-${i}`}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: `${leftOffset}px`,
+                      width: `${skeletonWidth}px`,
+                      height: '100%',
+                    }}
+                  >
+                    <SkeletonDayColumn timeSlots={timeSlots} />
+                  </Box>
+                );
+              })}
           </Box>
-          {currentTimePosition !== null && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: `${currentTimePosition}px`,
-                left: isMobile ? '50px' : '100px',
-                width: '99999px', // Large width to span all day columns when scrolling
-                height: '2px',
-                backgroundColor: '#ef4444',
-                zIndex: 25,
-                pointerEvents: 'none',
-                boxShadow: '0 0 4px rgba(239, 68, 68, 0.5)',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  left: '-8px',
-                  top: '-4px',
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '50%',
-                  backgroundColor: '#ef4444',
-                  border: '2px solid var(--color-card-bg, #1e1e1e)',
-                  boxShadow: '0 0 4px rgba(239, 68, 68, 0.5)',
-                },
-              }}
-            />
-          )}
-          {days.map(day => (
-            <DayColumn
-              key={day.toISOString()}
-              day={day}
-              layoutMap={dayLayoutMaps.get(day.toISOString()) || new Map()}
-              timeSlots={timeSlots}
-              onEventSelect={setSelectedEventId}
-              onTimeSlotClick={onTimeSlotClick}
-            />
-          ))}
         </Box>
         <DragOverlay>
-          {draggedEvent ? (
-            <Box
-              sx={{
-                padding: '4px',
-                backgroundColor: 'var(--color-primary, #6366f1)',
-                color: 'var(--color-text, #fff)',
-                borderRadius: '4px',
-                minWidth: '120px',
-                minHeight: '40px',
-                opacity: 0.8,
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-              }}
-            >
-              <Typography
-                variant="caption"
-                sx={{ fontWeight: 600, display: 'block' }}
+          {draggedEvent ? (() => {
+            // Calculate event height based on duration
+            const startDate = new Date(draggedEvent.startDate);
+            const endDate = new Date(draggedEvent.endDate);
+            const durationMinutes = differenceInMinutes(endDate, startDate);
+            const heightPixels = (durationMinutes / 60) * CALENDAR_CONSTANTS.SLOT_HEIGHT;
+            const minHeight = (CALENDAR_CONSTANTS.DRAG_SNAP_INTERVAL / 60) * CALENDAR_CONSTANTS.SLOT_HEIGHT;
+            
+            return (
+              <Box
+                sx={{
+                  padding: '4px 8px',
+                  backgroundColor: 'var(--color-primary, #6366f1)',
+                  color: 'var(--color-text, #fff)',
+                  borderRadius: '4px',
+                  minWidth: '120px',
+                  width: '150px',
+                  height: `${Math.max(minHeight, heightPixels)}px`,
+                  opacity: 0.8,
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  overflow: 'hidden',
+                }}
               >
-                {draggedEvent.title}
-              </Typography>
-            </Box>
-          ) : null}
+                <Typography
+                  variant="caption"
+                  sx={{ fontWeight: 600, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                >
+                  {draggedEvent.title}
+                </Typography>
+                {draggedEvent.description && (
+                  <Typography
+                    variant="caption"
+                    sx={{ 
+                      fontSize: '0.7rem', 
+                      opacity: 0.9, 
+                      marginTop: '4px',
+                      display: '-webkit-box',
+                      WebkitLineClamp: Math.floor((Math.max(minHeight, heightPixels) - 20) / 16),
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {draggedEvent.description}
+                  </Typography>
+                )}
+              </Box>
+            );
+          })() : null}
         </DragOverlay>
       </DndContext>
       <EventDetailsModal

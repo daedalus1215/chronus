@@ -12,6 +12,12 @@ type DayColumnProps = {
   timeSlots: number[];
   onEventSelect: (eventId: number) => void;
   onTimeSlotClick?: (date: Date, hour: number) => void;
+  resizePreview?: {
+    eventId: number;
+    startDate: Date;
+    endDate: Date;
+    direction: 'top' | 'bottom';
+  } | null;
 };
 
 /**
@@ -30,6 +36,7 @@ export const DayColumn: React.FC<DayColumnProps> = ({
   timeSlots,
   onEventSelect,
   onTimeSlotClick,
+  resizePreview,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: `day-${day.toISOString()}`,
@@ -76,7 +83,11 @@ export const DayColumn: React.FC<DayColumnProps> = ({
           <EventCard
             key={layout.event.id}
             layout={layout}
+            day={day}
             onSelect={onEventSelect}
+            resizePreview={
+              resizePreview?.eventId === layout.event.id ? resizePreview : null
+            }
           />
         ))}
       </Box>
