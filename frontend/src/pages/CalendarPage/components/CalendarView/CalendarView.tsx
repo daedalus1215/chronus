@@ -8,11 +8,13 @@ import {
   Alert,
 } from '@mui/material';
 import { Today } from '@mui/icons-material';
-import { format, eachDayOfInterval } from 'date-fns';
+import { format, eachDayOfInterval, startOfDay } from 'date-fns';
 import {
   DndContext,
   DragEndEvent,
   DragStartEvent,
+  DragMoveEvent,
+  DragCancelEvent,
   PointerSensor,
   TouchSensor,
   useSensor,
@@ -38,6 +40,12 @@ import {
   calculateDropPosition,
   calculateNewEventTimes,
 } from '../../utils/event-drag.utils';
+import {
+  calculateResizePosition,
+  calculateResizeFromTop,
+  calculateResizeFromBottom,
+  ResizeDirection,
+} from '../../utils/event-resize.utils';
 import { snapToTimeSlot } from '../../utils/drag-modifiers.utils';
 import { createDayWidthCalculator } from '../../utils/day-width.utils';
 import { CALENDAR_CONSTANTS } from '../../constants/calendar.constants';
@@ -95,6 +103,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [draggedEvent, setDraggedEvent] =
     useState<CalendarEventResponseDto | null>(null);
+  const [resizingEvent, setResizingEvent] = useState<{
+    event: CalendarEventResponseDto;
+    direction: ResizeDirection;
+  } | null>(null);
+  const [resizePreview, setResizePreview] = useState<{
+    eventId: number;
+    startDate: Date;
+    endDate: Date;
+    direction: ResizeDirection;
+  } | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>(
     'success'
@@ -174,21 +192,203 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   // Drag and drop handlers
   const handleDragStart = (event: DragStartEvent) => {
-    const eventData = event.active.data.current?.event as
-      | CalendarEventResponseDto
-      | undefined;
+    const data = event.active.data.current;
+    const eventData = data?.event as CalendarEventResponseDto | undefined;
+    const dragType = data?.type as string | undefined;
+
     if (eventData) {
-      setDraggedEvent(eventData);
+      if (dragType === 'resize') {
+        const direction = data.direction as ResizeDirection;
+        setResizingEvent({ event: eventData, direction });
+      } else {
+        setDraggedEvent(eventData);
+      }
     }
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    setDraggedEvent(null);
-    const { active, over } = event;
-    if (!over || !active.data.current?.event) {
+  const handleDragMove = (event: DragMoveEvent) => {
+    // Only handle resize preview updates
+    if (!resizingEvent) {
       return;
     }
-    const eventToMove = active.data.current.event as CalendarEventResponseDto;
+
+    const { active } = event;
+    const activeData = active.data.current;
+    
+    if (!activeData?.event) {
+      return;
+    }
+
+    const eventToResize = activeData.event as CalendarEventResponseDto;
+    
+    // Always use the event's original day - constrain resize to same day
+    const eventStart = new Date(eventToResize.startDate);
+    const eventDay = startOfDay(eventStart);
+    
+    // Find the day element for the event's day
+    const dayElement = document.querySelector(
+      `[data-day-id="${eventDay.toISOString()}"]`
+    ) as HTMLElement;
+
+    if (!dayElement) {
+      return;
+    }
+
+    const activeRect =
+      active.rect.current.translated ?? active.rect.current.initial;
+    if (!activeRect) {
+      return;
+    }
+
+    // Calculate resize position - constrain to the event's day
+    const resizeY = resizingEvent.direction === 'top' 
+      ? activeRect.top 
+      : activeRect.top + activeRect.height;
+
+    const resizePosition = calculateResizePosition(
+      resizeY,
+      dayElement,
+      eventDay
+    );
+
+    if (!resizePosition) {
+      return;
+    }
+
+    // Calculate preview times - but clamp to stay within the same day
+    const { startDate, endDate } =
+      resizingEvent.direction === 'top'
+        ? calculateResizeFromTop(eventToResize, resizePosition)
+        : calculateResizeFromBottom(eventToResize, resizePosition);
+
+    // Clamp preview dates to the event's day boundaries
+    const dayStart = startOfDay(eventDay);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    const clampedStartDate = startDate < dayStart ? dayStart : 
+                            startDate > dayEnd ? dayEnd : startDate;
+    const clampedEndDate = endDate < dayStart ? dayStart : 
+                          endDate > dayEnd ? dayEnd : endDate;
+
+    // Update preview state with clamped dates
+    setResizePreview({
+      eventId: eventToResize.id,
+      startDate: clampedStartDate,
+      endDate: clampedEndDate,
+      direction: resizingEvent.direction,
+    });
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    const activeData = active.data.current;
+    const dragType = activeData?.type as string | undefined;
+
+    // Handle resize operations
+    if (dragType === 'resize' && resizingEvent) {
+      setResizingEvent(null);
+      setResizePreview(null);
+      
+      if (!activeData?.event) {
+        return;
+      }
+
+      const eventToResize = activeData.event as CalendarEventResponseDto;
+      
+      // Always use the event's original day - constrain resize to same day
+      const eventStart = new Date(eventToResize.startDate);
+      const eventDay = startOfDay(eventStart);
+      
+      // Find the day element for the event's day
+      const dayElement = document.querySelector(
+        `[data-day-id="${eventDay.toISOString()}"]`
+      ) as HTMLElement;
+
+      if (!dayElement) {
+        return;
+      }
+
+      const activeRect =
+        active.rect.current.translated ?? active.rect.current.initial;
+      if (!activeRect) {
+        return;
+      }
+
+      // Use the center Y of the resize handle for more accurate positioning
+      const resizeY = resizingEvent.direction === 'top' 
+        ? activeRect.top 
+        : activeRect.top + activeRect.height;
+
+      const resizePosition = calculateResizePosition(
+        resizeY,
+        dayElement,
+        eventDay
+      );
+
+      if (!resizePosition) {
+        return;
+      }
+
+      let { startDate: newStartDate, endDate: newEndDate } =
+        resizingEvent.direction === 'top'
+          ? calculateResizeFromTop(eventToResize, resizePosition)
+          : calculateResizeFromBottom(eventToResize, resizePosition);
+
+      // Clamp to day boundaries to prevent cross-day resizing
+      const dayStart = startOfDay(eventDay);
+      const dayEnd = new Date(dayStart);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      if (newStartDate < dayStart) {
+        newStartDate = new Date(dayStart);
+      }
+      if (newStartDate > dayEnd) {
+        newStartDate = new Date(dayEnd);
+      }
+      if (newEndDate < dayStart) {
+        newEndDate = new Date(dayStart);
+      }
+      if (newEndDate > dayEnd) {
+        newEndDate = new Date(dayEnd);
+      }
+
+      // Ensure end is still after start
+      if (newEndDate <= newStartDate) {
+        newEndDate = new Date(newStartDate.getTime() + CALENDAR_CONSTANTS.DRAG_SNAP_INTERVAL * 60 * 1000);
+      }
+
+      try {
+        await updateMutation.mutateAsync({
+          id: eventToResize.id,
+          event: {
+            title: eventToResize.title,
+            description: eventToResize.description,
+            startDate: newStartDate.toISOString(),
+            endDate: newEndDate.toISOString(),
+          },
+        });
+        setToastSeverity('success');
+        setToastMessage('Event resized successfully');
+      } catch (error) {
+        console.error('Error resizing calendar event:', error);
+        setToastSeverity('error');
+        setToastMessage(
+          error instanceof Error
+            ? error.message || 'Failed to resize event'
+            : 'Failed to resize event'
+        );
+      }
+      return;
+    }
+
+    // Handle move operations (existing logic)
+    setDraggedEvent(null);
+    setResizePreview(null);
+    if (!over || !activeData?.event) {
+      return;
+    }
+    const eventToMove = activeData.event as CalendarEventResponseDto;
     const dropDayData = over.data.current;
     if (!dropDayData?.day) {
       return;
@@ -239,6 +439,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
   };
 
+  const handleDragCancel = () => {
+    // Clear all drag/resize state on cancel
+    setDraggedEvent(null);
+    setResizingEvent(null);
+    setResizePreview(null);
+  };
+
   if (isLoading) {
     return (
       <Box className={styles.loadingContainer}>
@@ -271,7 +478,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
         modifiers={[snapToTimeSlot]}
       >
         <Box className={styles.calendarGrid} ref={calendarGridRef}>
@@ -342,6 +551,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     timeSlots={timeSlots}
                     onEventSelect={setSelectedEventId}
                     onTimeSlotClick={onTimeSlotClick}
+                    resizePreview={resizePreview}
                   />
                 </Box>
               );
@@ -392,6 +602,21 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               >
                 {draggedEvent.title}
               </Typography>
+            </Box>
+          ) : resizingEvent ? (
+            <Box
+              sx={{
+                padding: '4px 8px',
+                backgroundColor: 'var(--color-primary, #6366f1)',
+                color: 'var(--color-text, #fff)',
+                borderRadius: '4px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                opacity: 0.9,
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              Resizing: {resizingEvent.event.title}
             </Box>
           ) : null}
         </DragOverlay>
