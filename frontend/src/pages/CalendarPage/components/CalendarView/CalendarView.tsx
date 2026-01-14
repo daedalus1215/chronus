@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useLayoutEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -14,7 +14,6 @@ import {
   DragEndEvent,
   DragStartEvent,
   DragMoveEvent,
-  DragCancelEvent,
   PointerSensor,
   TouchSensor,
   useSensor,
@@ -128,10 +127,71 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     [days, isMobile]
   );
 
+  // Virtualization for day columns with variable widths
+  const virtualizer = useVirtualizedDays({
+    containerRef: calendarGridRef,
+    dayCount: days.length,
+    isMobile,
+    getDayWidth,
+  });
+
+  // Track when days are loaded to prevent interference
+  const lastLoadTimeRef = useRef<number>(0);
+  
+  // Track previous startDate to detect prepending (scrolling backwards)
+  const prevStartDateRef = useRef<Date>(startDate);
+  const scrollAdjustmentRef = useRef<number>(0);
+  
+  // Detect prepending: when startDate moves to an earlier date
+  // This runs during render to capture state before useLayoutEffect
+  const prevStartTime = prevStartDateRef.current.getTime();
+  const currentStartTime = startDate.getTime();
+  
+  if (currentStartTime < prevStartTime) {
+    // Days were prepended - calculate how many days were added
+    // The difference in milliseconds / ms per day = days prepended
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const daysPrepended = Math.round((prevStartTime - currentStartTime) / msPerDay);
+    
+    if (daysPrepended > 0) {
+      // Calculate the total width of prepended days
+      let addedWidth = 0;
+      for (let i = 0; i < daysPrepended; i++) {
+        addedWidth += getDayWidth(i);
+      }
+      scrollAdjustmentRef.current = addedWidth;
+    }
+  }
+  
+  // Update ref after calculation (so next render can compare)
+  prevStartDateRef.current = startDate;
+  
+  // Apply scroll adjustment synchronously after React updates DOM but before paint
+  // When days are prepended, all content shifts right - we shift scroll to compensate
+  useLayoutEffect(() => {
+    const container = calendarGridRef.current;
+    const adjustment = scrollAdjustmentRef.current;
+    
+    if (container && adjustment > 0) {
+      // Immediately adjust scroll position (no animation, no delay)
+      // This must happen before the browser paints
+      container.scrollLeft += adjustment;
+      scrollAdjustmentRef.current = 0;
+      lastLoadTimeRef.current = Date.now();
+    }
+  }, [startDate, calendarGridRef]);
+  
+  const wrappedOnLoadMoreDays = useCallback((direction: 'left' | 'right') => {
+    lastLoadTimeRef.current = Date.now();
+    onLoadMoreDays(direction);
+  }, [onLoadMoreDays]);
+
   // Infinite scrolling with loading indicators
+  // Pass virtualizer's total size for accurate boundary detection
   const { isLoadingLeft, isLoadingRight } = useInfiniteScrollDays({
     containerRef: calendarGridRef,
-    onLoadMoreDays,
+    onLoadMoreDays: wrappedOnLoadMoreDays,
+    totalContentWidth: virtualizer.getTotalSize(),
   });
 
   // Current time indicator
@@ -140,8 +200,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     isMobile,
   });
 
-  // Visible date range for header
-  const { visibleStartDate, visibleEndDate } = useVisibleDateRange({
+  // Visible date for header (centered day)
+  const { visibleDate } = useVisibleDateRange({
     containerRef: calendarGridRef,
     days,
     isMobile,
@@ -154,14 +214,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     isMobile,
     autoScrollOnMount: true,
     scrollToCurrentTime: true,
-  });
-
-  // Virtualization for day columns with variable widths
-  const virtualizer = useVirtualizedDays({
-    containerRef: calendarGridRef,
-    dayCount: days.length,
-    isMobile,
-    getDayWidth, // Pass width calculation function for variable widths
   });
 
   // Drag and drop sensors
@@ -198,7 +250,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
     if (eventData) {
       if (dragType === 'resize') {
-        const direction = data.direction as ResizeDirection;
+        const direction = data?.direction as ResizeDirection;
         setResizingEvent({ event: eventData, direction });
       } else {
         setDraggedEvent(eventData);
@@ -446,23 +498,34 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     setResizePreview(null);
   };
 
-  if (isLoading) {
-    return (
-      <Box className={styles.loadingContainer}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
     <Box className={styles.calendarView}>
+      {/* Loading overlay - shows spinner but keeps calendar visible */}
+      {isLoading && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            pointerEvents: 'none', // Allow scrolling through overlay
+          }}
+        >
+          <CircularProgress size={48} />
+        </Box>
+      )}
       <Box className={styles.header}>
         <Typography
           variant={isMobile ? 'subtitle1' : 'h5'}
           className={styles.weekTitle}
         >
-          {format(visibleStartDate, 'MMM d')} -{' '}
-          {format(visibleEndDate, 'MMM d, yyyy')}
+          {format(visibleDate, 'EEEE, MMMM d, yyyy')}
         </Typography>
         <Button
           startIcon={<Today />}

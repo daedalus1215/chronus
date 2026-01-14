@@ -37,25 +37,14 @@ export const CalendarPage: React.FC = () => {
     dayRange.endDate
   );
 
+  // Simple handler - just update the date range
+  // CalendarView handles scroll position adjustment via useLayoutEffect
   const handleLoadMoreDays = useCallback((direction: 'left' | 'right') => {
-    const container = scrollContainerRef.current;
-
-    if (direction === 'left' && container) {
-      // Preserve scroll position when adding days to the left
-      const previousScrollWidth = container.scrollWidth;
-      const previousScrollLeft = container.scrollLeft;
-
+    if (direction === 'left') {
       setDayRange(prev => ({
         ...prev,
         startDate: subDays(prev.startDate, CALENDAR_CONSTANTS.DAYS_TO_LOAD),
       }));
-
-      // After React re-renders, adjust scroll position
-      requestAnimationFrame(() => {
-        const newScrollWidth = container.scrollWidth;
-        const addedWidth = newScrollWidth - previousScrollWidth;
-        container.scrollLeft = previousScrollLeft + addedWidth;
-      });
     } else {
       setDayRange(prev => ({
         ...prev,

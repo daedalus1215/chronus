@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { CALENDAR_CONSTANTS } from '../constants/calendar.constants';
 
 type UseInfiniteScrollDaysOptions = {
   containerRef: React.RefObject<HTMLDivElement>;
   onLoadMoreDays: (direction: 'left' | 'right') => void;
   loadThreshold?: number; // Number of days from edge to trigger loading
+  totalContentWidth?: number; // Total width of virtualized content (from virtualizer)
 };
 
 type UseInfiniteScrollDaysReturn = {
@@ -25,9 +26,14 @@ export const useInfiniteScrollDays = ({
   containerRef,
   onLoadMoreDays,
   loadThreshold = CALENDAR_CONSTANTS.SCROLL_THRESHOLD,
+  totalContentWidth,
 }: UseInfiniteScrollDaysOptions): UseInfiniteScrollDaysReturn => {
-  const isLoadingRef = useRef(false);
+  const isLoadingLeftRef = useRef(false);
+  const isLoadingRightRef = useRef(false);
   const dayWidthRef = useRef<number | null>(null);
+  const lastLoadTimeRef = useRef<number>(0);
+  const lastLoadDirectionRef = useRef<'left' | 'right' | null>(null);
+  const mountTimeRef = useRef<number>(Date.now());
   const [isLoadingLeft, setIsLoadingLeft] = useState(false);
   const [isLoadingRight, setIsLoadingRight] = useState(false);
 
@@ -46,40 +52,73 @@ export const useInfiniteScrollDays = ({
 
   const handleScroll = useCallback(() => {
     const container = containerRef.current;
-    if (!container || isLoadingRef.current) {
+    if (!container) {
       return;
     }
 
+    // Prevent loading immediately after mount (wait for initial scroll-to-today)
+    const now = Date.now();
+    if (now - mountTimeRef.current < 500) {
+      return;
+    }
+
+    // Prevent rapid consecutive loads in the same direction
+    // But allow switching directions immediately
+    const timeSinceLastLoad = now - lastLoadTimeRef.current;
+    
     const scrollLeft = container.scrollLeft;
     const containerWidth = container.clientWidth;
-    const scrollWidth = container.scrollWidth;
+    // Use totalContentWidth if provided (from virtualizer), otherwise use scrollWidth
+    const scrollWidth = totalContentWidth ?? container.scrollWidth;
     const dayWidth = calculateDayWidth();
 
     // Calculate how many days from the start/end we are
     const daysFromStart = scrollLeft / dayWidth;
     const daysFromEnd = (scrollWidth - scrollLeft - containerWidth) / dayWidth;
 
-    // Load more days if near edges
+    // Check if we should load more on the left
     if (daysFromStart < loadThreshold) {
-      isLoadingRef.current = true;
+      // Don't trigger if already loading left, or if we just loaded left recently
+      if (isLoadingLeftRef.current) {
+        return;
+      }
+      if (lastLoadDirectionRef.current === 'left' && timeSinceLastLoad < 300) {
+        return;
+      }
+      
+      isLoadingLeftRef.current = true;
+      lastLoadTimeRef.current = now;
+      lastLoadDirectionRef.current = 'left';
       setIsLoadingLeft(true);
       onLoadMoreDays('left');
-      // Reset loading flag after a delay to allow for async operations
+      
+      // Reset loading flag after a short delay
       setTimeout(() => {
-        isLoadingRef.current = false;
+        isLoadingLeftRef.current = false;
         setIsLoadingLeft(false);
-      }, 1000);
+      }, 100);
     } else if (daysFromEnd < loadThreshold) {
-      isLoadingRef.current = true;
+      // Don't trigger if already loading right, or if we just loaded right recently
+      if (isLoadingRightRef.current) {
+        return;
+      }
+      if (lastLoadDirectionRef.current === 'right' && timeSinceLastLoad < 300) {
+        return;
+      }
+      
+      isLoadingRightRef.current = true;
+      lastLoadTimeRef.current = now;
+      lastLoadDirectionRef.current = 'right';
       setIsLoadingRight(true);
       onLoadMoreDays('right');
-      // Reset loading flag after a delay to allow for async operations
+      
+      // Reset loading flag after a short delay
       setTimeout(() => {
-        isLoadingRef.current = false;
+        isLoadingRightRef.current = false;
         setIsLoadingRight(false);
-      }, 1000);
+      }, 100);
     }
-  }, [containerRef, onLoadMoreDays, loadThreshold, calculateDayWidth]);
+  }, [containerRef, onLoadMoreDays, loadThreshold, calculateDayWidth, totalContentWidth]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -99,20 +138,29 @@ export const useInfiniteScrollDays = ({
 
     updateDayWidth();
 
-    // Debounce scroll handler
-    let scrollTimeout: NodeJS.Timeout;
-    const debouncedHandleScroll = () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScroll, 100);
+    // Use requestAnimationFrame for smoother scroll detection
+    let rafId: number;
+    let lastScrollLeft = container.scrollLeft;
+    
+    const onScroll = () => {
+      // Only process if scroll position actually changed significantly
+      const currentScrollLeft = container.scrollLeft;
+      if (Math.abs(currentScrollLeft - lastScrollLeft) < 5) {
+        return;
+      }
+      lastScrollLeft = currentScrollLeft;
+      
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(handleScroll);
     };
 
-    container.addEventListener('scroll', debouncedHandleScroll);
+    container.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', updateDayWidth);
 
     return () => {
-      container.removeEventListener('scroll', debouncedHandleScroll);
+      container.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', updateDayWidth);
-      clearTimeout(scrollTimeout);
+      cancelAnimationFrame(rafId);
     };
   }, [containerRef, handleScroll]);
 

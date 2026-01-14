@@ -32,7 +32,7 @@ export const CALENDAR_CONSTANTS = {
   DAYS_TO_LOAD: 30,
   
   /** Number of days from edge to trigger infinite scroll loading */
-  SCROLL_THRESHOLD: 5,
+  SCROLL_THRESHOLD: 20, // Increased significantly to prevent too-aggressive loading
   
   /** Interval for updating current time indicator (1 minute) */
   TIME_UPDATE_INTERVAL: 60000,

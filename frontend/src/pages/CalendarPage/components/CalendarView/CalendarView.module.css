@@ -4,6 +4,7 @@
   height: 100%;
   overflow: hidden;
   min-height: 0;
+  position: relative; /* For loading overlay positioning */
 }
 
 .header {
@@ -54,7 +55,8 @@
   position: relative;
   align-items: flex-start;
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
+  /* Note: scroll-behavior is NOT set here so programmatic scroll adjustments
+     happen instantly. Use behavior: 'smooth' in JS when smooth scroll is desired */
 }
 
 @media (max-width: 600px) {
