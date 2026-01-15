@@ -1,4 +1,11 @@
-import React, { useRef, useState, useMemo, useLayoutEffect, useCallback } from 'react';
+import React, {
+  useRef,
+  useState,
+  useMemo,
+  useLayoutEffect,
+  useCallback,
+  useEffect,
+} from 'react';
 import {
   Box,
   Typography,
@@ -106,6 +113,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     event: CalendarEventResponseDto;
     direction: ResizeDirection;
   } | null>(null);
+  const [movePreview, setMovePreview] = useState<{
+    eventId: number;
+    startDate: Date;
+    endDate: Date;
+  } | null>(null);
   const [resizePreview, setResizePreview] = useState<{
     eventId: number;
     startDate: Date;
@@ -117,9 +129,40 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     'success'
   );
 
-  const dayLayoutMaps = useEventLayouts(startDate, endDate, events);
+  const displayEvents = useMemo(() => {
+    if (!movePreview) {
+      return events;
+    }
+    return events.map(eventItem => {
+      if (eventItem.id !== movePreview.eventId) {
+        return eventItem;
+      }
+      return {
+        ...eventItem,
+        startDate: movePreview.startDate.toISOString(),
+        endDate: movePreview.endDate.toISOString(),
+      };
+    });
+  }, [events, movePreview]);
+  const dayLayoutMaps = useEventLayouts(startDate, endDate, displayEvents);
   const isMobile = useIsMobile();
   const updateMutation = useUpdateCalendarEvent();
+  useEffect(() => {
+    if (!movePreview) {
+      return;
+    }
+    const matchingEvent = events.find(eventItem => eventItem.id === movePreview.eventId);
+    if (!matchingEvent) {
+      setMovePreview(null);
+      return;
+    }
+    if (
+      matchingEvent.startDate === movePreview.startDate.toISOString() &&
+      matchingEvent.endDate === movePreview.endDate.toISOString()
+    ) {
+      setMovePreview(null);
+    }
+  }, [events, movePreview]);
 
   // Create day width calculator for variable widths (today wider, weekends narrower)
   const getDayWidth = useMemo(
@@ -452,12 +495,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     if (!dayElement) {
       return;
     }
-    const dayContent = dayElement.querySelector(
-      '[class*="dayContent"]'
-    ) as HTMLElement;
-    if (!dayContent) {
-      return;
-    }
     const activeRect =
       active.rect.current.translated ?? active.rect.current.initial;
     if (!activeRect) {
@@ -468,8 +505,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     if (!dropPosition) {
       return;
     }
-    const { startDate: newStartDate, endDate: newEndDate } =
-      calculateNewEventTimes(eventToMove, dropPosition);
+    const { startDate: newStartDate, endDate: newEndDate } = calculateNewEventTimes(
+      eventToMove,
+      dropPosition
+    );
+    setMovePreview({
+      eventId: eventToMove.id,
+      startDate: newStartDate,
+      endDate: newEndDate,
+    });
     try {
       await updateMutation.mutateAsync({
         id: eventToMove.id,
@@ -482,6 +526,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       });
     } catch (error) {
       console.error('Error moving calendar event:', error);
+      setMovePreview(null);
       setToastSeverity('error');
       setToastMessage(
         error instanceof Error
@@ -495,6 +540,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     // Clear all drag/resize state on cancel
     setDraggedEvent(null);
     setResizingEvent(null);
+    setMovePreview(null);
     setResizePreview(null);
   };
 
