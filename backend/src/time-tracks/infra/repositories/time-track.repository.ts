@@ -112,6 +112,81 @@ export class TimeTrackRepository {
     return `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
   }
 
+  async getCurrentStreak(userId: number): Promise<number> {
+    const today = new Date();
+    const formatDate = (d: Date) => d.toISOString().split('T')[0];
+
+    const datesWithActivity = await this.repository
+      .createQueryBuilder('timeTrack')
+      .select('DISTINCT timeTrack.date', 'date')
+      .where('timeTrack.userId = :userId', { userId })
+      .orderBy('timeTrack.date', 'DESC')
+      .getRawMany();
+
+    if (datesWithActivity.length === 0) {
+      return 0;
+    }
+
+    const activeDates = new Set(datesWithActivity.map(r => r.date));
+    let streak = 0;
+    const checkDate = new Date(today);
+
+    const todayStr = formatDate(today);
+    if (!activeDates.has(todayStr)) {
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    while (true) {
+      const dateStr = formatDate(checkDate);
+      if (activeDates.has(dateStr)) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  }
+
+  async getWeeklyTrend(
+    userId: number,
+    days: number = 7
+  ): Promise<Array<{ date: string; totalMinutes: number }>> {
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - (days - 1));
+
+    const formatDate = (d: Date) => d.toISOString().split('T')[0];
+
+    const result = await this.repository
+      .createQueryBuilder('timeTrack')
+      .select(['timeTrack.date as date', 'SUM(timeTrack.durationMinutes) as totalMinutes'])
+      .where('timeTrack.userId = :userId', { userId })
+      .andWhere('timeTrack.date >= :startDate', { startDate: formatDate(startDate) })
+      .andWhere('timeTrack.date <= :endDate', { endDate: formatDate(today) })
+      .groupBy('timeTrack.date')
+      .orderBy('timeTrack.date', 'ASC')
+      .getRawMany();
+
+    const dateMap = new Map(
+      result.map(r => [r.date, parseInt(r.totalMinutes) || 0])
+    );
+
+    const trend: Array<{ date: string; totalMinutes: number }> = [];
+    for (let i = 0; i < days; i++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      const dateStr = formatDate(date);
+      trend.push({
+        date: dateStr,
+        totalMinutes: dateMap.get(dateStr) || 0,
+      });
+    }
+
+    return trend;
+  }
+
   async getWeeklyMostActiveNote(userId: number): Promise<{
     noteId: number;
     totalTimeMinutes: number;
