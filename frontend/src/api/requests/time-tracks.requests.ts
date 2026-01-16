@@ -9,6 +9,8 @@ import {
   TimeTrackAggregationResponse,
 } from '../dtos/time-tracks.dtos';
 import { WeeklyMostActiveNoteResponseDto } from '../dtos/weekly-most-active-note.dtos';
+import { WeeklyTrendResponseDto } from '../dtos/weekly-trend.dtos';
+import { StreakResponseDto } from '../dtos/streak.dtos';
 
 export const getNoteTimeTracks = async (
   noteId: number
@@ -53,3 +55,15 @@ export const getWeeklyMostActiveNote =
     );
     return response.data;
   };
+
+export const getWeeklyTrend = async (): Promise<WeeklyTrendResponseDto> => {
+  const response = await api.get<WeeklyTrendResponseDto>(
+    '/time-tracks/weekly-trend'
+  );
+  return response.data;
+};
+
+export const getStreak = async (): Promise<StreakResponseDto> => {
+  const response = await api.get<StreakResponseDto>('/time-tracks/streak');
+  return response.data;
+};

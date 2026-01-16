@@ -17,6 +17,10 @@ import { DeleteTimeTrackTransactionScript } from './domain/transaction-scripts/d
 import { GetDailyTimeTracksAction } from './apps/actions/get-daily-time-tracks-aggregation-action/get-daily-time-tracks-aggregation.action';
 import { GetWeeklyMostActiveNoteAction } from './apps/actions/get-weekly-most-active-note-action/get-weekly-most-active-note.action';
 import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script';
+import { GetWeeklyTrendAction } from './apps/actions/get-weekly-trend-action/get-weekly-trend.action';
+import { GetWeeklyTrendTransactionScript } from './domain/transaction-scripts/get-weekly-trend-TS/get-weekly-trend.transaction.script';
+import { GetStreakAction } from './apps/actions/get-streak-action/get-streak.action';
+import { GetStreakTransactionScript } from './domain/transaction-scripts/get-streak-TS/get-streak.transaction.script';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TimeTrack]), NotesModule],
@@ -30,6 +34,8 @@ import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-s
     TimeTrackService,
     TimeTrackWithNoteNamesResponder,
     GetWeeklyMostActiveNoteTransactionScript,
+    GetWeeklyTrendTransactionScript,
+    GetStreakTransactionScript,
   ],
   controllers: [
     CreateTimeTrackAction,
@@ -38,6 +44,8 @@ import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-s
     GetDailyTimeTracksAction,
     DeleteTimeTrackAction,
     GetWeeklyMostActiveNoteAction,
+    GetWeeklyTrendAction,
+    GetStreakAction,
   ],
   exports: [TimeTrackRepository],
 })
