@@ -14,12 +14,22 @@ export class UserRepository {
     return this.repository.findOne({ where: { username } });
   }
 
-  async findById(id: string): Promise<User | null> {
-    return this.repository.findOne({ where: { id: Number(id) } });
+  async findById(id: number | string): Promise<User | null> {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    return this.repository.findOne({ where: { id: numericId } });
   }
 
   async create(user: Partial<User>): Promise<User> {
     const newUser = this.repository.create(user);
     return this.repository.save(newUser);
+  }
+
+  async update(id: number, updates: Partial<User>): Promise<User> {
+    await this.repository.update(id, updates);
+    const updated = await this.repository.findOne({ where: { id } });
+    if (!updated) {
+      throw new Error('User not found after update');
+    }
+    return updated;
   }
 }

@@ -136,6 +136,19 @@ export class CalendarEventRepository {
   }
 
   /**
+   * Find a calendar event by ID only (for internal use like cron jobs).
+   */
+  async findByIdOnly(id: number): Promise<CalendarEvent | null> {
+    const entity = await this.repository.findOne({
+      where: { id },
+    });
+    if (!entity) {
+      return null;
+    }
+    return this.infrastructureToDomain(entity);
+  }
+
+  /**
    * Find a calendar event by ID and user ID.
    */
   async findById(id: number, userId: number): Promise<CalendarEvent | null> {

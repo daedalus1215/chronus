@@ -11,7 +11,16 @@ import { DeleteCalendarEventTransactionScript } from '../transaction-scripts/del
 import { DeleteCalendarEventCommand } from '../transaction-scripts/delete-calendar-event-TS/delete-calendar-event.command';
 import { GenerateEventInstancesTransactionScript } from '../transaction-scripts/generate-event-instances-TS/generate-event-instances.transaction.script';
 import { FetchRecurringEventsTransactionScript } from '../transaction-scripts/fetch-recurring-events-TS/fetch-recurring-events.transaction.script';
+import { CreateEventReminderTransactionScript } from '../transaction-scripts/create-event-reminder-TS/create-event-reminder.transaction.script';
+import { CreateEventReminderCommand } from '../transaction-scripts/create-event-reminder-TS/create-event-reminder.command';
+import { UpdateEventReminderTransactionScript } from '../transaction-scripts/update-event-reminder-TS/update-event-reminder.transaction.script';
+import { UpdateEventReminderCommand } from '../transaction-scripts/update-event-reminder-TS/update-event-reminder.command';
+import { DeleteEventReminderTransactionScript } from '../transaction-scripts/delete-event-reminder-TS/delete-event-reminder.transaction.script';
+import { DeleteEventReminderCommand } from '../transaction-scripts/delete-event-reminder-TS/delete-event-reminder.command';
+import { FetchEventRemindersTransactionScript } from '../transaction-scripts/fetch-event-reminders-TS/fetch-event-reminders.transaction.script';
+import { FetchEventRemindersCommand } from '../transaction-scripts/fetch-event-reminders-TS/fetch-event-reminders.command';
 import { CalendarEvent } from '../entities/calendar-event.entity';
+import { EventReminder } from '../entities/event-reminder.entity';
 
 /**
  * Calendar Event Service.
@@ -26,7 +35,11 @@ export class CalendarEventService {
     private readonly updateCalendarEventTransactionScript: UpdateCalendarEventTransactionScript,
     private readonly deleteCalendarEventTransactionScript: DeleteCalendarEventTransactionScript,
     private readonly generateEventInstancesTransactionScript: GenerateEventInstancesTransactionScript,
-    private readonly fetchRecurringEventsTransactionScript: FetchRecurringEventsTransactionScript
+    private readonly fetchRecurringEventsTransactionScript: FetchRecurringEventsTransactionScript,
+    private readonly createEventReminderTransactionScript: CreateEventReminderTransactionScript,
+    private readonly updateEventReminderTransactionScript: UpdateEventReminderTransactionScript,
+    private readonly deleteEventReminderTransactionScript: DeleteEventReminderTransactionScript,
+    private readonly fetchEventRemindersTransactionScript: FetchEventRemindersTransactionScript
   ) {}
 
   /**
@@ -88,5 +101,41 @@ export class CalendarEventService {
     command: DeleteCalendarEventCommand
   ): Promise<void> {
     return await this.deleteCalendarEventTransactionScript.apply(command);
+  }
+
+  /**
+   * Create an event reminder.
+   */
+  async createReminder(
+    command: CreateEventReminderCommand
+  ): Promise<EventReminder> {
+    return await this.createEventReminderTransactionScript.apply(command);
+  }
+
+  /**
+   * Update an event reminder.
+   */
+  async updateReminder(
+    command: UpdateEventReminderCommand
+  ): Promise<EventReminder> {
+    return await this.updateEventReminderTransactionScript.apply(command);
+  }
+
+  /**
+   * Delete an event reminder.
+   */
+  async deleteReminder(
+    command: DeleteEventReminderCommand
+  ): Promise<void> {
+    return await this.deleteEventReminderTransactionScript.apply(command);
+  }
+
+  /**
+   * Get reminders for an event.
+   */
+  async getRemindersForEvent(
+    command: FetchEventRemindersCommand
+  ): Promise<EventReminder[]> {
+    return await this.fetchEventRemindersTransactionScript.apply(command);
   }
 }

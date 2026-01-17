@@ -5,6 +5,9 @@ import {
   UpdateCalendarEventRequest,
   CreateRecurringEventRequest,
   RecurringEventResponseDto,
+  EventReminderResponseDto,
+  CreateEventReminderRequest,
+  UpdateEventReminderRequest,
 } from '../dtos/calendar-events.dtos';
 
 export const fetchCalendarEvents = async (
@@ -77,6 +80,48 @@ export const deleteRecurringEvent = async (
 ): Promise<{ success: boolean }> => {
   const { data } = await api.delete<{ success: boolean }>(
     `/calendar-events/recurring/${id}`
+  );
+  return data;
+};
+
+export const fetchEventReminders = async (
+  eventId: number
+): Promise<EventReminderResponseDto[]> => {
+  const { data } = await api.get<EventReminderResponseDto[]>(
+    `/calendar-events/${eventId}/reminders`
+  );
+  return data;
+};
+
+export const createEventReminder = async (
+  eventId: number,
+  reminder: CreateEventReminderRequest
+): Promise<EventReminderResponseDto> => {
+  const { data } = await api.post<EventReminderResponseDto>(
+    `/calendar-events/${eventId}/reminders`,
+    reminder
+  );
+  return data;
+};
+
+export const updateEventReminder = async (
+  eventId: number,
+  reminderId: number,
+  reminder: UpdateEventReminderRequest
+): Promise<EventReminderResponseDto> => {
+  const { data } = await api.put<EventReminderResponseDto>(
+    `/calendar-events/${eventId}/reminders/${reminderId}`,
+    reminder
+  );
+  return data;
+};
+
+export const deleteEventReminder = async (
+  eventId: number,
+  reminderId: number
+): Promise<{ success: boolean }> => {
+  const { data } = await api.delete<{ success: boolean }>(
+    `/calendar-events/${eventId}/reminders/${reminderId}`
   );
   return data;
 };

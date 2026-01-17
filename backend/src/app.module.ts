@@ -12,6 +12,8 @@ import { AudioModule } from './audio/audio.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 import { LoggingModule } from './shared-kernel/apps/logging/logging.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SharedKernelModule } from './shared-kernel/shared-kernel.module';
 
 @Module({
   imports: [
@@ -25,8 +27,14 @@ import { LoggingModule } from './shared-kernel/apps/logging/logging.module';
         NODE_ENV: Joi.string().required(),
         JWT_EXPIRES_IN: Joi.string().required(),
         HERMES_API_URL: Joi.string().required(),
+        SMTP_HOST: Joi.string().required(),
+        SMTP_PORT: Joi.number().required(),
+        SMTP_USER: Joi.string().required(),
+        SMTP_PASS: Joi.string().required(),
+        SMTP_FROM: Joi.string().required(),
       }),
     }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -48,6 +56,7 @@ import { LoggingModule } from './shared-kernel/apps/logging/logging.module';
     CalendarEventsModule,
     EventEmitterModule.forRoot(),
     LoggingModule,
+    SharedKernelModule,
   ],
   controllers: [],
   providers: [],

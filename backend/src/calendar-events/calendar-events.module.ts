@@ -3,9 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CalendarEventEntity } from './infra/entities/calendar-event.entity';
 import { RecurringEventEntity } from './infra/entities/recurring-event.entity';
 import { RecurrenceExceptionEntity } from './infra/entities/recurrence-exception.entity';
+import { EventReminderEntity } from './infra/entities/event-reminder.entity';
 import { CalendarEventRepository } from './infra/repositories/calendar-event.repository';
 import { RecurringEventRepository } from './infra/repositories/recurring-event.repository';
 import { RecurrenceExceptionRepository } from './infra/repositories/recurrence-exception.repository';
+import { EventReminderRepository } from './infra/repositories/event-reminder.repository';
 import { FetchCalendarEventsTransactionScript } from './domain/transaction-scripts/fetch-calendar-events-TS/fetch-calendar-events.transaction.script';
 import { CreateCalendarEventTransactionScript } from './domain/transaction-scripts/create-calendar-event-TS/create-calendar-event.transaction.script';
 import { FetchCalendarEventTransactionScript } from './domain/transaction-scripts/fetch-calendar-event-TS/fetch-calendar-event.transaction.script';
@@ -26,6 +28,18 @@ import { FetchRecurringEventsTransactionScript } from './domain/transaction-scri
 import { RecurringEventService } from './domain/services/recurring-event.service';
 import { RecurringEventToInfrastructureConverter } from './domain/transaction-scripts/create-recurring-event-TS/recurring-event-to-infrastructure.converter';
 import { RecurringEventToDomainConverter } from './domain/transaction-scripts/create-recurring-event-TS/recurring-event-to-domain.converter';
+import { CreateEventReminderTransactionScript } from './domain/transaction-scripts/create-event-reminder-TS/create-event-reminder.transaction.script';
+import { UpdateEventReminderTransactionScript } from './domain/transaction-scripts/update-event-reminder-TS/update-event-reminder.transaction.script';
+import { DeleteEventReminderTransactionScript } from './domain/transaction-scripts/delete-event-reminder-TS/delete-event-reminder.transaction.script';
+import { FetchEventRemindersTransactionScript } from './domain/transaction-scripts/fetch-event-reminders-TS/fetch-event-reminders.transaction.script';
+import { CreateEventReminderAction } from './apps/actions/create-event-reminder-action/create-event-reminder.action';
+import { UpdateEventReminderAction } from './apps/actions/update-event-reminder-action/update-event-reminder.action';
+import { DeleteEventReminderAction } from './apps/actions/delete-event-reminder-action/delete-event-reminder.action';
+import { FetchEventRemindersAction } from './apps/actions/fetch-event-reminders-action/fetch-event-reminders.action';
+import { ReminderScheduler } from './apps/schedulers/reminder-scheduler/reminder.scheduler';
+import { SharedKernelModule } from '../shared-kernel/shared-kernel.module';
+import { UserRepository } from '../users/infra/repositories/user.repository';
+import { User } from '../users/domain/entities/user.entity';
 
 /**
  * Calendar Events module: encapsulates all calendar event-related logic, actions, and persistence.
@@ -36,12 +50,16 @@ import { RecurringEventToDomainConverter } from './domain/transaction-scripts/cr
       CalendarEventEntity,
       RecurringEventEntity,
       RecurrenceExceptionEntity,
+      EventReminderEntity,
+      User,
     ]),
+    SharedKernelModule,
   ],
   providers: [
     CalendarEventRepository,
     RecurringEventRepository,
     RecurrenceExceptionRepository,
+    EventReminderRepository,
     FetchCalendarEventsTransactionScript,
     CreateCalendarEventTransactionScript,
     FetchCalendarEventTransactionScript,
@@ -55,6 +73,12 @@ import { RecurringEventToDomainConverter } from './domain/transaction-scripts/cr
     RecurringEventService,
     RecurringEventToInfrastructureConverter,
     RecurringEventToDomainConverter,
+    CreateEventReminderTransactionScript,
+    UpdateEventReminderTransactionScript,
+    DeleteEventReminderTransactionScript,
+    FetchEventRemindersTransactionScript,
+    ReminderScheduler,
+    UserRepository,
   ],
   controllers: [
     FetchCalendarEventsAction,
@@ -64,11 +88,16 @@ import { RecurringEventToDomainConverter } from './domain/transaction-scripts/cr
     DeleteCalendarEventAction,
     CreateRecurringEventAction,
     DeleteRecurringEventAction,
+    CreateEventReminderAction,
+    UpdateEventReminderAction,
+    DeleteEventReminderAction,
+    FetchEventRemindersAction,
   ],
   exports: [
     CalendarEventRepository,
     RecurringEventRepository,
     RecurrenceExceptionRepository,
+    EventReminderRepository,
   ],
 })
 export class CalendarEventsModule {}
