@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventReminderRepository } from '../../../infra/repositories/event-reminder.repository';
 import { CalendarEventRepository } from '../../../infra/repositories/calendar-event.repository';
-import { UserRepository } from '../../../../users/infra/repositories/user.repository';
+import { UserAggregator } from '../../../../users/domain/aggregators/user.aggregator';
 import { EmailService } from '../../../../shared-kernel/domain/services/email.service';
 
 /**
@@ -16,7 +16,7 @@ export class ReminderScheduler {
   constructor(
     private readonly eventReminderRepository: EventReminderRepository,
     private readonly calendarEventRepository: CalendarEventRepository,
-    private readonly userRepository: UserRepository,
+    private readonly userAggregator: UserAggregator,
     private readonly emailService: EmailService
   ) {}
 
@@ -58,20 +58,20 @@ export class ReminderScheduler {
 
           if (reminderTime <= now && reminderTime >= oneMinuteAgo) {
             this.logger.debug(`Reminder ${reminder.id} is due - processing...`);
-            const user = await this.userRepository.findById(event.userId);
-            if (!user) {
+            const username = await this.userAggregator.findUsernameById(event.userId);
+            if (!username) {
               this.logger.warn(`User ${event.userId} not found for event ${event.id}`);
               continue;
             }
 
             // Use username directly if it's already a valid email, otherwise skip
             let userEmail: string;
-            if (this.isValidEmail(user.username)) {
-              userEmail = user.username;
+            if (this.isValidEmail(username)) {
+              userEmail = username;
               this.logger.debug(`Using username as email: ${userEmail}`);
             } else {
               this.logger.warn(
-                `User ${user.id} has username "${user.username}" which is not a valid email address. Skipping reminder ${reminder.id}.`
+                `User ${event.userId} has username "${username}" which is not a valid email address. Skipping reminder ${reminder.id}.`
               );
               continue;
             }
