@@ -1,4 +1,5 @@
 import { CalendarEvent } from '../../../domain/entities/calendar-event.entity';
+import { EventReminderResponseDto } from '../../actions/fetch-event-reminders-action/dtos/responses/event-reminder.response.dto';
 
 export class CalendarEventResponseDto {
   id: number;
@@ -11,8 +12,9 @@ export class CalendarEventResponseDto {
   updatedAt: Date;
   isRecurring?: boolean;
   recurringEventId?: number;
+  reminders?: EventReminderResponseDto[];
 
-  constructor(event: CalendarEvent) {
+  constructor(event: CalendarEvent, reminders?: EventReminderResponseDto[]) {
     this.id = event.id;
     this.userId = event.userId;
     this.title = event.title;
@@ -23,5 +25,6 @@ export class CalendarEventResponseDto {
     this.updatedAt = event.updatedAt;
     this.isRecurring = event.recurringEventId !== null;
     this.recurringEventId = event.recurringEventId;
+    this.reminders = reminders;
   }
 }

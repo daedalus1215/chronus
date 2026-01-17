@@ -16,6 +16,8 @@ import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { FetchCalendarEventSwagger } from './fetch-calendar-event.swagger';
 import { FetchCalendarEventCommand } from '../../../domain/transaction-scripts/fetch-calendar-event-TS/fetch-calendar-event.command';
 import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.response.dto';
+import { EventReminderRepository } from '../../../infra/repositories/event-reminder.repository';
+import { EventReminderResponseDto } from '../fetch-event-reminders-action/dtos/responses/event-reminder.response.dto';
 
 /**
  * Action handler for fetching a single calendar event by ID.
@@ -26,7 +28,10 @@ import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.re
 @ApiTags('Calendar Events')
 @ApiBearerAuth()
 export class FetchCalendarEventAction {
-  constructor(private readonly calendarEventService: CalendarEventService) {}
+  constructor(
+    private readonly calendarEventService: CalendarEventService,
+    private readonly eventReminderRepository: EventReminderRepository
+  ) {}
 
   /**
    * Fetch a specific calendar event by ID for the authenticated user.
@@ -48,6 +53,11 @@ export class FetchCalendarEventAction {
     };
     const event =
       await this.calendarEventService.fetchCalendarEventById(command);
-    return new CalendarEventResponseDto(event);
+    
+    // Fetch reminders for this event
+    const reminders = await this.eventReminderRepository.findByEventId(event.id);
+    const reminderDtos = reminders.map(r => new EventReminderResponseDto(r));
+    
+    return new CalendarEventResponseDto(event, reminderDtos);
   }
 }

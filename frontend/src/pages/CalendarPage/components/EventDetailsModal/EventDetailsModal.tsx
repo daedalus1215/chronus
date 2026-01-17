@@ -29,6 +29,8 @@ import { useDeleteCalendarEvent } from '../../hooks/useDeleteCalendarEvent';
 import { useDeleteRecurringEvent } from '../../hooks/useDeleteRecurringEvent';
 import { useEventForm } from '../../hooks/useEventForm';
 import { EventFormFields } from './EventFormFields/EventFormFields';
+import { useEventReminders } from '../../hooks/useEventReminders';
+import { ReminderField } from './ReminderField/ReminderField';
 
 type EventDetailsModalProps = {
   isOpen: boolean;
@@ -86,6 +88,17 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
       onClose();
     },
   });
+
+  const {
+    reminders,
+    isLoading: isLoadingReminders,
+    createReminder,
+    updateReminder,
+    removeReminder,
+    isCreating: isCreatingReminder,
+  } = useEventReminders(eventId, event);
+
+  const [selectedReminderMinutes, setSelectedReminderMinutes] = useState<number | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,6 +264,52 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               updateMutationError={updateMutation.error as Error | null}
               onFieldChange={updateField}
             />
+            {isEditing && (
+              <Box sx={{ mt: 2 }}>
+                <ReminderField
+                  value={selectedReminderMinutes}
+                  onChange={async (minutes) => {
+                    setSelectedReminderMinutes(minutes);
+                    if (minutes !== null && eventId) {
+                      // Find if reminder already exists with this exact timing
+                      const existingReminder = reminders.find(
+                        r => r.reminderMinutes === minutes
+                      );
+                      if (existingReminder) {
+                        // Reminder with this timing already exists, do nothing
+                        return;
+                      }
+                      
+                      // If there's an existing reminder, update it instead of creating a new one
+                      // This ensures we don't have multiple reminders scheduled
+                      if (reminders.length > 0) {
+                        await updateReminder(reminders[0].id, { reminderMinutes: minutes });
+                      } else {
+                        // No existing reminder, create a new one
+                        await createReminder({ reminderMinutes: minutes });
+                      }
+                    } else if (minutes === null && eventId && reminders.length > 0) {
+                      // Remove all reminders if setting to null
+                      for (const reminder of reminders) {
+                        await removeReminder(reminder.id);
+                      }
+                    }
+                  }}
+                  isEditing={isEditing}
+                  existingReminders={reminders}
+                />
+              </Box>
+            )}
+            {!isEditing && reminders.length > 0 && (
+              <Box sx={{ mt: 2 }}>
+                <ReminderField
+                  value={null}
+                  onChange={() => {}}
+                  isEditing={false}
+                  existingReminders={reminders}
+                />
+              </Box>
+            )}
             {isEditing ? (
               <Box
                 sx={{

@@ -36,4 +36,9 @@ export class UsersService {
   async findById(id: string): Promise<User | null> {
     return this.userRepository.findById(id);
   }
+
+  async updateEmail(userId: number, email: string): Promise<Omit<User, 'password'>> {
+    const updatedUser = await this.userRepository.update(userId, { email });
+    return omit(updatedUser, ['password']);
+  }
 }

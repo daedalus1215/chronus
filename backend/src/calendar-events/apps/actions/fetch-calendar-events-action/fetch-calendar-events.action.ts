@@ -11,6 +11,8 @@ import { FetchCalendarEventsSwagger } from './fetch-calendar-events.swagger';
 import { FetchCalendarEventsRequestDto } from './dtos/requests/fetch-calendar-events.dto';
 import { FetchCalendarEventsCommand } from '../../../domain/transaction-scripts/fetch-calendar-events-TS/fetch-calendar-events.command';
 import { CalendarEventResponseDto } from '../../dtos/responses/calendar-event.response.dto';
+import { EventReminderRepository } from '../../../infra/repositories/event-reminder.repository';
+import { EventReminderResponseDto } from '../fetch-event-reminders-action/dtos/responses/event-reminder.response.dto';
 import { parseISO, startOfWeek, endOfWeek } from 'date-fns';
 
 /**
@@ -22,7 +24,10 @@ import { parseISO, startOfWeek, endOfWeek } from 'date-fns';
 @ApiTags('Calendar Events')
 @ApiBearerAuth()
 export class FetchCalendarEventsAction {
-  constructor(private readonly calendarEventService: CalendarEventService) {}
+  constructor(
+    private readonly calendarEventService: CalendarEventService,
+    private readonly eventReminderRepository: EventReminderRepository
+  ) {}
 
   /**
    * Fetch calendar events for the authenticated user within a date range.
@@ -52,6 +57,21 @@ export class FetchCalendarEventsAction {
       user,
     };
     const events = await this.calendarEventService.fetchCalendarEvents(command);
+    
+    // Fetch reminders for all events
+    const eventIds = events.map(event => event.id);
+    const allReminders = eventIds.length > 0
+      ? await this.eventReminderRepository.findByEventIds(eventIds)
+      : [];
+    
+    // Group reminders by event ID
+    const remindersByEventId = new Map<number, EventReminderResponseDto[]>();
+    allReminders.forEach(reminder => {
+      const eventReminders = remindersByEventId.get(reminder.calendarEventId) || [];
+      eventReminders.push(new EventReminderResponseDto(reminder));
+      remindersByEventId.set(reminder.calendarEventId, eventReminders);
+    });
+    
     // @TODO: Can move this to a responder
     return events.map(
       (event: {
@@ -69,7 +89,8 @@ export class FetchCalendarEventsAction {
         createdAt: Date;
         updatedAt: Date;
       }) => {
-        return new CalendarEventResponseDto(event);
+        const reminders = remindersByEventId.get(event.id) || [];
+        return new CalendarEventResponseDto(event, reminders);
       }
     );
   }
