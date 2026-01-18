@@ -102,9 +102,6 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
 
   // Reset selectedReminderMinutes and editing state when eventId changes
   useEffect(() => {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/f89aba1c-25bb-4783-a618-c3c5e4c8c734',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'EventDetailsModal.tsx:reset-selectedReminderMinutes',message:'Resetting selectedReminderMinutes and editing state',data:{eventId,remindersCount:reminders.length,firstReminderMinutes:reminders[0]?.reminderMinutes ?? null,currentSelectedReminderMinutes:selectedReminderMinutes,isEditing},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     // Reset editing state when switching events
     setIsEditing(false);
     // Reset selectedReminderMinutes based on actual reminders
@@ -116,24 +113,6 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
       setSelectedReminderMinutes(null);
     }
   }, [eventId, reminders]);
-
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/f89aba1c-25bb-4783-a618-c3c5e4c8c734',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'EventDetailsModal.tsx:eventId-change',message:'eventId changed',data:{eventId,previousEventId:null},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-  }, [eventId]);
-  // #endregion
-
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/f89aba1c-25bb-4783-a618-c3c5e4c8c734',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'EventDetailsModal.tsx:reminders-change',message:'reminders changed',data:{eventId,remindersCount:reminders.length,reminders:reminders.map(r=>({id:r.id,minutes:r.reminderMinutes})),selectedReminderMinutes},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-  }, [reminders, eventId]);
-  // #endregion
-
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7242/ingest/f89aba1c-25bb-4783-a618-c3c5e4c8c734',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'EventDetailsModal.tsx:selectedReminderMinutes-change',message:'selectedReminderMinutes changed',data:{eventId,selectedReminderMinutes,remindersCount:reminders.length},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
-  }, [selectedReminderMinutes, eventId]);
-  // #endregion
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -304,9 +283,6 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                 <ReminderField
                   value={selectedReminderMinutes}
                   onChange={async (minutes) => {
-                    // #region agent log
-                    fetch('http://127.0.0.1:7242/ingest/f89aba1c-25bb-4783-a618-c3c5e4c8c734',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'EventDetailsModal.tsx:onChange',message:'ReminderField onChange called',data:{eventId,oldValue:selectedReminderMinutes,newValue:minutes},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-                    // #endregion
                     setSelectedReminderMinutes(minutes);
                     if (minutes !== null && eventId) {
                       // Find if reminder already exists with this exact timing
