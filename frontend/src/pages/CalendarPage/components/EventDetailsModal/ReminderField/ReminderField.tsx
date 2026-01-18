@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   FormControl,
   FormLabel,
@@ -65,7 +65,47 @@ export const ReminderField: React.FC<ReminderFieldProps> = ({
     return 'minutes';
   });
 
+  // Sync internal state when value prop changes
+  useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f89aba1c-25bb-4783-a618-c3c5e4c8c734',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ReminderField.tsx:value-prop-change',message:'value prop changed, syncing internal state',data:{value,oldSelectedOption:selectedOption,oldCustomValue:customValue,oldCustomUnit:customUnit},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    
+    // Update selectedOption based on new value
+    if (value === null) {
+      setSelectedOption('none');
+    } else if (value === PRESET_OPTIONS['15min']) {
+      setSelectedOption('15min');
+    } else if (value === PRESET_OPTIONS['1hour']) {
+      setSelectedOption('1hour');
+    } else if (value === PRESET_OPTIONS['1day']) {
+      setSelectedOption('1day');
+    } else {
+      setSelectedOption('custom');
+      // Update custom value and unit for custom reminders
+      if (value < 60) {
+        setCustomUnit('minutes');
+        setCustomValue(value);
+      } else if (value < 1440) {
+        setCustomUnit('hours');
+        setCustomValue(Math.floor(value / 60));
+      } else {
+        setCustomUnit('days');
+        setCustomValue(Math.floor(value / 1440));
+      }
+    }
+  }, [value]);
+
+  // #region agent log
+  useEffect(() => {
+    fetch('http://127.0.0.1:7242/ingest/f89aba1c-25bb-4783-a618-c3c5e4c8c734',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ReminderField.tsx:mount',message:'ReminderField mounted',data:{value,selectedOption,customValue,customUnit},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'D'})}).catch(()=>{});
+  }, []);
+  // #endregion
+
   const handleOptionChange = (option: ReminderOption) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/f89aba1c-25bb-4783-a618-c3c5e4c8c734',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ReminderField.tsx:handleOptionChange',message:'handleOptionChange called',data:{oldOption:selectedOption,newOption:option,currentValue:value},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+    // #endregion
     setSelectedOption(option);
     
     if (option === 'none') {
