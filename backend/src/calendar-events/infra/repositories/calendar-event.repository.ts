@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, QueryFailedError } from 'typeorm';
+import { Repository, QueryFailedError, EntityManager } from 'typeorm';
 import { startOfDay } from 'date-fns';
 import { CalendarEventEntity } from '../entities/calendar-event.entity';
 import { CalendarEvent } from '../../domain/entities/calendar-event.entity';
@@ -20,11 +20,17 @@ export class CalendarEventRepository {
 
   /**
    * Create a new calendar event.
+   * @param event - Event data to create
+   * @param manager - Optional EntityManager for transaction support
    */
-  async create(event: Partial<CalendarEvent>): Promise<CalendarEvent> {
+  async create(
+    event: Partial<CalendarEvent>,
+    manager?: EntityManager
+  ): Promise<CalendarEvent> {
     const entity = this.domainToInfrastructure(event);
     this.logger.debug('Creating calendar event:', entity);
-    const saved = await this.repository.save(entity);
+    const repo = this.getRepository(manager);
+    const saved = await repo.save(entity);
     const domain = this.infrastructureToDomain(saved);
     this.logger.debug('Created calendar event:', domain);
     return domain;
@@ -235,5 +241,19 @@ export class CalendarEventRepository {
       createdAt: infra.createdAt,
       updatedAt: infra.updatedAt,
     };
+  }
+
+  /**
+   * Get the appropriate repository instance.
+   * Returns the transaction manager's repository if provided, otherwise the default repository.
+   * @param manager - Optional EntityManager for transaction support
+   * @returns Repository instance for CalendarEventEntity
+   */
+  private getRepository(
+    manager?: EntityManager
+  ): Repository<CalendarEventEntity> {
+    return manager
+      ? manager.getRepository(CalendarEventEntity)
+      : this.repository;
   }
 }
