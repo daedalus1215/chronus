@@ -38,4 +38,16 @@ export class UserAggregator {
     const { password: _, ...projection } = user;
     return projection;
   }
+
+  /**
+   * Find user by ID and return username.
+   * Used for cross-domain operations that need user identification.
+   */
+  async findUsernameById(id: number): Promise<string | null> {
+    const user = await this.userRepository.findById(id.toString());
+    if (!user) {
+      return null;
+    }
+    return user.username;
+  }
 }

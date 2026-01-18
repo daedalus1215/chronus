@@ -38,8 +38,7 @@ import { DeleteEventReminderAction } from './apps/actions/delete-event-reminder-
 import { FetchEventRemindersAction } from './apps/actions/fetch-event-reminders-action/fetch-event-reminders.action';
 import { ReminderScheduler } from './apps/schedulers/reminder-scheduler/reminder.scheduler';
 import { SharedKernelModule } from '../shared-kernel/shared-kernel.module';
-import { UserRepository } from '../users/infra/repositories/user.repository';
-import { User } from '../users/domain/entities/user.entity';
+import { UsersModule } from '../users/users.module';
 
 /**
  * Calendar Events module: encapsulates all calendar event-related logic, actions, and persistence.
@@ -51,9 +50,9 @@ import { User } from '../users/domain/entities/user.entity';
       RecurringEventEntity,
       RecurrenceExceptionEntity,
       EventReminderEntity,
-      User,
     ]),
     SharedKernelModule,
+    UsersModule,
   ],
   providers: [
     CalendarEventRepository,
@@ -78,7 +77,6 @@ import { User } from '../users/domain/entities/user.entity';
     DeleteEventReminderTransactionScript,
     FetchEventRemindersTransactionScript,
     ReminderScheduler,
-    UserRepository,
   ],
   controllers: [
     FetchCalendarEventsAction,
