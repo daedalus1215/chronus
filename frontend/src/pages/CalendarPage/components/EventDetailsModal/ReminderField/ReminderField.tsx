@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   FormControl,
   FormLabel,
@@ -64,6 +64,33 @@ export const ReminderField: React.FC<ReminderFieldProps> = ({
     }
     return 'minutes';
   });
+
+  // Sync internal state when value prop changes
+  useEffect(() => {
+    // Update selectedOption based on new value
+    if (value === null) {
+      setSelectedOption('none');
+    } else if (value === PRESET_OPTIONS['15min']) {
+      setSelectedOption('15min');
+    } else if (value === PRESET_OPTIONS['1hour']) {
+      setSelectedOption('1hour');
+    } else if (value === PRESET_OPTIONS['1day']) {
+      setSelectedOption('1day');
+    } else {
+      setSelectedOption('custom');
+      // Update custom value and unit for custom reminders
+      if (value < 60) {
+        setCustomUnit('minutes');
+        setCustomValue(value);
+      } else if (value < 1440) {
+        setCustomUnit('hours');
+        setCustomValue(Math.floor(value / 60));
+      } else {
+        setCustomUnit('days');
+        setCustomValue(Math.floor(value / 1440));
+      }
+    }
+  }, [value]);
 
   const handleOptionChange = (option: ReminderOption) => {
     setSelectedOption(option);

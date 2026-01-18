@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -99,6 +99,20 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   } = useEventReminders(eventId, event);
 
   const [selectedReminderMinutes, setSelectedReminderMinutes] = useState<number | null>(null);
+
+  // Reset selectedReminderMinutes and editing state when eventId changes
+  useEffect(() => {
+    // Reset editing state when switching events
+    setIsEditing(false);
+    // Reset selectedReminderMinutes based on actual reminders
+    if (reminders.length > 0) {
+      // Set to the first reminder's minutes if reminders exist
+      setSelectedReminderMinutes(reminders[0].reminderMinutes);
+    } else {
+      // Reset to null if no reminders
+      setSelectedReminderMinutes(null);
+    }
+  }, [eventId, reminders]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
