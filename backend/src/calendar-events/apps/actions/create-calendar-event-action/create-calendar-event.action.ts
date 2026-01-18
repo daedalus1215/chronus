@@ -33,7 +33,7 @@ export class CreateCalendarEventAction {
   /**
    * Create a new calendar event for the authenticated user.
    *
-   * @param dto - Request DTO with event details (title, description, startDate, endDate)
+   * @param dto - Request DTO with event details (title, description, startDate, endDate, reminderMinutes)
    * @param user - Authenticated user from JWT token
    * @returns Created calendar event response DTO
    */
@@ -50,6 +50,7 @@ export class CreateCalendarEventAction {
       startDate: new Date(dto.startDate),
       endDate: new Date(dto.endDate),
       user,
+      reminderMinutes: dto.reminderMinutes,
     };
     const event = await this.calendarEventService.createCalendarEvent(command);
     return new CalendarEventResponseDto(event);

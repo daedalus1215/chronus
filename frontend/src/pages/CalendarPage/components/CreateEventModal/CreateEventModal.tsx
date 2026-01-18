@@ -19,6 +19,7 @@ import {
 } from '../../../../api/dtos/calendar-events.dtos';
 import { format } from 'date-fns';
 import { RecurrencePatternForm } from '../RecurrencePatternForm/RecurrencePatternForm';
+import { ReminderField } from '../EventDetailsModal/ReminderField/ReminderField';
 
 type CreateEventModalProps = {
   isOpen: boolean;
@@ -64,6 +65,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
     },
     noEndDate: true,
   });
+  const [reminderMinutes, setReminderMinutes] = useState<number | null>(null);
   const [validationErrors, setValidationErrors] = useState<{
     title?: string;
     startDate?: string;
@@ -84,6 +86,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
           "yyyy-MM-dd'T'HH:mm"
         ),
       });
+      setReminderMinutes(null);
     }
   }, [isOpen, defaultDate]);
 
@@ -166,6 +169,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
           description: formData.description || undefined,
           startDate: new Date(formData.startDate).toISOString(),
           endDate: new Date(formData.endDate).toISOString(),
+          reminderMinutes: reminderMinutes !== null ? reminderMinutes : undefined,
         });
       }
       onClose();
@@ -204,6 +208,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
           "yyyy-MM-dd'T'HH:mm"
         ),
       });
+      setReminderMinutes(null);
       setRecurrenceData({
         recurrencePattern: {
           type: 'DAILY',
@@ -302,6 +307,11 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
               disabled={createMutation.isPending}
               error={!!validationErrors.endDate}
               helperText={validationErrors.endDate}
+            />
+            <ReminderField
+              value={reminderMinutes}
+              onChange={setReminderMinutes}
+              isEditing={true}
             />
             <Divider sx={{ my: 2 }} />
             <FormControlLabel

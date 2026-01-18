@@ -6,4 +6,5 @@ export type CreateCalendarEventCommand = {
   startDate: Date;
   endDate: Date;
   user: AuthUser;
+  reminderMinutes?: number;
 };

@@ -69,11 +69,23 @@ export class CalendarEventService {
 
   /**
    * Create a new calendar event.
+   * If reminderMinutes is provided, also creates a reminder for the event.
    */
   async createCalendarEvent(
     command: CreateCalendarEventCommand
   ): Promise<CalendarEvent> {
-    return await this.createCalendarEventTransactionScript.apply(command);
+    const event = await this.createCalendarEventTransactionScript.apply(command);
+    
+    if (command.reminderMinutes !== undefined && command.reminderMinutes !== null) {
+      const reminderCommand: CreateEventReminderCommand = {
+        calendarEventId: event.id,
+        reminderMinutes: command.reminderMinutes,
+        user: command.user,
+      };
+      await this.createEventReminderTransactionScript.apply(reminderCommand);
+    }
+    
+    return event;
   }
 
   /**
