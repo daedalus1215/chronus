@@ -34,6 +34,7 @@ export type CreateCalendarEventRequest = {
   startDate: string;
   endDate: string;
   reminders?: CreateEventReminderRequest[];
+  reminderMinutes?: number;
 };
 
 export type UpdateCalendarEventRequest = {

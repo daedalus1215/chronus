@@ -4,7 +4,10 @@ import {
   IsDateString,
   IsOptional,
   MaxLength,
+  IsInt,
+  Min,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateCalendarEventRequestDto {
   @IsString()
@@ -23,4 +26,10 @@ export class CreateCalendarEventRequestDto {
   @IsDateString()
   @IsNotEmpty()
   endDate: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  reminderMinutes?: number;
 }
