@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, EntityManager } from 'typeorm';
 import { EventReminderEntity } from '../entities/event-reminder.entity';
 import { EventReminder } from '../../domain/entities/event-reminder.entity';
 import { Logger } from 'nestjs-pino';
@@ -19,11 +19,17 @@ export class EventReminderRepository {
 
   /**
    * Create a new event reminder.
+   * @param reminder - Reminder data to create
+   * @param manager - Optional EntityManager for transaction support
    */
-  async create(reminder: Partial<EventReminder>): Promise<EventReminder> {
+  async create(
+    reminder: Partial<EventReminder>,
+    manager?: EntityManager
+  ): Promise<EventReminder> {
     const entity = this.domainToInfrastructure(reminder);
     this.logger.debug('Creating event reminder:', entity);
-    const saved = await this.repository.save(entity);
+    const repo = this.getRepository(manager);
+    const saved = await repo.save(entity);
     const domain = this.infrastructureToDomain(saved);
     this.logger.debug('Created event reminder:', domain);
     return domain;
@@ -156,5 +162,19 @@ export class EventReminderRepository {
       createdAt: infra.createdAt,
       updatedAt: infra.updatedAt,
     };
+  }
+
+  /**
+   * Get the appropriate repository instance.
+   * Returns the transaction manager's repository if provided, otherwise the default repository.
+   * @param manager - Optional EntityManager for transaction support
+   * @returns Repository instance for EventReminderEntity
+   */
+  private getRepository(
+    manager?: EntityManager
+  ): Repository<EventReminderEntity> {
+    return manager
+      ? manager.getRepository(EventReminderEntity)
+      : this.repository;
   }
 }

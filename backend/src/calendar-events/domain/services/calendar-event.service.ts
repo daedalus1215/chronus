@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { FetchCalendarEventsTransactionScript } from '../transaction-scripts/fetch-calendar-events-TS/fetch-calendar-events.transaction.script';
 import { FetchCalendarEventsCommand } from '../transaction-scripts/fetch-calendar-events-TS/fetch-calendar-events.command';
 import { CreateCalendarEventTransactionScript } from '../transaction-scripts/create-calendar-event-TS/create-calendar-event.transaction.script';
@@ -29,6 +30,7 @@ import { EventReminder } from '../entities/event-reminder.entity';
 @Injectable()
 export class CalendarEventService {
   constructor(
+    private readonly dataSource: DataSource,
     private readonly fetchCalendarEventsTransactionScript: FetchCalendarEventsTransactionScript,
     private readonly createCalendarEventTransactionScript: CreateCalendarEventTransactionScript,
     private readonly fetchCalendarEventTransactionScript: FetchCalendarEventTransactionScript,
@@ -70,22 +72,34 @@ export class CalendarEventService {
   /**
    * Create a new calendar event.
    * If reminderMinutes is provided, also creates a reminder for the event.
+   * Both operations are performed atomically within a single database transaction.
    */
   async createCalendarEvent(
     command: CreateCalendarEventCommand
   ): Promise<CalendarEvent> {
-    const event = await this.createCalendarEventTransactionScript.apply(command);
-    
-    if (command.reminderMinutes !== undefined && command.reminderMinutes !== null) {
-      const reminderCommand: CreateEventReminderCommand = {
-        calendarEventId: event.id,
-        reminderMinutes: command.reminderMinutes,
-        user: command.user,
-      };
-      await this.createEventReminderTransactionScript.apply(reminderCommand);
-    }
-    
-    return event;
+    return await this.dataSource.transaction(async (manager) => {
+      const event = await this.createCalendarEventTransactionScript.apply(
+        command,
+        manager
+      );
+
+      if (
+        command.reminderMinutes !== undefined &&
+        command.reminderMinutes !== null
+      ) {
+        const reminderCommand: CreateEventReminderCommand = {
+          calendarEventId: event.id,
+          reminderMinutes: command.reminderMinutes,
+          user: command.user,
+        };
+        await this.createEventReminderTransactionScript.apply(
+          reminderCommand,
+          manager
+        );
+      }
+
+      return event;
+    });
   }
 
   /**

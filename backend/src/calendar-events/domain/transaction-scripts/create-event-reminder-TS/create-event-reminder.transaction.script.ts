@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { EventReminderRepository } from '../../../infra/repositories/event-reminder.repository';
 import { CalendarEventRepository } from '../../../infra/repositories/calendar-event.repository';
 import { CreateEventReminderCommand } from './create-event-reminder.command';
@@ -18,8 +19,13 @@ export class CreateEventReminderTransactionScript {
   /**
    * Create a new event reminder.
    * Validates business rules and creates the reminder.
+   * @param command - Command containing reminder data
+   * @param manager - Optional EntityManager for transaction support
    */
-  async apply(command: CreateEventReminderCommand): Promise<EventReminder> {
+  async apply(
+    command: CreateEventReminderCommand,
+    manager?: EntityManager
+  ): Promise<EventReminder> {
     // Verify the calendar event exists and belongs to the user
     const event = await this.calendarEventRepository.findById(
       command.calendarEventId,
@@ -45,10 +51,13 @@ export class CreateEventReminderTransactionScript {
       throw new Error('Reminder with this timing already exists for this event');
     }
 
-    const reminder = await this.eventReminderRepository.create({
-      calendarEventId: command.calendarEventId,
-      reminderMinutes: command.reminderMinutes,
-    });
+    const reminder = await this.eventReminderRepository.create(
+      {
+        calendarEventId: command.calendarEventId,
+        reminderMinutes: command.reminderMinutes,
+      },
+      manager
+    );
     return reminder;
   }
 }
