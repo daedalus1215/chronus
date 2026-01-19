@@ -3,6 +3,7 @@ import { EventReminderRepository } from '../../../infra/repositories/event-remin
 import { CalendarEventRepository } from '../../../infra/repositories/calendar-event.repository';
 import { UpdateEventReminderCommand } from './update-event-reminder.command';
 import { EventReminder } from '../../entities/event-reminder.entity';
+import { UpdateEventReminderValidator } from './update-event-reminder.validator';
 
 /**
  * Transaction script for updating event reminders.
@@ -12,7 +13,8 @@ import { EventReminder } from '../../entities/event-reminder.entity';
 export class UpdateEventReminderTransactionScript {
   constructor(
     private readonly eventReminderRepository: EventReminderRepository,
-    private readonly calendarEventRepository: CalendarEventRepository
+    private readonly calendarEventRepository: CalendarEventRepository,
+    private readonly validator: UpdateEventReminderValidator
   ) {}
 
   /**
@@ -24,34 +26,26 @@ export class UpdateEventReminderTransactionScript {
     const existingReminder = await this.eventReminderRepository.findById(
       command.reminderId
     );
-    if (!existingReminder) {
-      throw new NotFoundException('Event reminder not found');
-    }
+    this.validator.validateReminderExists(existingReminder);
 
     // Verify the calendar event belongs to the user
     const event = await this.calendarEventRepository.findById(
       existingReminder.calendarEventId,
       command.user.userId
     );
-    if (!event) {
-      throw new NotFoundException('Calendar event not found');
-    }
+    this.validator.validateCalendarEventExists(event);
 
-    // Validate reminder minutes is positive
-    if (command.reminderMinutes < 0) {
-      throw new Error('Reminder minutes must be non-negative');
-    }
+    this.validator.validateReminderMinutesArePositive(command.reminderMinutes);
 
     // Check if another reminder with same minutes already exists for this event
     const existingReminders = await this.eventReminderRepository.findByEventId(
       existingReminder.calendarEventId
     );
-    const duplicateReminder = existingReminders.find(
-      r => r.id !== command.reminderId && r.reminderMinutes === command.reminderMinutes
+    this.validator.validateNoDuplicateReminder(
+      existingReminders,
+      command.reminderId,
+      command.reminderMinutes
     );
-    if (duplicateReminder) {
-      throw new Error('Reminder with this timing already exists for this event');
-    }
 
     const updatedReminder = await this.eventReminderRepository.update(
       command.reminderId,
