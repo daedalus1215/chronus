@@ -30,6 +30,7 @@ import { RecurringEventToInfrastructureConverter } from './domain/transaction-sc
 import { RecurringEventToDomainConverter } from './domain/transaction-scripts/create-recurring-event-TS/recurring-event-to-domain.converter';
 import { CreateEventReminderTransactionScript } from './domain/transaction-scripts/create-event-reminder-TS/create-event-reminder.transaction.script';
 import { UpdateEventReminderTransactionScript } from './domain/transaction-scripts/update-event-reminder-TS/update-event-reminder.transaction.script';
+import { UpdateEventReminderValidator } from './domain/transaction-scripts/update-event-reminder-TS/update-event-reminder.validator';
 import { DeleteEventReminderTransactionScript } from './domain/transaction-scripts/delete-event-reminder-TS/delete-event-reminder.transaction.script';
 import { FetchEventRemindersTransactionScript } from './domain/transaction-scripts/fetch-event-reminders-TS/fetch-event-reminders.transaction.script';
 import { CreateEventReminderAction } from './apps/actions/create-event-reminder-action/create-event-reminder.action';
@@ -74,6 +75,7 @@ import { UsersModule } from '../users/users.module';
     RecurringEventToDomainConverter,
     CreateEventReminderTransactionScript,
     UpdateEventReminderTransactionScript,
+    UpdateEventReminderValidator,
     DeleteEventReminderTransactionScript,
     FetchEventRemindersTransactionScript,
     ReminderScheduler,
