@@ -34,7 +34,6 @@ export const TagItem: React.FC<TagItemProps> = ({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  // Fetch full tag data when form opens
   const { data: fullTag, isLoading: isLoadingTag } = useQuery<Tag>({
     queryKey: ['tag', tag.id],
     queryFn: () => fetchTagById(tag.id),
