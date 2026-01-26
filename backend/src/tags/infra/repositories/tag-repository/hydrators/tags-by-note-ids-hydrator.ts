@@ -11,20 +11,25 @@ export const tagsByNoteIdsHydrator = (
   }
 
   const tagsMap = new Map(tags.map(tag => [tag.id, tag]));
-  const result = new Map<number, Set<Tag>>();
 
-  for (const noteId of noteIds) {
-    result.set(noteId, new Set());
-  }
-
-  for (const tagNote of tagNotes) {
-    const tag = tagsMap.get(tagNote.tagId);
-    if (tag) {
-      result.get(tagNote.noteId)?.add(tag);
-    }
-  }
+  const tagNotesByNoteId = tagNotes
+    .map(tagNote => ({
+      noteId: tagNote.noteId,
+      tag: tagsMap.get(tagNote.tagId),
+    }))
+    .filter(({ tag }) => tag !== undefined)
+    .reduce(
+      (acc, { noteId, tag }) => ({
+        ...acc,
+        [noteId]: [...(acc[noteId] || []), tag!],
+      }),
+      {} as Record<number, Tag[]>
+    );
 
   return new Map(
-    Array.from(result).map(([noteId, tagSet]) => [noteId, Array.from(tagSet)])
+    noteIds.map(noteId => {
+      const noteTags = tagNotesByNoteId[noteId] || [];
+      return [noteId, Array.from(new Set(noteTags))];
+    })
   );
 };
