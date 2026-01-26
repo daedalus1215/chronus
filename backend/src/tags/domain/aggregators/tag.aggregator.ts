@@ -9,10 +9,9 @@ export class TagAggregator {
 
   async getTagsByNoteIds(
     noteIds: number[]
-  ): Promise<Map<number, Array<{ id: number; name: string }>>> {
-    const tagsMap = await this.getTagsByNoteIdsTS.apply(noteIds);
+  ): Promise<Map<number, { id: number; name: string }[]>> {
     return new Map(
-      Array.from(tagsMap).map(([noteId, tags]) => [
+      Array.from(await this.getTagsByNoteIdsTS.apply(noteIds)).map(([noteId, tags]) => [
         noteId,
         tags.map(tag => ({ id: tag.id, name: tag.name })),
       ])

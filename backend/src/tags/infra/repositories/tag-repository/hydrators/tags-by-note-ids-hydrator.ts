@@ -1,35 +1,36 @@
 import { Tag } from '../../../../domain/entities/tag.entity';
-import { TagNote } from '../../../../../shared-kernel/domain/entities/tag-note.entity';
+
+type TagNoteRow = {
+  noteId: string;
+  id: string;
+  name: string;
+  description: string;
+  userId: string;
+};
 
 export const tagsByNoteIdsHydrator = (
-  tagNotes: TagNote[],
-  tags: Tag[],
+  rows: TagNoteRow[],
   noteIds: number[]
 ): Map<number, Tag[]> => {
-  if (tagNotes.length === 0) {
-    return new Map(noteIds.map(noteId => [noteId, []]));
-  }
-
-  const tagsMap = new Map(tags.map(tag => [tag.id, tag]));
-
-  const tagNotesByNoteId = tagNotes
-    .map(tagNote => ({
-      noteId: tagNote.noteId,
-      tag: tagsMap.get(tagNote.tagId),
-    }))
-    .filter(({ tag }) => tag !== undefined)
-    .reduce(
-      (acc, { noteId, tag }) => ({
-        ...acc,
-        [noteId]: [...(acc[noteId] || []), tag!],
-      }),
-      {} as Record<number, Tag[]>
-    );
+  const tagsByNoteId = rows.reduce(
+    (acc, row) => {
+      const noteId = parseInt(row.noteId);
+      const tag: Tag = {
+        id: parseInt(row.id),
+        name: row.name,
+        description: row.description,
+        userId: parseInt(row.userId),
+      };
+      const existing = acc[noteId] || [];
+      const hasDuplicate = existing.some(t => t.id === tag.id);
+      return hasDuplicate
+        ? acc
+        : { ...acc, [noteId]: [...existing, tag] };
+    },
+    {} as Record<number, Tag[]>
+  );
 
   return new Map(
-    noteIds.map(noteId => {
-      const noteTags = tagNotesByNoteId[noteId] || [];
-      return [noteId, Array.from(new Set(noteTags))];
-    })
+    noteIds.map(noteId => [noteId, tagsByNoteId[noteId] || []])
   );
 };

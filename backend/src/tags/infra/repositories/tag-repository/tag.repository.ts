@@ -71,17 +71,19 @@ export class TagRepository {
       return new Map();
     }
 
-    const tagNotes = await this.tagNoteRepository.find({
-      where: { notes: { id: In(noteIds) } },
-    });
+    const rows = await this.tagNoteRepository
+      .createQueryBuilder('tagNote')
+      .innerJoin('tags', 'tag', 'tag.id = tagNote.tag_id')
+      .where('tagNote.notes_id IN (:...noteIds)', { noteIds })
+      .select([
+        'tagNote.notes_id as noteId',
+        'tag.id as id',
+        'tag.name as name',
+        'tag.description as description',
+        'tag.user_id as userId',
+      ])
+      .getRawMany();
 
-    if (tagNotes.length === 0) {
-      return new Map(noteIds.map(noteId => [noteId, []]));
-    }
-
-    const tagIds = [...new Set(tagNotes.map(tn => tn.tagId))];
-    const tags = await this.tagRepository.find({ where: { id: In(tagIds) } });
-
-    return tagsByNoteIdsHydrator(tagNotes, tags, noteIds);
+    return tagsByNoteIdsHydrator(rows, noteIds);
   }
 }
