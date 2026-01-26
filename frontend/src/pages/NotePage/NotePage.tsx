@@ -11,11 +11,13 @@ import { BottomSheet } from '../../components/BottomSheet/BottomSheet';
 import { useState } from 'react';
 import { AddTagForm } from './components/AddTagForm/AddTagForm';
 import { useAllTags } from './hooks/useAllTags';
-import { Chip, IconButton } from '@mui/material';
-import { Add, Close } from '@mui/icons-material';
+import { Chip, IconButton, Button } from '@mui/material';
+import { Add, Close, Edit, Cancel, Save } from '@mui/icons-material';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { DesktopNoteEditor } from './components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor';
 import { MobileNoteEditor } from './components/NoteEditor/MobileNoteEditor/MobileNoteEditor';
+import { DesktopNoteReadView } from './components/NoteReadView/DesktopNoteReadView/DesktopNoteReadView';
+import { MobileNoteReadView } from './components/NoteReadView/MobileNoteReadView/MobileNoteReadView';
 import { DesktopCheckListView } from './components/CheckListView/DesktopCheckListView/DesktopCheckListView';
 import { MobileCheckListView } from './components/CheckListView/MobileCheckListView/MobileCheckListView';
 import { TranscriptionRecorder } from './components/TranscriptionRecorder/TranscriptionRecorder';
@@ -41,6 +43,7 @@ export const NotePage: React.FC = () => {
     error: allTagsError,
   } = useAllTags();
   const [isAddTagOpen, setAddTagOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // Use custom hook to manage transcription callback chain
   const { setAppendToDescriptionFn, onTranscription: onTranscriptionCallback } =
@@ -61,6 +64,14 @@ export const NotePage: React.FC = () => {
     } catch (err) {
       console.error('Failed to save note:', err);
     }
+  };
+
+  const handleEditClick = () => {
+    setIsEditMode(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
   };
 
   const availableTags = allTags
@@ -123,25 +134,60 @@ export const NotePage: React.FC = () => {
             Error loading note
           </Alert>
         )}
-        <TextField
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          className={styles.titleInput}
-          placeholder="Note title"
-          aria-label="Note title"
-          disabled={titleLoading}
-          variant="standard"
-          fullWidth
-          InputProps={{
-            disableUnderline: true,
-            style: {
-              fontWeight: 600,
-              marginLeft: '20px',
-              fontSize: '1.2rem',
-              color: 'var(--color-text)',
-            },
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            mb: note?.isMemo && !isEditMode ? 0 : 1,
           }}
-        />
+        >
+          <TextField
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            className={styles.titleInput}
+            placeholder="Note title"
+            aria-label="Note title"
+            disabled={titleLoading}
+            variant="standard"
+            fullWidth
+            InputProps={{
+              disableUnderline: true,
+              style: {
+                fontWeight: 600,
+                marginLeft: '20px',
+                fontSize: '1.2rem',
+                color: 'var(--color-text)',
+              },
+            }}
+          />
+          {note?.isMemo && (
+            <>
+              {!isEditMode ? (
+                <IconButton
+                  onClick={handleEditClick}
+                  color="primary"
+                  size="small"
+                  aria-label="Edit note"
+                >
+                  <Edit />
+                </IconButton>
+              ) : (
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                  <Button
+                    startIcon={<Cancel />}
+                    onClick={handleCancelEdit}
+                    size="small"
+                    variant="outlined"
+                    color="secondary"
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              )}
+            </>
+          )}
+        </Box>
         {titleError && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {titleError}
@@ -157,22 +203,30 @@ export const NotePage: React.FC = () => {
         >
           {note?.isMemo ? (
             <>
-              <TranscriptionRecorder
-                noteId={note.id}
-                onTranscription={onTranscriptionCallback}
-              />
-              {isMobile ? (
-                <MobileNoteEditor
-                  note={note}
-                  onSave={handleSave}
-                  onAppendToDescription={setAppendToDescriptionFn}
+              {isEditMode && (
+                <TranscriptionRecorder
+                  noteId={note.id}
+                  onTranscription={onTranscriptionCallback}
                 />
+              )}
+              {isEditMode ? (
+                isMobile ? (
+                  <MobileNoteEditor
+                    note={note}
+                    onSave={handleSave}
+                    onAppendToDescription={setAppendToDescriptionFn}
+                  />
+                ) : (
+                  <DesktopNoteEditor
+                    note={note}
+                    onSave={handleSave}
+                    onAppendToDescription={setAppendToDescriptionFn}
+                  />
+                )
+              ) : isMobile ? (
+                <MobileNoteReadView note={note} />
               ) : (
-                <DesktopNoteEditor
-                  note={note}
-                  onSave={handleSave}
-                  onAppendToDescription={setAppendToDescriptionFn}
-                />
+                <DesktopNoteReadView note={note} />
               )}
             </>
           ) : isMobile ? (
