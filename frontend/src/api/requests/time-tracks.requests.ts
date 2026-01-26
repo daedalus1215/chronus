@@ -7,6 +7,7 @@ import {
 import {
   NoteTimeTracksResponse,
   TimeTrackAggregationResponse,
+  NotesByYearResponseDto,
 } from '../dtos/time-tracks.dtos';
 import { WeeklyMostActiveNoteResponseDto } from '../dtos/weekly-most-active-note.dtos';
 import { WeeklyTrendResponseDto } from '../dtos/weekly-trend.dtos';
@@ -65,5 +66,12 @@ export const getWeeklyTrend = async (): Promise<WeeklyTrendResponseDto> => {
 
 export const getStreak = async (): Promise<StreakResponseDto> => {
   const response = await api.get<StreakResponseDto>('/time-tracks/streak');
+  return response.data;
+};
+
+export const getNotesByYear = async (): Promise<NotesByYearResponseDto> => {
+  const response = await api.get<NotesByYearResponseDto>(
+    '/time-tracks/notes-by-year'
+  );
   return response.data;
 };

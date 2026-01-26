@@ -5,6 +5,7 @@ import { Tag } from '../../../domain/entities/tag.entity';
 import { TagNote } from '../../../../shared-kernel/domain/entities/tag-note.entity';
 import { GetTagsByUserIdProjection } from 'src/tags/domain/transaction-scripts/get-tags-by-user-id.projection';
 import { tagsByUserIdHydrator } from './hydrators/tags-by-user-id-hydrator';
+import { tagsByNoteIdsHydrator } from './hydrators/tags-by-note-ids-hydrator';
 
 @Injectable()
 export class TagRepository {
@@ -63,5 +64,26 @@ export class TagRepository {
     const tagIds = tagNotes.map(tn => tn.tagId);
     if (!tagIds.length) return [];
     return this.tagRepository.find({ where: { id: In(tagIds) } });
+  }
+
+  async findTagsByNoteIds(noteIds: number[]): Promise<Map<number, Tag[]>> {
+    if (noteIds.length === 0) {
+      return new Map();
+    }
+
+    const rows = await this.tagNoteRepository
+      .createQueryBuilder('tagNote')
+      .innerJoin('tags', 'tag', 'tag.id = tagNote.tag_id')
+      .where('tagNote.notes_id IN (:...noteIds)', { noteIds })
+      .select([
+        'tagNote.notes_id as noteId',
+        'tag.id as id',
+        'tag.name as name',
+        'tag.description as description',
+        'tag.user_id as userId',
+      ])
+      .getRawMany();
+
+    return tagsByNoteIdsHydrator(rows, noteIds);
   }
 }

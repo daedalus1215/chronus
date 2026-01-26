@@ -5,7 +5,9 @@ import { TagNote } from '../shared-kernel/domain/entities/tag-note.entity';
 import { TagRepository } from './infra/repositories/tag-repository/tag.repository';
 import { AddTagToNoteTransactionScript } from './domain/transaction-scripts/add-tag-to-note.transaction.script';
 import { GetTagsByNoteIdTransactionScript } from './domain/transaction-scripts/get-tags-by-note-id.transaction.script';
+import { GetTagsByNoteIdsTransactionScript } from './domain/transaction-scripts/get-tags-by-note-ids.transaction.script';
 import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/get-tags-by-user-id.transaction.script';
+import { TagAggregator } from './domain/aggregators/tag.aggregator';
 import { UpdateTagTransactionScript } from './domain/transaction-scripts/update-tag.transaction.script';
 import { DeleteTagTransactionScript } from './domain/transaction-scripts/delete-tag.transaction.script';
 import { AddTagToNoteAction } from './app/actions/add-tag-to-note-action/add-tag-to-note.action';
@@ -30,11 +32,13 @@ import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-
     TagNoteRepository,
     AddTagToNoteTransactionScript,
     GetTagsByNoteIdTransactionScript,
+    GetTagsByNoteIdsTransactionScript,
     GetTagsByUserIdTransactionScript,
     UpdateTagTransactionScript,
     DeleteTagTransactionScript,
     RemoveTagFromNoteTransactionScript,
     TagService,
+    TagAggregator,
     DeleteNoteTagAssociationsListener,
   ],
   controllers: [
@@ -51,8 +55,10 @@ import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-
     TagNoteRepository,
     AddTagToNoteTransactionScript,
     GetTagsByNoteIdTransactionScript,
+    GetTagsByNoteIdsTransactionScript,
     GetTagsByUserIdTransactionScript,
     TagService,
+    TagAggregator,
     DeleteNoteTagAssociationsListener,
   ],
 })

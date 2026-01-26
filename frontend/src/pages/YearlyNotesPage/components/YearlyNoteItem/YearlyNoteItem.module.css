@@ -1,0 +1,106 @@
+.noteItem {
+  padding: 0.75rem 1rem;
+  margin-bottom: 2px;
+  background-color: var(--color-bg-paper, #111);
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  outline: none;
+}
+
+.noteItem:hover {
+  background-color: var(--color-bg-elevated, #1a1a1a);
+  border-left-color: var(--color-primary, #6366f1);
+  transform: translateX(2px);
+}
+
+.noteItem:focus-visible {
+  background-color: var(--color-bg-elevated, #1a1a1a);
+  border-left-color: var(--color-primary, #6366f1);
+  box-shadow: 0 0 0 2px var(--color-primary-light-2, rgba(99, 102, 241, 0.2));
+}
+
+.noteContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.noteName {
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--color-text, #fff);
+  line-height: 1.4;
+}
+
+.noteDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.topRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dateRange {
+  color: var(--color-text-secondary, #9ca3af);
+  font-size: 0.8125rem;
+}
+
+.metrics {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.125rem;
+}
+
+.tagChip {
+  cursor: pointer;
+}
+
+.time {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  color: var(--color-text, #fff);
+}
+
+.dateCount {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+@media (max-width: 600px) {
+  .noteItem {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .noteName {
+    font-size: 0.875rem;
+  }
+
+  .topRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+  }
+
+  .metrics {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .tagsContainer {
+    gap: 0.25rem;
+  }
+}
