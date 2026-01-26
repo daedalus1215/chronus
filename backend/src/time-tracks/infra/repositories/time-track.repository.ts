@@ -223,4 +223,41 @@ export class TimeTrackRepository {
       weekEndDate: result.weekEndDate,
     };
   }
+
+  async getNotesByYear(userId: number): Promise<
+    Array<{
+      noteId: number;
+      year: number;
+      firstDate: string;
+      lastDate: string;
+      totalTimeMinutes: number;
+      dateCount: number;
+    }>
+  > {
+    const result = await this.repository
+      .createQueryBuilder('timeTrack')
+      .select([
+        'timeTrack.noteId as noteId',
+        "CAST(strftime('%Y', timeTrack.date) AS INTEGER) as year",
+        'MIN(timeTrack.date) as firstDate',
+        'MAX(timeTrack.date) as lastDate',
+        'SUM(timeTrack.durationMinutes) as totalTimeMinutes',
+        'COUNT(DISTINCT timeTrack.date) as dateCount',
+      ])
+      .where('timeTrack.userId = :userId', { userId })
+      .groupBy('timeTrack.noteId')
+      .addGroupBy("strftime('%Y', timeTrack.date)")
+      .orderBy("strftime('%Y', timeTrack.date)", 'DESC')
+      .addOrderBy('MAX(timeTrack.date)', 'DESC')
+      .getRawMany();
+
+    return result.map(r => ({
+      noteId: parseInt(r.noteId),
+      year: parseInt(r.year),
+      firstDate: r.firstDate,
+      lastDate: r.lastDate,
+      totalTimeMinutes: parseInt(r.totalTimeMinutes) || 0,
+      dateCount: parseInt(r.dateCount) || 0,
+    }));
+  }
 }

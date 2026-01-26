@@ -8,14 +8,17 @@ import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decora
 import { GetTimeTracksTotalByNoteIdTransactionScript } from '../../transaction-scripts/get-time-tracks-total-by-note-id-TS/get-time-tracks-total-by-note-id.transaction.script';
 import { GetDailyTimeTracksAggregationTransactionScript } from '../../transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.transaction.script';
 import { GetDailyTimeTracksAggregationCommand } from '../../transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.command';
-import { TimeTrackWithNoteNamesResponder } from '../../../apps/actions/get-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
 import { GetWeeklyMostActiveNoteTransactionScript } from '../../transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script';
 import { GetWeeklyTrendTransactionScript } from '../../transaction-scripts/get-weekly-trend-TS/get-weekly-trend.transaction.script';
 import { GetStreakTransactionScript } from '../../transaction-scripts/get-streak-TS/get-streak.transaction.script';
+import { GetNotesByYearTransactionScript } from '../../transaction-scripts/get-notes-by-year-TS/get-notes-by-year.transaction.script';
+import { GetNotesByYearCommand } from '../../transaction-scripts/get-notes-by-year-TS/get-notes-by-year.command';
 import { GET_NOTE_DETAILS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/notes/get-note-details.command';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WeeklyTrendResponseDto } from '../../../apps/dtos/responses/weekly-trend.response.dto';
 import { StreakResponseDto } from '../../../apps/dtos/responses/streak.response.dto';
+import { NotesByYearResponseDto } from '../../../apps/dtos/responses/notes-by-year.response.dto';
+import { TagAggregator } from '../../../../tags/domain/aggregators/tag.aggregator';
 
 //@TODO: Move this to a command object
 type ValidateTimeTrackCreationCommand = {
@@ -31,10 +34,11 @@ export class TimeTrackService {
     private readonly noteAggregator: NoteAggregator,
     private readonly getTimeTracksTotalByNoteIdTS: GetTimeTracksTotalByNoteIdTransactionScript,
     private readonly getDailyTimeTracksAggregationTS: GetDailyTimeTracksAggregationTransactionScript,
-    private readonly timeTrackWithNoteNamesConverter: TimeTrackWithNoteNamesResponder,
     private readonly getWeeklyMostActiveNoteTS: GetWeeklyMostActiveNoteTransactionScript,
     private readonly getWeeklyTrendTS: GetWeeklyTrendTransactionScript,
     private readonly getStreakTS: GetStreakTransactionScript,
+    private readonly getNotesByYearTS: GetNotesByYearTransactionScript,
+    private readonly tagAggregator: TagAggregator,
     private readonly eventEmitter: EventEmitter2
   ) {}
 
@@ -94,5 +98,48 @@ export class TimeTrackService {
 
   async getStreak(userId: number): Promise<StreakResponseDto> {
     return this.getStreakTS.apply(userId);
+  }
+
+  async getNotesByYear(
+    command: GetNotesByYearCommand
+  ): Promise<NotesByYearResponseDto> {
+    const notesByYear = await this.getNotesByYearTS.apply(command);
+    const noteIds = notesByYear.map(n => n.noteId);
+    const uniqueNoteIds = [...new Set(noteIds)];
+    const noteNames = await this.noteAggregator.getNoteNamesByIds(
+      uniqueNoteIds,
+      command.user.userId
+    );
+    const noteNamesMap = new Map(
+      noteNames.map(n => [n.id, n.name])
+    );
+    const tagsMap = await this.tagAggregator.getTagsByNoteIds(uniqueNoteIds);
+    const notesWithNames = notesByYear.map(note => ({
+      ...note,
+      noteName: noteNamesMap.get(note.noteId) || 'Unknown',
+      tags: tagsMap.get(note.noteId) || [],
+    }));
+    const yearsMap = new Map<number, typeof notesWithNames>();
+    for (const note of notesWithNames) {
+      if (!yearsMap.has(note.year)) {
+        yearsMap.set(note.year, []);
+      }
+      yearsMap.get(note.year)!.push(note);
+    }
+    const years = Array.from(yearsMap.entries())
+      .map(([year, notes]) => ({
+        year,
+        notes: notes.map(n => ({
+          noteId: n.noteId,
+          noteName: n.noteName,
+          firstDate: n.firstDate,
+          lastDate: n.lastDate,
+          totalTimeMinutes: n.totalTimeMinutes,
+          dateCount: n.dateCount,
+          tags: n.tags,
+        })),
+      }))
+      .sort((a, b) => b.year - a.year);
+    return { years };
   }
 }

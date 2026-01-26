@@ -17,6 +17,7 @@ import { muiTheme } from './theme';
 import { TagPage } from './pages/TagPage/TagPage';
 import { ActivityPage } from './pages/ActivityPage/ActivityPage';
 import { CalendarPage } from './pages/CalendarPage/CalendarPage';
+import { YearlyNotesPage } from './pages/YearlyNotesPage/YearlyNotesPage';
 import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 import { ROUTES, ROUTE_PATTERNS } from './constants/routes';
 import { AuthenticatedLayout } from './components/Layout/AuthenticatedLayout';
@@ -52,6 +53,7 @@ function AppRoutes() {
           <Route path={ROUTES.TAGS} element={<TagPage />} />
           <Route path={ROUTES.ACTIVITY} element={<ActivityPage />} />
           <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
+          <Route path={ROUTES.YEARLY_NOTES} element={<YearlyNotesPage />} />
           <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
 
           {/* Redirect authenticated users trying to access auth pages */}
