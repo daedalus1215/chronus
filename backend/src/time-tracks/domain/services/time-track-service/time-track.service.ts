@@ -98,7 +98,7 @@ export class TimeTrackService {
 
   async getStreak(userId: number): Promise<StreakResponseDto> {
     return this.getStreakTS.apply(userId);
-  }
+  }i
 
   async getNotesByYear(
     command: GetNotesByYearCommand
