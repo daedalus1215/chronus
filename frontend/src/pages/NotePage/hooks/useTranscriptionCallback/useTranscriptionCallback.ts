@@ -1,4 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
+import {
+  isValidTextForInsertion,
+  insertTextAtCursor,
+  appendTextToEnd,
+} from '../../utils/textInsertion';
 
 type UseTranscriptionCallbackReturn = {
   appendToDescriptionFn: ((text: string) => void) | null;
@@ -55,34 +60,32 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
       }
 
       // Fallback: directly update the textarea if callback isn't set
+      // This ensures transcriptions don't get lost even if the callback chain isn't set up
       console.warn(
         '⚠️ appendToDescriptionFn not set, trying direct textarea update'
       );
-      const textarea = document.getElementById(
-        'note-description'
-      ) as HTMLTextAreaElement;
+      const TEXTAREA_ID = 'note-description';
+      const textarea = document.getElementById(TEXTAREA_ID) as HTMLTextAreaElement;
+      
       if (textarea) {
         const currentValue = textarea.value || '';
         const cursorPosition = textarea.selectionStart;
-        const textBeforeCursor = currentValue.substring(0, cursorPosition);
-        const textAfterCursor = currentValue.substring(cursorPosition);
         
-        // Add a space before the new text if there's text before the cursor and it doesn't end with a space
-        const separator = textBeforeCursor && !textBeforeCursor.endsWith(' ') ? ' ' : '';
-        const trimmedText = text.trim();
-        const newValue = `${textBeforeCursor}${separator}${trimmedText}${textAfterCursor}`;
-        
-        // Calculate new cursor position (after the inserted text)
-        const newCursorPosition = cursorPosition + separator.length + trimmedText.length;
+        // Insert text at cursor position (for speech-to-text at cursor location)
+        const { newText, newCursorPosition } = insertTextAtCursor(
+          currentValue,
+          text,
+          cursorPosition
+        );
         
         console.log('📝 Directly updating textarea at cursor position:', {
           cursorPosition,
           currentLength: currentValue.length,
-          newLength: newValue.length,
+          newLength: newText.length,
         });
 
         // Update the textarea value
-        textarea.value = newValue;
+        textarea.value = newText;
 
         // Set cursor position after the inserted text
         textarea.setSelectionRange(newCursorPosition, newCursorPosition);

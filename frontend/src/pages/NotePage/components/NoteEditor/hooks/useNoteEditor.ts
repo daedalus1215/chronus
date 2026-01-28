@@ -1,4 +1,9 @@
 import React from 'react';
+import {
+  isValidTextForInsertion,
+  insertTextAtCursorInTextarea,
+  appendTextToEnd,
+} from '../../../utils/textInsertion';
 
 type Note = {
   id: number;
@@ -91,64 +96,34 @@ export const useNoteEditor = ({
   const appendToDescription = React.useCallback(
     (text: string) => {
       console.log('appendToDescription called with:', text);
-      // Strict validation - only append valid, non-empty strings
-      if (
-        !text ||
-        text === undefined ||
-        text === null ||
-        typeof text !== 'string' ||
-        text.trim() === '' ||
-        text === 'undefined' ||
-        text === 'null'
-      ) {
+      
+      // Validate text before processing
+      if (!isValidTextForInsertion(text)) {
         console.debug('Skipping invalid text in appendToDescription:', text);
         return;
       }
 
-      const textarea = document.getElementById(
-        'note-description'
-      ) as HTMLTextAreaElement;
-      
-      if (!textarea) {
+      const currentDescription = contentRef.current.description || '';
+      const TEXTAREA_ID = 'note-description';
+
+      // Try to insert at cursor position (for speech-to-text at cursor location)
+      const inserted = insertTextAtCursorInTextarea(
+        TEXTAREA_ID,
+        currentDescription,
+        text,
+        (newText) => {
+          handleContentChange({ description: newText });
+        }
+      );
+
+      // Fallback to append behavior if textarea not found
+      if (!inserted) {
         console.warn('Textarea not found, falling back to append behavior');
-        const currentDescription = contentRef.current.description || '';
-        const separator = currentDescription ? ' ' : '';
-        const newDescription = `${currentDescription}${separator}${text.trim()}`;
+        const newDescription = appendTextToEnd(currentDescription, text);
         handleContentChange({
           description: newDescription,
         });
-        return;
       }
-
-      const currentDescription = contentRef.current.description || '';
-      const cursorPosition = textarea.selectionStart;
-      const textBeforeCursor = currentDescription.substring(0, cursorPosition);
-      const textAfterCursor = currentDescription.substring(cursorPosition);
-      
-      // Add a space before the new text if there's text before the cursor and it doesn't end with a space
-      const separator = textBeforeCursor && !textBeforeCursor.endsWith(' ') ? ' ' : '';
-      const trimmedText = text.trim();
-      const newDescription = `${textBeforeCursor}${separator}${trimmedText}${textAfterCursor}`;
-      
-      // Calculate new cursor position (after the inserted text)
-      const newCursorPosition = cursorPosition + separator.length + trimmedText.length;
-      
-      console.log(
-        `Inserting text at cursor position ${cursorPosition}. Current length: ${currentDescription.length}, New length: ${newDescription.length}`
-      );
-      
-      handleContentChange({
-        description: newDescription,
-      });
-      
-      // Restore cursor position after React updates the DOM
-      // Use setTimeout to ensure DOM has updated
-      setTimeout(() => {
-        if (textarea) {
-          textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-          textarea.focus();
-        }
-      }, 0);
     },
     [handleContentChange]
   );
