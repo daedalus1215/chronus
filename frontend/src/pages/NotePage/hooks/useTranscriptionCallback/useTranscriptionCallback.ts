@@ -63,15 +63,29 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
       ) as HTMLTextAreaElement;
       if (textarea) {
         const currentValue = textarea.value || '';
-        const separator = currentValue ? ' ' : '';
-        const newValue = `${currentValue}${separator}${text.trim()}`;
-        console.log('📝 Directly updating textarea:', {
+        const cursorPosition = textarea.selectionStart;
+        const textBeforeCursor = currentValue.substring(0, cursorPosition);
+        const textAfterCursor = currentValue.substring(cursorPosition);
+        
+        // Add a space before the new text if there's text before the cursor and it doesn't end with a space
+        const separator = textBeforeCursor && !textBeforeCursor.endsWith(' ') ? ' ' : '';
+        const trimmedText = text.trim();
+        const newValue = `${textBeforeCursor}${separator}${trimmedText}${textAfterCursor}`;
+        
+        // Calculate new cursor position (after the inserted text)
+        const newCursorPosition = cursorPosition + separator.length + trimmedText.length;
+        
+        console.log('📝 Directly updating textarea at cursor position:', {
+          cursorPosition,
           currentLength: currentValue.length,
           newLength: newValue.length,
         });
 
         // Update the textarea value
         textarea.value = newValue;
+
+        // Set cursor position after the inserted text
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
 
         // Trigger input event to notify React
         const event = new Event('input', { bubbles: true });
@@ -81,7 +95,7 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
         const changeEvent = new Event('change', { bubbles: true });
         textarea.dispatchEvent(changeEvent);
 
-        console.log('✅ Textarea updated directly');
+        console.log('✅ Textarea updated directly at cursor position');
       } else {
         console.error('❌ Textarea not found!');
       }
