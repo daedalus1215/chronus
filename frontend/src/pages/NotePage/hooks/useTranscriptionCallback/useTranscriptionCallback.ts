@@ -1,4 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
+import {
+  isValidTextForInsertion,
+  insertTextAtCursor,
+  appendTextToEnd,
+} from '../../utils/textInsertion';
 
 type UseTranscriptionCallbackReturn = {
   appendToDescriptionFn: ((text: string) => void) | null;
@@ -55,23 +60,35 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
       }
 
       // Fallback: directly update the textarea if callback isn't set
+      // This ensures transcriptions don't get lost even if the callback chain isn't set up
       console.warn(
         '⚠️ appendToDescriptionFn not set, trying direct textarea update'
       );
-      const textarea = document.getElementById(
-        'note-description'
-      ) as HTMLTextAreaElement;
+      const TEXTAREA_ID = 'note-description';
+      const textarea = document.getElementById(TEXTAREA_ID) as HTMLTextAreaElement;
+      
       if (textarea) {
         const currentValue = textarea.value || '';
-        const separator = currentValue ? ' ' : '';
-        const newValue = `${currentValue}${separator}${text.trim()}`;
-        console.log('📝 Directly updating textarea:', {
+        const cursorPosition = textarea.selectionStart;
+        
+        // Insert text at cursor position (for speech-to-text at cursor location)
+        const { newText, newCursorPosition } = insertTextAtCursor(
+          currentValue,
+          text,
+          cursorPosition
+        );
+        
+        console.log('📝 Directly updating textarea at cursor position:', {
+          cursorPosition,
           currentLength: currentValue.length,
-          newLength: newValue.length,
+          newLength: newText.length,
         });
 
         // Update the textarea value
-        textarea.value = newValue;
+        textarea.value = newText;
+
+        // Set cursor position after the inserted text
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
 
         // Trigger input event to notify React
         const event = new Event('input', { bubbles: true });
@@ -81,7 +98,7 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
         const changeEvent = new Event('change', { bubbles: true });
         textarea.dispatchEvent(changeEvent);
 
-        console.log('✅ Textarea updated directly');
+        console.log('✅ Textarea updated directly at cursor position');
       } else {
         console.error('❌ Textarea not found!');
       }
