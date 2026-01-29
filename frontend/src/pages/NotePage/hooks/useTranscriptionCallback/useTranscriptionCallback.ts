@@ -1,8 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import {
-  isValidTextForInsertion,
   insertTextAtCursor,
-  appendTextToEnd,
 } from '../../utils/textInsertion';
 
 type UseTranscriptionCallbackReturn = {
