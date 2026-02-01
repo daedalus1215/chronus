@@ -16,7 +16,7 @@
 
 .titleInput {
   width: 100%;
-  padding: 1rem;
+  padding: 0rem;
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--foreground);
@@ -26,6 +26,11 @@
   outline: none;
   transition: all 0.2s ease-in-out;
   box-sizing: border-box;
+}
+
+.titleInput textarea {
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .titleInput:focus {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useNote } from './hooks/useNote/useNote';
 import { useTitle } from './hooks/useTitle';
@@ -8,11 +8,27 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { Tag, useNoteTags } from './hooks/useNoteTags';
 import { BottomSheet } from '../../components/BottomSheet/BottomSheet';
-import { useState } from 'react';
 import { AddTagForm } from './components/AddTagForm/AddTagForm';
 import { useAllTags } from './hooks/useAllTags';
-import { Chip, IconButton, Button } from '@mui/material';
-import { Add, Close, Edit, ViewKanban, EditOff } from '@mui/icons-material';
+import {
+  Chip,
+  IconButton,
+  Button,
+  Fab,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import {
+  Add,
+  Close,
+  Edit,
+  ViewKanban,
+  EditOff,
+  MoreVert,
+  Label,
+} from '@mui/icons-material';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { DesktopNoteEditor } from './components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor';
 import { MobileNoteEditor } from './components/NoteEditor/MobileNoteEditor/MobileNoteEditor';
@@ -44,6 +60,35 @@ export const NotePage: React.FC = () => {
   } = useAllTags();
   const [isAddTagOpen, setAddTagOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [fabMenuAnchor, setFabMenuAnchor] = useState<null | HTMLElement>(null);
+  const isFabMenuOpen = Boolean(fabMenuAnchor);
+
+  const handleFabMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setFabMenuAnchor(event.currentTarget);
+  };
+
+  const handleFabMenuClose = () => {
+    setFabMenuAnchor(null);
+  };
+
+  const handleFabEdit = () => {
+    handleFabMenuClose();
+    if (isEditMode) {
+      handleCancelEdit();
+    } else {
+      handleEditClick();
+    }
+  };
+
+  const handleFabKanban = () => {
+    handleFabMenuClose();
+    navigate(`/notes/${note.id}/kanban`);
+  };
+
+  const handleFabAddTag = () => {
+    handleFabMenuClose();
+    setAddTagOpen(true);
+  };
 
   // Use custom hook to manage transcription callback chain
   const { setAppendToDescriptionFn, onTranscription: onTranscriptionCallback } =
@@ -90,13 +135,16 @@ export const NotePage: React.FC = () => {
     <main className={styles.main}>
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box className="flex items-center gap-2 overflow-x-auto py-2 mb-2">
-          <IconButton
-            onClick={() => setAddTagOpen(true)}
-            color="secondary"
-            size="small"
-          >
-            <Add />
-          </IconButton>
+          {(!isMobile || !note?.isMemo) && (
+            <IconButton
+              onClick={() => setAddTagOpen(true)}
+              color="secondary"
+              size="small"
+              aria-label="Add tag"
+            >
+              <Add />
+            </IconButton>
+          )}
 
           {tags &&
             tags.map((tag: Tag) => (
@@ -142,7 +190,7 @@ export const NotePage: React.FC = () => {
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             gap: 1,
             mb: note?.isMemo && !isEditMode ? 0 : 1,
           }}
@@ -156,6 +204,9 @@ export const NotePage: React.FC = () => {
             disabled={titleLoading}
             variant="standard"
             fullWidth
+            multiline
+            minRows={1}
+            maxRows={4}
             InputProps={{
               disableUnderline: true,
               style: {
@@ -163,10 +214,15 @@ export const NotePage: React.FC = () => {
                 marginLeft: '20px',
                 fontSize: '1.2rem',
                 color: 'var(--color-text)',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
               },
             }}
+            inputProps={{
+              style: { resize: 'none' },
+            }}
           />
-          {note?.isMemo && (
+          {note?.isMemo && !isMobile && (
             <>
               {!isEditMode ? (
                 <IconButton
@@ -190,14 +246,16 @@ export const NotePage: React.FC = () => {
               )}
             </>
           )}
-          <IconButton
-            onClick={() => navigate(`/notes/${note.id}/kanban`)}
-            color="primary"
-            size="small"
-            aria-label="Open kanban board"
-          >
-            <ViewKanban />
-          </IconButton>
+          {!isMobile && (
+            <IconButton
+              onClick={() => navigate(`/notes/${note.id}/kanban`)}
+              color="primary"
+              size="small"
+              aria-label="Open kanban board"
+            >
+              <ViewKanban />
+            </IconButton>
+          )}
         </Box>
         {titleError && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -246,6 +304,62 @@ export const NotePage: React.FC = () => {
             <DesktopCheckListView note={note} />
           )}
         </Box>
+
+        {isMobile && note?.isMemo && (
+          <>
+            <Fab
+              color="primary"
+              aria-label="Note actions"
+              aria-haspopup="menu"
+              aria-expanded={isFabMenuOpen}
+              onClick={handleFabMenuOpen}
+              sx={{
+                position: 'fixed',
+                bottom: 24,
+                right: 24,
+              }}
+            >
+              <MoreVert />
+            </Fab>
+            <Menu
+              anchorEl={fabMenuAnchor}
+              open={isFabMenuOpen}
+              onClose={handleFabMenuClose}
+              anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+              transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              slotProps={{
+                paper: {
+                  sx: { minWidth: 200 },
+                },
+              }}
+            >
+              <MenuItem onClick={handleFabEdit}>
+                <ListItemIcon>
+                  {isEditMode ? (
+                    <EditOff fontSize="small" />
+                  ) : (
+                    <Edit fontSize="small" />
+                  )}
+                </ListItemIcon>
+                <ListItemText>
+                  {isEditMode ? 'Cancel edit' : 'Edit'}
+                </ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleFabKanban}>
+                <ListItemIcon>
+                  <ViewKanban fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Kanban</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleFabAddTag}>
+                <ListItemIcon>
+                  <Label fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Add tag</ListItemText>
+              </MenuItem>
+            </Menu>
+          </>
+        )}
       </Box>
     </main>
   );
