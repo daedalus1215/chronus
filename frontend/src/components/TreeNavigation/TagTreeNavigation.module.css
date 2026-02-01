@@ -18,7 +18,6 @@
 .treeWrapper::-webkit-scrollbar {
   display: none;
 }
-
 /*
  * Children outline: vertical connector line for each group of children.
  * margin-left keeps the line visible (gap from parent row). Nested item

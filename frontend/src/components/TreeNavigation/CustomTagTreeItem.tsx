@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import Box from '@mui/material/Box';
@@ -11,6 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import MoreVert from '@mui/icons-material/MoreVert';
+import { ROUTES } from '../../constants/routes';
 import { NOTE_PREFIX, parseNoteId } from './tagTreeItems';
 import { NoteActionsGrid } from '../../pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid';
 import {
@@ -40,6 +43,14 @@ const ICON_CONTAINER_SX = {
   fontSize: 20,
   color: 'var(--color-text-secondary)',
   '& svg': { fontSize: 20 },
+  padding: '1rem',
+  marginBottom: '2px',
+  borderLeft: '4px solid transparent',
+  transition: 'all 0.2s ease-in-out',
+  cursor: 'pointer',
+  userSelect: 'none',
+  position: 'relative',
+  outline: 'none',
 };
 /** Subtle divider under each row so items read as distinct. */
 const CONTENT_DIVIDER_SX = {
@@ -54,9 +65,12 @@ const CONTENT_DIVIDER_SX = {
 export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
   (props, ref) => {
     const { itemId, slotProps = {}, slots = {}, ...rest } = props;
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const isNote = typeof itemId === 'string' && itemId.startsWith(NOTE_PREFIX);
     const parsed = typeof itemId === 'string' ? parseNoteId(itemId) : null;
     const noteId = parsed?.noteId ?? 0;
+    const tagId = parsed?.tagId;
 
     const [isActionsOpen, setIsActionsOpen] = useState(false);
     const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
@@ -152,47 +166,53 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       try {
         await deleteNote(noteId);
         setDeleteDialogOpen(false);
-        window.location.reload();
+        await queryClient.invalidateQueries({ queryKey: ['tags'] });
+        if (tagId != null) {
+          navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
+        }
       } catch (err: unknown) {
         setIsDeleting(false);
         const message =
           err &&
-          typeof err === 'object' &&
-          err !== null &&
-          'response' in err &&
-          (err as { response?: { data?: { message?: string } } }).response?.data
-            ?.message
+            typeof err === 'object' &&
+            err !== null &&
+            'response' in err &&
+            (err as { response?: { data?: { message?: string } } }).response?.data
+              ?.message
             ? String(
-                (err as { response: { data: { message: string } } }).response
-                  .data.message
-              )
+              (err as { response: { data: { message: string } } }).response
+                .data.message
+            )
             : 'Failed to delete note';
         setDeleteError(message);
       }
-    }, [noteId]);
+    }, [noteId, queryClient, tagId, navigate]);
 
     const confirmArchive = useCallback(async () => {
       setArchiveError(null);
       try {
         await archiveNote(noteId);
         setArchiveDialogOpen(false);
-        window.location.reload();
+        await queryClient.invalidateQueries({ queryKey: ['tags'] });
+        if (tagId != null) {
+          navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
+        }
       } catch (err: unknown) {
         const message =
           err &&
-          typeof err === 'object' &&
-          err !== null &&
-          'response' in err &&
-          (err as { response?: { data?: { message?: string } } }).response?.data
-            ?.message
+            typeof err === 'object' &&
+            err !== null &&
+            'response' in err &&
+            (err as { response?: { data?: { message?: string } } }).response?.data
+              ?.message
             ? String(
-                (err as { response: { data: { message: string } } }).response
-                  .data.message
-              )
+              (err as { response: { data: { message: string } } }).response
+                .data.message
+            )
             : 'Failed to archive note';
         setArchiveError(message);
       }
-    }, [noteId, archiveNote]);
+    }, [noteId, archiveNote, queryClient, tagId, navigate]);
 
     const noop = useCallback(() => setIsActionsOpen(false), []);
 

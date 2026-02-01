@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
 import FolderIcon from '@mui/icons-material/Folder';
 import { ROUTES } from '../../constants/routes';
 import styles from './TagTreeNavigation.module.css';
