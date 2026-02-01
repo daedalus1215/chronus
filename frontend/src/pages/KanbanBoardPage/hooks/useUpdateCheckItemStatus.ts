@@ -21,7 +21,50 @@ export const useUpdateCheckItemStatus = (noteId: number) => {
       );
       return response.data;
     },
+    onMutate: async ({ id, status }) => {
+      await queryClient.cancelQueries({ queryKey: checkItemKeys.list(noteId) });
+      await queryClient.cancelQueries({ queryKey: ['note', noteId] });
+      const previousItems = queryClient.getQueryData<CheckItem[]>(
+        checkItemKeys.list(noteId)
+      );
+      const previousNote = queryClient.getQueryData<{ checkItems?: CheckItem[] }>(
+        ['note', noteId]
+      );
+      const optimisticUpdate = (item: CheckItem): CheckItem =>
+        item.id === id
+          ? {
+              ...item,
+              status,
+              doneDate: status === 'done' ? new Date().toISOString() : null,
+            }
+          : item;
+      if (previousItems) {
+        queryClient.setQueryData(
+          checkItemKeys.list(noteId),
+          previousItems.map(optimisticUpdate)
+        );
+      }
+      if (previousNote?.checkItems) {
+        queryClient.setQueryData(['note', noteId], {
+          ...previousNote,
+          checkItems: previousNote.checkItems.map(optimisticUpdate),
+        });
+      }
+      return { previousItems, previousNote };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousItems) {
+        queryClient.setQueryData(
+          checkItemKeys.list(noteId),
+          context.previousItems
+        );
+      }
+      if (context?.previousNote) {
+        queryClient.setQueryData(['note', noteId], context.previousNote);
+      }
+    },
     onSuccess: updatedItem => {
+      if (!updatedItem) return;
       queryClient.setQueryData(
         checkItemKeys.list(noteId),
         (oldItems: CheckItem[] | undefined) => {

@@ -28,6 +28,8 @@ type CheckListViewProps = {
 
 const getStatusColor = (status?: string): string => {
   switch (status) {
+    case 'ready':
+      return '#4f46e5';
     case 'in_progress':
       return '#facc15';
     case 'review':
@@ -35,7 +37,7 @@ const getStatusColor = (status?: string): string => {
     case 'done':
       return '#22c55e';
     default:
-      return '#22c55e';
+        return '#1a1a1a';
   }
 };
 

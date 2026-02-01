@@ -1,19 +1,26 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import EditIcon from '@mui/icons-material/Edit';
 import { CheckItem } from '../../../NotePage/api/responses';
+import styles from './KanbanCard.module.css';
 
 type KanbanCardProps = {
   item: CheckItem;
   statusColorClass: string;
+  onEdit: (id: number, name: string) => void;
 };
 
 export const KanbanCard: React.FC<KanbanCardProps> = ({
   item,
   statusColorClass,
+  onEdit,
 }) => {
   const {
     attributes,
@@ -23,10 +30,18 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
     transition,
     isDragging,
   } = useSortable({ id: item.id });
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const hoverTimerRef = useRef<number | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  };
+
+  const handleCardRef = (node: HTMLDivElement | null) => {
+    cardRef.current = node;
+    setNodeRef(node);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -35,32 +50,99 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
     }
   };
 
+  const openMenu = () => {
+    if (cardRef.current) {
+      setMenuAnchor(cardRef.current);
+    }
+  };
+
+  const closeMenu = () => {
+    setMenuAnchor(null);
+  };
+
+  const handleMouseEnter = () => {
+    if (hoverTimerRef.current) {
+      window.clearTimeout(hoverTimerRef.current);
+    }
+    hoverTimerRef.current = window.setTimeout(() => {
+      openMenu();
+    }, 2000);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) {
+      window.clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  };
+
+  const handleEditClick = () => {
+    closeMenu();
+    onEdit(item.id, item.name);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        window.clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
+
   return (
     <Card
-      ref={setNodeRef}
+      ref={handleCardRef}
       style={style}
-      className={`rounded-lg border border-gray-200 ${isDragging ? 'shadow-md opacity-70' : 'shadow-sm'}`}
+      className={`${styles.card} ${isDragging ? styles.cardDragging : ''}`}
       role="button"
       tabIndex={0}
       aria-label={`Kanban card: ${item.name}`}
       onKeyDown={handleKeyDown}
-      {...attributes}
-      {...listeners}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <CardContent className="flex items-start gap-2 px-3 py-2">
-        <span
-          className={`mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full ${statusColorClass}`}
-          aria-hidden="true"
-        />
-        <span className="text-sm text-gray-800 break-words">{item.name}</span>
+      <CardContent className={styles.cardContent}>
+        <div
+          className={styles.dragHandle}
+          {...attributes}
+          {...listeners}
+        >
+          <span
+            className={`${styles.statusDot} ${statusColorClass}`}
+            aria-hidden="true"
+          />
+          <span
+            className={styles.cardText}
+          >
+            {item.name}
+          </span>
+        </div>
         {item.status === 'done' && (
           <CheckCircleIcon
-            className="ml-auto text-green-500"
+            className={styles.doneIcon}
             fontSize="small"
             aria-label="Done"
           />
         )}
       </CardContent>
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={closeMenu}
+        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'center', horizontal: 'center' }}
+        MenuListProps={{
+          onMouseLeave: closeMenu,
+          'aria-label': 'Card actions',
+        }}
+      >
+        <MenuItem onClick={handleEditClick}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          Edit
+        </MenuItem>
+      </Menu>
     </Card>
   );
 };

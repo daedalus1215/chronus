@@ -10,6 +10,7 @@ type KanbanColumnProps = {
   title: string;
   statusColorClass: string;
   items: CheckItem[];
+  onEditItem: (id: number, name: string) => void;
 };
 
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({
@@ -17,6 +18,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   title,
   statusColorClass,
   items,
+  onEditItem,
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: columnId });
 
@@ -29,8 +31,9 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
         display: 'flex',
         flexDirection: 'column',
         borderRadius: 2,
-        backgroundColor: '#f3f4f6',
-        boxShadow: isOver ? '0 0 0 2px rgba(191, 219, 254, 0.9)' : 'none',
+        backgroundColor: 'var(--color-bg-elevated)',
+        boxShadow: isOver ? '0 0 0 2px var(--color-border-accent)' : 'none',
+        height: '100%',
       }}
       role="region"
       aria-label={`${title} column`}
@@ -42,8 +45,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           gap: 1,
           borderTopLeftRadius: 2,
           borderTopRightRadius: 2,
-          borderBottom: '1px solid #e5e7eb',
-          backgroundColor: '#e5e7eb',
+          borderBottom: '1px solid var(--color-border)',
+          backgroundColor: 'var(--color-bg-elevated-2)',
           padding: '8px 12px',
         }}
       >
@@ -51,16 +54,37 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           className={`h-2.5 w-2.5 rounded-full ${statusColorClass}`}
           aria-hidden="true"
         />
-        <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
-        <span className="ml-auto text-xs text-gray-500">{items.length}</span>
+        <h3 className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>
+          {title}
+        </h3>
+        <span
+          className="ml-auto text-[11px]"
+          style={{ color: 'var(--color-text-secondary)' }}
+        >
+          {items.length}
+        </span>
       </Box>
-      <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 1.5 }}>
+      <SortableContext
+        items={items.map(item => item.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            padding: 1.5,
+            flex: 1,
+            minHeight: 120,
+            overflowY: 'auto',
+          }}
+        >
           {items.map(item => (
             <KanbanCard
               key={item.id}
               item={item}
               statusColorClass={statusColorClass}
+              onEdit={onEditItem}
             />
           ))}
         </Box>
