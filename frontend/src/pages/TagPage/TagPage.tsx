@@ -5,13 +5,17 @@ import { TagTreeNavigation } from '../../components/TreeNavigation/TagTreeNaviga
 import styles from './TagPage.module.css';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useResizablePane } from '../../hooks/useResizablePane';
-import { useParams, Outlet } from 'react-router-dom';
+import { useParams, useMatch, Outlet } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
+
+const TAG_NOTES_NOTE_PATTERN = '/tag-notes/:tagId/notes/:id';
 
 export const TagPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { tagId: routeTagId } = useParams<{ tagId: string }>();
+  const noteMatch = useMatch(TAG_NOTES_NOTE_PATTERN);
   const isTagRoute = routeTagId != null;
+  const hasNoteOpen = !!noteMatch;
 
   const {
     size: treeWidth,
@@ -115,14 +119,27 @@ export const TagPage: React.FC = () => {
               height: '100%',
               minWidth: 0,
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'text.secondary',
+              flexDirection: 'column',
+              overflow: 'hidden',
             }}
           >
-            <Typography variant="body2">
-              Select a tag or note from the tree
-            </Typography>
+            {hasNoteOpen ? (
+              <Outlet />
+            ) : (
+              <Box
+                sx={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'text.secondary',
+                }}
+              >
+                <Typography variant="body2">
+                  Select a tag or note from the tree
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       )}
