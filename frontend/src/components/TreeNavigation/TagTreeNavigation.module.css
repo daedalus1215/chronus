@@ -8,6 +8,7 @@
 
 .treeWrapper {
   flex: 1;
+  min-width: 0;
   min-height: 0;
   overflow: auto;
   padding: 0.25rem 0;
@@ -27,4 +28,5 @@
   border-left: 1px solid rgba(156, 163, 175, 0.35);
   margin-left: 4px;
   padding-left: 0;
+  min-width: 0;
 }

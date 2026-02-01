@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
@@ -13,8 +13,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import MoreVert from '@mui/icons-material/MoreVert';
+import LocalOffer from '@mui/icons-material/LocalOffer';
 import { ROUTES } from '../../constants/routes';
-import { NOTE_PREFIX, parseNoteId } from './tagTreeItems';
+import { NOTE_PREFIX, TAG_PREFIX, parseNoteId } from './tagTreeItems';
 import { NoteActionsGrid } from '../../pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid';
 import {
   TimeTrackingForm,
@@ -68,10 +69,18 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
     const { itemId, slotProps = {}, slots = {}, ...rest } = props;
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const { tagId: routeTagId } = useParams<{ tagId: string }>();
     const isNote = typeof itemId === 'string' && itemId.startsWith(NOTE_PREFIX);
     const parsed = typeof itemId === 'string' ? parseNoteId(itemId) : null;
     const noteId = parsed?.noteId ?? 0;
     const tagId = parsed?.tagId;
+    const tagIdFromItem =
+      typeof itemId === 'string' && itemId.startsWith(TAG_PREFIX)
+        ? itemId.slice(TAG_PREFIX.length)
+        : '';
+    const isTagSelected = Boolean(
+      routeTagId && tagIdFromItem && routeTagId === tagIdFromItem
+    );
 
     const [isActionsOpen, setIsActionsOpen] = useState(false);
     const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
@@ -253,6 +262,14 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       [handleMoreClick]
     );
 
+    const tagLabelSx = {
+      ...TAG_LABEL_SX,
+      ...(isTagSelected ? { color: 'var(--color-primary)' } : {}),
+    };
+    const tagIconContainerSx = {
+      ...ICON_CONTAINER_SX,
+      ...(isTagSelected ? { color: 'var(--color-primary)' } : {}),
+    };
     const mergedSlotProps = {
       ...slotProps,
       content: {
@@ -261,16 +278,18 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       },
       label: isNote
         ? { ...slotProps.label, sx: { ...NOTE_LABEL_SX, ...labelSlot?.sx } }
-        : { ...slotProps.label, sx: { ...TAG_LABEL_SX, ...labelSlot?.sx } },
+        : { ...slotProps.label, sx: { ...tagLabelSx, ...labelSlot?.sx } },
       iconContainer: {
         ...slotProps.iconContainer,
-        sx: { ...ICON_CONTAINER_SX, ...iconSlot?.sx },
+        sx: isNote
+          ? { ...ICON_CONTAINER_SX, ...iconSlot?.sx }
+          : { ...tagIconContainerSx, ...iconSlot?.sx },
       },
     };
 
     const mergedSlots = isNote
       ? { ...slots, label: CustomNoteLabel }
-      : slots;
+      : { ...slots, icon: LocalOffer };
 
     return (
       <>
