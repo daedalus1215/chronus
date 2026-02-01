@@ -141,7 +141,7 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
         >
           {notes.map((note, index) => (
             <Fade
-              key={note.id}
+              key={tagId !== undefined ? `${tagId}-${note.id}` : note.id}
               in={true}
               timeout={300}
               style={{

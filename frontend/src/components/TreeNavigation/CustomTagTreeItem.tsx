@@ -231,34 +231,37 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
     const iconSlot = slotProps.iconContainer as { sx?: object } | undefined;
 
     const CustomNoteLabel = useCallback(
-      (labelProps: Record<string, unknown>) => (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%',
-            minWidth: 0,
-          }}
-        >
+      (labelProps: Record<string, unknown>) => {
+        const { ownerState, editable, ...labelPropsForDom } = labelProps;
+        return (
           <Box
-            {...labelProps}
-            sx={[
-              NOTE_LABEL_SX,
-              (labelProps.sx as object) ?? {},
-              { flex: 1, minWidth: 0 },
-            ]}
-          />
-          <IconButton
-            size="small"
-            onClick={handleMoreClick}
-            onPointerDown={(e) => e.stopPropagation()}
-            aria-label="More options"
-            sx={{ flexShrink: 0, color: 'var(--color-text-secondary)' }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              minWidth: 0,
+            }}
           >
-            <MoreVert fontSize="small" />
-          </IconButton>
-        </Box>
-      ),
+            <Box
+              {...labelPropsForDom}
+              sx={[
+                NOTE_LABEL_SX,
+                (labelProps.sx as object) ?? {},
+                { flex: 1, minWidth: 0 },
+              ]}
+            />
+            <IconButton
+              size="small"
+              onClick={handleMoreClick}
+              onPointerDown={(e) => e.stopPropagation()}
+              aria-label="More options"
+              sx={{ flexShrink: 0, color: 'var(--color-text-secondary)' }}
+            >
+              <MoreVert fontSize="small" />
+            </IconButton>
+          </Box>
+        );
+      },
       [handleMoreClick]
     );
 
