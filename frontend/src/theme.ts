@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+import type {} from '@mui/x-tree-view/themeAugmentation';
 
 export const muiTheme = createTheme({
   palette: {
@@ -14,5 +15,14 @@ export const muiTheme = createTheme({
   typography: {
     fontFamily: 'Inter, Roboto, Arial, sans-serif',
     fontSize: 16,
+  },
+  components: {
+    MuiRichTreeView: {
+      styleOverrides: {
+        root: {
+          '--TreeView-itemChildrenIndentation': '16px',
+        },
+      },
+    },
   },
 });

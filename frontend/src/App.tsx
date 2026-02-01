@@ -44,8 +44,8 @@ function AppRoutes() {
             <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
           </Route>
 
-          {/* Tag notes route with optional note */}
-          <Route path={ROUTE_PATTERNS.TAG_NOTES} element={<HomePage />}>
+          {/* Tag notes route: tree on left, note opens in right panel (TagPage) */}
+          <Route path={ROUTE_PATTERNS.TAG_NOTES} element={<TagPage />}>
             <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
           </Route>
 

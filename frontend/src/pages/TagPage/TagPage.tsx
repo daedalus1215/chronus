@@ -1,29 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MobileTagListView } from './components/TagListView/MobileTagListView/MobileTagListView';
-import { DesktopTagListView } from './components/TagListView/DesktopTagListView/DesktopTagListView';
+import { SearchBar } from './components/TagListView/SearchBar/SearchBar';
+import { TagTreeNavigation } from '../../components/TreeNavigation/TagTreeNavigation';
 import styles from './TagPage.module.css';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { useNavigate, useParams, Outlet } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { useResizablePane } from '../../hooks/useResizablePane';
+import { useParams, useMatch, Outlet } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
+
+const TAG_NOTES_NOTE_PATTERN = '/tag-notes/:tagId/notes/:id';
 
 export const TagPage: React.FC = () => {
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
-  const { id: routeTagId } = useParams<{ id: string }>();
-  const [selectedTagId, setSelectedTagId] = React.useState<number | null>(
-    routeTagId ? Number(routeTagId) : null
-  );
+  const { tagId: routeTagId } = useParams<{ tagId: string }>();
+  const noteMatch = useMatch(TAG_NOTES_NOTE_PATTERN);
+  const isTagRoute = routeTagId != null;
+  const hasNoteOpen = !!noteMatch;
 
-  const handleTagSelect = (tagId: number) => {
-    if (isMobile) {
-      navigate(`/tag-notes/${tagId}`);
-    } else {
-      setSelectedTagId(tagId);
-      navigate(`/tag-notes/${tagId}`, { replace: true });
-    }
-  };
+  const {
+    size: treeWidth,
+    startResizing,
+    handleKeyDown,
+    handleDoubleClick,
+  } = useResizablePane({
+    localStorageKey: 'tagTreeWidthPx',
+    min: 160,
+    max: 400,
+    initial: 280,
+    axis: 'x',
+    step: 10,
+    largeStep: 20,
+    snapPoints: [160, 220, 280, 340, 400],
+    snapThreshold: 10,
+  });
 
-  const isTagRoute = !!routeTagId;
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <div
@@ -65,16 +76,68 @@ export const TagPage: React.FC = () => {
         </Box>
       ) : (
         <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-          <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
-            <DesktopTagListView
-              onTagSelect={handleTagSelect}
-              selectedTagId={selectedTagId}
+          <Box
+            sx={{
+              position: 'relative',
+              width: `${treeWidth}px`,
+              flex: '0 0 auto',
+            }}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                borderRight: '1px solid',
+                borderColor: 'divider',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
+            >
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onClear={() => setSearchQuery('')}
+                placeholder="Search tags and notes..."
+              />
+              <TagTreeNavigation searchQuery={searchQuery} />
+            </Box>
+            <div
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize tag tree"
+              tabIndex={0}
+              className={styles.resizeHandle}
+              onMouseDown={startResizing}
+              onPointerDown={startResizing}
+              onKeyDown={handleKeyDown}
+              onDoubleClick={handleDoubleClick}
             />
           </Box>
-          <Box sx={{ flex: 1, height: '100%' }}>
-            {selectedTagId && (
-              <Box sx={{ p: 2 }}>
-                <Outlet />
+          <Box
+            sx={{
+              flex: 1,
+              height: '100%',
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            {hasNoteOpen ? (
+              <Outlet />
+            ) : (
+              <Box
+                sx={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'text.secondary',
+                }}
+              >
+                <Typography variant="body2">
+                  Select a tag or note from the tree
+                </Typography>
               </Box>
             )}
           </Box>

@@ -30,12 +30,15 @@ interface NoteItemProps {
   note: Note;
   onClick?: () => void;
   isSelected?: boolean;
+  /** When true, uses smaller padding and font so more items fit on screen (e.g. desktop list). */
+  compact?: boolean;
 }
 
 export const NoteItem: React.FC<NoteItemProps> = ({
   note,
   onClick,
   isSelected,
+  compact = false,
 }) => {
   const navigate = useNavigate();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
@@ -216,7 +219,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   return (
     <>
       <div
-        className={`${styles.noteListItem} ${isSelected ? styles.selected : ''}`}
+        className={`${styles.noteListItem} ${isSelected ? styles.selected : ''} ${compact ? styles.compact : ''}`}
         onClick={handleClick}
         role="button"
         tabIndex={0}

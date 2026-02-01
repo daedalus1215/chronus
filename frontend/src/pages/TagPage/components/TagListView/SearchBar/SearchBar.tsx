@@ -7,18 +7,21 @@ type SearchBarProps = {
   value: string;
   onChange: (value: string) => void;
   onClear: () => void;
+  /** Placeholder when no value. Default: "Search tags...". */
+  placeholder?: string;
 };
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
   onClear,
+  placeholder = 'Search tags...',
 }) => {
   return (
     <div className={styles.searchBar}>
       <TextField
         fullWidth
-        placeholder="Search tags..."
+        placeholder={placeholder}
         value={value}
         onChange={e => onChange(e.target.value)}
         InputProps={{
