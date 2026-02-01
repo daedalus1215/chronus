@@ -134,8 +134,7 @@ export const NotePage: React.FC = () => {
   return (
     <main className={styles.main}>
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box className="flex items-center gap-2 overflow-x-auto py-2 mb-2">
-          {(!isMobile || !note?.isMemo) && (
+        <Box className="flex items-center gap-2 overflow-x-auto py-2">
             <IconButton
               onClick={() => setAddTagOpen(true)}
               color="secondary"
@@ -144,7 +143,6 @@ export const NotePage: React.FC = () => {
             >
               <Add />
             </IconButton>
-          )}
 
           {tags &&
             tags.map((tag: Tag) => (
