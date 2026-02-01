@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MobileTagListView } from './components/TagListView/MobileTagListView/MobileTagListView';
+import { SearchBar } from './components/TagListView/SearchBar/SearchBar';
 import { TagTreeNavigation } from '../../components/TreeNavigation/TagTreeNavigation';
 import styles from './TagPage.module.css';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -28,6 +29,8 @@ export const TagPage: React.FC = () => {
     snapPoints: [160, 220, 280, 340, 400],
     snapThreshold: 10,
   });
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <div
@@ -86,7 +89,13 @@ export const TagPage: React.FC = () => {
                 overflow: 'hidden',
               }}
             >
-              <TagTreeNavigation />
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onClear={() => setSearchQuery('')}
+                placeholder="Search tags and notes..."
+              />
+              <TagTreeNavigation searchQuery={searchQuery} />
             </Box>
             <div
               role="separator"

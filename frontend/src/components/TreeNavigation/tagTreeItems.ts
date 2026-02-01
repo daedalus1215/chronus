@@ -61,3 +61,35 @@ export const parseNoteId = (
   if (!match) return null;
   return { noteId: Number(match[1]), tagId: Number(match[2]) };
 };
+
+const matchesQuery = (text: string, query: string): boolean =>
+  text.toLowerCase().includes(query.toLowerCase().trim());
+
+/**
+ * Filters the tag tree by search query: keeps tags whose name matches or that
+ * have at least one note whose name matches; under matching tags, only notes
+ * that match are shown (or all notes if the tag name matches).
+ */
+export const filterTagTreeItems = (
+  items: TagTreeItem[],
+  query: string
+): TagTreeItem[] => {
+  const q = query.trim();
+  if (!q) return items;
+
+  const filtered: TagTreeItem[] = [];
+  for (const tag of items) {
+    const tagMatches = matchesQuery(tag.label, q);
+    const children = tag.children ?? [];
+    const filteredChildren = tagMatches
+      ? children
+      : children.filter((note) => matchesQuery(note.label, q));
+    if (filteredChildren.length === 0 && !tagMatches) continue;
+    filtered.push({
+      ...tag,
+      children:
+        filteredChildren.length === 0 ? undefined : filteredChildren,
+    });
+  }
+  return filtered;
+};

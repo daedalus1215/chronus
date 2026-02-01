@@ -10,6 +10,7 @@ import styles from './TagTreeNavigation.module.css';
 import { CustomTagTreeItem } from './CustomTagTreeItem';
 import {
   TAG_PREFIX,
+  filterTagTreeItems,
   getTagTreeItemLabel,
   parseNoteId,
   type TagTreeItem,
@@ -18,11 +19,23 @@ import { useTagTreeItems } from './useTagTreeItems';
 
 export type { TagTreeItem } from './tagTreeItems';
 
-export const TagTreeNavigation: React.FC = () => {
+type TagTreeNavigationProps = {
+  /** When set, tree is filtered to tags/notes whose label contains this (case-insensitive). */
+  searchQuery?: string;
+};
+
+export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
+  searchQuery = '',
+}) => {
   const navigate = useNavigate();
   const { tagId: routeTagId } = useParams<{ tagId: string }>();
   const { treeItems, isLoading, error } = useTagTreeItems();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const filteredItems = useMemo(
+    () => filterTagTreeItems(treeItems, searchQuery),
+    [treeItems, searchQuery]
+  );
 
   const handleItemClick = (_event: React.MouseEvent, itemId: string) => {
     if (itemId.startsWith(TAG_PREFIX)) {
@@ -84,6 +97,14 @@ export const TagTreeNavigation: React.FC = () => {
     );
   }
 
+  if (filteredItems.length === 0) {
+    return (
+      <Box sx={{ p: 2, color: 'text.secondary' }}>
+        No matching tags or notes
+      </Box>
+    );
+  }
+
   return (
     <Box className={styles.root}>
       <Typography
@@ -98,7 +119,7 @@ export const TagTreeNavigation: React.FC = () => {
         className={styles.treeWrapper}
       >
         <RichTreeView<TagTreeItem>
-          items={treeItems}
+          items={filteredItems}
           getItemId={(item) => item.id}
           getItemLabel={getTagTreeItemLabel}
           getItemChildren={(item) => item.children ?? []}
