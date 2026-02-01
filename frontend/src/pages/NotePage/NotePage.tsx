@@ -207,20 +207,6 @@ export const NotePage: React.FC = () => {
             multiline
             minRows={1}
             maxRows={4}
-            InputProps={{
-              disableUnderline: true,
-              style: {
-                fontWeight: 600,
-                marginLeft: '20px',
-                fontSize: '1.2rem',
-                color: 'var(--color-text)',
-                wordBreak: 'break-word',
-                overflowWrap: 'break-word',
-              },
-            }}
-            inputProps={{
-              style: { resize: 'none' },
-            }}
           />
           {note?.isMemo && !isMobile && (
             <>
