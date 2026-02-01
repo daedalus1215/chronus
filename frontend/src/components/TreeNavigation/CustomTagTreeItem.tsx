@@ -29,31 +29,32 @@ import {
 } from '../../api/requests/notes.requests';
 import { useArchiveNote } from '../../pages/HomePage/hooks/useArchiveNote';
 
-/** Font size for nested note items (tags use default tree font). Adjust as needed. */
-const NESTED_NOTE_FONT_SIZE = '0.8125rem';
+/** Font size to match DesktopNoteListView compact items. */
+const LIST_FONT_SIZE = '0.8125rem';
 
-/** Nested note label color from app palette – stands out from tag labels. */
+/** Tag (folder) label: same font, size and color as DesktopNoteListView compact .noteName. */
+const TAG_LABEL_SX = {
+  fontSize: LIST_FONT_SIZE,
+  fontWeight: 500,
+  color: 'var(--color-text)',
+};
+
+/** Nested note label: same size, secondary color to distinguish from tags. */
 const NESTED_NOTE_LABEL_COLOR = 'var(--color-text-secondary)';
-
 const NOTE_LABEL_SX = {
-  fontSize: NESTED_NOTE_FONT_SIZE,
+  fontSize: LIST_FONT_SIZE,
   color: NESTED_NOTE_LABEL_COLOR,
 };
+
 const ICON_CONTAINER_SX = {
   fontSize: 20,
   color: 'var(--color-text-secondary)',
   '& svg': { fontSize: 20 },
-  padding: '1rem',
-  marginBottom: '2px',
-  borderLeft: '4px solid transparent',
-  transition: 'all 0.2s ease-in-out',
-  cursor: 'pointer',
-  userSelect: 'none',
-  position: 'relative',
-  outline: 'none',
 };
-/** Subtle divider under each row so items read as distinct. */
+
+/** Content row: padding to match compact note list, divider. */
 const CONTENT_DIVIDER_SX = {
+  padding: '0.375rem 0.5rem',
   borderBottom: '1px solid var(--color-border-light)',
 };
 
@@ -260,7 +261,7 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       },
       label: isNote
         ? { ...slotProps.label, sx: { ...NOTE_LABEL_SX, ...labelSlot?.sx } }
-        : slotProps.label,
+        : { ...slotProps.label, sx: { ...TAG_LABEL_SX, ...labelSlot?.sx } },
       iconContainer: {
         ...slotProps.iconContainer,
         sx: { ...ICON_CONTAINER_SX, ...iconSlot?.sx },
