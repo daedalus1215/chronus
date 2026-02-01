@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { AddTagForm } from './components/AddTagForm/AddTagForm';
 import { useAllTags } from './hooks/useAllTags';
 import { Chip, IconButton, Button } from '@mui/material';
-import { Add, Close, Edit, Cancel, ViewKanban } from '@mui/icons-material';
+import { Add, Close, Edit, ViewKanban, EditOff } from '@mui/icons-material';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { DesktopNoteEditor } from './components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor';
 import { MobileNoteEditor } from './components/NoteEditor/MobileNoteEditor/MobileNoteEditor';
@@ -76,9 +76,9 @@ export const NotePage: React.FC = () => {
 
   const availableTags = allTags
     ? allTags.filter(
-        (tag: { id: number }) =>
-          !tags.some((noteTag: { id: number }) => noteTag.id === tag.id)
-      )
+      (tag: { id: number }) =>
+        !tags.some((noteTag: { id: number }) => noteTag.id === tag.id)
+    )
     : [];
 
   const addTagOptions = availableTags.map(tag => ({
@@ -178,17 +178,15 @@ export const NotePage: React.FC = () => {
                   <Edit />
                 </IconButton>
               ) : (
-                <Box sx={{ display: 'flex', gap: 0.5 }}>
-                  <Button
-                    startIcon={<Cancel />}
-                    onClick={handleCancelEdit}
-                    size="small"
-                    variant="outlined"
-                    color="secondary"
-                  >
-                    Cancel
-                  </Button>
-                </Box>
+                <Button
+                  onClick={handleCancelEdit}
+                  size="small"
+                  variant="outlined"
+                  color="secondary"
+                  aria-label="Cancel edit note"
+                >
+                  <EditOff />
+                </Button>
               )}
             </>
           )}
