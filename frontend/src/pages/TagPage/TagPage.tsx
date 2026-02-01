@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MobileTagListView } from './components/TagListView/MobileTagListView/MobileTagListView';
+import { MobileTagNotesListView } from './components/TagListView/MobileTagNotesListView/MobileTagNotesListView';
 import { SearchBar } from './components/TagListView/SearchBar/SearchBar';
 import { TagTreeNavigation } from '../../components/TreeNavigation/TagTreeNavigation';
 import styles from './TagPage.module.css';
@@ -58,7 +59,22 @@ export const TagPage: React.FC = () => {
           >
             <MobileTagListView />
           </Box>
-          {isTagRoute && (
+          {isTagRoute && !hasNoteOpen && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'background.paper',
+                zIndex: 1,
+              }}
+            >
+              <MobileTagNotesListView />
+            </Box>
+          )}
+          {isTagRoute && hasNoteOpen && (
             <Box
               sx={{
                 position: 'absolute',
