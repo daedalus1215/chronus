@@ -109,7 +109,7 @@ export const TagTreeNavigation: React.FC = () => {
           itemChildrenIndentation={0}
           slots={{
             item: CustomTagTreeItem,
-            // expandIcon: FolderIcon,
+            expandIcon: FolderIcon,
             // collapseIcon: FolderIcon,
           }}
         />

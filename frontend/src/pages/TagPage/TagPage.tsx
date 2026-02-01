@@ -3,6 +3,7 @@ import { MobileTagListView } from './components/TagListView/MobileTagListView/Mo
 import { TagTreeNavigation } from '../../components/TreeNavigation/TagTreeNavigation';
 import styles from './TagPage.module.css';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useResizablePane } from '../../hooks/useResizablePane';
 import { useParams, Outlet } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
@@ -10,6 +11,23 @@ export const TagPage: React.FC = () => {
   const isMobile = useIsMobile();
   const { tagId: routeTagId } = useParams<{ tagId: string }>();
   const isTagRoute = routeTagId != null;
+
+  const {
+    size: treeWidth,
+    startResizing,
+    handleKeyDown,
+    handleDoubleClick,
+  } = useResizablePane({
+    localStorageKey: 'tagTreeWidthPx',
+    min: 160,
+    max: 400,
+    initial: 280,
+    axis: 'x',
+    step: 10,
+    largeStep: 20,
+    snapPoints: [160, 220, 280, 340, 400],
+    snapThreshold: 10,
+  });
 
   return (
     <div
@@ -53,16 +71,34 @@ export const TagPage: React.FC = () => {
         <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
           <Box
             sx={{
-              borderRight: '1px solid',
-              borderColor: 'divider',
-              minWidth: 220,
-              maxWidth: 280,
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
+              position: 'relative',
+              width: `${treeWidth}px`,
+              flex: '0 0 auto',
             }}
           >
-            <TagTreeNavigation />
+            <Box
+              sx={{
+                height: '100%',
+                borderRight: '1px solid',
+                borderColor: 'divider',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
+            >
+              <TagTreeNavigation />
+            </Box>
+            <div
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize tag tree"
+              tabIndex={0}
+              className={styles.resizeHandle}
+              onMouseDown={startResizing}
+              onPointerDown={startResizing}
+              onKeyDown={handleKeyDown}
+              onDoubleClick={handleDoubleClick}
+            />
           </Box>
           <Box
             sx={{
