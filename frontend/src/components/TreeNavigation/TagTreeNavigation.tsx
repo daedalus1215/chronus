@@ -3,8 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import FolderIcon from '@mui/icons-material/Folder';
 import { ROUTES } from '../../constants/routes';
 import styles from './TagTreeNavigation.module.css';
 import { CustomTagTreeItem } from './CustomTagTreeItem';
@@ -42,6 +40,8 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
       setExpandedItems((prev) =>
         prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]
       );
+      const tagId = itemId.slice(TAG_PREFIX.length);
+      navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
       return;
     }
     const parsed = parseNoteId(itemId);
@@ -122,8 +122,6 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
           itemChildrenIndentation={0}
           slots={{
             item: CustomTagTreeItem,
-            expandIcon: FolderIcon,
-            // collapseIcon: FolderIcon,
           }}
         />
       </Box>

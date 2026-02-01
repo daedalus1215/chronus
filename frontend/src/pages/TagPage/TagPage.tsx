@@ -24,7 +24,7 @@ export const TagPage: React.FC = () => {
     handleDoubleClick,
   } = useResizablePane({
     localStorageKey: 'tagTreeWidthPx',
-    min: 160,
+    min: 2,
     max: 400,
     initial: 280,
     axis: 'x',

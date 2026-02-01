@@ -10,14 +10,13 @@ export const AuthenticatedLayout: React.FC = () => {
 
   return (
     <>
-      <Header />
+      {isMobile && <Header />}
       <main
         style={{
           display: 'flex',
           flexDirection: 'column',
-          marginTop: '64px', // this is for the header
-          height: 'calc(100vh - 64px)', // this is for the sidebar
-          // overflow: 'hidden',
+          marginTop: isMobile ? 64 : 0,
+          height: isMobile ? 'calc(100vh - 64px)' : '100vh',
           width: '100%',
         }}
       >

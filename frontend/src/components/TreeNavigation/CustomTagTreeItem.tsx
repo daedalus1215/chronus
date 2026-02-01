@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import Box from '@mui/material/Box';
@@ -11,7 +13,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import MoreVert from '@mui/icons-material/MoreVert';
-import { NOTE_PREFIX, parseNoteId } from './tagTreeItems';
+import LocalOffer from '@mui/icons-material/LocalOffer';
+import { ROUTES } from '../../constants/routes';
+import { NOTE_PREFIX, TAG_PREFIX, parseNoteId } from './tagTreeItems';
 import { NoteActionsGrid } from '../../pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid';
 import {
   TimeTrackingForm,
@@ -26,23 +30,32 @@ import {
 } from '../../api/requests/notes.requests';
 import { useArchiveNote } from '../../pages/HomePage/hooks/useArchiveNote';
 
-/** Font size for nested note items (tags use default tree font). Adjust as needed. */
-const NESTED_NOTE_FONT_SIZE = '0.8125rem';
+/** Font size to match DesktopNoteListView compact items. */
+const LIST_FONT_SIZE = '0.8125rem';
 
-/** Nested note label color from app palette – stands out from tag labels. */
+/** Tag (folder) label: same font, size and color as DesktopNoteListView compact .noteName. */
+const TAG_LABEL_SX = {
+  fontSize: LIST_FONT_SIZE,
+  fontWeight: 500,
+  color: 'var(--color-text)',
+};
+
+/** Nested note label: same size, secondary color to distinguish from tags. */
 const NESTED_NOTE_LABEL_COLOR = 'var(--color-text-secondary)';
-
 const NOTE_LABEL_SX = {
-  fontSize: NESTED_NOTE_FONT_SIZE,
+  fontSize: LIST_FONT_SIZE,
   color: NESTED_NOTE_LABEL_COLOR,
 };
+
 const ICON_CONTAINER_SX = {
   fontSize: 20,
   color: 'var(--color-text-secondary)',
   '& svg': { fontSize: 20 },
 };
-/** Subtle divider under each row so items read as distinct. */
+
+/** Content row: padding to match compact note list, divider. */
 const CONTENT_DIVIDER_SX = {
+  padding: '0.375rem 0.5rem',
   borderBottom: '1px solid var(--color-border-light)',
 };
 
@@ -54,9 +67,20 @@ const CONTENT_DIVIDER_SX = {
 export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
   (props, ref) => {
     const { itemId, slotProps = {}, slots = {}, ...rest } = props;
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const { tagId: routeTagId } = useParams<{ tagId: string }>();
     const isNote = typeof itemId === 'string' && itemId.startsWith(NOTE_PREFIX);
     const parsed = typeof itemId === 'string' ? parseNoteId(itemId) : null;
     const noteId = parsed?.noteId ?? 0;
+    const tagId = parsed?.tagId;
+    const tagIdFromItem =
+      typeof itemId === 'string' && itemId.startsWith(TAG_PREFIX)
+        ? itemId.slice(TAG_PREFIX.length)
+        : '';
+    const isTagSelected = Boolean(
+      routeTagId && tagIdFromItem && routeTagId === tagIdFromItem
+    );
 
     const [isActionsOpen, setIsActionsOpen] = useState(false);
     const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
@@ -152,47 +176,53 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       try {
         await deleteNote(noteId);
         setDeleteDialogOpen(false);
-        window.location.reload();
+        await queryClient.invalidateQueries({ queryKey: ['tags'] });
+        if (tagId != null) {
+          navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
+        }
       } catch (err: unknown) {
         setIsDeleting(false);
         const message =
           err &&
-          typeof err === 'object' &&
-          err !== null &&
-          'response' in err &&
-          (err as { response?: { data?: { message?: string } } }).response?.data
-            ?.message
+            typeof err === 'object' &&
+            err !== null &&
+            'response' in err &&
+            (err as { response?: { data?: { message?: string } } }).response?.data
+              ?.message
             ? String(
-                (err as { response: { data: { message: string } } }).response
-                  .data.message
-              )
+              (err as { response: { data: { message: string } } }).response
+                .data.message
+            )
             : 'Failed to delete note';
         setDeleteError(message);
       }
-    }, [noteId]);
+    }, [noteId, queryClient, tagId, navigate]);
 
     const confirmArchive = useCallback(async () => {
       setArchiveError(null);
       try {
         await archiveNote(noteId);
         setArchiveDialogOpen(false);
-        window.location.reload();
+        await queryClient.invalidateQueries({ queryKey: ['tags'] });
+        if (tagId != null) {
+          navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
+        }
       } catch (err: unknown) {
         const message =
           err &&
-          typeof err === 'object' &&
-          err !== null &&
-          'response' in err &&
-          (err as { response?: { data?: { message?: string } } }).response?.data
-            ?.message
+            typeof err === 'object' &&
+            err !== null &&
+            'response' in err &&
+            (err as { response?: { data?: { message?: string } } }).response?.data
+              ?.message
             ? String(
-                (err as { response: { data: { message: string } } }).response
-                  .data.message
-              )
+              (err as { response: { data: { message: string } } }).response
+                .data.message
+            )
             : 'Failed to archive note';
         setArchiveError(message);
       }
-    }, [noteId, archiveNote]);
+    }, [noteId, archiveNote, queryClient, tagId, navigate]);
 
     const noop = useCallback(() => setIsActionsOpen(false), []);
 
@@ -232,6 +262,14 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       [handleMoreClick]
     );
 
+    const tagLabelSx = {
+      ...TAG_LABEL_SX,
+      ...(isTagSelected ? { color: 'var(--color-primary)' } : {}),
+    };
+    const tagIconContainerSx = {
+      ...ICON_CONTAINER_SX,
+      ...(isTagSelected ? { color: 'var(--color-primary)' } : {}),
+    };
     const mergedSlotProps = {
       ...slotProps,
       content: {
@@ -240,16 +278,18 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       },
       label: isNote
         ? { ...slotProps.label, sx: { ...NOTE_LABEL_SX, ...labelSlot?.sx } }
-        : slotProps.label,
+        : { ...slotProps.label, sx: { ...tagLabelSx, ...labelSlot?.sx } },
       iconContainer: {
         ...slotProps.iconContainer,
-        sx: { ...ICON_CONTAINER_SX, ...iconSlot?.sx },
+        sx: isNote
+          ? { ...ICON_CONTAINER_SX, ...iconSlot?.sx }
+          : { ...tagIconContainerSx, ...iconSlot?.sx },
       },
     };
 
     const mergedSlots = isNote
       ? { ...slots, label: CustomNoteLabel }
-      : slots;
+      : { ...slots, icon: LocalOffer };
 
     return (
       <>
