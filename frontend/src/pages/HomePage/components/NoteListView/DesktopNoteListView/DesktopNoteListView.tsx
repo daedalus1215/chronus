@@ -153,6 +153,7 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
                   note={note}
                   onClick={() => handleNoteClick(note.id)}
                   isSelected={selectedNoteId === note.id}
+                  compact
                 />
               </div>
             </Fade>
