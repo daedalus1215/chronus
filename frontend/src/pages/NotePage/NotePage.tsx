@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { AddTagForm } from './components/AddTagForm/AddTagForm';
 import { useAllTags } from './hooks/useAllTags';
 import { Chip, IconButton, Button } from '@mui/material';
-import { Add, Close, Edit, Cancel, Save } from '@mui/icons-material';
+import { Add, Close, Edit, Cancel, ViewKanban } from '@mui/icons-material';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { DesktopNoteEditor } from './components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor';
 import { MobileNoteEditor } from './components/NoteEditor/MobileNoteEditor/MobileNoteEditor';
@@ -81,6 +81,11 @@ export const NotePage: React.FC = () => {
       )
     : [];
 
+  const addTagOptions = availableTags.map(tag => ({
+    id: String(tag.id),
+    name: tag.name,
+  }));
+
   return (
     <main className={styles.main}>
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -123,7 +128,7 @@ export const NotePage: React.FC = () => {
           ) : (
             <AddTagForm
               noteId={Number(id)}
-              tags={availableTags}
+              tags={addTagOptions}
               onTagAdded={refetch}
               onClose={() => setAddTagOpen(false)}
             />
@@ -187,6 +192,14 @@ export const NotePage: React.FC = () => {
               )}
             </>
           )}
+          <IconButton
+            onClick={() => navigate(`/notes/${note.id}/kanban`)}
+            color="primary"
+            size="small"
+            aria-label="Open kanban board"
+          >
+            <ViewKanban />
+          </IconButton>
         </Box>
         {titleError && (
           <Alert severity="error" sx={{ mb: 2 }}>

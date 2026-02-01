@@ -26,6 +26,19 @@ type CheckListViewProps = {
   note: Note;
 };
 
+const getStatusColor = (status?: string): string => {
+  switch (status) {
+    case 'in_progress':
+      return '#facc15';
+    case 'review':
+      return '#fb923c';
+    case 'done':
+      return '#22c55e';
+    default:
+      return '#22c55e';
+  }
+};
+
 export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
   const { data: checkItems = [], error } = useCheckItemsQuery(note.id);
   const { addItem, toggleItem, deleteItem, updateItem, reorderItems } =
@@ -192,6 +205,16 @@ export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
                     ml: 1,
                   }}
                 >
+                  <Box
+                    sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      backgroundColor: getStatusColor(item.status),
+                      marginRight: '8px',
+                    }}
+                    aria-label={`Status: ${item.status || 'ready'}`}
+                  />
                   <Checkbox
                     checked={!!item.doneDate}
                     onChange={() => handleToggle(item.id)}

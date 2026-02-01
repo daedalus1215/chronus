@@ -33,4 +33,7 @@ export class CheckItem {
 
   @Column({ name: 'order', type: 'integer', default: 0 })
   order: number;
+
+  @Column({ name: 'status', type: 'varchar', length: 20, default: 'ready' })
+  status: 'ready' | 'in_progress' | 'review' | 'done';
 }

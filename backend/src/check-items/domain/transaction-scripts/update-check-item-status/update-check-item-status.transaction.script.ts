@@ -1,31 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CheckItem } from '../../entities/check-item.entity';
 import { CheckItemsRepository } from '../../../infra/repositories/check-items/check-items.repository';
+import {
+  UpdateCheckItemStatusDto,
+  CheckItemStatus,
+} from '../../../apps/dtos/requests/update-check-item-status.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 
 @Injectable()
-export class ToggleCheckItemTransactionScript {
+export class UpdateCheckItemStatusTransactionScript {
   constructor(private readonly checkItemsRepository: CheckItemsRepository) {}
 
   async apply(
     id: number,
-    noteId: number,
+    dto: UpdateCheckItemStatusDto,
     authUser: AuthUser
   ): Promise<CheckItem> {
-    const checkItem =
-      await this.checkItemsRepository.findByIdWithNoteValidationForUpdate(
-        id,
-        noteId,
-        authUser.userId
-      );
+    const checkItem = await this.checkItemsRepository.findByIdWithNoteValidation(
+      id,
+      authUser.userId
+    );
 
     if (!checkItem) {
       throw new NotFoundException('Check item not found');
     }
 
-    // Toggle the done_date - if it's null, set it to now, if it exists, set it to null
-    checkItem.doneDate = checkItem.doneDate ? null : new Date();
-    checkItem.status = checkItem.doneDate ? 'done' : 'ready';
+    const nextStatus: CheckItemStatus = dto.status;
+    checkItem.status = nextStatus;
+    checkItem.doneDate = nextStatus === 'done' ? new Date() : null;
 
     return this.checkItemsRepository.save(checkItem);
   }

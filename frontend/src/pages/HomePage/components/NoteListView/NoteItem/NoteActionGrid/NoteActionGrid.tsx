@@ -13,6 +13,7 @@ import {
   LabelOutlined,
   AccessTimeOutlined,
   LockOutlined,
+  ViewKanbanOutlined,
 } from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
 import { ActionButton } from '@/components/ActionButton/ActionButton';
@@ -34,6 +35,7 @@ type NoteActionsProps = {
   onEdit: () => void;
   onLabel: () => void;
   onDownloadAudio: () => void;
+  onViewBoard: () => void;
   isConverting?: boolean;
   isDownloading?: boolean;
   audioError?: string | null;
@@ -54,6 +56,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onEdit,
   onTextToSpeech,
   onLabel,
+  onViewBoard,
   isConverting = false,
   isDownloading = false,
   audioError = null,
@@ -71,6 +74,10 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
 
         <ActionButton label="Edit" onClick={onEdit}>
           <EditOutlined className={styles.icon} />
+        </ActionButton>
+
+        <ActionButton label="Board" onClick={onViewBoard}>
+          <ViewKanbanOutlined className={styles.icon} />
         </ActionButton>
 
         <ActionButton
