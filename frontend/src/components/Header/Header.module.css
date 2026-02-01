@@ -75,3 +75,8 @@
   font-size: 0.9rem;
   font-weight: 500;
 }
+
+.header.mobile .container {
+  padding: 0 0.5rem;
+  justify-content: flex-start;
+}

@@ -70,11 +70,6 @@
 
 @media (max-width: 600px) {
   .main {
-    position: fixed;
-    top: 64px;
-    left: 0;
-    right: 0;
-    bottom: 0;
     padding: 0rem;
     width: 100vw;
     overflow: auto;

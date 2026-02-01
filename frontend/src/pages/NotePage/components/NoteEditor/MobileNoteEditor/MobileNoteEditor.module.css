@@ -28,6 +28,7 @@
   transition: all 0.2s ease-in-out;
   overflow-y: auto;
   box-sizing: border-box;
+  height: calc(100vh - 10px);
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 

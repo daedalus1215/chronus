@@ -1,22 +1,34 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Box, Paper } from '@mui/material';
-import { Header } from '../Header/Header';
+import { Header, MOBILE_HEADER_HEIGHT_PX } from '../Header/Header';
 import { DesktopSidebar } from '../Header/Sidebar/DesktopSidebar';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
+/** True when the current route is a note detail (NotePage). */
+const isNotePageRoute = (pathname: string): boolean =>
+  /\/notes\/[^/]+$/.test(pathname);
+
 export const AuthenticatedLayout: React.FC = () => {
   const isMobile = useIsMobile();
+  const location = useLocation();
+  const isNotePage = isNotePageRoute(location.pathname);
+  const showMobileHeader = isMobile && !isNotePage;
 
   return (
     <>
-      {isMobile && <Header />}
+      {showMobileHeader && <Header />}
       <main
         style={{
           display: 'flex',
           flexDirection: 'column',
-          marginTop: isMobile ? 64 : 0,
-          height: isMobile ? 'calc(100vh - 64px)' : '100vh',
+          marginTop: showMobileHeader ? MOBILE_HEADER_HEIGHT_PX : 0,
+          height:
+            isMobile && !showMobileHeader
+              ? '100vh'
+              : showMobileHeader
+                ? `calc(100vh - ${MOBILE_HEADER_HEIGHT_PX}px)`
+                : '100vh',
           width: '100%',
         }}
       >
