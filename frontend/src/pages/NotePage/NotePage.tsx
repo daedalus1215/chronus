@@ -25,6 +25,7 @@ import {
   Close,
   Edit,
   ViewKanban,
+  ViewList,
   EditOff,
   MoreVert,
   Label,
@@ -38,6 +39,8 @@ import { DesktopCheckListView } from './components/CheckListView/DesktopCheckLis
 import { MobileCheckListView } from './components/CheckListView/MobileCheckListView/MobileCheckListView';
 import { TranscriptionRecorder } from './components/TranscriptionRecorder/TranscriptionRecorder';
 import { useTranscriptionCallback } from './hooks/useTranscriptionCallback/useTranscriptionCallback';
+import { RightSidebar } from './components/RightSidebar/RightSidebar';
+import { SidebarChecklistView } from './components/SidebarChecklistView/SidebarChecklistView';
 import styles from './NotePage.module.css';
 
 export const NotePage: React.FC = () => {
@@ -60,6 +63,7 @@ export const NotePage: React.FC = () => {
   } = useAllTags();
   const [isAddTagOpen, setAddTagOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [fabMenuAnchor, setFabMenuAnchor] = useState<null | HTMLElement>(null);
   const isFabMenuOpen = Boolean(fabMenuAnchor);
 
@@ -88,6 +92,12 @@ export const NotePage: React.FC = () => {
   const handleFabAddTag = () => {
     handleFabMenuClose();
     setAddTagOpen(true);
+  };
+  const handleToggleSidebar = (): void => {
+    setIsSidebarOpen(prevOpen => !prevOpen);
+  };
+  const handleCloseSidebar = (): void => {
+    setIsSidebarOpen(false);
   };
 
   // Use custom hook to manage transcription callback chain
@@ -240,6 +250,17 @@ export const NotePage: React.FC = () => {
               <ViewKanban />
             </IconButton>
           )}
+          {!isMobile && note?.isMemo && (
+            <IconButton
+              onClick={handleToggleSidebar}
+              color={isSidebarOpen ? 'secondary' : 'primary'}
+              size="small"
+              aria-label="Toggle checklist sidebar"
+              aria-pressed={isSidebarOpen}
+            >
+              <ViewList />
+            </IconButton>
+          )}
         </Box>
         {titleError && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -251,41 +272,59 @@ export const NotePage: React.FC = () => {
             flex: 1,
             minHeight: 0,
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: isMobile ? 'column' : 'row',
           }}
         >
-          {note?.isMemo ? (
-            <>
-              {isEditMode && (
-                <TranscriptionRecorder
-                  noteId={note.id}
-                  onTranscription={onTranscriptionCallback}
-                />
-              )}
-              {isEditMode ? (
-                isMobile ? (
-                  <MobileNoteEditor
-                    note={note}
-                    onSave={handleSave}
-                    onAppendToDescription={setAppendToDescriptionFn}
+          <Box
+            sx={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {note?.isMemo ? (
+              <>
+                {isEditMode && (
+                  <TranscriptionRecorder
+                    noteId={note.id}
+                    onTranscription={onTranscriptionCallback}
                   />
+                )}
+                {isEditMode ? (
+                  isMobile ? (
+                    <MobileNoteEditor
+                      note={note}
+                      onSave={handleSave}
+                      onAppendToDescription={setAppendToDescriptionFn}
+                    />
+                  ) : (
+                    <DesktopNoteEditor
+                      note={note}
+                      onSave={handleSave}
+                      onAppendToDescription={setAppendToDescriptionFn}
+                    />
+                  )
+                ) : isMobile ? (
+                  <MobileNoteReadView note={note} />
                 ) : (
-                  <DesktopNoteEditor
-                    note={note}
-                    onSave={handleSave}
-                    onAppendToDescription={setAppendToDescriptionFn}
-                  />
-                )
-              ) : isMobile ? (
-                <MobileNoteReadView note={note} />
-              ) : (
-                <DesktopNoteReadView note={note} />
-              )}
-            </>
-          ) : isMobile ? (
-            <MobileCheckListView note={note} />
-          ) : (
-            <DesktopCheckListView note={note} />
+                  <DesktopNoteReadView note={note} />
+                )}
+              </>
+            ) : isMobile ? (
+              <MobileCheckListView note={note} />
+            ) : (
+              <DesktopCheckListView note={note} />
+            )}
+          </Box>
+          {!isMobile && note?.isMemo && (
+            <RightSidebar
+              isOpen={isSidebarOpen}
+              title=""
+              onClose={handleCloseSidebar}
+            >
+              <SidebarChecklistView note={note} />
+            </RightSidebar>
           )}
         </Box>
 
