@@ -107,14 +107,6 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
 
   return (
     <Box className={styles.root}>
-      <Typography
-        component="div"
-        variant="caption"
-        className={styles.header}
-        color="text.secondary"
-      >
-        Tags
-      </Typography>
       <Box
         className={styles.treeWrapper}
       >
