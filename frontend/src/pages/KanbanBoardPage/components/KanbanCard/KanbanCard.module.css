@@ -1,0 +1,48 @@
+.card {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-elevated-3);
+  border-radius: 8px;
+  min-height: 88px;
+}
+
+.cardDragging {
+  box-shadow: 0 8px 24px var(--color-shadow-md);
+  opacity: 0.7;
+}
+
+.cardContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.dragHandle {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: grab;
+}
+
+.statusDot {
+  margin-top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.cardText {
+  font-size: 0.75rem;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.doneIcon {
+  color: #22c55e;
+}
+
+.menuAnchor {
+  display: block;
+}

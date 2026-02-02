@@ -2,7 +2,7 @@
   min-height: 100vh;
   background-color: var(--color-bg);
   color: var(--color-text);
-  padding-top: 1rem;
+  /* padding-top: 1rem; */
 }
 
 .main {

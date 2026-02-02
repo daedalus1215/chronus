@@ -15,9 +15,11 @@ export const ROUTES = {
   SETTINGS: '/settings',
   TAG_NOTES: (tagId: string | number) => `/tag-notes/${tagId}`,
   NOTE: (noteId: string | number) => `notes/${noteId}`, // Removed leading slash for nested routes
+  KANBAN: (noteId: string | number) => `/notes/${noteId}/kanban`,
 } as const;
 
 export const ROUTE_PATTERNS = {
   TAG_NOTES: '/tag-notes/:tagId',
   NOTE: 'notes/:id', // Removed leading slash for nested routes
+  KANBAN: 'notes/:id/kanban',
 } as const;

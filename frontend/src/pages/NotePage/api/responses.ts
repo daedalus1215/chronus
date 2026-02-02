@@ -16,8 +16,9 @@ export type Note = {
 export type CheckItem = {
   id: number;
   name: string;
-  doneDate: string;
-  archiveDate: string;
+  doneDate: string | null;
+  archiveDate: string | null;
   noteId: number;
   order: number;
+  status: 'ready' | 'in_progress' | 'review' | 'done';
 };

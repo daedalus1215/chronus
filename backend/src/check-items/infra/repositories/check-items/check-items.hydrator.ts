@@ -8,6 +8,7 @@ type RawCheckItemResult = {
   archived_date: Date | null;
   note_id: number;
   order: number | null;
+  status: string;
   created_at: Date;
   updated_at: Date;
 };
@@ -22,6 +23,12 @@ export class CheckItemsHydrator {
     checkItem.archiveDate = rawResult.archived_date;
     checkItem.noteId = rawResult.note_id;
     checkItem.order = rawResult.order ?? 0;
+    checkItem.status =
+      rawResult.status === 'done' ||
+      rawResult.status === 'review' ||
+      rawResult.status === 'in_progress'
+        ? rawResult.status
+        : 'ready';
     checkItem.createdAt = rawResult.created_at;
     checkItem.updatedAt = rawResult.updated_at;
     return checkItem;

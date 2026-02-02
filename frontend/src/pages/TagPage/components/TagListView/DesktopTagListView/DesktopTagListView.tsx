@@ -7,6 +7,7 @@ import { TagItem } from '../TagItem/TagItem';
 import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './DesktopTagListView.module.css';
 import Fade from '@mui/material/Fade';
+import { Typography } from '@mui/material';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -91,6 +92,11 @@ export const DesktopTagListView: React.FC<TagListViewProps> = ({
 
   return (
     <div className={styles.tagList}>
+      <div className={styles.tagListHeader}>
+        <Typography variant="h6" component="div" className={styles.tagListTitle}>
+          Chronus
+        </Typography>
+      </div>
       <SearchBar
         value={searchQuery}
         onChange={setSearchQuery}

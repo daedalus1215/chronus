@@ -46,11 +46,8 @@ export const useNoteEditor = ({
 
   const saveChanges = React.useCallback(() => {
     const currentContent = contentRef.current;
-    onSave({
-      ...note,
-      description: currentContent.description,
-    });
-  }, [note, onSave]);
+    onSave({ description: currentContent.description });
+  }, [onSave]);
 
   const debouncedSave = React.useCallback(() => {
     if (timeoutRef.current) {

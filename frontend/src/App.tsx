@@ -19,6 +19,7 @@ import { ActivityPage } from './pages/ActivityPage/ActivityPage';
 import { CalendarPage } from './pages/CalendarPage/CalendarPage';
 import { YearlyNotesPage } from './pages/YearlyNotesPage/YearlyNotesPage';
 import { SettingsPage } from './pages/SettingsPage/SettingsPage';
+import { KanbanBoardPage } from './pages/KanbanBoardPage/KanbanBoardPage';
 import { ROUTES, ROUTE_PATTERNS } from './constants/routes';
 import { AuthenticatedLayout } from './components/Layout/AuthenticatedLayout';
 
@@ -48,6 +49,8 @@ function AppRoutes() {
           <Route path={ROUTE_PATTERNS.TAG_NOTES} element={<TagPage />}>
             <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
           </Route>
+
+          <Route path={ROUTE_PATTERNS.KANBAN} element={<KanbanBoardPage />} />
 
           {/* Other routes */}
           <Route path={ROUTES.TAGS} element={<TagPage />} />

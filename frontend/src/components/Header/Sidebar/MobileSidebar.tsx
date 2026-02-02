@@ -7,6 +7,8 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Logout from '@mui/icons-material/Logout';
+import Divider from '@mui/material/Divider';
 import Fade from '@mui/material/Fade';
 import { Link, useLocation } from 'react-router-dom';
 import { Logo } from '../../Logo/Logo';
@@ -16,11 +18,15 @@ import styles from './MobileSidebar.module.css';
 type MobileSidebarProps = {
   isOpen: boolean;
   onClose: () => void;
+  onSignOut?: () => void;
+  username?: string;
 };
 
 export const MobileSidebar: React.FC<MobileSidebarProps> = ({
   isOpen,
   onClose,
+  onSignOut,
+  username,
 }) => {
   const location = useLocation();
 
@@ -154,6 +160,42 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
           );
         })}
       </List>
+      {onSignOut != null && (
+        <>
+          <Divider />
+          <List>
+            {username != null && (
+              <ListItem sx={{ py: 0, px: 2 }}>
+                <ListItemText
+                  secondary={username}
+                  secondaryTypographyProps={{
+                    sx: { fontSize: '0.75rem' },
+                    color: 'text.secondary',
+                  }}
+                />
+              </ListItem>
+            )}
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  onClose();
+                  onSignOut();
+                }}
+                sx={{
+                  borderRadius: '8px',
+                  margin: '0 8px',
+                  padding: '8px 16px',
+                }}
+              >
+                <ListItemIcon sx={{ color: 'text.secondary' }}>
+                  <Logout />
+                </ListItemIcon>
+                <ListItemText primary="Sign Out" />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </>
+      )}
     </Drawer>
   );
 };

@@ -1,0 +1,51 @@
+.sidebarChecklist {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  background-color: var(--color-bg-paper);
+  font-size: 0.8125rem;
+}
+
+.list {
+  padding: 0;
+  scrollbar-color: var(--color-primary) var(--color-bg-paper);
+  scrollbar-width: thin;
+}
+
+.list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: var(--color-bg-paper);
+  border-radius: 999px;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary),
+    var(--color-primary-dark)
+  );
+  border-radius: 999px;
+  border: 2px solid var(--color-bg-paper);
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary-dark),
+    var(--color-primary)
+  );
+}
+
+.listItem {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  min-height: 36px;
+}
+
+.listItem:hover {
+  background-color: var(--color-overlay-stronger);
+}

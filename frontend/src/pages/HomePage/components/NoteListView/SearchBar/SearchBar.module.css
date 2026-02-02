@@ -1,5 +1,5 @@
 .searchBar {
-  padding: 1rem;
+  padding: 0rem;
   background-color: var(--background-color);
   border-bottom: 1px solid var(--border-color);
 }

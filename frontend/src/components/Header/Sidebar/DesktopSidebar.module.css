@@ -8,6 +8,7 @@
   overflow-y: hidden;
   scrollbar-width: none;
   scroll-behavior: none;
+  margin-top: 6em;
 }
 
 .header {

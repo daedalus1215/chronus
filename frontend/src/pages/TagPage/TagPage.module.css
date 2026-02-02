@@ -2,16 +2,15 @@
   min-height: 100vh;
   background-color: var(--color-bg);
   color: var(--color-text);
-  padding-top: 1rem;
 }
 
 .main {
-  padding: 1rem;
-  position: fixed;
-  top: 64px;
+  position: relative;
   width: 100%;
-  left: 0;
-  right: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .mainDesktop {
@@ -35,4 +34,12 @@
 .resizeHandle:focus {
   background: var(--color-overlay-medium);
   outline: none;
+}
+
+.noNotesSelectedText {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  height: 100vh;
 }

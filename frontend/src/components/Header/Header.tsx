@@ -4,7 +4,11 @@ import { useAuth } from '../../auth/useAuth';
 import { Sidebar } from './Sidebar/Sidebar';
 import { Logo } from '../Logo/Logo';
 import { useSidebar } from '../../hooks/useSidebar';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 import styles from './Header.module.css';
+
+export const MOBILE_HEADER_HEIGHT_PX = 48;
 
 export const Header: React.FC = () => {
   const { logout, user } = useAuth();
@@ -18,9 +22,37 @@ export const Header: React.FC = () => {
 
   const toggleSidebar = () => (isMobile ? setIsOpen(!isOpen) : navigate('/'));
 
+  if (isMobile) {
+    return (
+      <>
+        <header
+          className={`${styles.header} ${styles.mobile}`}
+          style={{ height: MOBILE_HEADER_HEIGHT_PX }}
+        >
+          <div className={styles.container}>
+            <IconButton
+              onClick={toggleSidebar}
+              aria-label="Open menu"
+              size="small"
+              sx={{ color: 'text.primary' }}
+            >
+              <MenuIcon fontSize="small" />
+            </IconButton>
+          </div>
+        </header>
+        <Sidebar
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          onSignOut={handleSignOut}
+          username={user?.username}
+        />
+      </>
+    );
+  }
+
   return (
     <>
-      <header className={`${styles.header} ${isMobile ? styles.mobile : ''}`}>
+      <header className={styles.header}>
         <div className={styles.container}>
           <button onClick={toggleSidebar} className={styles.brand}>
             <Logo />

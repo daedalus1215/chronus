@@ -25,6 +25,7 @@ export class ToggleCheckItemTransactionScript {
 
     // Toggle the done_date - if it's null, set it to now, if it exists, set it to null
     checkItem.doneDate = checkItem.doneDate ? null : new Date();
+    checkItem.status = checkItem.doneDate ? 'done' : 'ready';
 
     return this.checkItemsRepository.save(checkItem);
   }

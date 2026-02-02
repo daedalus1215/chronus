@@ -192,6 +192,11 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     setIsTimeTrackListOpen(true);
   };
 
+  const handleViewBoard = () => {
+    setIsActionsOpen(false);
+    navigate(`/notes/${note.id}/kanban`);
+  };
+
   const handleTimeTrackingSubmit = async (data: TimeTrackingData) => {
     try {
       await createTimeTrack({
@@ -257,6 +262,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onStar={handleTimeTracking}
         onTextToSpeech={handleTextToSpeech}
         onDownloadAudio={handleDownloadAudio}
+        onViewBoard={handleViewBoard}
         onEdit={handleTimeTracking}
         onLabel={handleTimeTracking}
         onExport={handleTimeTracking}

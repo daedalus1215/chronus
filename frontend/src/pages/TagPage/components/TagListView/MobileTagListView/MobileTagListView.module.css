@@ -9,6 +9,21 @@
   scrollbar-width: none;
 }
 
+.tagListHeader {
+  height: 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tagListTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 .tagListContent {
   flex: 1;
   display: flex;

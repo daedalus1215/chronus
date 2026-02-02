@@ -13,6 +13,35 @@
   margin-left: auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--color-primary) var(--background);
+  scrollbar-width: thin;
+}
+
+.readView::-webkit-scrollbar {
+  width: 8px;
+}
+
+.readView::-webkit-scrollbar-track {
+  background: var(--background);
+  border-radius: 999px;
+}
+
+.readView::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary),
+    var(--color-primary-dark)
+  );
+  border-radius: 999px;
+  border: 2px solid var(--background);
+}
+
+.readView::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary-dark),
+    var(--color-primary)
+  );
 }
 
 .markdownContent {

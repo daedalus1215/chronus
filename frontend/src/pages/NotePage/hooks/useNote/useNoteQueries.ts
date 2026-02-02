@@ -31,17 +31,23 @@ export const useUpdateNoteMutation = (noteId: number) => {
 
   return useMutation({
     mutationFn: async (updatedNote: Partial<Note>) => {
-      const { name, description, tags } = updatedNote;
-      const response = await api.patch<Note>(`/notes/detail/${noteId}`, {
-        name,
-        description,
-        tags,
-      });
+      const body: Partial<Pick<Note, 'description' | 'tags'>> = {};
+      if (updatedNote.description !== undefined) body.description = updatedNote.description;
+      if (updatedNote.tags !== undefined) body.tags = updatedNote.tags;
+      const response = await api.patch<Note>(`/notes/detail/${noteId}`, body);
       return response.data;
     },
-    onSuccess: updatedNote => {
-      queryClient.setQueryData(noteKeys.detail(noteId), updatedNote);
-      // Optionally invalidate related queries
+    onSuccess: (responseData) => {
+      queryClient.setQueryData(noteKeys.detail(noteId), (prev: Note | undefined) => {
+        if (!prev) return responseData;
+        const merged = { ...prev };
+        (Object.keys(responseData) as (keyof Note)[]).forEach((key) => {
+          if (responseData[key] !== undefined) {
+            (merged as Record<keyof Note, unknown>)[key] = responseData[key];
+          }
+        });
+        return merged;
+      });
       queryClient.invalidateQueries({ queryKey: noteKeys.lists() });
     },
   });

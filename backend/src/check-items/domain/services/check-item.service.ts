@@ -8,9 +8,11 @@ import { DeleteCheckItemTransactionScript } from '../transaction-scripts/delete-
 import { UpdateCheckItemTransactionScript } from '../transaction-scripts/update-check-item/update-check-item.transaction.script';
 import { GetCheckItemsByNoteTransactionScript } from '../transaction-scripts/get-check-items-by-note/get-check-items-by-note.transaction.script';
 import { ReorderCheckItemsTransactionScript } from '../transaction-scripts/reorder-check-items/reorder-check-items.transaction.script';
+import { UpdateCheckItemStatusTransactionScript } from '../transaction-scripts/update-check-item-status/update-check-item-status.transaction.script';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { CreateCheckItemDto } from '../../apps/dtos/requests/create-check-item.dto';
 import { UpdateCheckItemDto } from '../../apps/dtos/requests/update-check-item.dto';
+import { UpdateCheckItemStatusDto } from '../../apps/dtos/requests/update-check-item-status.dto';
 import { ReorderCheckItemsDto } from '../../apps/dtos/requests/reorder-check-items.dto';
 import { VERIFY_NOTE_ACCESS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/notes/verify-note-access.command';
 
@@ -22,6 +24,7 @@ export class CheckItemService {
     private readonly toggleCheckItemTransactionScript: ToggleCheckItemTransactionScript,
     private readonly deleteCheckItemTransactionScript: DeleteCheckItemTransactionScript,
     private readonly updateCheckItemTransactionScript: UpdateCheckItemTransactionScript,
+    private readonly updateCheckItemStatusTransactionScript: UpdateCheckItemStatusTransactionScript,
     private readonly getCheckItemsByNoteTransactionScript: GetCheckItemsByNoteTransactionScript,
     private readonly reorderCheckItemsTransactionScript: ReorderCheckItemsTransactionScript,
     private readonly eventEmitter: EventEmitter2
@@ -80,6 +83,18 @@ export class CheckItemService {
     return await this.updateCheckItemTransactionScript.apply(
       id,
       noteId,
+      dto,
+      authUser
+    );
+  }
+
+  async updateCheckItemStatus(
+    id: number,
+    dto: UpdateCheckItemStatusDto,
+    authUser: AuthUser
+  ): Promise<CheckItem> {
+    return await this.updateCheckItemStatusTransactionScript.apply(
+      id,
       dto,
       authUser
     );
