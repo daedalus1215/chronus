@@ -21,7 +21,7 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
         setIsLoading(true);
         setError(null);
 
-        const response = await getNamesOfNotes(cursor, 20, query, type, tagId);
+        const response = await getNamesOfNotes(cursor, 100, query, type, tagId);
 
         if (cursor > 0) {
           setNotes(prev => [...prev, ...response.notes]);
