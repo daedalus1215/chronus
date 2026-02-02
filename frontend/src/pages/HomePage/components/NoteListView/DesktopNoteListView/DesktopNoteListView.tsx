@@ -7,6 +7,7 @@ import styles from './DesktopNoteListView.module.css';
 import { useResizablePane } from '../../../../../hooks/useResizablePane';
 import Fade from '@mui/material/Fade';
 import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
+import { Typography } from '@mui/material';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -120,6 +121,12 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
       className={styles.noteList}
       style={{ position: 'relative', width: `${width}px`, flex: '0 0 auto' }}
     >
+      <div style={{ height: '6em' }}>
+        <Typography variant="h6" component="div"
+          style={{ justifyContent: 'center', textAlign: 'center', display: 'flex', alignItems: 'center', height: '100%' }}>
+          Chronus
+        </Typography>
+      </div>
       {width >= 120 && (
         <SearchBar
           value={searchQuery}

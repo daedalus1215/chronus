@@ -9,14 +9,14 @@
   border-radius: 0;
   position: relative;
   box-sizing: border-box;
-  height: calc(100vh - 180px);
   min-width: 0;
-  margin-left: auto; /* keep right edge aligned to window */
+  min-height: 0;
+  flex: 1;
 }
 .descriptionInput {
   width: 100%;
   flex: 1;
-  min-height: calc(100vh - 200px);
+  min-height: 0;
   padding: 0.75rem;
   font-size: 0.875rem;
   line-height: 1.4;
