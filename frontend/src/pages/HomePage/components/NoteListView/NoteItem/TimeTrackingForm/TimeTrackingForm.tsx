@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
-import { FormControl } from '@mui/material';
-import { Stack, Chip } from '@mui/material';
+import {
+  FormControl,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Stack,
+  Chip,
+} from '@mui/material';
 import {
   getCurrentDateString,
   getCurrentTimeString,
@@ -56,24 +61,31 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
     { label: '1h', value: 60 },
     { label: '1h 30m', value: 90 },
     { label: '2h', value: 120 },
+    { label: '2h 30m', value: 150 },
+    { label: '3h', value: 180 },
   ];
 
   const [customMode, setCustomMode] = useState(false);
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <Box sx={{ p: 2 }}>
-        <Stack spacing={2} component="form" onSubmit={handleSubmit}>
-          <Box>
-            <h3>Track Time</h3>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      aria-labelledby="time-tracking-dialog-title"
+    >
+      <DialogTitle id="time-tracking-dialog-title">Track Time</DialogTitle>
+      <DialogContent>
+        <Box sx={{ pt: 1 }}>
+          <Stack spacing={2} component="form" onSubmit={handleSubmit}>
             {hasPendingTracks && (
               <Alert severity="warning" sx={{ mb: 2 }}>
                 You have time tracks pending sync. They will be uploaded when
                 you're back online.
               </Alert>
             )}
-          </Box>
-          <TextField
+            <TextField
             label="Date"
             type="date"
             value={formData.date}
@@ -92,7 +104,7 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
             InputLabelProps={{ shrink: true }}
           />
           <FormControl fullWidth size="small"></FormControl>
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="space-evenly">
             {quickDurations.map(opt => (
               <Chip
                 key={opt.value}
@@ -163,6 +175,7 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
           </Stack>
         </Stack>
       </Box>
-    </BottomSheet>
+    </DialogContent>
+    </Dialog>
   );
 };
