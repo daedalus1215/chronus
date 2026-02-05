@@ -7,7 +7,6 @@ import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { Tag, useNoteTags } from './hooks/useNoteTags';
-import { BottomSheet } from '../../components/BottomSheet/BottomSheet';
 import { AddTagForm } from './components/AddTagForm/AddTagForm';
 import { useAllTags } from './hooks/useAllTags';
 import {
@@ -18,6 +17,9 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from '@mui/material';
 import {
   Add,
@@ -98,9 +100,6 @@ export const NotePage: React.FC = () => {
     setIsSidebarOpen(prev => !prev);
   };
 
-  const handleToggleSidebar = (): void => {
-    setIsSidebarOpen(prevOpen => !prevOpen);
-  };
   const handleCloseSidebar = (): void => {
     setIsSidebarOpen(false);
   };
@@ -198,20 +197,31 @@ export const NotePage: React.FC = () => {
             ))}
           </Box>
 
-          <BottomSheet isOpen={isAddTagOpen} onClose={() => setAddTagOpen(false)}>
-            {allTagsLoading ? (
-              <span className="text-gray-400 ml-2">Loading all tags...</span>
-            ) : allTagsError ? (
-              <span className="text-red-500 ml-2">Error loading all tags</span>
-            ) : (
-              <AddTagForm
-                noteId={Number(id)}
-                tags={addTagOptions}
-                onTagAdded={refetch}
-                onClose={() => setAddTagOpen(false)}
-              />
-            )}
-          </BottomSheet>
+          <Dialog
+            open={isAddTagOpen}
+            onClose={() => setAddTagOpen(false)}
+            maxWidth="sm"
+            fullWidth
+            aria-labelledby="add-tag-dialog-title"
+          >
+            <DialogTitle id="add-tag-dialog-title">Add tag to note</DialogTitle>
+            <DialogContent>
+              {allTagsLoading ? (
+                <span className="text-gray-400 ml-2">Loading all tags...</span>
+              ) : allTagsError ? (
+                <span className="text-red-500 ml-2">
+                  Error loading all tags
+                </span>
+              ) : (
+                <AddTagForm
+                  noteId={Number(id)}
+                  tags={addTagOptions}
+                  onTagAdded={refetch}
+                  onClose={() => setAddTagOpen(false)}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               Error loading note
@@ -333,7 +343,7 @@ export const NotePage: React.FC = () => {
                     )}
                   </ListItemIcon>
                   <ListItemText>
-                    {isEditMode ? 'Cancel edit' : 'Edit'}
+                    {isEditMode ? 'Read mode' : 'Edit mode'}
                   </ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleFabKanban}>
