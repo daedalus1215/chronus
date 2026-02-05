@@ -13,7 +13,6 @@ import { useAllTags } from './hooks/useAllTags';
 import {
   Chip,
   IconButton,
-  Button,
   Fab,
   Menu,
   MenuItem,
@@ -93,6 +92,12 @@ export const NotePage: React.FC = () => {
     handleFabMenuClose();
     setAddTagOpen(true);
   };
+
+  const handleFabShowChecklist = () => {
+    handleFabMenuClose();
+    setIsSidebarOpen(prev => !prev);
+  };
+
   const handleToggleSidebar = (): void => {
     setIsSidebarOpen(prevOpen => !prevOpen);
   };
@@ -143,13 +148,21 @@ export const NotePage: React.FC = () => {
 
   return (
     <main className={styles.main}>
-      <Box sx={{ display: 'flex', height: '100%', minHeight: 0 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          height: '100%',
+          minHeight: 0,
+          overflowX: 'auto',
+          minWidth: 0,
+        }}
+      >
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             flex: 1,
-            minWidth: 0,
+            minWidth: 280,
             minHeight: 0,
           }}
         >
@@ -225,51 +238,6 @@ export const NotePage: React.FC = () => {
               minRows={1}
               maxRows={4}
             />
-            {note?.isMemo && !isMobile && (
-              <>
-                {!isEditMode ? (
-                  <IconButton
-                    onClick={handleEditClick}
-                    color="primary"
-                    size="small"
-                    aria-label="Edit note"
-                  >
-                    <Edit />
-                  </IconButton>
-                ) : (
-                  <Button
-                    onClick={handleCancelEdit}
-                    size="small"
-                    variant="outlined"
-                    color="secondary"
-                    aria-label="Cancel edit note"
-                  >
-                    <EditOff />
-                  </Button>
-                )}
-              </>
-            )}
-            {!isMobile && (
-              <IconButton
-                onClick={() => navigate(`/notes/${note.id}/kanban`)}
-                color="primary"
-                size="small"
-                aria-label="Open kanban board"
-              >
-                <ViewKanban />
-              </IconButton>
-            )}
-            {!isMobile && note?.isMemo && (
-              <IconButton
-                onClick={handleToggleSidebar}
-                color={isSidebarOpen ? 'secondary' : 'primary'}
-                size="small"
-                aria-label="Toggle checklist sidebar"
-                aria-pressed={isSidebarOpen}
-              >
-                <ViewList />
-              </IconButton>
-            )}
           </Box>
           {titleError && (
             <Alert severity="error" sx={{ mb: 2 }}>
@@ -328,7 +296,7 @@ export const NotePage: React.FC = () => {
             </Box>
           </Box>
 
-          {isMobile && note?.isMemo && (
+          {note?.isMemo && (
             <>
               <Fab
                 color="primary"
@@ -374,6 +342,16 @@ export const NotePage: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText>Kanban</ListItemText>
                 </MenuItem>
+                {!isMobile && (
+                  <MenuItem onClick={handleFabShowChecklist}>
+                    <ListItemIcon>
+                      <ViewList fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>
+                      {isSidebarOpen ? 'Hide checklist' : 'Show checklist'}
+                    </ListItemText>
+                  </MenuItem>
+                )}
                 <MenuItem onClick={handleFabAddTag}>
                   <ListItemIcon>
                     <Label fontSize="small" />
