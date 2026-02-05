@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Fab,
   Tooltip,
@@ -11,14 +11,26 @@ import { Mic, Stop } from '@mui/icons-material';
 import { useTranscriptionWebSocket } from '../../hooks/useTranscriptionWebSocket/useTranscriptionWebSocket';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder/useAudioRecorder';
 
+type TranscriptionRecorderController = {
+  toggleRecording: () => Promise<void> | void;
+  isRecording: boolean;
+  isInitializing: boolean;
+  micAvailable: boolean | null;
+  getStatusText: () => string;
+};
+
 type TranscriptionRecorderProps = {
   noteId: number;
   onTranscription: (text: string) => void;
+  useOwnFab?: boolean;
+  onControllerReady?: (controller: TranscriptionRecorderController) => void;
 };
 
 export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
   noteId,
   onTranscription,
+  useOwnFab = true,
+  onControllerReady,
 }) => {
   const [micAvailable, setMicAvailable] = useState<boolean | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
@@ -103,7 +115,7 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
     }
   }, [error]);
 
-  const handleToggleRecording = async () => {
+  const handleToggleRecording = useCallback(async () => {
     if (isRecording) {
       // Stop recording
       stopAudio();
@@ -131,64 +143,87 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
         console.error('Failed to start recording:', err);
       }
     }
-  };
+  }, [isRecording, startAudio, startWs, stopAudio, stopWs]);
 
-  const getStatusText = () => {
+  const getStatusText = useCallback(() => {
     if (error) return `Error: ${error}`;
     if (isRecording) return 'Recording - Click to stop';
     if (isInitializing) return 'Initializing...';
     if (micAvailable === false) return 'Microphone not available';
     if (isConnected) return 'Ready to record';
     return 'Idle - Click to start recording';
-  };
+  }, [error, isConnected, isInitializing, isRecording, micAvailable]);
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
+  useEffect(() => {
+    if (!onControllerReady) {
+      return;
+    }
+
+    onControllerReady({
+      toggleRecording: handleToggleRecording,
+      isRecording,
+      isInitializing,
+      micAvailable,
+      getStatusText,
+    });
+  }, [
+    getStatusText,
+    handleToggleRecording,
+    isInitializing,
+    isRecording,
+    micAvailable,
+    onControllerReady,
+  ]);
+
   return (
     <>
-      <Tooltip title={getStatusText()} arrow placement="left">
-        <Fab
-          color={isRecording ? 'error' : 'primary'}
-          onClick={handleToggleRecording}
-          disabled={micAvailable === false || isInitializing}
-          aria-label={isRecording ? 'Stop recording' : 'Start recording'}
-          sx={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
-            zIndex: 1000,
-          }}
-        >
-          <Badge
-            badgeContent=" "
-            color="error"
-            invisible={!isRecording}
+      {useOwnFab && (
+        <Tooltip title={getStatusText()} arrow placement="left">
+          <Fab
+            color={isRecording ? 'error' : 'primary'}
+            onClick={handleToggleRecording}
+            disabled={micAvailable === false || isInitializing}
+            aria-label={isRecording ? 'Stop recording' : 'Start recording'}
             sx={{
-              '& .MuiBadge-badge': {
-                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              },
-              '@keyframes pulse': {
-                '0%, 100%': {
-                  opacity: 1,
-                },
-                '50%': {
-                  opacity: 0.5,
-                },
-              },
+              position: 'fixed',
+              bottom: 24,
+              right: 24,
+              zIndex: 1000,
             }}
           >
-            {isInitializing ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : isRecording ? (
-              <Stop />
-            ) : (
-              <Mic />
-            )}
-          </Badge>
-        </Fab>
-      </Tooltip>
+            <Badge
+              badgeContent=" "
+              color="error"
+              invisible={!isRecording}
+              sx={{
+                '& .MuiBadge-badge': {
+                  animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                },
+                '@keyframes pulse': {
+                  '0%, 100%': {
+                    opacity: 1,
+                  },
+                  '50%': {
+                    opacity: 0.5,
+                  },
+                },
+              }}
+            >
+              {isInitializing ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : isRecording ? (
+                <Stop />
+              ) : (
+                <Mic />
+              )}
+            </Badge>
+          </Fab>
+        </Tooltip>
+      )}
 
       <Snackbar
         open={snackbarOpen}

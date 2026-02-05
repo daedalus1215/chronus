@@ -30,6 +30,8 @@ import {
   EditOff,
   MoreVert,
   Label,
+  Mic,
+  Stop,
 } from '@mui/icons-material';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { DesktopNoteEditor } from './components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor';
@@ -67,6 +69,13 @@ export const NotePage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [fabMenuAnchor, setFabMenuAnchor] = useState<null | HTMLElement>(null);
   const isFabMenuOpen = Boolean(fabMenuAnchor);
+  const [transcriptionController, setTranscriptionController] = useState<{
+    toggleRecording: () => Promise<void> | void;
+    isRecording: boolean;
+    isInitializing: boolean;
+    micAvailable: boolean | null;
+    getStatusText: () => string;
+  } | null>(null);
 
   const handleFabMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setFabMenuAnchor(event.currentTarget);
@@ -98,6 +107,14 @@ export const NotePage: React.FC = () => {
   const handleFabShowChecklist = () => {
     handleFabMenuClose();
     setIsSidebarOpen(prev => !prev);
+  };
+
+  const handleFabToggleRecording = () => {
+    handleFabMenuClose();
+    if (!transcriptionController) {
+      return;
+    }
+    transcriptionController.toggleRecording();
   };
 
   const handleCloseSidebar = (): void => {
@@ -276,6 +293,8 @@ export const NotePage: React.FC = () => {
                     <TranscriptionRecorder
                       noteId={note.id}
                       onTranscription={onTranscriptionCallback}
+                      useOwnFab={false}
+                      onControllerReady={setTranscriptionController}
                     />
                   )}
                   {isEditMode ? (
@@ -352,6 +371,25 @@ export const NotePage: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText>Kanban</ListItemText>
                 </MenuItem>
+                {note?.isMemo && isEditMode && (
+                  <MenuItem
+                    onClick={handleFabToggleRecording}
+                    disabled={!transcriptionController}
+                  >
+                    <ListItemIcon>
+                      {transcriptionController?.isRecording ? (
+                        <Stop fontSize="small" />
+                      ) : (
+                        <Mic fontSize="small" />
+                      )}
+                    </ListItemIcon>
+                    <ListItemText>
+                      {transcriptionController?.isRecording
+                        ? 'Stop recording'
+                        : 'Start recording'}
+                    </ListItemText>
+                  </MenuItem>
+                )}
                 {!isMobile && (
                   <MenuItem onClick={handleFabShowChecklist}>
                     <ListItemIcon>
