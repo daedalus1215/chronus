@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CheckItem } from '../../entities/check-item.entity';
 import { CheckItemsRepository } from '../../../infra/repositories/check-items/check-items.repository';
 
@@ -14,7 +14,7 @@ export class GetCheckItemsByNoteTransactionScript {
       );
 
     if (checkItems.length === 0) {
-      throw new ForbiddenException('Access denied to this note');
+      return [];
     }
 
     const nonArchivedCheckItems = checkItems.filter(
