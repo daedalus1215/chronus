@@ -11,7 +11,7 @@ type UseTranscriptionWebSocketReturn = {
   isConnected: boolean;
   isRecording: boolean;
   error: string | null;
-  startRecording: () => void;
+  startRecording: () => Promise<void>;
   stopRecording: () => void;
   sendAudioChunk: (chunk: ArrayBuffer) => void;
 };
@@ -84,11 +84,11 @@ export const useTranscriptionWebSocket = ({
     }
   }, [onTranscription]);
 
-  const connect = useCallback(() => {
+  const connect = useCallback((): Promise<void> => {
     // If WebSocket exists and is open, don't create a new one
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       console.log('WebSocket already connected, skipping connect');
-      return;
+      return Promise.resolve();
     }
 
     // If WebSocket exists but not open, close it first to avoid duplicates
@@ -101,100 +101,111 @@ export const useTranscriptionWebSocket = ({
     }
 
     // Connect directly to thoth-backend, just like thoth-frontend does
-    const thothWsUrl = env.VITE_THOTH_WS_URL || 'wss://172.16.0.61:8443';
+    const thothWsUrl = env.VITE_THOTH_WS_URL;
     const wsUrl = `${thothWsUrl}/stream-audio`;
 
     console.log('Connecting directly to Thoth WebSocket:', wsUrl);
 
-    const ws = new WebSocket(wsUrl);
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket(wsUrl);
+      let opened = false;
 
-    ws.onopen = () => {
-      console.log('WebSocket connected successfully to Thoth!');
-      setIsConnected(true);
-      setError(null);
-    };
+      ws.onopen = () => {
+        opened = true;
+        console.log('WebSocket connected successfully to Thoth!');
+        setIsConnected(true);
+        setError(null);
+        resolve();
+      };
 
-    ws.onmessage = event => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log('Received message from Thoth:', data);
+      ws.onmessage = event => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log('Received message from Thoth:', data);
 
-        // Only process valid, non-empty transcriptions
-        if (
-          data &&
-          data.transcription !== undefined &&
-          data.transcription !== null &&
-          typeof data.transcription === 'string' &&
-          data.transcription.trim() !== '' &&
-          data.transcription !== 'undefined'
-        ) {
-          const trimmed = data.transcription.trim();
-          console.log(`📨 Received transcription: "${trimmed}"`);
+          if (
+            data &&
+            data.transcription !== undefined &&
+            data.transcription !== null &&
+            typeof data.transcription === 'string' &&
+            data.transcription.trim() !== '' &&
+            data.transcription !== 'undefined'
+          ) {
+            const trimmed = data.transcription.trim();
+            console.log(`📨 Received transcription: "${trimmed}"`);
 
-          // Use ref to get latest callback (avoids stale closure)
-          const callback = onTranscriptionRef.current;
+            const callback = onTranscriptionRef.current;
 
-          if (!callback) {
-            console.error('❌ onTranscription callback is null or undefined!');
-            return;
+            if (!callback) {
+              console.error('❌ onTranscription callback is null or undefined!');
+              return;
+            }
+
+            if (typeof callback !== 'function') {
+              console.error(
+                '❌ onTranscription callback is not a function:',
+                typeof callback
+              );
+              return;
+            }
+
+            const callbackStr = callback.toString();
+            const isWrapperCallback =
+              callbackStr.includes('onTranscriptionCallback') ||
+              callbackStr.includes('appendToDescriptionFn');
+
+            console.log('🔍 Callback analysis:', {
+              isFunction: typeof callback === 'function',
+              isWrapperCallback,
+              callbackPreview: callbackStr.substring(0, 300),
+            });
+
+            console.log('▶️ Calling onTranscription callback with:', trimmed);
+            try {
+              callback(trimmed);
+              console.log(
+                '✅ onTranscription callback executed - check if appendToDescription was called'
+              );
+            } catch (err) {
+              console.error('❌ Error executing onTranscription callback:', err);
+            }
+          } else {
+            console.debug('Skipping invalid transcription:', data);
           }
-
-          if (typeof callback !== 'function') {
-            console.error(
-              '❌ onTranscription callback is not a function:',
-              typeof callback
-            );
-            return;
-          }
-
-          const callbackStr = callback.toString();
-          // Check if it's the wrapper callback (should contain "onTranscriptionCallback" or "appendToDescriptionFn")
-          const isWrapperCallback =
-            callbackStr.includes('onTranscriptionCallback') ||
-            callbackStr.includes('appendToDescriptionFn');
-
-          console.log('🔍 Callback analysis:', {
-            isFunction: typeof callback === 'function',
-            isWrapperCallback,
-            callbackPreview: callbackStr.substring(0, 300),
-          });
-
-          // Always try to call it - the wrapper callback will handle the null check
-          console.log('▶️ Calling onTranscription callback with:', trimmed);
-          try {
-            callback(trimmed);
-            console.log(
-              '✅ onTranscription callback executed - check if appendToDescription was called'
-            );
-          } catch (err) {
-            console.error('❌ Error executing onTranscription callback:', err);
-          }
-        } else {
-          console.debug('Skipping invalid transcription:', data);
+        } catch (err) {
+          console.error('Error parsing transcription message:', err);
+          setError('Failed to parse transcription message');
         }
-      } catch (err) {
-        console.error('Error parsing transcription message:', err);
-        setError('Failed to parse transcription message');
-      }
-    };
+      };
 
-    ws.onerror = err => {
-      console.error('WebSocket error:', err);
-      setError('WebSocket connection error');
-      setIsConnected(false);
-      setIsRecording(false);
-      isRecordingRef.current = false;
-    };
+      ws.onerror = () => {
+        const message = 'WebSocket connection error';
+        console.error('WebSocket error');
+        setError(message);
+        setIsConnected(false);
+        setIsRecording(false);
+        isRecordingRef.current = false;
+        if (!opened) {
+          reject(new Error(message));
+        }
+      };
 
-    ws.onclose = event => {
-      console.log('WebSocket disconnected:', event.code, event.reason);
-      setIsConnected(false);
-      isRecordingRef.current = false;
-      setIsRecording(false);
-    };
+      ws.onclose = event => {
+        console.log('WebSocket disconnected:', event.code, event.reason);
+        setIsConnected(false);
+        isRecordingRef.current = false;
+        setIsRecording(false);
+        if (!opened) {
+          const message =
+            event.reason || `Connection closed (code ${event.code})`;
+          setError(message);
+          reject(new Error(message));
+        }
+      };
 
-    wsRef.current = ws;
-  }, []); // Remove onTranscription from deps since we use ref
+      wsRef.current = ws;
+    });
+  }, []);
 
   const disconnect = useCallback(() => {
     if (wsRef.current) {
@@ -207,14 +218,18 @@ export const useTranscriptionWebSocket = ({
     }
   }, []);
 
-  const startRecording = useCallback(() => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      connect();
-    }
-    isRecordingRef.current = true; // Update ref immediately
-    setIsRecording(true);
+  const startRecording = useCallback(async (): Promise<void> => {
     setError(null);
-    console.log('startRecording called - isRecording set to true');
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      isRecordingRef.current = true;
+      setIsRecording(true);
+      console.log('startRecording: already connected, set isRecording');
+      return;
+    }
+    await connect();
+    isRecordingRef.current = true;
+    setIsRecording(true);
+    console.log('startRecording: connected, set isRecording');
   }, [connect]);
 
   const stopRecording = useCallback(() => {

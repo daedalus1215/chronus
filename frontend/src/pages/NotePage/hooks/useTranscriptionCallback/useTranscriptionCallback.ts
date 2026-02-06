@@ -41,6 +41,14 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
   // This is a fallback to ensure transcriptions don't get lost
   const onTranscription = useCallback(
     (text: string) => {
+      if (
+        text == null ||
+        typeof text !== 'string' ||
+        text.trim() === ''
+      ) {
+        return;
+      }
+
       console.log('🔵 onTranscriptionCallback called with:', text);
 
       if (
