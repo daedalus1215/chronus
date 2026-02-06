@@ -101,7 +101,7 @@ export const useTranscriptionWebSocket = ({
     }
 
     // Connect directly to thoth-backend, just like thoth-frontend does
-    const thothWsUrl = env.VITE_THOTH_WS_URL || 'wss://172.16.0.61:8443';
+    const thothWsUrl = env.VITE_THOTH_WS_URL;
     const wsUrl = `${thothWsUrl}/stream-audio`;
 
     console.log('Connecting directly to Thoth WebSocket:', wsUrl);
