@@ -122,25 +122,19 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
       stopWs();
       setIsInitializing(false);
     } else {
-      // Start recording
+      // Start recording: wait for WebSocket to open, then start mic
       try {
         setIsInitializing(true);
 
-        // First connect WebSocket if not connected
-        // Use startWs which handles connection and sets isRecording
-        // Don't check isConnected state as it may not have updated yet
-        console.log('Starting WebSocket connection...');
-        startWs();
-        // Wait a bit for connection to establish and gateway to send 'connected' event
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('Connecting WebSocket...');
+        await startWs();
 
-        // Then start audio recording
         console.log('Starting audio recording...');
         await startAudio();
-        setIsInitializing(false);
       } catch (err) {
-        setIsInitializing(false);
         console.error('Failed to start recording:', err);
+      } finally {
+        setIsInitializing(false);
       }
     }
   }, [isRecording, startAudio, startWs, stopAudio, stopWs]);
