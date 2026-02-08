@@ -35,10 +35,12 @@ type NoteActionsProps = {
   onEdit: () => void;
   onLabel: () => void;
   onDownloadAudio: () => void;
+  onViewAudioHistory: () => void;
   onViewBoard: () => void;
   isConverting?: boolean;
   isDownloading?: boolean;
   audioError?: string | null;
+  audioCount?: number;
 };
 
 export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
@@ -56,10 +58,12 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onEdit,
   onTextToSpeech,
   onLabel,
+  onViewAudioHistory,
   onViewBoard,
   isConverting = false,
   isDownloading = false,
   audioError = null,
+  audioCount = 0,
 }) => {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
@@ -96,6 +100,13 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         >
           <HeadphonesOutlined className={styles.icon} />
           {isDownloading ? 'Downloading...' : ''}
+        </ActionButton>
+
+        <ActionButton
+          label={`Audio History ${audioCount > 0 ? `(${audioCount})` : ''}`}
+          onClick={onViewAudioHistory}
+        >
+          <RecordVoiceOverOutlined className={styles.icon} />
         </ActionButton>
 
         {audioError && <div className={styles.errorMessage}>{audioError}</div>}

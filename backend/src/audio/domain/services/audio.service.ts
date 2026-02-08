@@ -1,35 +1,108 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import {
   TextToSpeechRequestDto,
-  TextToSpeechResponseDto,
 } from 'src/audio/apps/dtos/requests/text-to-speech.dto';
-import { AudioResponse } from 'src/audio/apps/dtos/responses/audio.response.dto';
-import { TextToSpeechTransactionScript } from '../transaction-scripts/text-to-speech.transaction.script';
+import { AudioResponse, AudioDownloadResult } from 'src/audio/apps/dtos/responses/audio.response.dto';
+import {
+  TextToSpeechTransactionScript,
+} from '../transaction-scripts/text-to-speech.transaction.script';
+import { SaveNoteAudioTransactionScript } from '../transaction-scripts/save-note-audio-TS/save-note-audio.transaction.script';
 import { DownloadAudioTransactionScript } from '../transaction-scripts/download-audio.transaction.script';
+import { GetNoteAudiosTransactionScript } from '../transaction-scripts/get-note-audios-TS/get-note-audios.transaction.script';
+import { GetNoteAudioByIdTransactionScript } from '../transaction-scripts/get-note-audio-by-id-TS/get-note-audio-by-id.transaction.script';
 import { NoteAggregator } from 'src/notes/domain/aggregators/note.aggregator';
+import { NoteAudio } from '../entities/note-audio.entity';
+
+export interface ConvertTextToSpeechResult {
+  file_path: string;
+  audioMetadata: NoteAudio;
+}
 
 @Injectable()
 export class AudioService {
   constructor(
     private readonly textToSpeechTS: TextToSpeechTransactionScript,
+    private readonly saveNoteAudioTS: SaveNoteAudioTransactionScript,
     private readonly downloadAudioTS: DownloadAudioTransactionScript,
+    private readonly getNoteAudiosTS: GetNoteAudiosTransactionScript,
+    private readonly getNoteAudioByIdTS: GetNoteAudioByIdTransactionScript,
     private readonly noteAggregator: NoteAggregator
   ) {}
 
   async convertTextToSpeech(
     request: TextToSpeechRequestDto & { userId: number }
-  ): Promise<TextToSpeechResponseDto> {
+  ): Promise<ConvertTextToSpeechResult> {
     const note = await this.noteAggregator.getMemoById(
       request.assetId,
       request.userId
     );
-    return this.textToSpeechTS.execute({
+    
+    // Step 1: Convert text to speech
+    const ttsResult = await this.textToSpeechTS.execute({
       ...request,
       text: note.memo.description,
     });
+
+    // Step 2: Save audio metadata to database
+    const audioMetadata = await this.saveNoteAudioTS.execute({
+      noteId: request.assetId,
+      filePath: ttsResult.file_path,
+      fileFormat: ttsResult.fileFormat,
+    });
+
+    return {
+      file_path: ttsResult.file_path,
+      audioMetadata,
+    };
   }
 
   async downloadAudio(userId: number, assetId: string): Promise<AudioResponse> {
     return this.downloadAudioTS.execute(userId, assetId);
+  }
+
+  async getNoteAudios(noteId: number): Promise<NoteAudio[]> {
+    return this.getNoteAudiosTS.execute(noteId);
+  }
+
+  async getNoteAudioById(audioId: number, userId: number): Promise<NoteAudio> {
+    const audio = await this.getNoteAudioByIdTS.execute(audioId);
+
+    if (!audio) {
+      throw new NotFoundException('Audio not found');
+    }
+
+    // Verify user owns the note associated with this audio
+    const note = await this.noteAggregator.getReference(audio.noteId, userId);
+    if (!note || note.userId !== userId) {
+      throw new ForbiddenException('Not authorized to access this audio');
+    }
+
+    return audio;
+  }
+
+  async downloadAudioById(audioId: number, userId: number): Promise<AudioDownloadResult> {
+    const audio = await this.getNoteAudioById(audioId, userId);
+    const { data, headers } = await this.downloadAudioTS.execute(userId, audio.noteId.toString());
+    const contentType = this.getContentType(audio.fileFormat);
+
+    return {
+      data,
+      contentType: headers['content-type'] || contentType,
+      contentDisposition: headers['content-disposition'] || `attachment; filename="${audio.fileName}"`,
+      fileName: audio.fileName,
+    };
+  }
+
+  private getContentType(fileFormat: string): string {
+    const format = fileFormat.toLowerCase();
+    const contentTypes: { [key: string]: string } = {
+      wav: 'audio/wav',
+      mp3: 'audio/mpeg',
+      ogg: 'audio/ogg',
+      m4a: 'audio/mp4',
+      flac: 'audio/flac',
+      aac: 'audio/aac',
+    };
+    return contentTypes[format] || 'audio/wav';
   }
 }

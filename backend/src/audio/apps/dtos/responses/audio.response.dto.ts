@@ -4,3 +4,10 @@ export interface AudioResponse {
     [key: string]: string;
   };
 }
+
+export interface AudioDownloadResult {
+  data: Buffer;
+  contentType: string;
+  contentDisposition: string;
+  fileName: string;
+}
