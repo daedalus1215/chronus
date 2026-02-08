@@ -95,10 +95,39 @@ export class HermesRemoteCaller {
     }
   }
 
-  async downloadAudio(userId: number, assetId: string): Promise<AudioResponse> {
+  async downloadAudio(
+    userId: number,
+    assetId: string,
+    fileName?: string
+  ): Promise<AudioResponse> {
     const url = `${this.hermesApiUrl}download/${userId}/${assetId}`;
+    const params = fileName ? { filename: fileName } : undefined;
     const response = await firstValueFrom(
-      this.httpService.get(url, { responseType: 'arraybuffer' })
+      this.httpService.get(url, { responseType: 'arraybuffer', params })
+    );
+
+    const headers: { [key: string]: string } = {};
+    Object.entries(response.headers).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        headers[key] = value;
+      } else if (Array.isArray(value)) {
+        headers[key] = value.join(', ');
+      }
+    });
+
+    return {
+      data: response.data,
+      headers,
+    };
+  }
+
+  async downloadAudioByPath(filePath: string): Promise<AudioResponse> {
+    const url = `${this.hermesApiUrl}download-by-path`;
+    const response = await firstValueFrom(
+      this.httpService.get(url, {
+        responseType: 'arraybuffer',
+        params: { file_path: filePath },
+      })
     );
 
     const headers: { [key: string]: string } = {};

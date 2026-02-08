@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import * as path from 'path';
 import {
   TextToSpeechRequestDto,
 } from 'src/audio/apps/dtos/requests/text-to-speech.dto';
@@ -13,10 +14,10 @@ import { GetNoteAudioByIdTransactionScript } from '../transaction-scripts/get-no
 import { NoteAggregator } from 'src/notes/domain/aggregators/note.aggregator';
 import { NoteAudio } from '../entities/note-audio.entity';
 
-export interface ConvertTextToSpeechResult {
+export type ConvertTextToSpeechResult = {
   file_path: string;
   audioMetadata: NoteAudio;
-}
+};
 
 @Injectable()
 export class AudioService {
@@ -47,6 +48,7 @@ export class AudioService {
     const audioMetadata = await this.saveNoteAudioTS.execute({
       noteId: request.assetId,
       filePath: ttsResult.file_path,
+      fileName: ttsResult.file_name,
       fileFormat: ttsResult.fileFormat,
     });
 
@@ -82,13 +84,23 @@ export class AudioService {
 
   async downloadAudioById(audioId: number, userId: number): Promise<AudioDownloadResult> {
     const audio = await this.getNoteAudioById(audioId, userId);
-    const { data, headers } = await this.downloadAudioTS.execute(userId, audio.noteId.toString());
+    const filePath = this.getHermesDownloadFilePath(audio.filePath);
+    const downloadFileName = this.getHermesDownloadFileName(audio.fileName);
+    const { data, headers } = filePath
+      ? await this.downloadAudioTS.executeByPath(filePath)
+      : await this.downloadAudioTS.execute(
+          userId,
+          audio.noteId.toString(),
+          downloadFileName
+        );
     const contentType = this.getContentType(audio.fileFormat);
 
     return {
       data,
       contentType: headers['content-type'] || contentType,
-      contentDisposition: headers['content-disposition'] || `attachment; filename="${audio.fileName}"`,
+      contentDisposition:
+        headers['content-disposition'] ||
+        `attachment; filename="${downloadFileName || audio.fileName}"`,
       fileName: audio.fileName,
     };
   }
@@ -104,5 +116,26 @@ export class AudioService {
       aac: 'audio/aac',
     };
     return contentTypes[format] || 'audio/wav';
+  }
+
+  private getHermesDownloadFileName(fileName: string): string | undefined {
+    if (!fileName) {
+      return undefined;
+    }
+    const isCombinedFile = /^combined_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.wav$/;
+    if (!isCombinedFile.test(fileName)) {
+      return undefined;
+    }
+    return fileName;
+  }
+
+  private getHermesDownloadFilePath(filePath: string): string | undefined {
+    if (!filePath) {
+      return undefined;
+    }
+    if (!path.isAbsolute(filePath)) {
+      return undefined;
+    }
+    return filePath;
   }
 }

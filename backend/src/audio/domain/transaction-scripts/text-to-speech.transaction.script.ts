@@ -5,10 +5,11 @@ import {
 } from 'src/audio/apps/dtos/requests/text-to-speech.dto';
 import { HermesRemoteCaller } from '../../infrastructure/remote-callers/hermes.remote-caller';
 
-export interface TextToSpeechResult {
+export type TextToSpeechResult = {
   file_path: string;
+  file_name: string;
   fileFormat: string;
-}
+};
 
 @Injectable()
 export class TextToSpeechTransactionScript {
@@ -27,6 +28,7 @@ export class TextToSpeechTransactionScript {
 
     return {
       file_path: hermesResponse.file_path,
+      file_name: hermesResponse.file_name,
       fileFormat,
     };
   }
