@@ -1,13 +1,13 @@
-export interface AudioResponse {
+export type AudioResponse = {
   data: Buffer;
   headers: {
     [key: string]: string;
   };
-}
+};
 
-export interface AudioDownloadResult {
+export type AudioDownloadResult = {
   data: Buffer;
   contentType: string;
   contentDisposition: string;
   fileName: string;
-}
+};

@@ -9,4 +9,5 @@ export class TextToSpeechRequestDto {
 
 export class TextToSpeechResponseDto {
   file_path: string;
+  file_name: string;
 }

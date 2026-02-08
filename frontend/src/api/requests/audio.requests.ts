@@ -1,6 +1,6 @@
 import api from '../axios.interceptor';
 
-export interface NoteAudio {
+export type NoteAudio = {
   id: number;
   noteId: number;
   filePath: string;
@@ -8,7 +8,7 @@ export interface NoteAudio {
   fileFormat: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 export const convertTextToSpeech = async (assetId: number) => {
   const response = await api.post(`/audio/text-to-speech`, { assetId });

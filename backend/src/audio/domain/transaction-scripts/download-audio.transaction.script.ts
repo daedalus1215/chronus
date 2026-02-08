@@ -6,7 +6,11 @@ import { HermesRemoteCaller } from '../../infrastructure/remote-callers/hermes.r
 export class DownloadAudioTransactionScript {
   constructor(private readonly hermesRemoteCaller: HermesRemoteCaller) {}
 
-  async execute(userId: number, assetId: string): Promise<AudioResponse> {
-    return this.hermesRemoteCaller.downloadAudio(userId, assetId);
+  async execute(
+    userId: number,
+    assetId: string,
+    fileName?: string
+  ): Promise<AudioResponse> {
+    return this.hermesRemoteCaller.downloadAudio(userId, assetId, fileName);
   }
 }
