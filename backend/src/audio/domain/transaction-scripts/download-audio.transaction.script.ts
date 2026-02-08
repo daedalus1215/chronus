@@ -13,4 +13,8 @@ export class DownloadAudioTransactionScript {
   ): Promise<AudioResponse> {
     return this.hermesRemoteCaller.downloadAudio(userId, assetId, fileName);
   }
+
+  async executeByPath(filePath: string): Promise<AudioResponse> {
+    return this.hermesRemoteCaller.downloadAudioByPath(filePath);
+  }
 }

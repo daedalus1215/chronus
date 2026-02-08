@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import * as path from 'path';
 import {
   TextToSpeechRequestDto,
 } from 'src/audio/apps/dtos/requests/text-to-speech.dto';
@@ -83,12 +84,15 @@ export class AudioService {
 
   async downloadAudioById(audioId: number, userId: number): Promise<AudioDownloadResult> {
     const audio = await this.getNoteAudioById(audioId, userId);
+    const filePath = this.getHermesDownloadFilePath(audio.filePath);
     const downloadFileName = this.getHermesDownloadFileName(audio.fileName);
-    const { data, headers } = await this.downloadAudioTS.execute(
-      userId,
-      audio.noteId.toString(),
-      downloadFileName
-    );
+    const { data, headers } = filePath
+      ? await this.downloadAudioTS.executeByPath(filePath)
+      : await this.downloadAudioTS.execute(
+          userId,
+          audio.noteId.toString(),
+          downloadFileName
+        );
     const contentType = this.getContentType(audio.fileFormat);
 
     return {
@@ -123,5 +127,15 @@ export class AudioService {
       return undefined;
     }
     return fileName;
+  }
+
+  private getHermesDownloadFilePath(filePath: string): string | undefined {
+    if (!filePath) {
+      return undefined;
+    }
+    if (!path.isAbsolute(filePath)) {
+      return undefined;
+    }
+    return filePath;
   }
 }
