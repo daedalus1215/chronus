@@ -10,6 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './TimeTrackListView.module.css';
 import { TimeTrack } from '../../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
@@ -115,7 +116,13 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
           ) : null}
         </div>
         {timeTracks.length === 0 ? (
-          <div className={styles.empty}>No time entries found</div>
+          <div className={styles.empty}>
+            <AccessTimeIcon className={styles.emptyIcon} />
+            <p>No time entries found</p>
+            <p className={styles.emptySubtext}>
+              Start a timer to track time spent on this note
+            </p>
+          </div>
         ) : (
           <div className={styles.list}>
             {timeTracks.map(track => (
@@ -134,6 +141,7 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
                       setDeleteTargetId(track.id);
                       setDeleteDialogOpen(true);
                     }}
+                    className={styles.deleteButton}
                   >
                     <DeleteIcon fontSize="small" color="error" />
                   </IconButton>

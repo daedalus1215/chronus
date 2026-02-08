@@ -10,6 +10,7 @@ import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
 import { useAudioActions } from '../../../hooks/useAudioActions/useAudioActions';
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
+import { AudioHistoryView } from './AudioHistoryView/AudioHistoryView';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -45,6 +46,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
   const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
+  const [isAudioHistoryOpen, setIsAudioHistoryOpen] = useState(false);
   const {
     createTimeTrack,
     isCreating,
@@ -64,8 +66,11 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   const {
     handleTextToSpeech,
     handleDownloadAudio,
+    fetchAudioHistory,
+    audioHistory,
     isConverting,
     isDownloading,
+    isHistoryLoading,
     error: audioError,
   } = useAudioActions(note.id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -197,6 +202,12 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     navigate(`/notes/${note.id}/kanban`);
   };
 
+  const handleViewAudioHistory = () => {
+    setIsActionsOpen(false);
+    setIsAudioHistoryOpen(true);
+    fetchAudioHistory();
+  };
+
   const handleTimeTrackingSubmit = async (data: TimeTrackingData) => {
     try {
       await createTimeTrack({
@@ -262,6 +273,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onStar={handleTimeTracking}
         onTextToSpeech={handleTextToSpeech}
         onDownloadAudio={handleDownloadAudio}
+        onViewAudioHistory={handleViewAudioHistory}
         onViewBoard={handleViewBoard}
         onEdit={handleTimeTracking}
         onLabel={handleTimeTracking}
@@ -270,6 +282,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         isConverting={isConverting}
         isDownloading={isDownloading}
         audioError={audioError}
+        audioCount={audioHistory.length}
       />
 
       <DateTimePicker
@@ -296,6 +309,17 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         error={timeTrackError || undefined}
         totalTimeData={totalTimeData}
         isLoadingTotal={isLoadingTotal}
+      />
+
+      <AudioHistoryView
+        isOpen={isAudioHistoryOpen}
+        onClose={() => setIsAudioHistoryOpen(false)}
+        noteId={note.id}
+        audios={audioHistory}
+        isLoading={isHistoryLoading}
+        error={audioError}
+        onDownload={handleDownloadAudio}
+        isDownloading={isDownloading}
       />
 
       <Dialog
