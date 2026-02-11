@@ -4,6 +4,9 @@ import { NoteAudio } from '../../../../../../api/requests/audio.requests';
 import { IconButton, Chip } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import { useAudioPlayer } from '../../../../../../contexts/AudioPlayerContext';
 import styles from './AudioHistoryView.module.css';
 
 type AudioHistoryViewProps = {
@@ -27,6 +30,8 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
   onDownload,
   isDownloading,
 }) => {
+  const { currentTrack, isPlaying, loadAudio, togglePlay } = useAudioPlayer();
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
@@ -41,6 +46,22 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
   const getFormatLabel = (format: string) => {
     return format.toUpperCase();
   };
+
+  const handlePlay = (audio: NoteAudio) => {
+    if (currentTrack?.audioId === audio.id) {
+      // Toggle play/pause for current track
+      togglePlay();
+    } else {
+      // Load and play new track
+      loadAudio({
+        audioId: audio.id,
+        fileName: audio.fileName,
+        noteId: noteId,
+      });
+    }
+  };
+
+  const isCurrentTrack = (audioId: number) => currentTrack?.audioId === audioId;
 
   if (isLoading) {
     return (
@@ -82,7 +103,9 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
               <div key={audio.id} className={styles.audioItem}>
                 <div className={styles.audioInfo}>
                   <div className={styles.audioHeader}>
-                    <span className={styles.audioNumber}>#{audios.length - index}</span>
+                    <span className={styles.audioNumber}>
+                      #{audios.length - index}
+                    </span>
                     <Chip
                       label={getFormatLabel(audio.fileFormat)}
                       size="small"
@@ -94,15 +117,34 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
                   </div>
                   <div className={styles.audioFileName}>{audio.fileName}</div>
                 </div>
-                <IconButton
-                  aria-label="Download audio"
-                  size="small"
-                  onClick={() => onDownload(audio.id, audio.fileName)}
-                  disabled={isDownloading}
-                  className={styles.downloadButton}
-                >
-                  <DownloadIcon fontSize="small" />
-                </IconButton>
+                <div className={styles.actionButtons}>
+                  <IconButton
+                    aria-label={
+                      isCurrentTrack(audio.id) && isPlaying
+                        ? 'Pause audio'
+                        : 'Play audio'
+                    }
+                    size="small"
+                    onClick={() => handlePlay(audio)}
+                    className={styles.playButton}
+                    color={isCurrentTrack(audio.id) ? 'primary' : 'default'}
+                  >
+                    {isCurrentTrack(audio.id) && isPlaying ? (
+                      <PauseIcon fontSize="small" />
+                    ) : (
+                      <PlayArrowIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                  <IconButton
+                    aria-label="Download audio"
+                    size="small"
+                    onClick={() => onDownload(audio.id, audio.fileName)}
+                    disabled={isDownloading}
+                    className={styles.downloadButton}
+                  >
+                    <DownloadIcon fontSize="small" />
+                  </IconButton>
+                </div>
               </div>
             ))}
           </div>

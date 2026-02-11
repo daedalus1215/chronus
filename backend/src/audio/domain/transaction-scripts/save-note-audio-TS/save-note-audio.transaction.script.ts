@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as path from 'path';
 import { NoteAudio } from '../../entities/note-audio.entity';
-import { NoteAudioRepository } from '../../../infra/repositories/note-audio.repository';
+import { NoteAudioRepository } from '../../../infrastructure/repositories/note-audio.repository';
 
 export type SaveNoteAudioParams = {
   noteId: number;

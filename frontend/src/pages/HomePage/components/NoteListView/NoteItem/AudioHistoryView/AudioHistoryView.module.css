@@ -99,6 +99,20 @@
   text-overflow: ellipsis;
 }
 
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.playButton {
+  color: var(--primary);
+}
+
+.playButton:hover {
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
 .downloadButton {
-  margin-left: 8px;
+  margin-left: 0;
 }

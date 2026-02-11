@@ -22,7 +22,17 @@ export const downloadAudio = async (audioId: number) => {
   return response.data;
 };
 
-export const getNoteAudios = async (noteId: number): Promise<{ audios: NoteAudio[] }> => {
+export const getNoteAudios = async (
+  noteId: number
+): Promise<{ audios: NoteAudio[] }> => {
   const response = await api.get(`/audio/note/${noteId}`);
   return response.data;
+};
+
+/**
+ * Get the streaming URL for an audio file.
+ * This URL supports HTTP Range requests for seeking.
+ */
+export const getAudioStreamUrl = (audioId: number): string => {
+  return `/api/audio/stream/${audioId}`;
 };

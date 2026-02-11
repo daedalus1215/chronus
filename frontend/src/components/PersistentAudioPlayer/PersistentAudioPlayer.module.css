@@ -1,0 +1,125 @@
+.playerWidget {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1300;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fabButton {
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4) !important;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+}
+
+.fabButton:hover {
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.6) !important;
+}
+
+.playerCard {
+  background: rgba(17, 17, 17, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.seekBar {
+  padding: 0 8px;
+}
+
+.seekBar :global(.MuiSlider-root) {
+  color: #6366f1;
+}
+
+.seekBar :global(.MuiSlider-thumb) {
+  width: 12px;
+  height: 12px;
+  background-color: #6366f1;
+}
+
+.seekBar :global(.MuiSlider-thumb:hover) {
+  box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.16);
+}
+
+.seekBar :global(.MuiSlider-rail) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.volumeSlider {
+  width: 80px;
+}
+
+.volumeSlider :global(.MuiSlider-root) {
+  color: #6366f1;
+}
+
+.playingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 16px;
+}
+
+.bar {
+  width: 3px;
+  background-color: #6366f1;
+  border-radius: 1px;
+  animation: soundBar 0.5s ease-in-out infinite alternate;
+}
+
+.bar:nth-child(1) {
+  height: 8px;
+  animation-delay: 0s;
+}
+
+.bar:nth-child(2) {
+  height: 12px;
+  animation-delay: 0.1s;
+}
+
+.bar:nth-child(3) {
+  height: 6px;
+  animation-delay: 0.2s;
+}
+
+.bar:nth-child(4) {
+  height: 14px;
+  animation-delay: 0.3s;
+}
+
+@keyframes soundBar {
+  0% {
+    transform: scaleY(0.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .playerWidget {
+    bottom: 80px;
+    right: 12px;
+  }
+
+  .playerCard {
+    width: calc(100vw - 48px);
+    max-width: 320px;
+  }
+}

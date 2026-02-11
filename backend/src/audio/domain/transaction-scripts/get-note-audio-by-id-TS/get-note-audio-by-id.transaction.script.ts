@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NoteAudio } from '../../entities/note-audio.entity';
-import { NoteAudioRepository } from '../../../infra/repositories/note-audio.repository';
+import { NoteAudioRepository } from '../../../infrastructure/repositories/note-audio.repository';
 
 @Injectable()
 export class GetNoteAudioByIdTransactionScript {
