@@ -7,6 +7,7 @@ import {
 import { AuthProvider } from './auth/AuthContext';
 import { useAuth } from './auth/useAuth';
 import { SidebarProvider } from './contexts/SidebarContext';
+import { AudioPlayerProvider } from './contexts/AudioPlayerContext';
 import { HomePage } from './pages/HomePage/HomePage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { RegisterPage } from './pages/RegisterPage/RegisterPage';
@@ -22,6 +23,7 @@ import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 import { KanbanBoardPage } from './pages/KanbanBoardPage/KanbanBoardPage';
 import { ROUTES, ROUTE_PATTERNS } from './constants/routes';
 import { AuthenticatedLayout } from './components/Layout/AuthenticatedLayout';
+import { PersistentAudioPlayer } from './components/PersistentAudioPlayer/PersistentAudioPlayer';
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -94,7 +96,10 @@ export function App() {
         <CssBaseline />
         <Router>
           <SidebarProvider>
-            <AppRoutes />
+            <AudioPlayerProvider>
+              <AppRoutes />
+              <PersistentAudioPlayer />
+            </AudioPlayerProvider>
           </SidebarProvider>
         </Router>
       </ThemeProvider>
