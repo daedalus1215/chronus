@@ -27,6 +27,8 @@ import { GetNoteDetailsListener } from './apps/listeners/get-note-details.listen
 import { CheckItemsModule } from '../check-items/check-items.module';
 import { GetNoteByIdResponder } from './apps/actions/notes/get-note-by-id-action/get-note-by-id.responder';
 import { UpdateNoteResponder } from './apps/actions/notes/update-note-action/update-note.responder';
+import { NoteOwnershipAdapter } from './apps/adapters/note-ownership.adapter';
+import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
 
 @Module({
   imports: [
@@ -50,6 +52,11 @@ import { UpdateNoteResponder } from './apps/actions/notes/update-note-action/upd
     GetNoteDetailsListener,
     GetNoteByIdResponder,
     UpdateNoteResponder,
+    NoteOwnershipAdapter,
+    {
+      provide: NOTE_OWNERSHIP_PORT,
+      useExisting: NoteOwnershipAdapter,
+    },
   ],
   controllers: [
     GetNoteNamesByUserIdAction,
@@ -61,6 +68,11 @@ import { UpdateNoteResponder } from './apps/actions/notes/update-note-action/upd
     DeleteNoteAction,
     ArchiveNoteAction,
   ],
-  exports: [NoteMemoTagRepository, NoteAggregator, NoteService],
+  exports: [
+    NoteMemoTagRepository,
+    NoteAggregator,
+    NoteService,
+    NOTE_OWNERSHIP_PORT,
+  ],
 })
 export class NotesModule {}
