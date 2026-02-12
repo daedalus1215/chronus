@@ -20,7 +20,6 @@ import { AudioFileCache } from './infrastructure/cache/audio-file.cache';
 import { NoteAudioRepository } from './infrastructure/repositories/note-audio.repository';
 import { NoteAudio } from './domain/entities/note-audio.entity';
 import { NotesModule } from 'src/notes/notes.module';
-import { NoteOwnershipAdapter } from 'src/notes/apps/adapters/note-ownership.adapter';
 import { NOTE_OWNERSHIP_PORT } from './domain/ports/note-ownership.port';
 import { DownloadAudioResponder } from './apps/actions/download-audio/download-audio.responder';
 
@@ -50,11 +49,6 @@ import { DownloadAudioResponder } from './apps/actions/download-audio/download-a
     StreamAudioTransactionScript,
     HermesRemoteCaller,
     NoteAudioRepository,
-    NoteOwnershipAdapter,
-    {
-      provide: NOTE_OWNERSHIP_PORT,
-      useExisting: NoteOwnershipAdapter,
-    },
     DownloadAudioResponder,
   ],
   exports: [AudioService],
