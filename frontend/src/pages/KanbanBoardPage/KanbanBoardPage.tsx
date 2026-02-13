@@ -13,11 +13,8 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ViewListIcon from '@mui/icons-material/ViewList';
 import AddIcon from '@mui/icons-material/Add';
-import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
+import Fab from '@mui/material/Fab';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -275,47 +272,10 @@ export const KanbanBoardPage: React.FC = () => {
         color: 'var(--color-text)',
       }}
     >
-      <header className="flex flex-wrap items-center gap-2">
-        <IconButton
-          onClick={() => navigate(-1)}
-          aria-label="Go back"
-          size="small"
-        >
-          <ArrowBackIcon />
-        </IconButton>
-        <div className="flex flex-col">
-          <span className="text-lg font-semibold">
-            {note?.name || 'Kanban Board'}
-          </span>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Button
-            variant="outlined"
-            startIcon={<ViewListIcon />}
-            onClick={() => navigate(`/notes/${noteId}`)}
-            size="small"
-            sx={{
-              borderColor: 'var(--color-border)',
-              color: 'var(--color-text)',
-              '&:hover': { borderColor: 'var(--color-border-accent)' },
-            }}
-          >
-            Checklist View
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={openAddDialog}
-            size="small"
-            sx={{
-              backgroundColor: 'var(--color-primary)',
-              color: 'var(--color-text)',
-              '&:hover': { backgroundColor: 'var(--color-primary-dark)' },
-            }}
-          >
-            Add Card
-          </Button>
-        </div>
+      <header className="flex items-center justify-center py-2">
+        <span className="text-lg font-semibold">
+          {note?.name || 'Kanban Board'}
+        </span>
       </header>
 
       {(isNoteLoading || isCheckItemsLoading) && (
@@ -404,6 +364,19 @@ export const KanbanBoardPage: React.FC = () => {
         onClose={handleCloseDetailsDialog}
         onSave={handleSaveDetails}
       />
+
+      <Fab
+        color="primary"
+        aria-label="Add card"
+        onClick={openAddDialog}
+        sx={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+        }}
+      >
+        <AddIcon />
+      </Fab>
     </main>
   );
 };
