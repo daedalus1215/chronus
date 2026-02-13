@@ -16,6 +16,7 @@ export type Note = {
 export type CheckItem = {
   id: number;
   name: string;
+  description?: string;
   doneDate: string | null;
   archiveDate: string | null;
   noteId: number;

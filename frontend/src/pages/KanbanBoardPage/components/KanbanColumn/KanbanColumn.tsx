@@ -11,6 +11,7 @@ type KanbanColumnProps = {
   statusColorClass: string;
   items: CheckItem[];
   onEditItem: (id: number, name: string) => void;
+  onViewItemDetails: (item: CheckItem) => void;
 };
 
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({
@@ -19,6 +20,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   statusColorClass,
   items,
   onEditItem,
+  onViewItemDetails,
 }) => {
   const { setNodeRef, isOver } = useDroppable({ id: columnId });
 
@@ -85,6 +87,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
               item={item}
               statusColorClass={statusColorClass}
               onEdit={onEditItem}
+              onViewDetails={onViewItemDetails}
             />
           ))}
         </Box>

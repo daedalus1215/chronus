@@ -36,4 +36,7 @@ export class CheckItem {
 
   @Column({ name: 'status', type: 'varchar', length: 20, default: 'ready' })
   status: 'ready' | 'in_progress' | 'review' | 'done';
+
+  @Column({ name: 'description', type: 'text', nullable: true })
+  description: string | null;
 }

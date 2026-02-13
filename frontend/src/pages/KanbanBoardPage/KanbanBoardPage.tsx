@@ -27,8 +27,10 @@ import { useCheckItems, useCheckItemsQuery } from '../NotePage/components/CheckL
 import { useAddCheckItemDialog } from '../NotePage/components/CheckListView/hooks/useAddCheckItemDialog';
 import { AddCheckItemDialog } from '../NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog';
 import { KanbanColumn } from './components/KanbanColumn/KanbanColumn';
+import { CardDetailsDialog } from './components/CardDetailsDialog/CardDetailsDialog';
 import cardStyles from './components/KanbanCard/KanbanCard.module.css';
 import { useUpdateCheckItemStatus, CheckItemStatus } from './hooks/useUpdateCheckItemStatus';
+import { checkItemKeys } from '../NotePage/components/CheckListView/hooks/useCheckItems';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
@@ -85,6 +87,8 @@ export const KanbanBoardPage: React.FC = () => {
     saveNew,
   } = useAddCheckItemDialog();
   const [editItemId, setEditItemId] = useState<number | null>(null);
+  const [selectedItemForDetails, setSelectedItemForDetails] = useState<CheckItem | null>(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   useEffect(() => {
     setItems(checkItems);
@@ -190,6 +194,57 @@ export const KanbanBoardPage: React.FC = () => {
     openAddDialog();
   };
 
+  const handleViewItemDetails = (item: CheckItem) => {
+    setSelectedItemForDetails(item);
+    setIsDetailsDialogOpen(true);
+  };
+
+  const handleCloseDetailsDialog = () => {
+    setIsDetailsDialogOpen(false);
+    setSelectedItemForDetails(null);
+  };
+
+  const handleSaveDetails = async (
+    id: number,
+    name: string,
+    description: string | undefined,
+    status: CheckItemStatus
+  ) => {
+    try {
+      const currentItem = items.find(item => item.id === id);
+      if (!currentItem) return;
+
+      // Update name and description if changed
+      if (currentItem.name !== name || currentItem.description !== description) {
+        await updateItem(id, name, description);
+      }
+
+      // Update status if changed
+      if (currentItem.status !== status) {
+        await updateStatus({ id, status });
+      }
+
+      // Update local state
+      setItems(prevItems =>
+        prevItems.map(item =>
+          item.id === id
+            ? {
+                ...item,
+                name,
+                description,
+                status,
+                doneDate: status === 'done' ? new Date().toISOString() : null,
+              }
+            : item
+        )
+      );
+
+      handleCloseDetailsDialog();
+    } catch (error) {
+      console.error('Failed to save card details:', error);
+    }
+  };
+
   if (!noteId || Number.isNaN(noteId)) {
     return (
       <main className="flex h-full items-center justify-center text-sm text-gray-500">
@@ -292,6 +347,7 @@ export const KanbanBoardPage: React.FC = () => {
               statusColorClass={column.statusColorClass}
               items={itemsByStatus[column.id]}
               onEditItem={handleEditClick}
+              onViewItemDetails={handleViewItemDetails}
             />
           ))}
         </Box>
@@ -319,6 +375,13 @@ export const KanbanBoardPage: React.FC = () => {
           onClose={closeAddDialog}
         />
       )}
+
+      <CardDetailsDialog
+        isOpen={isDetailsDialogOpen}
+        item={selectedItemForDetails}
+        onClose={handleCloseDetailsDialog}
+        onSave={handleSaveDetails}
+      />
     </main>
   );
 };

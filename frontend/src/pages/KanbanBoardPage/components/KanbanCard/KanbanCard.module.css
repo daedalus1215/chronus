@@ -46,3 +46,19 @@
 .menuAnchor {
   display: block;
 }
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.moreButton {
+  padding: 2px;
+  color: var(--color-text-secondary);
+}
+
+.moreButton:hover {
+  color: var(--color-text);
+}
