@@ -28,7 +28,7 @@ type UseCheckListReturn = {
   noteState: Note;
   setNoteState: (note: Note) => void;
   error: string | null;
-  addItem: (name: string) => Promise<CheckItem[]>;
+  addItem: (name: string) => Promise<void>;
   toggleItem: (id: number, note: Note) => Promise<CheckItem>;
   deleteItem: (id: number) => Promise<void>;
   updateItem: (id: number, name: string, description?: string) => Promise<CheckItem>;
@@ -229,8 +229,8 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
     },
   });
 
-  const addItem = async (name: string) => {
-    return addItemMutation.mutateAsync(name);
+  const addItem = async (name: string): Promise<void> => {
+    addItemMutation.mutateAsync(name);
   };
 
   const toggleItem = async (id: number) => {

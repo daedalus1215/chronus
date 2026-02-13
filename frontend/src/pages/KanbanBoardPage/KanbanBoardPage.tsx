@@ -28,9 +28,11 @@ import { useAddCheckItemDialog } from '../NotePage/components/CheckListView/hook
 import { AddCheckItemDialog } from '../NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog';
 import { KanbanColumn } from './components/KanbanColumn/KanbanColumn';
 import { CardDetailsDialog } from './components/CardDetailsDialog/CardDetailsDialog';
+import { MobileKanbanBoard } from './components/MobileKanbanBoard/MobileKanbanBoard';
 import cardStyles from './components/KanbanCard/KanbanCard.module.css';
 import { useUpdateCheckItemStatus, CheckItemStatus } from './hooks/useUpdateCheckItemStatus';
 import { checkItemKeys } from '../NotePage/components/CheckListView/hooks/useCheckItems';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
@@ -245,6 +247,13 @@ export const KanbanBoardPage: React.FC = () => {
     }
   };
 
+  const isMobile = useIsMobile();
+
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: checkItemKeys.list(noteId) });
+    await queryClient.invalidateQueries({ queryKey: ['note', noteId] });
+  };
+
   if (!noteId || Number.isNaN(noteId)) {
     return (
       <main className="flex h-full items-center justify-center text-sm text-gray-500">
@@ -321,50 +330,63 @@ export const KanbanBoardPage: React.FC = () => {
         <Alert severity="error">Failed to load check items.</Alert>
       )}
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={pointerWithin}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        onDragCancel={handleDragCancel}
-      >
-        <Box
-          component="section"
-          sx={{
-            display: 'flex',
-            flex: 1,
-            gap: 2,
-            width: '100%',
-            overflowX: 'auto',
-            paddingBottom: 2,
-          }}
+      {isMobile ? (
+        <MobileKanbanBoard
+          items={items}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+          onEditItem={handleEditClick}
+          onViewItemDetails={handleViewItemDetails}
+          activeItem={activeItem}
+          onRefresh={handleRefresh}
+        />
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={pointerWithin}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
         >
-          {KANBAN_COLUMNS.map(column => (
-            <KanbanColumn
-              key={column.id}
-              columnId={column.id}
-              title={column.title}
-              statusColorClass={column.statusColorClass}
-              items={itemsByStatus[column.id]}
-              onEditItem={handleEditClick}
-              onViewItemDetails={handleViewItemDetails}
-            />
-          ))}
-        </Box>
-        <DragOverlay>
-          {activeItem ? (
-            <Card className={cardStyles.card}>
-              <CardContent className={cardStyles.cardContent}>
-                <span
-                  className={`${cardStyles.statusDot} ${getStatusDotClass(activeItem)}`}
-                  aria-hidden="true"
-                />
-                <span className={cardStyles.cardText}>{activeItem.name}</span>
-              </CardContent>
-            </Card>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+          <Box
+            component="section"
+            sx={{
+              display: 'flex',
+              flex: 1,
+              gap: 2,
+              width: '100%',
+              overflowX: 'auto',
+              paddingBottom: 2,
+            }}
+          >
+            {KANBAN_COLUMNS.map(column => (
+              <KanbanColumn
+                key={column.id}
+                columnId={column.id}
+                title={column.title}
+                statusColorClass={column.statusColorClass}
+                items={itemsByStatus[column.id]}
+                onEditItem={handleEditClick}
+                onViewItemDetails={handleViewItemDetails}
+              />
+            ))}
+          </Box>
+          <DragOverlay>
+            {activeItem ? (
+              <Card className={cardStyles.card}>
+                <CardContent className={cardStyles.cardContent}>
+                  <span
+                    className={`${cardStyles.statusDot} ${getStatusDotClass(activeItem)}`}
+                    aria-hidden="true"
+                  />
+                  <span className={cardStyles.cardText}>{activeItem.name}</span>
+                </CardContent>
+              </Card>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      )}
 
       {isAddDialogOpen && (
         <AddCheckItemDialog
