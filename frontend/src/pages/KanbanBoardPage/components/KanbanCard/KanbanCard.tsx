@@ -1,13 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditIcon from '@mui/icons-material/Edit';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { CheckItem } from '../../../NotePage/api/responses';
 import styles from './KanbanCard.module.css';
 
@@ -15,12 +18,14 @@ type KanbanCardProps = {
   item: CheckItem;
   statusColorClass: string;
   onEdit: (id: number, name: string) => void;
+  onViewDetails: (item: CheckItem) => void;
 };
 
 export const KanbanCard: React.FC<KanbanCardProps> = ({
   item,
   statusColorClass,
   onEdit,
+  onViewDetails,
 }) => {
   const {
     attributes,
@@ -30,8 +35,6 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
     transition,
     isDragging,
   } = useSortable({ id: item.id });
-  const cardRef = useRef<HTMLDivElement | null>(null);
-  const hoverTimerRef = useRef<number | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
   const style = {
@@ -40,40 +43,16 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
   };
 
   const handleCardRef = (node: HTMLDivElement | null) => {
-    cardRef.current = node;
     setNodeRef(node);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-    }
-  };
-
-  const openMenu = () => {
-    if (cardRef.current) {
-      setMenuAnchor(cardRef.current);
-    }
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    setMenuAnchor(event.currentTarget);
   };
 
   const closeMenu = () => {
     setMenuAnchor(null);
-  };
-
-  const handleMouseEnter = () => {
-    if (hoverTimerRef.current) {
-      window.clearTimeout(hoverTimerRef.current);
-    }
-    hoverTimerRef.current = window.setTimeout(() => {
-      openMenu();
-    }, 2000);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimerRef.current) {
-      window.clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
   };
 
   const handleEditClick = () => {
@@ -81,13 +60,10 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
     onEdit(item.id, item.name);
   };
 
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current) {
-        window.clearTimeout(hoverTimerRef.current);
-      }
-    };
-  }, []);
+  const handleViewDetailsClick = () => {
+    closeMenu();
+    onViewDetails(item);
+  };
 
   return (
     <Card
@@ -97,9 +73,6 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
       role="button"
       tabIndex={0}
       aria-label={`Kanban card: ${item.name}`}
-      onKeyDown={handleKeyDown}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <CardContent className={styles.cardContent}>
         <div
@@ -111,36 +84,43 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
             className={`${styles.statusDot} ${statusColorClass}`}
             aria-hidden="true"
           />
-          <span
-            className={styles.cardText}
-          >
+          <span className={styles.cardText}>
             {item.name}
           </span>
         </div>
-        {item.status === 'done' && (
-          <CheckCircleIcon
-            className={styles.doneIcon}
-            fontSize="small"
-            aria-label="Done"
-          />
-        )}
+        <div className={styles.cardActions}>
+          {item.status === 'done' && (
+            <CheckCircleIcon
+              className={styles.doneIcon}
+              fontSize="small"
+              aria-label="Done"
+            />
+          )}
+          <IconButton
+            size="small"
+            onClick={handleMenuClick}
+            className={styles.moreButton}
+            aria-label="More options"
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        </div>
       </CardContent>
       <Menu
         anchorEl={menuAnchor}
         open={Boolean(menuAnchor)}
         onClose={closeMenu}
-        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
-        transformOrigin={{ vertical: 'center', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         MenuListProps={{
-          onMouseLeave: closeMenu,
           'aria-label': 'Card actions',
         }}
       >
-        <MenuItem onClick={handleEditClick}>
+        <MenuItem onClick={handleViewDetailsClick}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
-          Edit
+          <ListItemText>Edit Details</ListItemText>
         </MenuItem>
       </Menu>
     </Card>

@@ -26,6 +26,7 @@ export class UpdateCheckItemTransactionScript {
     }
 
     checkItem.name = dto.name;
+    checkItem.description = dto.description || null;
     return this.checkItemsRepository.save(checkItem);
   }
 }

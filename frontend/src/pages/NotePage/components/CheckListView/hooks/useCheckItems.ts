@@ -31,7 +31,7 @@ type UseCheckListReturn = {
   addItem: (name: string) => Promise<CheckItem[]>;
   toggleItem: (id: number, note: Note) => Promise<CheckItem>;
   deleteItem: (id: number) => Promise<void>;
-  updateItem: (id: number, name: string) => Promise<CheckItem>;
+  updateItem: (id: number, name: string, description?: string) => Promise<CheckItem>;
   reorderItems: (checkItemIds: number[]) => Promise<CheckItem[]>;
   isAdding: boolean;
   isToggling: boolean;
@@ -130,10 +130,10 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
   });
 
   const updateItemMutation = useMutation({
-    mutationFn: async ({ id, name }: { id: number; name: string }) => {
+    mutationFn: async ({ id, name, description }: { id: number; name: string; description?: string }) => {
       const response = await api.patch<CheckItem>(
         `/check-items/items/${id}/notes/${note.id}`,
-        { name }
+        { name, description }
       );
       return response.data;
     },
@@ -241,8 +241,8 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
     await deleteItemMutation.mutateAsync(id);
   };
 
-  const updateItem = async (id: number, name: string) => {
-    return updateItemMutation.mutateAsync({ id, name });
+  const updateItem = async (id: number, name: string, description?: string) => {
+    return updateItemMutation.mutateAsync({ id, name, description });
   };
 
   const reorderItems = async (checkItemIds: number[]) => {

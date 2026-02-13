@@ -34,6 +34,9 @@ export class CheckItem {
 
   @Column({ name: 'status', type: 'varchar', length: 20, default: 'ready' })
   status: 'ready' | 'in_progress' | 'review' | 'done';
+
+  @Column({ name: 'description', type: 'text', nullable: true })
+  description: string | null;
 }
 
 export class CheckItemResponseDto {
@@ -44,18 +47,22 @@ export class CheckItemResponseDto {
   noteId: number;
   order: number;
   status: 'ready' | 'in_progress' | 'review' | 'done';
+  description: string | null;
   createdAt: string;
   updatedAt: string;
 
-  constructor(checkItem: CheckItem) {
-    this.id = checkItem.id;
-    this.name = checkItem.name;
-    this.doneDate = checkItem.doneDate;
-    this.archiveDate = checkItem.archiveDate;
-    this.noteId = checkItem.noteId;
-    this.order = checkItem.order;
-    this.status = checkItem.status;
-    this.createdAt = checkItem.createdAt;
-    this.updatedAt = checkItem.updatedAt;
+  constructor(checkItem: {
+    id: number,
+    createdAt: string,
+    updatedAt: string,
+    name: string,
+    doneDate: Date | null,
+    archiveDate: Date | null,
+    noteId: number,
+    order: number,
+    status: 'ready' | 'in_progress' | 'review' | 'done',
+    description: string | null,
+  }) {
+    return { ...checkItem };
   }
 }

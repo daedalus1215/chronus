@@ -7,6 +7,7 @@ export class CheckItemResponseDto {
   doneDate: Date | null;
   archiveDate: Date | null;
   noteId: number;
+  description: string | null;
   createdAt: Date;
   updatedAt: Date;
 
@@ -16,6 +17,7 @@ export class CheckItemResponseDto {
     this.doneDate = checkItem.doneDate;
     this.archiveDate = checkItem.archiveDate;
     this.noteId = checkItem.noteId;
+    this.description = checkItem.description;
     this.createdAt = checkItem.createdAt;
     this.updatedAt = checkItem.updatedAt;
   }
