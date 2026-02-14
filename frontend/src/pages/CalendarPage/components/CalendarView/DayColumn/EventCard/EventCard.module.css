@@ -4,7 +4,6 @@
   background-color: var(--color-primary, #6366f1);
   color: var(--color-text, #fff);
   cursor: pointer;
-  border-radius: 4px;
   overflow: hidden;
   z-index: 1;
   box-sizing: border-box;
@@ -39,7 +38,6 @@
   .eventCard {
     padding: 6px;
     min-height: 32px;
-    border-radius: 6px;
   }
 
   .eventCard:active {
@@ -101,7 +99,6 @@
   opacity: 0;
   transition: opacity 0.2s ease;
   background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,7 +114,6 @@
   width: 20px;
   height: 3px;
   background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
 }
 
 .resizeHandle:active {
