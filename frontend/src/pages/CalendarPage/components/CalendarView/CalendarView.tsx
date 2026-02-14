@@ -140,6 +140,29 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       };
     });
   }, [events, movePreview]);
+  useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/a1ee2f6c-81f1-40da-a534-f4dab2c41eea', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        runId: 'initial',
+        hypothesisId: 'H5',
+        location: 'CalendarView.tsx:144',
+        message: 'Timeline render event stats',
+        data: {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          totalEventsInput: events.length,
+          recurringInput: events.filter(e => e.isRecurring).length,
+          displayEvents: displayEvents.length,
+          recurringDisplay: displayEvents.filter(e => e.isRecurring).length,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+  }, [displayEvents, events, startDate, endDate]);
   const dayLayoutMaps = useEventLayouts(startDate, endDate, displayEvents);
   const isMobile = useIsMobile();
   const updateMutation = useUpdateCalendarEvent();

@@ -3,9 +3,11 @@ import { Box, Paper, Typography } from '@mui/material';
 import {
   addDays,
   eachDayOfInterval,
+  endOfDay,
   format,
   isSameMonth,
   isToday,
+  startOfDay,
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
@@ -59,8 +61,47 @@ export const MonthViewDesktop: React.FC<MonthViewProps> = ({
       dayEvents.push(event);
       map.set(dateKey, dayEvents);
     });
+    const visibleGridStart = weeksDays[0]?.[0];
+    const visibleGridEnd = weeksDays[weeksDays.length - 1]?.[6];
+    if (visibleGridStart && visibleGridEnd) {
+      const gridStart = startOfDay(visibleGridStart);
+      const gridEnd = endOfDay(visibleGridEnd);
+      const overlapsGrid = events.filter(event => {
+        const eventStart = new Date(event.startDate);
+        const eventEnd = new Date(event.endDate);
+        return eventStart <= gridEnd && eventEnd >= gridStart;
+      });
+      const overlapsGridButStartOutside = overlapsGrid.filter(event => {
+        const eventStart = new Date(event.startDate);
+        return eventStart < gridStart || eventStart > gridEnd;
+      });
+      // #region agent log
+      fetch('http://127.0.0.1:7245/ingest/a1ee2f6c-81f1-40da-a534-f4dab2c41eea', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          runId: 'initial',
+          hypothesisId: 'H4',
+          location: 'MonthViewDesktop.tsx:58',
+          message: 'Month desktop grouping stats',
+          data: {
+            currentDate: currentDate.toISOString(),
+            totalEventsInput: events.length,
+            recurringInput: events.filter(e => e.isRecurring).length,
+            groupedDays: map.size,
+            overlapsGridCount: overlapsGrid.length,
+            overlapsGridButStartOutsideCount: overlapsGridButStartOutside.length,
+            overlapsGridButStartOutsideRecurring: overlapsGridButStartOutside.filter(
+              e => e.isRecurring
+            ).length,
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+    }
     return map;
-  }, [events]);
+  }, [events, weeksDays, currentDate]);
 
   const handleDayClick = useCallback(
     (day: Date) => {
