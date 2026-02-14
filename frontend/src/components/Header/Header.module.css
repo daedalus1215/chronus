@@ -79,4 +79,21 @@
 .header.mobile .container {
   padding: 0 0.5rem;
   justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.calendarMonthLabel {
+  flex: 1;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  pointer-events: none;
+}
+
+.calendarHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
 }
