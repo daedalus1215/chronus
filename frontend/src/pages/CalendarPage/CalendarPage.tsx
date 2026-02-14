@@ -58,13 +58,15 @@ export const CalendarPage: React.FC = () => {
     return () => setOpenCreateEventModal(null);
   }, [setOpenCreateEventModal]);
 
-  // Fetch events based on current view
+  // Fetch events based on current view.
+  // Day view: request previous and next calendar day so UTC-bound backend still returns
+  // evening events (e.g. 8pm PST on the 15th is 4am UTC on the 16th); DayView filters by local day.
   const getStartDate = () => {
     switch (currentView) {
       case 'month':
         return startOfDay(subDays(currentDate, 31));
       case 'day':
-        return startOfDay(currentDate);
+        return startOfDay(subDays(currentDate, 1));
       case 'timeline':
       default:
         return dayRange.startDate;
@@ -76,7 +78,7 @@ export const CalendarPage: React.FC = () => {
       case 'month':
         return endOfDay(addDays(currentDate, 31));
       case 'day':
-        return endOfDay(currentDate);
+        return endOfDay(addDays(currentDate, 1));
       case 'timeline':
       default:
         return dayRange.endDate;

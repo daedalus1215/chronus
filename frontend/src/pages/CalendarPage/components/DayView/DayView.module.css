@@ -74,11 +74,12 @@
     margin-bottom: 0.75rem;
   }
 
-  .dateTitle
+  .dateTitle {
+    font-size: 0.875rem;
+  }
+
   .dayView {
     margin-top: -58px;
-  } {
-    font-size: 0.875rem;
   }
 
   .calendarGrid {
