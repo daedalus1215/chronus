@@ -38,29 +38,6 @@ export const useCalendarEvents = (
     queryKey: calendarEventKeys.list(startDateStr, endDateStr),
     queryFn: async () => {
       const events = await fetchCalendarEvents(startDateStr, endDateStr);
-      // #region agent log
-      fetch('http://127.0.0.1:7245/ingest/a1ee2f6c-81f1-40da-a534-f4dab2c41eea', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          runId: 'initial',
-          hypothesisId: 'H1_H2',
-          location: 'useCalendarEvents.ts:40',
-          message: 'Fetched calendar events for range',
-          data: {
-            startDateStr,
-            endDateStr,
-            rangeDays: Math.round(
-              (new Date(endDateStr).getTime() - new Date(startDateStr).getTime()) /
-                (24 * 60 * 60 * 1000)
-            ),
-            totalEvents: events.length,
-            recurringEvents: events.filter(e => e.isRecurring).length,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       return events;
     },
     staleTime: 0, // Always refetch when invalidated to ensure fresh data

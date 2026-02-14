@@ -106,40 +106,10 @@ export const DayView: React.FC<DayViewProps> = ({
 
   // Filter events to only show those for the current day
   const dayEvents = useMemo(() => {
-    const filtered = events.filter(event => {
+    return events.filter(event => {
       const eventStart = new Date(event.startDate);
       return isSameDay(eventStart, currentDate);
     });
-    const currentDayStart = startOfDay(currentDate);
-    const currentDayEnd = endOfDay(currentDate);
-    const overlappingButDropped = events.filter(event => {
-      const eventStart = new Date(event.startDate);
-      const eventEnd = new Date(event.endDate);
-      const overlapsDay = eventStart <= currentDayEnd && eventEnd >= currentDayStart;
-      return overlapsDay && !isSameDay(eventStart, currentDate);
-    });
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/a1ee2f6c-81f1-40da-a534-f4dab2c41eea', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        runId: 'initial',
-        hypothesisId: 'H3',
-        location: 'DayView.tsx:108',
-        message: 'Day view event filtering stats',
-        data: {
-          currentDate: currentDate.toISOString(),
-          totalEventsInput: events.length,
-          filteredEvents: filtered.length,
-          recurringFiltered: filtered.filter(e => e.isRecurring).length,
-          overlappingButDroppedCount: overlappingButDropped.length,
-          overlappingButDroppedRecurring: overlappingButDropped.filter(e => e.isRecurring).length,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-    return filtered;
   }, [events, currentDate]);
 
   const displayEvents = useMemo(() => {
