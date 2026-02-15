@@ -49,16 +49,35 @@ export const useAudioRecorder = ({
       );
 
       if (audioInputs.length === 0) {
+        try {
+          const probeStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          probeStream.getTracks().forEach(track => track.stop());
+          return { available: true };
+        } catch (probeError) {
+          if (probeError instanceof Error && probeError.name === 'NotFoundError') {
+            return {
+              available: false,
+              error: 'No audio input devices found',
+            };
+          }
+          return {
+            available: true,
+          };
+        }
+      }
+
+      return { available: true };
+    } catch (err) {
+      if (err instanceof Error && err.name === 'NotFoundError') {
         return {
           available: false,
           error: 'No audio input devices found',
         };
       }
-
-      return { available: true };
-    } catch (err) {
       return {
-        available: false,
+        available: true,
         error:
           err instanceof Error
             ? err.message
