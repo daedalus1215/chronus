@@ -125,6 +125,11 @@ export class CreateRecurringEventRequestDto {
   @IsString()
   description?: string;
 
+  @IsString()
+  @IsOptional()
+  @MaxLength(20)
+  color?: string;
+
   @IsDateString()
   startDate: string;
 

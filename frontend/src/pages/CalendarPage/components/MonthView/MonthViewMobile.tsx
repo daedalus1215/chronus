@@ -12,13 +12,15 @@ import {
 import { CalendarEventResponseDto } from '../../../../api/dtos/calendar-events.dtos';
 import { EventDetailsModal } from '../EventDetailsModal/EventDetailsModal';
 import { MonthViewProps } from './MonthView.types';
+import { EVENT_COLORS, DEFAULT_EVENT_COLOR_KEY } from '../../constants/calendar.constants';
 import styles from './MonthViewMobile.module.css';
 
 const MAX_EVENTS_MOBILE = 4;
 const WEEKDAYS_MOBILE = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-const getEventColor = (): string => {
-  return 'var(--color-primary, #6366f1)';
+const getEventColor = (event: CalendarEventResponseDto): string => {
+  if (event.color) return event.color;
+  return EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY].value;
 };
 
 export const MonthViewMobile: React.FC<MonthViewProps> = ({
@@ -117,7 +119,7 @@ export const MonthViewMobile: React.FC<MonthViewProps> = ({
                           className={styles.eventPill}
                           onClick={(mouseEvent) => handleEventClick(event, mouseEvent)}
                           title={event.title}
-                          style={{ backgroundColor: getEventColor() }}
+                          style={{ backgroundColor: getEventColor(event) }}
                         >
                           <Typography className={styles.eventTitle} noWrap
                             sx={{ fontSize: '0.575rem' }}

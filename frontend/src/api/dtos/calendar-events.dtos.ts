@@ -11,6 +11,7 @@ export type CalendarEventResponseDto = {
   userId: number;
   title: string;
   description?: string;
+  color?: string;
   startDate: string;
   endDate: string;
   createdAt: string;
@@ -31,6 +32,7 @@ export type UpdateEventReminderRequest = {
 export type CreateCalendarEventRequest = {
   title: string;
   description?: string;
+  color?: string;
   startDate: string;
   endDate: string;
   reminders?: CreateEventReminderRequest[];
@@ -40,6 +42,7 @@ export type CreateCalendarEventRequest = {
 export type UpdateCalendarEventRequest = {
   title: string;
   description?: string;
+  color?: string;
   startDate: string;
   endDate: string;
   reminders?: CreateEventReminderRequest[];
@@ -56,6 +59,7 @@ export type RecurrencePatternDto = {
 export type CreateRecurringEventRequest = {
   title: string;
   description?: string;
+  color?: string;
   startDate: string;
   endDate: string;
   recurrencePattern: RecurrencePatternDto;
@@ -68,6 +72,7 @@ export type RecurringEventResponseDto = {
   userId: number;
   title: string;
   description?: string;
+  color?: string;
   startDate: string;
   endDate: string;
   recurrencePattern: RecurrencePatternDto;

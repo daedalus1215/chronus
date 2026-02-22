@@ -57,3 +57,21 @@ export const CALENDAR_CONSTANTS = {
 } as const;
 
 export type CalendarConstants = typeof CALENDAR_CONSTANTS;
+
+export const EVENT_COLORS = {
+  indigo: { name: 'Indigo', value: '#6366f1', light: '#818cf8' },
+  emerald: { name: 'Emerald', value: '#10b981', light: '#34d399' },
+  rose: { name: 'Rose', value: '#f43f5e', light: '#fb7185' },
+  amber: { name: 'Amber', value: '#f59e0b', light: '#fbbf24' },
+  sky: { name: 'Sky', value: '#0ea5e9', light: '#38bdf8' },
+  violet: { name: 'Violet', value: '#8b5cf6', light: '#a78bfa' },
+  orange: { name: 'Orange', value: '#f97316', light: '#fb923c' },
+  teal: { name: 'Teal', value: '#14b8a6', light: '#2dd4bf' },
+  pink: { name: 'Pink', value: '#ec4899', light: '#f472b6' },
+  slate: { name: 'Slate', value: '#64748b', light: '#94a3b8' },
+} as const;
+
+export type EventColorKey = keyof typeof EVENT_COLORS;
+export type EventColor = typeof EVENT_COLORS[EventColorKey];
+
+export const DEFAULT_EVENT_COLOR_KEY: EventColorKey = 'indigo';

@@ -5,7 +5,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { startOfDay } from 'date-fns';
 import { EventLayout } from '../../../../hooks/useEventLayouts';
-import { CALENDAR_CONSTANTS } from '../../../../constants/calendar.constants';
+import { CALENDAR_CONSTANTS, EVENT_COLORS, DEFAULT_EVENT_COLOR_KEY } from '../../../../constants/calendar.constants';
 import styles from './EventCard.module.css';
 
 type EventCardProps = {
@@ -75,7 +75,14 @@ export const EventCard: React.FC<EventCardProps> = ({
 
   const widthPercent = 100 / layout.columnCount;
   const leftPercent = (layout.columnIndex * 100) / layout.columnCount;
-  
+
+  const eventColor = layout.event.color || EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY].value;
+  const getColorData = (colorValue: string) => {
+    const entry = Object.entries(EVENT_COLORS).find(([_, c]) => c.value === colorValue);
+    return entry ? entry[1] : EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY];
+  };
+  const colorData = getColorData(eventColor);
+
   // Calculate dimensions - use preview if available during resize
   let topPixels: number;
   let heightPixels: number;
@@ -96,19 +103,19 @@ export const EventCard: React.FC<EventCardProps> = ({
     const startHours = clampedStart.getHours() + clampedStart.getMinutes() / 60;
     const endHours = clampedEnd.getHours() + clampedEnd.getMinutes() / 60;
     const startOffset = clampedStart.getMinutes() % 60 / 60;
-    
+
     // Ensure end is after start
     const validEndHours = Math.max(startHours, endHours);
-    
+
     topPixels = startHours * CALENDAR_CONSTANTS.SLOT_HEIGHT + startOffset * CALENDAR_CONSTANTS.SLOT_HEIGHT;
     heightPixels = Math.max(
       CALENDAR_CONSTANTS.DRAG_SNAP_INTERVAL / 60 * CALENDAR_CONSTANTS.SLOT_HEIGHT, // Minimum 15 minutes
       (validEndHours - startHours) * CALENDAR_CONSTANTS.SLOT_HEIGHT
     );
-    
+
     // Clamp top to stay within day bounds (0 to 1440px)
     topPixels = Math.max(0, Math.min(1440, topPixels));
-    
+
     // Clamp height to not extend beyond day
     const maxHeight = 1440 - topPixels;
     heightPixels = Math.min(heightPixels, maxHeight);
@@ -124,10 +131,11 @@ export const EventCard: React.FC<EventCardProps> = ({
     top: `${topPixels}px`,
     height: `${heightPixels}px`,
     zIndex: isDragging ? 1000 : layout.columnIndex + 1,
-    opacity: isDragging ? 0 : 1, // Hide original when dragging - DragOverlay shows the dragged version
+    opacity: isDragging ? 0 : 1,
     transform: CSS.Translate.toString(transform),
-    borderRadius: '0px',
-  };
+    '--event-color': eventColor,
+    '--event-color-light': colorData.light,
+  } as React.CSSProperties;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -143,9 +151,8 @@ export const EventCard: React.FC<EventCardProps> = ({
   return (
     <Paper
       ref={setNodeRef}
-      className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${
-        isResizing ? styles.resizing : ''
-      } ${styles.recurring}`}
+      className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${isResizing ? styles.resizing : ''
+        } ${layout.event.isRecurring ? styles.recurring : ''}`}
       onClick={handleClick}
       style={style}
       {...listeners}

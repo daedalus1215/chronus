@@ -12,20 +12,15 @@ import {
 import { CalendarEventResponseDto } from '../../../../api/dtos/calendar-events.dtos';
 import { EventDetailsModal } from '../EventDetailsModal/EventDetailsModal';
 import { MonthViewProps } from './MonthView.types';
+import { EVENT_COLORS, DEFAULT_EVENT_COLOR_KEY } from '../../constants/calendar.constants';
 import styles from './MonthViewDesktop.module.css';
 
 const MAX_EVENTS_PER_DAY = 4;
 const WEEKDAYS_DESKTOP = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const getEventColor = (eventId: number): string => {
-  const colorIndex = eventId % 3;
-  if (colorIndex === 0) {
-    return 'var(--color-primary, #6366f1)';
-  }
-  if (colorIndex === 1) {
-    return 'var(--color-secondary, #8b5cf6)';
-  }
-  return 'var(--color-tertiary, #f97316)';
+const getEventColor = (event: CalendarEventResponseDto): string => {
+  if (event.color) return event.color;
+  return EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY].value;
 };
 
 export const MonthViewDesktop: React.FC<MonthViewProps> = ({
@@ -129,7 +124,7 @@ export const MonthViewDesktop: React.FC<MonthViewProps> = ({
                           >
                             <Box
                               className={styles.eventDot}
-                              style={{ backgroundColor: getEventColor(event.id) }}
+                              style={{ backgroundColor: getEventColor(event) }}
                             />
                             <Typography className={styles.eventTime}>{timeStr}</Typography>
                             <Typography className={styles.eventTitle} noWrap>

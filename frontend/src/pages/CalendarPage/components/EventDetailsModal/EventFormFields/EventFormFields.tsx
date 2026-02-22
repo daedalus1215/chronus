@@ -3,6 +3,7 @@ import { TextField, Stack, Typography } from '@mui/material';
 import { UpdateCalendarEventRequest } from '../../../../../api/dtos/calendar-events.dtos';
 import { ValidationErrors } from '../../../utils/event-form-validation.utils';
 import { ReminderField } from '../ReminderField/ReminderField';
+import { ColorPicker } from '../../ColorPicker/ColorPicker';
 
 type EventFormFieldsProps = {
   formData: UpdateCalendarEventRequest;
@@ -16,18 +17,6 @@ type EventFormFieldsProps = {
   ) => void;
 };
 
-/**
- * Component for rendering event form fields.
- * Handles all form input fields with validation display.
- *
- * @param props - Component props
- * @param props.formData - Current form data values
- * @param props.validationErrors - Validation error messages
- * @param props.isEditing - Whether form is in edit mode
- * @param props.isSubmitting - Whether form submission is in progress
- * @param props.updateMutationError - Error from update mutation
- * @param props.onFieldChange - Callback when field value changes
- */
 export const EventFormFields: React.FC<EventFormFieldsProps> = ({
   formData,
   validationErrors,
@@ -56,6 +45,12 @@ export const EventFormFields: React.FC<EventFormFieldsProps> = ({
         rows={3}
         fullWidth
         disabled={!isEditing || isSubmitting}
+      />
+      <ColorPicker
+        value={formData.color}
+        onChange={color => onFieldChange('color', color)}
+        isEditing={isEditing}
+        disabled={isSubmitting}
       />
       <TextField
         label="Start Date & Time"

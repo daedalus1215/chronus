@@ -285,6 +285,7 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
                         wordBreak: 'break-word',
                         whiteSpace: 'pre-wrap',
                         display: 'block',
+                        fontSize: '0.9rem',
                       }}
                     >
                       {item.name}
