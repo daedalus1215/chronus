@@ -1,11 +1,17 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Box, Fab } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { CalendarView } from './components/CalendarView/CalendarView';
+import { DayView } from './components/DayView/DayView';
+import { MonthView } from './components/MonthView/MonthView';
+import { CalendarToolbar } from './components/CalendarToolbar/CalendarToolbar';
 import { CreateEventModal } from './components/CreateEventModal/CreateEventModal';
 import { useCalendarEvents } from './hooks/useCalendarEvents';
-import { subDays, addDays } from 'date-fns';
+import { useCalendarView } from './hooks/useCalendarView';
+import { subDays, addDays, startOfDay, endOfDay, format } from 'date-fns';
 import { CALENDAR_CONSTANTS } from './constants/calendar.constants';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { CalendarContext } from '../../contexts/CalendarContext';
 import styles from './CalendarPage.module.css';
 
 type DayRange = {
@@ -15,8 +21,8 @@ type DayRange = {
 
 /**
  * Main calendar page component.
- * Displays an infinite scrolling calendar view with events and provides functionality to create new events.
- * Handles day range management and event creation through a modal.
+ * Displays a calendar with multiple view modes (Timeline, Day, Week, Month) and provides functionality to create new events.
+ * Handles day range management, view switching, and event creation through a modal.
  */
 export const CalendarPage: React.FC = () => {
   const today = new Date();
@@ -27,14 +33,61 @@ export const CalendarPage: React.FC = () => {
     startDate: initialStartDate,
     endDate: initialEndDate,
   });
+  const [currentDate, setCurrentDate] = useState<Date>(today);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createEventDate, setCreateEventDate] = useState<Date | undefined>(
     undefined
   );
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const { setCalendarMonthLabel, setOpenCreateEventModal } =
+    React.useContext(CalendarContext);
+
+  const { currentView, setView } = useCalendarView();
+
+  useEffect(() => {
+    setCalendarMonthLabel(format(currentDate, 'MMMM'));
+  }, [currentDate, setCalendarMonthLabel]);
+
+  useEffect(() => {
+    const openModal = () => {
+      setCreateEventDate(undefined);
+      setIsCreateModalOpen(true);
+    };
+    setOpenCreateEventModal(openModal);
+    return () => setOpenCreateEventModal(null);
+  }, [setOpenCreateEventModal]);
+
+  // Fetch events based on current view.
+  // Day view: request previous and next calendar day so UTC-bound backend still returns
+  // evening events (e.g. 8pm PST on the 15th is 4am UTC on the 16th); DayView filters by local day.
+  const getStartDate = () => {
+    switch (currentView) {
+      case 'month':
+        return startOfDay(subDays(currentDate, 31));
+      case 'day':
+        return startOfDay(subDays(currentDate, 1));
+      case 'timeline':
+      default:
+        return dayRange.startDate;
+    }
+  };
+
+  const getEndDate = () => {
+    switch (currentView) {
+      case 'month':
+        return endOfDay(addDays(currentDate, 31));
+      case 'day':
+        return endOfDay(addDays(currentDate, 1));
+      case 'timeline':
+      default:
+        return dayRange.endDate;
+    }
+  };
+
   const { events, isLoading, error, refetch } = useCalendarEvents(
-    dayRange.startDate,
-    dayRange.endDate
+    getStartDate(),
+    getEndDate()
   );
 
   // Simple handler - just update the date range
@@ -53,21 +106,13 @@ export const CalendarPage: React.FC = () => {
     }
   }, []);
 
-  const handleToday = useCallback(() => {
-    const today = new Date();
-    setDayRange(prev => {
-      const newRange = { ...prev };
-
-      // Ensure today is in the range, expand if needed
-      if (today < prev.startDate) {
-        newRange.startDate = subDays(today, CALENDAR_CONSTANTS.DAYS_TO_LOAD);
-      } else if (today > prev.endDate) {
-        newRange.endDate = addDays(today, CALENDAR_CONSTANTS.DAYS_TO_LOAD);
-      }
-
-      return newRange;
-    });
+  const handleDateChange = useCallback((date: Date) => {
+    setCurrentDate(date);
   }, []);
+
+  const handleViewChange = useCallback((view: 'day') => {
+    setView(view);
+  }, [setView]);
 
   const handleCreateEvent = () => {
     setCreateEventDate(undefined);
@@ -98,31 +143,76 @@ export const CalendarPage: React.FC = () => {
     );
   }
 
+  const renderCalendarView = () => {
+    switch (currentView) {
+      case 'day':
+        return (
+          <DayView
+            currentDate={currentDate}
+            events={events}
+            isLoading={isLoading}
+            onDateChange={handleDateChange}
+            onTimeSlotClick={handleTimeSlotClick}
+          />
+        );
+      case 'month':
+        return (
+          <MonthView
+            currentDate={currentDate}
+            events={events}
+            isLoading={isLoading}
+            onDateChange={handleDateChange}
+            onViewChange={handleViewChange}
+          />
+        );
+      case 'timeline':
+      default:
+        return (
+          <CalendarView
+            startDate={dayRange.startDate}
+            endDate={dayRange.endDate}
+            events={events}
+            isLoading={isLoading}
+            onLoadMoreDays={handleLoadMoreDays}
+            onTimeSlotClick={handleTimeSlotClick}
+            scrollContainerRef={scrollContainerRef}
+            onVisibleDateChange={handleDateChange}
+          />
+        );
+    }
+  };
+
   return (
     <Box className={styles.calendarPage}>
-      <CalendarView
-        startDate={dayRange.startDate}
-        endDate={dayRange.endDate}
-        events={events}
-        isLoading={isLoading}
-        onLoadMoreDays={handleLoadMoreDays}
-        onToday={handleToday}
-        onTimeSlotClick={handleTimeSlotClick}
-        scrollContainerRef={scrollContainerRef}
+      {/* Desktop: Show CalendarToolbar / Mobile: ViewToggle is in Header */}
+
+      <CalendarToolbar
+        currentDate={currentDate}
+        currentView={currentView}
+        onDateChange={handleDateChange}
+        onViewChange={setView}
       />
-      <Fab
-        color="primary"
-        aria-label="create event"
-        onClick={handleCreateEvent}
-        sx={{
-          position: 'fixed',
-          bottom: '2rem',
-          right: '2rem',
-          zIndex: 1000,
-        }}
-      >
-        <AddIcon />
-      </Fab>
+
+
+      <Box className={styles.calendarContent}>
+        {renderCalendarView()}
+      </Box>
+
+      {!isMobile && (
+        <Fab
+          color="primary"
+          aria-label="create event"
+          onClick={handleCreateEvent}
+          sx={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            zIndex: 1000,
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
       <CreateEventModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseModal}

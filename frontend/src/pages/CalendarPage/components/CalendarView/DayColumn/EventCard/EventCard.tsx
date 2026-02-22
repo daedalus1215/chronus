@@ -3,7 +3,7 @@ import { Paper, Typography, Box } from '@mui/material';
 import { Repeat as RepeatIcon } from '@mui/icons-material';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { startOfDay, differenceInMinutes } from 'date-fns';
+import { startOfDay } from 'date-fns';
 import { EventLayout } from '../../../../hooks/useEventLayouts';
 import { CALENDAR_CONSTANTS, EVENT_COLORS, DEFAULT_EVENT_COLOR_KEY } from '../../../../constants/calendar.constants';
 import styles from './EventCard.module.css';
@@ -82,7 +82,7 @@ export const EventCard: React.FC<EventCardProps> = ({
     return entry ? entry[1] : EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY];
   };
   const colorData = getColorData(eventColor);
-  
+
   // Calculate dimensions - use preview if available during resize
   let topPixels: number;
   let heightPixels: number;
@@ -103,19 +103,19 @@ export const EventCard: React.FC<EventCardProps> = ({
     const startHours = clampedStart.getHours() + clampedStart.getMinutes() / 60;
     const endHours = clampedEnd.getHours() + clampedEnd.getMinutes() / 60;
     const startOffset = clampedStart.getMinutes() % 60 / 60;
-    
+
     // Ensure end is after start
     const validEndHours = Math.max(startHours, endHours);
-    
+
     topPixels = startHours * CALENDAR_CONSTANTS.SLOT_HEIGHT + startOffset * CALENDAR_CONSTANTS.SLOT_HEIGHT;
     heightPixels = Math.max(
       CALENDAR_CONSTANTS.DRAG_SNAP_INTERVAL / 60 * CALENDAR_CONSTANTS.SLOT_HEIGHT, // Minimum 15 minutes
       (validEndHours - startHours) * CALENDAR_CONSTANTS.SLOT_HEIGHT
     );
-    
+
     // Clamp top to stay within day bounds (0 to 1440px)
     topPixels = Math.max(0, Math.min(1440, topPixels));
-    
+
     // Clamp height to not extend beyond day
     const maxHeight = 1440 - topPixels;
     heightPixels = Math.min(heightPixels, maxHeight);
@@ -151,9 +151,8 @@ export const EventCard: React.FC<EventCardProps> = ({
   return (
     <Paper
       ref={setNodeRef}
-      className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${
-        isResizing ? styles.resizing : ''
-      } ${layout.event.isRecurring ? styles.recurring : ''}`}
+      className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${isResizing ? styles.resizing : ''
+        } ${layout.event.isRecurring ? styles.recurring : ''}`}
       onClick={handleClick}
       style={style}
       {...listeners}

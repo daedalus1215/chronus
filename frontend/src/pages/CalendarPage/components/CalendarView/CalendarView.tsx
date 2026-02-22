@@ -9,13 +9,11 @@ import React, {
 import {
   Box,
   Typography,
-  Button,
   CircularProgress,
   Snackbar,
   Alert,
 } from '@mui/material';
-import { Today } from '@mui/icons-material';
-import { format, eachDayOfInterval, startOfDay, differenceInMinutes } from 'date-fns';
+import { eachDayOfInterval, startOfDay, differenceInMinutes } from 'date-fns';
 import {
   DndContext,
   DragEndEvent,
@@ -53,7 +51,6 @@ import {
   ResizeDirection,
 } from '../../utils/event-resize.utils';
 import { snapToTimeSlot } from '../../utils/drag-modifiers.utils';
-import { createDayWidthCalculator } from '../../utils/day-width.utils';
 import { CALENDAR_CONSTANTS } from '../../constants/calendar.constants';
 import styles from './CalendarView.module.css';
 
@@ -63,9 +60,9 @@ type CalendarViewProps = {
   events: CalendarEventResponseDto[];
   isLoading: boolean;
   onLoadMoreDays: (direction: 'left' | 'right') => void;
-  onToday: () => void;
   onTimeSlotClick?: (date: Date, hour: number) => void;
   scrollContainerRef?: React.RefObject<HTMLDivElement>;
+  onVisibleDateChange?: (date: Date) => void;
 };
 
 /**
@@ -79,7 +76,6 @@ type CalendarViewProps = {
  * @param props.events - Array of calendar events to display
  * @param props.isLoading - Whether events are currently loading
  * @param props.onLoadMoreDays - Callback to load more days when scrolling near edges
- * @param props.onToday - Callback to navigate to current day
  */
 export const CalendarView: React.FC<CalendarViewProps> = ({
   startDate,
@@ -87,9 +83,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   events,
   isLoading,
   onLoadMoreDays,
-  onToday,
   onTimeSlotClick,
   scrollContainerRef: externalRef,
+  onVisibleDateChange,
 }) => {
   const internalRef = useRef<HTMLDivElement>(null);
   const calendarGridRef = externalRef || internalRef;
@@ -164,18 +160,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
   }, [events, movePreview]);
 
-  // Create day width calculator for variable widths (today wider, weekends narrower)
-  const getDayWidth = useMemo(
-    () => createDayWidthCalculator(days, { isMobile }),
-    [days, isMobile]
-  );
-
-  // Virtualization for day columns with variable widths
+  // Virtualization for day columns with consistent fixed widths
   const virtualizer = useVirtualizedDays({
     containerRef: calendarGridRef,
     dayCount: days.length,
     isMobile,
-    getDayWidth,
   });
 
   // Track when days are loaded to prevent interference
@@ -200,7 +189,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       // Calculate the total width of prepended days
       let addedWidth = 0;
       for (let i = 0; i < daysPrepended; i++) {
-        addedWidth += getDayWidth(i);
+        addedWidth += CALENDAR_CONSTANTS.DAY_WIDTH;
       }
       scrollAdjustmentRef.current = addedWidth;
     }
@@ -242,22 +231,29 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     days,
     isMobile,
   });
-
-  // Visible date for header (centered day)
-  const { visibleDate } = useVisibleDateRange({
-    containerRef: calendarGridRef,
-    days,
-    isMobile,
-  });
-
+  
   // Auto-scroll to today on mount
-  const { scrollToToday } = useScrollToToday({
+  useScrollToToday({
     containerRef: calendarGridRef,
     days,
     isMobile,
     autoScrollOnMount: true,
     scrollToCurrentTime: true,
   });
+
+  // Track currently centered date in the horizontal viewport
+  const { visibleDate } = useVisibleDateRange({
+    containerRef: calendarGridRef,
+    days,
+    isMobile,
+  });
+
+  useEffect(() => {
+    if (!onVisibleDateChange) {
+      return;
+    }
+    onVisibleDateChange(visibleDate);
+  }, [onVisibleDateChange, visibleDate]);
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -278,12 +274,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       },
     })
   );
-
-  // Handle Today button click
-  const handleTodayClick = () => {
-    onToday();
-    scrollToToday();
-  };
 
   // Drag and drop handlers
   const handleDragStart = (event: DragStartEvent) => {
@@ -566,22 +556,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           <CircularProgress size={48} />
         </Box>
       )}
-      <Box className={styles.header}>
-        <Typography
-          variant={isMobile ? 'subtitle1' : 'h5'}
-          className={styles.weekTitle}
-        >
-          {format(visibleDate, 'EEEE, MMMM d, yyyy')}
-        </Typography>
-        <Button
-          startIcon={<Today />}
-          onClick={handleTodayClick}
-          variant="outlined"
-          size={isMobile ? 'small' : 'medium'}
-        >
-          Today
-        </Button>
-      </Box>
 
       <DndContext
         sensors={sensors}
@@ -640,6 +614,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               const day = days[virtualItem.index];
               if (!day) return null;
 
+              // Use consistent fixed width for all columns
+              const dayWidth = isMobile
+                ? CALENDAR_CONSTANTS.MOBILE_DAY_WIDTH
+                : CALENDAR_CONSTANTS.DAY_WIDTH;
+
               return (
                 <Box
                   key={virtualItem.key}
@@ -650,7 +629,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     position: 'absolute',
                     top: 0,
                     left: `${virtualItem.start}px`,
-                    width: `${virtualItem.size}px`,
+                    width: `${dayWidth}px`,
                     height: '100%',
                   }}
                 >
