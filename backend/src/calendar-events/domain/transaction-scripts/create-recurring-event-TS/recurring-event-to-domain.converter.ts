@@ -26,6 +26,7 @@ export class RecurringEventToDomainConverter {
       userId: infra.userId,
       title: infra.title,
       description: infra.description,
+      color: infra.color,
       startDate: infra.startDate,
       endDate: infra.endDate,
       recurrencePattern: pattern,

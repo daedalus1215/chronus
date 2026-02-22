@@ -123,6 +123,7 @@ export class GenerateEventInstancesTransactionScript {
         instanceDate,
         title: recurringEvent.title, // Base title from recurring event
         description: recurringEvent.description, // Base description from recurring event
+        color: recurringEvent.color, // Color from recurring event
         startDate: instanceStartDate,
         endDate: instanceEndDate,
         isModified: false,

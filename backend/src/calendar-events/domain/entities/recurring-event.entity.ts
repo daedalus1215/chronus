@@ -9,6 +9,7 @@ export type RecurringEvent = {
   userId: number;
   title: string;
   description?: string;
+  color?: string;
   startDate: Date; // First occurrence start date/time
   endDate: Date; // First occurrence end date/time
   recurrencePattern: RecurrencePattern; // Value object

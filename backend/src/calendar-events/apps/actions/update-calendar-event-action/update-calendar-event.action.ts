@@ -50,6 +50,7 @@ export class UpdateCalendarEventAction {
       eventId: id,
       title: dto.title,
       description: dto.description,
+      color: dto.color,
       startDate: new Date(dto.startDate),
       endDate: new Date(dto.endDate),
       user,

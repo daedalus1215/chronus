@@ -20,6 +20,8 @@ import {
 import { format } from 'date-fns';
 import { RecurrencePatternForm } from '../RecurrencePatternForm/RecurrencePatternForm';
 import { ReminderField } from '../EventDetailsModal/ReminderField/ReminderField';
+import { ColorPicker } from '../ColorPicker/ColorPicker';
+import { DEFAULT_EVENT_COLOR_KEY, EVENT_COLORS } from '../../constants/calendar.constants';
 
 type CreateEventModalProps = {
   isOpen: boolean;
@@ -48,6 +50,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
   const [formData, setFormData] = useState<CreateCalendarEventRequest>({
     title: '',
     description: '',
+    color: EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY].value,
     startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
     endDate: format(
       new Date(defaultDate.getTime() + 60 * 60 * 1000),
@@ -80,6 +83,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
       setFormData({
         title: '',
         description: '',
+        color: EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY].value,
         startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
         endDate: format(
           new Date(defaultDate.getTime() + 60 * 60 * 1000),
@@ -155,6 +159,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
         await createRecurringMutation.mutateAsync({
           title: formData.title,
           description: formData.description || undefined,
+          color: formData.color,
           startDate: new Date(formData.startDate).toISOString(),
           endDate: new Date(formData.endDate).toISOString(),
           recurrencePattern: recurrenceData.recurrencePattern,
@@ -167,6 +172,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
         await createMutation.mutateAsync({
           title: formData.title,
           description: formData.description || undefined,
+          color: formData.color,
           startDate: new Date(formData.startDate).toISOString(),
           endDate: new Date(formData.endDate).toISOString(),
           reminderMinutes: reminderMinutes !== null ? reminderMinutes : undefined,
@@ -176,6 +182,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
       setFormData({
         title: '',
         description: '',
+        color: EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY].value,
         startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
         endDate: format(
           new Date(defaultDate.getTime() + 60 * 60 * 1000),
@@ -202,6 +209,7 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
       setFormData({
         title: '',
         description: '',
+        color: EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY].value,
         startDate: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
         endDate: format(
           new Date(defaultDate.getTime() + 60 * 60 * 1000),
@@ -257,6 +265,12 @@ export const CreateEventModal: React.FC<CreateEventModalProps> = ({
               rows={3}
               fullWidth
               disabled={createMutation.isPending}
+            />
+            <ColorPicker
+              value={formData.color}
+              onChange={color => setFormData({ ...formData, color })}
+              isEditing={true}
+              disabled={createMutation.isPending || createRecurringMutation.isPending}
             />
             <TextField
               label="Start Date & Time"

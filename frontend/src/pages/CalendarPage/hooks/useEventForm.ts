@@ -32,6 +32,7 @@ export const useEventForm = ({
   const [formData, setFormData] = useState<UpdateCalendarEventRequest>({
     title: '',
     description: '',
+    color: undefined,
     startDate: '',
     endDate: '',
   });
@@ -45,6 +46,7 @@ export const useEventForm = ({
       setFormData({
         title: event.title,
         description: event.description || '',
+        color: event.color,
         startDate: format(new Date(event.startDate), "yyyy-MM-dd'T'HH:mm"),
         endDate: format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm"),
       });
@@ -84,6 +86,7 @@ export const useEventForm = ({
       setFormData({
         title: event.title,
         description: event.description || '',
+        color: event.color,
         startDate: format(new Date(event.startDate), "yyyy-MM-dd'T'HH:mm"),
         endDate: format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm"),
       });
@@ -108,6 +111,7 @@ export const useEventForm = ({
         await onUpdate({
           title: formData.title,
           description: formData.description || undefined,
+          color: formData.color,
           startDate: new Date(formData.startDate).toISOString(),
           endDate: new Date(formData.endDate).toISOString(),
         });

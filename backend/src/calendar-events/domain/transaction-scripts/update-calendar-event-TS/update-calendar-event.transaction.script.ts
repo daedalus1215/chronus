@@ -40,6 +40,7 @@ export class UpdateCalendarEventTransactionScript {
       {
         title: command.title.trim(),
         description: command.description?.trim(),
+        color: command.color,
         startDate: command.startDate,
         endDate: command.endDate,
       }

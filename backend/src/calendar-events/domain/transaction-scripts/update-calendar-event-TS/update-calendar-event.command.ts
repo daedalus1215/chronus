@@ -4,6 +4,7 @@ export type UpdateCalendarEventCommand = {
   eventId: number;
   title: string;
   description?: string;
+  color?: string;
   startDate: Date;
   endDate: Date;
   user: AuthUser;

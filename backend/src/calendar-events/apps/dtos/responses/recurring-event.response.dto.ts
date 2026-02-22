@@ -13,6 +13,7 @@ export type RecurringEventResponseDto = {
   userId: number;
   title: string;
   description?: string;
+  color?: string;
   startDate: Date;
   endDate: Date;
   recurrencePattern: RecurrencePatternResponseDto;
@@ -27,6 +28,7 @@ export class RecurringEventResponseDtoClass {
   userId: number;
   title: string;
   description?: string;
+  color?: string;
   startDate: Date;
   endDate: Date;
   recurrencePattern: RecurrencePatternResponseDto;
@@ -40,6 +42,7 @@ export class RecurringEventResponseDtoClass {
     this.userId = event.userId;
     this.title = event.title;
     this.description = event.description;
+    this.color = event.color;
     this.startDate = event.startDate;
     this.endDate = event.endDate;
     this.recurrencePattern = {

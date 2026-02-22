@@ -38,6 +38,7 @@ export class CreateRecurringEventTransactionScript {
       userId: command.user.userId,
       title: command.title.trim(),
       description: command.description?.trim(),
+      color: command.color,
       startDate: command.startDate,
       endDate: command.endDate,
       recurrencePattern: command.recurrencePattern,

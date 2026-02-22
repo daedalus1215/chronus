@@ -20,6 +20,7 @@ export class RecurringEventToInfrastructureConverter {
       userId: domain.userId,
       title: domain.title,
       description: domain.description,
+      color: domain.color,
       startDate: domain.startDate,
       endDate: domain.endDate,
       recurrenceType: pattern?.type,

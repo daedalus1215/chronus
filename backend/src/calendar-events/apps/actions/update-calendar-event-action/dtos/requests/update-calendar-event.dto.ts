@@ -16,6 +16,11 @@ export class UpdateCalendarEventRequestDto {
   @IsOptional()
   description?: string;
 
+  @IsString()
+  @IsOptional()
+  @MaxLength(20)
+  color?: string;
+
   @IsDateString()
   @IsNotEmpty()
   startDate: string;

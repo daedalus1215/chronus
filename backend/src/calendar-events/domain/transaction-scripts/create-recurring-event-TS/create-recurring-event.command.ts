@@ -4,6 +4,7 @@ import { RecurrencePattern } from '../../entities/recurrence-pattern.value-objec
 export type CreateRecurringEventCommand = {
   title: string;
   description?: string;
+  color?: string;
   startDate: Date;
   endDate: Date;
   recurrencePattern: RecurrencePattern;

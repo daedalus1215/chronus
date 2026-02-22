@@ -24,6 +24,9 @@ export class RecurringEventEntity {
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
 
+  @Column({ name: 'color', type: 'varchar', length: 20, nullable: true })
+  color?: string;
+
   @Column({ name: 'start_date', type: 'datetime' })
   startDate: Date;
 

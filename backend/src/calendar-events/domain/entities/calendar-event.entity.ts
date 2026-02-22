@@ -12,6 +12,7 @@ export type CalendarEvent = {
   instanceDate?: Date; // Date of this instance (for recurring events)
   title: string;
   description?: string;
+  color?: string;
   startDate: Date;
   endDate: Date;
   isModified?: boolean; // True if this instance has been individually modified

@@ -6,6 +6,7 @@ export class CalendarEventResponseDto {
   userId: number;
   title: string;
   description?: string;
+  color?: string;
   startDate: Date;
   endDate: Date;
   createdAt: Date;
@@ -19,6 +20,7 @@ export class CalendarEventResponseDto {
     this.userId = event.userId;
     this.title = event.title;
     this.description = event.description;
+    this.color = event.color;
     this.startDate = event.startDate;
     this.endDate = event.endDate;
     this.createdAt = event.createdAt;

@@ -5,7 +5,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { startOfDay, differenceInMinutes } from 'date-fns';
 import { EventLayout } from '../../../../hooks/useEventLayouts';
-import { CALENDAR_CONSTANTS } from '../../../../constants/calendar.constants';
+import { CALENDAR_CONSTANTS, EVENT_COLORS, DEFAULT_EVENT_COLOR_KEY } from '../../../../constants/calendar.constants';
 import styles from './EventCard.module.css';
 
 type EventCardProps = {
@@ -75,6 +75,13 @@ export const EventCard: React.FC<EventCardProps> = ({
 
   const widthPercent = 100 / layout.columnCount;
   const leftPercent = (layout.columnIndex * 100) / layout.columnCount;
+
+  const eventColor = layout.event.color || EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY].value;
+  const getColorData = (colorValue: string) => {
+    const entry = Object.entries(EVENT_COLORS).find(([_, c]) => c.value === colorValue);
+    return entry ? entry[1] : EVENT_COLORS[DEFAULT_EVENT_COLOR_KEY];
+  };
+  const colorData = getColorData(eventColor);
   
   // Calculate dimensions - use preview if available during resize
   let topPixels: number;
@@ -124,9 +131,11 @@ export const EventCard: React.FC<EventCardProps> = ({
     top: `${topPixels}px`,
     height: `${heightPixels}px`,
     zIndex: isDragging ? 1000 : layout.columnIndex + 1,
-    opacity: isDragging ? 0 : 1, // Hide original when dragging - DragOverlay shows the dragged version
+    opacity: isDragging ? 0 : 1,
     transform: CSS.Translate.toString(transform),
-  };
+    '--event-color': eventColor,
+    '--event-color-light': colorData.light,
+  } as React.CSSProperties;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -144,7 +153,7 @@ export const EventCard: React.FC<EventCardProps> = ({
       ref={setNodeRef}
       className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${
         isResizing ? styles.resizing : ''
-      } ${styles.recurring}`}
+      } ${layout.event.isRecurring ? styles.recurring : ''}`}
       onClick={handleClick}
       style={style}
       {...listeners}
