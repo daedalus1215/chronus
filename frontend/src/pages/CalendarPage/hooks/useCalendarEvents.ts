@@ -37,7 +37,8 @@ export const useCalendarEvents = (
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: calendarEventKeys.list(startDateStr, endDateStr),
     queryFn: async () => {
-      return await fetchCalendarEvents(startDateStr, endDateStr);
+      const events = await fetchCalendarEvents(startDateStr, endDateStr);
+      return events;
     },
     staleTime: 0, // Always refetch when invalidated to ensure fresh data
   });

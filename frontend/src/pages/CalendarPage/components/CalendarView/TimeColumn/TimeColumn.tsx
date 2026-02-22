@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { WbSunny, Nightlight } from '@mui/icons-material';
+import { useIsMobile } from '../../../../../hooks/useIsMobile';
 import styles from './TimeColumn.module.css';
 
 type TimeColumnProps = {
@@ -33,6 +34,8 @@ const formatHour = (hour: number): FormattedHour => {
  * Displays on the left side of the calendar grid with sticky positioning
  */
 export const TimeColumn: React.FC<TimeColumnProps> = ({ timeSlots }) => {
+  const isMobile = useIsMobile();
+
   return (
     <Box className={styles.timeColumn} role="presentation" aria-hidden="true">
       <Box className={styles.timeSlotHeader}></Box>
@@ -41,19 +44,23 @@ export const TimeColumn: React.FC<TimeColumnProps> = ({ timeSlots }) => {
         return (
           <Box key={hour} className={styles.timeSlot}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              {isDay ? (
-                <WbSunny
-                  sx={{ fontSize: '0.875rem', color: '#f59e0b' }}
-                  aria-label="Day time"
-                />
-              ) : (
-                <Nightlight
-                  sx={{ fontSize: '0.875rem', color: '#6366f1' }}
-                  aria-label="Night time"
-                />
+              {!isMobile && (
+                <>
+                  {isDay ? (
+                    <WbSunny
+                      sx={{ fontSize: '0.875rem', color: '#f59e0b' }}
+                      aria-label="Day time"
+                    />
+                  ) : (
+                    <Nightlight
+                      sx={{ fontSize: '0.875rem', color: '#6366f1' }}
+                      aria-label="Night time"
+                    />
+                  )}
+                </>
               )}
               <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
-                {displayHour}:00 {period}
+                {displayHour}{isMobile ? '' : ':00'} {period}
               </Typography>
             </Box>
           </Box>

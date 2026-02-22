@@ -45,6 +45,7 @@
 .calendarGrid {
   display: flex;
   flex: 1;
+  margin-top: 48px;
   overflow-y: auto;
   overflow-x: auto;
   border: 1px solid var(--color-border, #333);
@@ -60,6 +61,9 @@
 }
 
 @media (max-width: 600px) {
+  .calendarView {
+    margin-top: -48px;
+  }
   .calendarGrid {
     border-radius: 4px;
   }

@@ -99,7 +99,7 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
       const result = await checkMicrophoneAvailability();
       setMicAvailable(result.available);
       if (!result.available) {
-        setSnackbarMessage('Microphone not available');
+        setSnackbarMessage(result.error ?? 'Microphone not available');
         setSnackbarSeverity('warning');
         setSnackbarOpen(true);
       }
@@ -125,6 +125,15 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
       // Start recording: wait for WebSocket to open, then start mic
       try {
         setIsInitializing(true);
+        const availability = await checkMicrophoneAvailability();
+        setMicAvailable(availability.available);
+
+        if (!availability.available) {
+          setSnackbarMessage(availability.error ?? 'Microphone not available');
+          setSnackbarSeverity('warning');
+          setSnackbarOpen(true);
+          return;
+        }
 
         console.log('Connecting WebSocket...');
         await startWs();
@@ -137,7 +146,14 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
         setIsInitializing(false);
       }
     }
-  }, [isRecording, startAudio, startWs, stopAudio, stopWs]);
+  }, [
+    checkMicrophoneAvailability,
+    isRecording,
+    startAudio,
+    startWs,
+    stopAudio,
+    stopWs,
+  ]);
 
   const getStatusText = useCallback(() => {
     if (error) return `Error: ${error}`;

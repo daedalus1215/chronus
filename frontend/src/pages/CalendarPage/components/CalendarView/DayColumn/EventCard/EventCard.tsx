@@ -3,7 +3,7 @@ import { Paper, Typography, Box } from '@mui/material';
 import { Repeat as RepeatIcon } from '@mui/icons-material';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { startOfDay, differenceInMinutes } from 'date-fns';
+import { startOfDay } from 'date-fns';
 import { EventLayout } from '../../../../hooks/useEventLayouts';
 import { CALENDAR_CONSTANTS } from '../../../../constants/calendar.constants';
 import styles from './EventCard.module.css';
@@ -126,6 +126,7 @@ export const EventCard: React.FC<EventCardProps> = ({
     zIndex: isDragging ? 1000 : layout.columnIndex + 1,
     opacity: isDragging ? 0 : 1, // Hide original when dragging - DragOverlay shows the dragged version
     transform: CSS.Translate.toString(transform),
+    borderRadius: '0px',
   };
 
   const handleClick = (e: React.MouseEvent) => {
