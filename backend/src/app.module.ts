@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
@@ -14,9 +15,16 @@ import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 import { LoggingModule } from './shared-kernel/apps/logging/logging.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SharedKernelModule } from './shared-kernel/shared-kernel.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60_000,
+        limit: 3,
+      },
+    ]),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', `.env.${process.env.NODE_ENV}`],
@@ -32,6 +40,8 @@ import { SharedKernelModule } from './shared-kernel/shared-kernel.module';
         SMTP_USER: Joi.string().required(),
         SMTP_PASS: Joi.string().required(),
         SMTP_FROM: Joi.string().required(),
+        ALLOW_REGISTRATION: Joi.string().valid('true', 'false').optional(),
+        FRONTEND_ORIGIN: Joi.string().optional(),
       }),
     }),
     ScheduleModule.forRoot(),
@@ -59,6 +69,11 @@ import { SharedKernelModule } from './shared-kernel/shared-kernel.module';
     SharedKernelModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

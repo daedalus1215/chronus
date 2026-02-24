@@ -19,8 +19,11 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
+  const corsOrigin = process.env.FRONTEND_ORIGIN
+    ? process.env.FRONTEND_ORIGIN.split(',').map((s) => s.trim())
+    : true;
   app.enableCors({
-    origin: true,
+    origin: corsOrigin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
@@ -33,17 +36,19 @@ async function bootstrap() {
     })
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('The API documentation')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-
   const configService = app.get(ConfigService);
+  const nodeEnv = configService.get<string>('NODE_ENV');
+  if (nodeEnv !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('API Documentation')
+      .setDescription('The API documentation')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+  }
+
   const logger = app.get(Logger);
   const port = configService.get<number>('PORT') || 3000;
 
