@@ -20,7 +20,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const corsOrigin = process.env.FRONTEND_ORIGIN
-    ? process.env.FRONTEND_ORIGIN.split(',').map((s) => s.trim())
+    ? process.env.FRONTEND_ORIGIN.split(',').map(s => s.trim())
     : true;
   app.enableCors({
     origin: corsOrigin,

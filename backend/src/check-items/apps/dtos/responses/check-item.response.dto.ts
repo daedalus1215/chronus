@@ -52,16 +52,16 @@ export class CheckItemResponseDto {
   updatedAt: string;
 
   constructor(checkItem: {
-    id: number,
-    createdAt: string,
-    updatedAt: string,
-    name: string,
-    doneDate: Date | null,
-    archiveDate: Date | null,
-    noteId: number,
-    order: number,
-    status: 'ready' | 'in_progress' | 'review' | 'done',
-    description: string | null,
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    name: string;
+    doneDate: Date | null;
+    archiveDate: Date | null;
+    noteId: number;
+    order: number;
+    status: 'ready' | 'in_progress' | 'review' | 'done';
+    description: string | null;
   }) {
     return { ...checkItem };
   }

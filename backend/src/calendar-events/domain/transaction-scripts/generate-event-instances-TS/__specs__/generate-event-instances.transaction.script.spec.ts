@@ -5,7 +5,11 @@ import { RecurrenceExceptionRepository } from '../../../../infra/repositories/re
 import { generateInstanceDates } from '../../../../domain/utils/rrule-pattern.utils';
 import { RecurringEvent } from '../../../../domain/entities/recurring-event.entity';
 import { CalendarEvent } from '../../../../domain/entities/calendar-event.entity';
-import { createLoggerMock, createMock, generateRandomNumbers } from 'src/shared-kernel/test-utils';
+import {
+  createLoggerMock,
+  createMock,
+  generateRandomNumbers,
+} from 'src/shared-kernel/test-utils';
 import { startOfDay, addDays, addYears } from 'date-fns';
 import { Logger } from 'nestjs-pino';
 
@@ -46,11 +50,12 @@ describe('GenerateEventInstancesTransactionScript', () => {
       delete: jest.fn(),
     });
 
-    mockRecurrenceExceptionRepository = createMock<RecurrenceExceptionRepository>({
-      create: jest.fn(),
-      findByRecurringEventId: jest.fn(),
-      delete: jest.fn(),
-    });
+    mockRecurrenceExceptionRepository =
+      createMock<RecurrenceExceptionRepository>({
+        create: jest.fn(),
+        findByRecurringEventId: jest.fn(),
+        delete: jest.fn(),
+      });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [

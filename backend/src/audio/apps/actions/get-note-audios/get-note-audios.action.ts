@@ -12,7 +12,8 @@ export class GetNoteAudiosAction {
   @Get('note/:noteId')
   @ProtectedAction({
     tag: 'audio',
-    summary: 'Get all audio files for a note - Returns a list of all audio metadata associated with the specified note',
+    summary:
+      'Get all audio files for a note - Returns a list of all audio metadata associated with the specified note',
   })
   async execute(
     @Param('noteId') noteId: string,

@@ -48,7 +48,9 @@ export class CreateEventReminderTransactionScript {
       r => r.reminderMinutes === command.reminderMinutes
     );
     if (duplicateReminder) {
-      throw new Error('Reminder with this timing already exists for this event');
+      throw new Error(
+        'Reminder with this timing already exists for this event'
+      );
     }
 
     const reminder = await this.eventReminderRepository.create(

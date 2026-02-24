@@ -16,10 +16,11 @@ export class UpdateCheckItemStatusTransactionScript {
     dto: UpdateCheckItemStatusDto,
     authUser: AuthUser
   ): Promise<CheckItem> {
-    const checkItem = await this.checkItemsRepository.findByIdWithNoteValidation(
-      id,
-      authUser.userId
-    );
+    const checkItem =
+      await this.checkItemsRepository.findByIdWithNoteValidation(
+        id,
+        authUser.userId
+      );
 
     if (!checkItem) {
       throw new NotFoundException('Check item not found');

@@ -20,7 +20,7 @@ export class UpdatePasswordTransactionScript {
 
     // Verify user is updating their own account
     if (user.userId !== userId) {
-      throw new UnauthorizedException('Cannot update another user\'s account');
+      throw new UnauthorizedException("Cannot update another user's account");
     }
 
     // Validate new password format (6-50 chars, matching CreateUserDto)
@@ -35,13 +35,19 @@ export class UpdatePasswordTransactionScript {
     }
 
     // Verify current password
-    const isPasswordValid = await bcrypt.compare(currentPassword, userWithPassword.password);
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      userWithPassword.password
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Current password is incorrect');
     }
 
     // Check if new password is different from current
-    const isSamePassword = await bcrypt.compare(newPassword, userWithPassword.password);
+    const isSamePassword = await bcrypt.compare(
+      newPassword,
+      userWithPassword.password
+    );
     if (isSamePassword) {
       throw new Error('New password must be different from current password');
     }

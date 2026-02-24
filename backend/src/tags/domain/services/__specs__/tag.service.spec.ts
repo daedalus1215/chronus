@@ -30,7 +30,10 @@ describe('TagService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         TagService,
-        { provide: AddTagToNoteTransactionScript, useValue: mockAddTagToNoteTS },
+        {
+          provide: AddTagToNoteTransactionScript,
+          useValue: mockAddTagToNoteTS,
+        },
         {
           provide: GetTagsByNoteIdTransactionScript,
           useValue: mockGetTagsByNoteIdTS,

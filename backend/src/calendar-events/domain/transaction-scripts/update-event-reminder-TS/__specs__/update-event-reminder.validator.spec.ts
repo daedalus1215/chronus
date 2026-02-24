@@ -197,9 +197,7 @@ describe('UpdateEventReminderValidator', () => {
           reminderId,
           reminderMinutes
         )
-      ).toThrow(
-        'Reminder with this timing already exists for this event'
-      );
+      ).toThrow('Reminder with this timing already exists for this event');
     });
 
     it('should throw Error when multiple reminders exist and one is duplicate', () => {
@@ -231,9 +229,7 @@ describe('UpdateEventReminderValidator', () => {
           reminderId,
           reminderMinutes
         )
-      ).toThrow(
-        'Reminder with this timing already exists for this event'
-      );
+      ).toThrow('Reminder with this timing already exists for this event');
     });
   });
 });

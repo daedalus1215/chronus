@@ -91,7 +91,7 @@ export const useAuthProvider = () => {
   const register = useCallback(
     async (username: string, password: string): Promise<boolean> => {
       try {
-        await api.post('/auth/register', {
+        await api.post('/users/register', {
           username,
           password,
         });

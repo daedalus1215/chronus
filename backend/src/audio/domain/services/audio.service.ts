@@ -1,12 +1,15 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import * as path from 'path';
+import { TextToSpeechRequestDto } from 'src/audio/apps/dtos/requests/text-to-speech.dto';
 import {
-  TextToSpeechRequestDto,
-} from 'src/audio/apps/dtos/requests/text-to-speech.dto';
-import { AudioResponse, AudioDownloadResult } from 'src/audio/apps/dtos/responses/audio.response.dto';
-import {
-  TextToSpeechTransactionScript,
-} from '../transaction-scripts/text-to-speech.transaction.script';
+  AudioResponse,
+  AudioDownloadResult,
+} from 'src/audio/apps/dtos/responses/audio.response.dto';
+import { TextToSpeechTransactionScript } from '../transaction-scripts/text-to-speech.transaction.script';
 import { SaveNoteAudioTransactionScript } from '../transaction-scripts/save-note-audio-TS/save-note-audio.transaction.script';
 import { DownloadAudioTransactionScript } from '../transaction-scripts/download-audio.transaction.script';
 import { GetNoteAudiosTransactionScript } from '../transaction-scripts/get-note-audios-TS/get-note-audios.transaction.script';
@@ -37,7 +40,7 @@ export class AudioService {
       request.assetId,
       request.userId
     );
-    
+
     // Step 1: Convert text to speech
     const ttsResult = await this.textToSpeechTS.execute({
       ...request,
@@ -82,7 +85,10 @@ export class AudioService {
     return audio;
   }
 
-  async downloadAudioById(audioId: number, userId: number): Promise<AudioDownloadResult> {
+  async downloadAudioById(
+    audioId: number,
+    userId: number
+  ): Promise<AudioDownloadResult> {
     const audio = await this.getNoteAudioById(audioId, userId);
     const filePath = this.getHermesDownloadFilePath(audio.filePath);
     const downloadFileName = this.getHermesDownloadFileName(audio.fileName);
@@ -122,7 +128,8 @@ export class AudioService {
     if (!fileName) {
       return undefined;
     }
-    const isCombinedFile = /^combined_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.wav$/;
+    const isCombinedFile =
+      /^combined_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.wav$/;
     if (!isCombinedFile.test(fileName)) {
       return undefined;
     }

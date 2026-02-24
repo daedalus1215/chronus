@@ -188,9 +188,11 @@ describe('UpdateEventReminderTransactionScript', () => {
         mockExistingReminder
       );
       mockCalendarEventRepository.findById.mockResolvedValue(mockCalendarEvent);
-      mockValidator.validateReminderMinutesArePositive.mockImplementation(() => {
-        throw new Error('Reminder minutes must be non-negative');
-      });
+      mockValidator.validateReminderMinutesArePositive.mockImplementation(
+        () => {
+          throw new Error('Reminder minutes must be non-negative');
+        }
+      );
 
       await expect(target.apply(invalidCommand)).rejects.toThrow(
         'Reminder minutes must be non-negative'

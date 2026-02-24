@@ -98,7 +98,8 @@ export class TimeTrackService {
 
   async getStreak(userId: number): Promise<StreakResponseDto> {
     return this.getStreakTS.apply(userId);
-  }i
+  }
+  i;
 
   async getNotesByYear(
     command: GetNotesByYearCommand
@@ -110,9 +111,7 @@ export class TimeTrackService {
       uniqueNoteIds,
       command.user.userId
     );
-    const noteNamesMap = new Map(
-      noteNames.map(n => [n.id, n.name])
-    );
+    const noteNamesMap = new Map(noteNames.map(n => [n.id, n.name]));
     const tagsMap = await this.tagAggregator.getTagsByNoteIds(uniqueNoteIds);
     const notesWithNames = notesByYear.map(note => ({
       ...note,
