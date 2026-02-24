@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserRepository } from '../../../infra/repositories/user.repository';
 import { UpdateUsernameCommand } from './update-username.command';
 import { User } from '../../entities/user.entity';
@@ -22,11 +26,15 @@ export class UpdateUsernameTransactionScript {
 
     // Verify user is updating their own account
     if (user.userId !== userId) {
-      throw new UnauthorizedException('Cannot update another user\'s account');
+      throw new UnauthorizedException("Cannot update another user's account");
     }
 
     // Validate username format (4-20 chars, matching CreateUserDto)
-    if (!newUsername || newUsername.trim().length < 4 || newUsername.trim().length > 20) {
+    if (
+      !newUsername ||
+      newUsername.trim().length < 4 ||
+      newUsername.trim().length > 20
+    ) {
       throw new Error('Username must be between 4 and 20 characters');
     }
 
@@ -43,7 +51,8 @@ export class UpdateUsernameTransactionScript {
     }
 
     // Check username uniqueness (excluding current user)
-    const existingUser = await this.userRepository.findByUsername(trimmedUsername);
+    const existingUser =
+      await this.userRepository.findByUsername(trimmedUsername);
     if (existingUser && existingUser.id !== userId) {
       throw new ConflictException('Username already exists');
     }
@@ -54,7 +63,10 @@ export class UpdateUsernameTransactionScript {
       throw new Error('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(currentPassword, userWithPassword.password);
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      userWithPassword.password
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Current password is incorrect');
     }

@@ -38,9 +38,7 @@ export class EventReminderRepository {
   /**
    * Find reminders by calendar event ID.
    */
-  async findByEventId(
-    calendarEventId: number
-  ): Promise<EventReminder[]> {
+  async findByEventId(calendarEventId: number): Promise<EventReminder[]> {
     const entities = await this.repository.find({
       where: { calendarEventId },
       order: { reminderMinutes: 'ASC' },
@@ -51,9 +49,7 @@ export class EventReminderRepository {
   /**
    * Find reminders by multiple calendar event IDs.
    */
-  async findByEventIds(
-    calendarEventIds: number[]
-  ): Promise<EventReminder[]> {
+  async findByEventIds(calendarEventIds: number[]): Promise<EventReminder[]> {
     if (calendarEventIds.length === 0) {
       return [];
     }

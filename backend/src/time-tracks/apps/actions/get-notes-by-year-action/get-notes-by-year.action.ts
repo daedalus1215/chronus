@@ -14,9 +14,7 @@ export class GetNotesByYearAction {
 
   @Get('/notes-by-year')
   @ProtectedAction(GetNotesByYearSwagger)
-  async apply(
-    @GetAuthUser() user: AuthUser
-  ): Promise<NotesByYearResponseDto> {
+  async apply(@GetAuthUser() user: AuthUser): Promise<NotesByYearResponseDto> {
     return await this.timeTrackService.getNotesByYear({ user });
   }
 }

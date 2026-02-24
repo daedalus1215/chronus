@@ -6,7 +6,6 @@ import type { StringValue } from 'ms';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthService } from './domain/auth.service';
 import { LoginAction } from './app/actions/login.action';
-import { RegisterAction } from './app/actions/register-action/register.action';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
@@ -28,7 +27,7 @@ import { UsersModule } from 'src/users/users.module';
     UsersModule,
   ],
   providers: [AuthService, JwtStrategy],
-  controllers: [LoginAction, RegisterAction],
+  controllers: [LoginAction],
   exports: [AuthService],
 })
 export class AuthModule {}

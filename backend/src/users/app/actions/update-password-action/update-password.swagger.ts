@@ -11,7 +11,8 @@ export const UpdatePasswordSwagger: ProtectedActionOptions = {
     },
     {
       status: 400,
-      description: 'Invalid request data, validation failed, or passwords do not match.',
+      description:
+        'Invalid request data, validation failed, or passwords do not match.',
     },
     {
       status: 401,

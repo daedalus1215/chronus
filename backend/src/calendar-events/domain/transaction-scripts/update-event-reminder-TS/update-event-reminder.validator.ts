@@ -57,7 +57,9 @@ export class UpdateEventReminderValidator {
       r => r.id !== reminderId && r.reminderMinutes === reminderMinutes
     );
     if (duplicateReminder) {
-      throw new Error('Reminder with this timing already exists for this event');
+      throw new Error(
+        'Reminder with this timing already exists for this event'
+      );
     }
   }
 }

@@ -1,7 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class Alter_addDescriptionColumn_checkItemsTable1770946910474
-  implements MigrationInterface {
+  implements MigrationInterface
+{
   name = 'Alter_addDescriptionColumn_checkItemsTable1770946910474';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

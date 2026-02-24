@@ -61,7 +61,7 @@ export const setupTransactionMock = (
 ): jest.Mocked<EntityManager> => {
   const mockManager = createMock<EntityManager>();
   (mockDataSource.transaction as jest.Mock).mockImplementation(
-    async (callback) => {
+    async callback => {
       if (mockConfigs) {
         for (const config of mockConfigs) {
           if (config.error) {

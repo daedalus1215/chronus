@@ -1,10 +1,17 @@
-import { IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  MaxLength,
+  IsEmail,
+} from 'class-validator';
 
-export class RegisterDto {
+export class RegisterUserRequestDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(4)
   @MaxLength(20)
+  @IsEmail()
   readonly username: string;
 
   @IsString()

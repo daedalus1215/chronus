@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersService } from './domain/users.service';
 import { UsersController } from './app/controllers/users.controller';
 import { User } from './domain/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
@@ -10,6 +9,7 @@ import { UpdateUsernameTransactionScript } from './domain/transaction-scripts/up
 import { UpdatePasswordTransactionScript } from './domain/transaction-scripts/update-password-TS/update-password.transaction.script';
 import { UpdateUsernameAction } from './app/actions/update-username-action/update-username.action';
 import { UpdatePasswordAction } from './app/actions/update-password-action/update-password.action';
+import { UsersService } from './domain/users.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), ConfigModule],

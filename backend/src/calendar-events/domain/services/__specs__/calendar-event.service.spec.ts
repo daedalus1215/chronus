@@ -54,27 +54,38 @@ describe('CalendarEventService', () => {
   };
 
   beforeEach(async () => {
-    mockFetchCalendarEventsTransactionScript = createMockWithApply<FetchCalendarEventsTransactionScript>();
+    mockFetchCalendarEventsTransactionScript =
+      createMockWithApply<FetchCalendarEventsTransactionScript>();
 
-    mockCreateCalendarEventTransactionScript = createMockWithApply<CreateCalendarEventTransactionScript>();
+    mockCreateCalendarEventTransactionScript =
+      createMockWithApply<CreateCalendarEventTransactionScript>();
 
-    mockFetchCalendarEventTransactionScript = createMockWithApply<FetchCalendarEventTransactionScript>();
+    mockFetchCalendarEventTransactionScript =
+      createMockWithApply<FetchCalendarEventTransactionScript>();
 
-    mockUpdateCalendarEventTransactionScript = createMockWithApply<UpdateCalendarEventTransactionScript>();
+    mockUpdateCalendarEventTransactionScript =
+      createMockWithApply<UpdateCalendarEventTransactionScript>();
 
-    mockDeleteCalendarEventTransactionScript = createMockWithApply<DeleteCalendarEventTransactionScript>();
+    mockDeleteCalendarEventTransactionScript =
+      createMockWithApply<DeleteCalendarEventTransactionScript>();
 
-    mockGenerateEventInstancesTransactionScript = createMockWithApply<GenerateEventInstancesTransactionScript>();
+    mockGenerateEventInstancesTransactionScript =
+      createMockWithApply<GenerateEventInstancesTransactionScript>();
 
-    mockFetchRecurringEventsTransactionScript = createMockWithApply<FetchRecurringEventsTransactionScript>();
+    mockFetchRecurringEventsTransactionScript =
+      createMockWithApply<FetchRecurringEventsTransactionScript>();
 
-    mockCreateEventReminderTransactionScript = createMockWithApply<CreateEventReminderTransactionScript>();
+    mockCreateEventReminderTransactionScript =
+      createMockWithApply<CreateEventReminderTransactionScript>();
 
-    mockUpdateEventReminderTransactionScript = createMockWithApply<UpdateEventReminderTransactionScript>();
+    mockUpdateEventReminderTransactionScript =
+      createMockWithApply<UpdateEventReminderTransactionScript>();
 
-    mockDeleteEventReminderTransactionScript = createMockWithApply<DeleteEventReminderTransactionScript>();
+    mockDeleteEventReminderTransactionScript =
+      createMockWithApply<DeleteEventReminderTransactionScript>();
 
-    mockFetchEventRemindersTransactionScript = createMockWithApply<FetchEventRemindersTransactionScript>();
+    mockFetchEventRemindersTransactionScript =
+      createMockWithApply<FetchEventRemindersTransactionScript>();
 
     mockDataSource = createMock<DataSource>({
       transaction: jest.fn(),
@@ -183,7 +194,10 @@ describe('CalendarEventService', () => {
 
       const mockManager = setupTransactionMock(mockDataSource, [
         { script: mockCreateCalendarEventTransactionScript, return: mockEvent },
-        { script: mockCreateEventReminderTransactionScript, return: mockReminder },
+        {
+          script: mockCreateEventReminderTransactionScript,
+          return: mockReminder,
+        },
       ]);
 
       const result = await target.createCalendarEvent(commandWithReminder);
@@ -221,7 +235,10 @@ describe('CalendarEventService', () => {
 
       const mockManager = setupTransactionMock(mockDataSource, [
         { script: mockCreateCalendarEventTransactionScript, return: mockEvent },
-        { script: mockCreateEventReminderTransactionScript, return: mockReminder },
+        {
+          script: mockCreateEventReminderTransactionScript,
+          return: mockReminder,
+        },
       ]);
 
       await target.createCalendarEvent(commandWithZeroReminder);
@@ -246,7 +263,10 @@ describe('CalendarEventService', () => {
 
       setupTransactionMock(mockDataSource, [
         { script: mockCreateCalendarEventTransactionScript, return: mockEvent },
-        { script: mockCreateEventReminderTransactionScript, error: new Error('Reminder creation failed') },
+        {
+          script: mockCreateEventReminderTransactionScript,
+          error: new Error('Reminder creation failed'),
+        },
       ]);
 
       await expect(
@@ -263,7 +283,10 @@ describe('CalendarEventService', () => {
       };
 
       setupTransactionMock(mockDataSource, [
-        { script: mockCreateCalendarEventTransactionScript, error: new Error('Event creation failed') },
+        {
+          script: mockCreateCalendarEventTransactionScript,
+          error: new Error('Event creation failed'),
+        },
       ]);
 
       await expect(

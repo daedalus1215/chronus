@@ -13,15 +13,14 @@ export type TextToSpeechResult = {
 
 @Injectable()
 export class TextToSpeechTransactionScript {
-  constructor(
-    private readonly hermesRemoteCaller: HermesRemoteCaller
-  ) {}
+  constructor(private readonly hermesRemoteCaller: HermesRemoteCaller) {}
 
   async execute(
     request: TextToSpeechRequestDto & { userId: number; text: string }
   ): Promise<TextToSpeechResult> {
     // Call Hermes to convert text to speech
-    const hermesResponse = await this.hermesRemoteCaller.convertTextToSpeech(request);
+    const hermesResponse =
+      await this.hermesRemoteCaller.convertTextToSpeech(request);
 
     // Extract file format from the file path (e.g., "path/to/file.wav" -> "wav")
     const fileFormat = this.extractFileFormat(hermesResponse.file_path);

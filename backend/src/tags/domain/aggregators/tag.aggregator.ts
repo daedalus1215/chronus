@@ -11,10 +11,12 @@ export class TagAggregator {
     noteIds: number[]
   ): Promise<Map<number, { id: number; name: string }[]>> {
     return new Map(
-      Array.from(await this.getTagsByNoteIdsTS.apply(noteIds)).map(([noteId, tags]) => [
-        noteId,
-        tags.map(tag => ({ id: tag.id, name: tag.name })),
-      ])
+      Array.from(await this.getTagsByNoteIdsTS.apply(noteIds)).map(
+        ([noteId, tags]) => [
+          noteId,
+          tags.map(tag => ({ id: tag.id, name: tag.name })),
+        ]
+      )
     );
   }
 }

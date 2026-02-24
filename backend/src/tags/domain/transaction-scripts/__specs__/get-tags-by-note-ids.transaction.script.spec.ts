@@ -66,7 +66,9 @@ describe('GetTagsByNoteIdsTransactionScript', () => {
 
     // Assert
     expect(result.size).toBe(1);
-    expect(result.get(noteId)).toEqual(tags.map(tag => new TagResponseDto(tag)));
+    expect(result.get(noteId)).toEqual(
+      tags.map(tag => new TagResponseDto(tag))
+    );
     expect(result.get(noteId)).toHaveLength(2);
     expect(result.get(noteId)?.[0]).toBeInstanceOf(TagResponseDto);
     expect(mockRepository.findTagsByNoteIds).toHaveBeenCalledWith([noteId]);
@@ -76,9 +78,7 @@ describe('GetTagsByNoteIdsTransactionScript', () => {
     // Arrange
     const noteId = generateRandomNumbers();
 
-    mockRepository.findTagsByNoteIds.mockResolvedValue(
-      new Map([[noteId, []]])
-    );
+    mockRepository.findTagsByNoteIds.mockResolvedValue(new Map([[noteId, []]]));
 
     // Act
     const result = await target.apply([noteId]);
@@ -129,11 +129,18 @@ describe('GetTagsByNoteIdsTransactionScript', () => {
 
     // Assert
     expect(result.size).toBe(2);
-    expect(result.get(noteId1)).toEqual(tags1.map(tag => new TagResponseDto(tag)));
-    expect(result.get(noteId2)).toEqual(tags2.map(tag => new TagResponseDto(tag)));
+    expect(result.get(noteId1)).toEqual(
+      tags1.map(tag => new TagResponseDto(tag))
+    );
+    expect(result.get(noteId2)).toEqual(
+      tags2.map(tag => new TagResponseDto(tag))
+    );
     expect(result.get(noteId1)).toHaveLength(1);
     expect(result.get(noteId2)).toHaveLength(2);
-    expect(mockRepository.findTagsByNoteIds).toHaveBeenCalledWith([noteId1, noteId2]);
+    expect(mockRepository.findTagsByNoteIds).toHaveBeenCalledWith([
+      noteId1,
+      noteId2,
+    ]);
   });
 
   it('should convert Tag entities to TagResponseDto', async () => {

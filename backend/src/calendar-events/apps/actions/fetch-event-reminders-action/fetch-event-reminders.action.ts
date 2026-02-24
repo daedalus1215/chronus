@@ -46,7 +46,8 @@ export class FetchEventRemindersAction {
       calendarEventId: id,
       user,
     };
-    const reminders = await this.calendarEventService.getRemindersForEvent(command);
+    const reminders =
+      await this.calendarEventService.getRemindersForEvent(command);
     return reminders.map(reminder => new EventReminderResponseDto(reminder));
   }
 }

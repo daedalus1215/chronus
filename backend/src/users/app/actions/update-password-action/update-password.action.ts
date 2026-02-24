@@ -46,7 +46,9 @@ export class UpdatePasswordAction {
   ) {
     // Validate password confirmation
     if (dto.newPassword !== dto.confirmPassword) {
-      throw new BadRequestException('New password and confirmation password do not match');
+      throw new BadRequestException(
+        'New password and confirmation password do not match'
+      );
     }
 
     const command: UpdatePasswordCommand = {

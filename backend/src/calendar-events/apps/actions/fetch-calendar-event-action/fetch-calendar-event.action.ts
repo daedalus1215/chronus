@@ -53,11 +53,13 @@ export class FetchCalendarEventAction {
     };
     const event =
       await this.calendarEventService.fetchCalendarEventById(command);
-    
+
     // Fetch reminders for this event
-    const reminders = await this.eventReminderRepository.findByEventId(event.id);
+    const reminders = await this.eventReminderRepository.findByEventId(
+      event.id
+    );
     const reminderDtos = reminders.map(r => new EventReminderResponseDto(r));
-    
+
     return new CalendarEventResponseDto(event, reminderDtos);
   }
 }

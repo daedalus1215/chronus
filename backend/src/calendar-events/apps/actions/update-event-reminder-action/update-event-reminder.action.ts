@@ -47,10 +47,12 @@ export class UpdateEventReminderAction {
     @Body() dto: UpdateEventReminderRequestDto,
     @GetAuthUser() user: AuthUser
   ): Promise<EventReminderResponseDto> {
-    return new EventReminderResponseDto(await this.calendarEventService.updateReminder({
-      reminderId,
-      reminderMinutes: dto.reminderMinutes,
-      user,
-    }));
+    return new EventReminderResponseDto(
+      await this.calendarEventService.updateReminder({
+        reminderId,
+        reminderMinutes: dto.reminderMinutes,
+        user,
+      })
+    );
   }
 }

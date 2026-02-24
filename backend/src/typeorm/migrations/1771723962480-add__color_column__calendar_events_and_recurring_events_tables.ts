@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddColorColumnCalendarEventsAndRecurringEventsTables1771723962480
-    implements MigrationInterface
+  implements MigrationInterface
 {
   name = 'AddColorColumnCalendarEventsAndRecurringEventsTables1771723962480';
 

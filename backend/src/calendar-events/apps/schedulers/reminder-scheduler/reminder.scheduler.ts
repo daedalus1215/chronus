@@ -23,9 +23,10 @@ export class ReminderScheduler {
   @Cron(CronExpression.EVERY_MINUTE)
   async handleReminderCron(): Promise<void> {
     this.logger.debug('Running reminder cron job');
-    
+
     try {
-      const pendingReminders = await this.eventReminderRepository.findPendingReminders();
+      const pendingReminders =
+        await this.eventReminderRepository.findPendingReminders();
       this.logger.debug(`Found ${pendingReminders.length} pending reminders`);
 
       const now = new Date();
@@ -33,7 +34,9 @@ export class ReminderScheduler {
 
       for (const reminder of pendingReminders) {
         try {
-          const event = await this.calendarEventRepository.findByIdOnly(reminder.calendarEventId);
+          const event = await this.calendarEventRepository.findByIdOnly(
+            reminder.calendarEventId
+          );
           if (!event) {
             this.logger.warn(
               `Event ${reminder.calendarEventId} not found for reminder ${reminder.id}. This reminder is orphaned (event was deleted). Marking as sent to prevent repeated warnings.`
@@ -42,7 +45,9 @@ export class ReminderScheduler {
             try {
               await this.eventReminderRepository.markAsSent(reminder.id);
             } catch (error) {
-              this.logger.error(`Failed to mark orphaned reminder ${reminder.id} as sent: ${error.message}`);
+              this.logger.error(
+                `Failed to mark orphaned reminder ${reminder.id} as sent: ${error.message}`
+              );
             }
             continue;
           }
@@ -58,9 +63,13 @@ export class ReminderScheduler {
 
           if (reminderTime <= now && reminderTime >= oneMinuteAgo) {
             this.logger.debug(`Reminder ${reminder.id} is due - processing...`);
-            const username = await this.userAggregator.findUsernameById(event.userId);
+            const username = await this.userAggregator.findUsernameById(
+              event.userId
+            );
             if (!username) {
-              this.logger.warn(`User ${event.userId} not found for event ${event.id}`);
+              this.logger.warn(
+                `User ${event.userId} not found for event ${event.id}`
+              );
               continue;
             }
 
@@ -111,7 +120,10 @@ export class ReminderScheduler {
         }
       }
     } catch (error) {
-      this.logger.error(`Error in reminder cron job: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error in reminder cron job: ${error.message}`,
+        error.stack
+      );
     }
   }
 

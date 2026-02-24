@@ -77,7 +77,7 @@ export class CalendarEventService {
   async createCalendarEvent(
     command: CreateCalendarEventCommand
   ): Promise<CalendarEvent> {
-    return await this.dataSource.transaction(async (manager) => {
+    return await this.dataSource.transaction(async manager => {
       const event = await this.createCalendarEventTransactionScript.apply(
         command,
         manager
@@ -150,9 +150,7 @@ export class CalendarEventService {
   /**
    * Delete an event reminder.
    */
-  async deleteReminder(
-    command: DeleteEventReminderCommand
-  ): Promise<void> {
+  async deleteReminder(command: DeleteEventReminderCommand): Promise<void> {
     return await this.deleteEventReminderTransactionScript.apply(command);
   }
 

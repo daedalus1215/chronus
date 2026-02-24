@@ -113,9 +113,10 @@ describe('CalendarEventRepository Integration Tests', () => {
       expect(result.id).toBeDefined();
       expect(result.recurringEventId).toBe(recurringEvent.id);
       // Assert
-      const resultDate = result.instanceDate instanceof Date 
-        ? result.instanceDate.toISOString().split('T')[0]
-        : result.instanceDate;
+      const resultDate =
+        result.instanceDate instanceof Date
+          ? result.instanceDate.toISOString().split('T')[0]
+          : result.instanceDate;
       const expectedDate = instanceDate.toISOString().split('T')[0];
       expect(resultDate).toBe(expectedDate);
       expect(result.title).toBe('Recurring Meeting');
@@ -175,9 +176,10 @@ describe('CalendarEventRepository Integration Tests', () => {
       // Assert
       expect(result.id).toBeDefined();
       expect(result.recurringEventId).toBe(recurringEvent.id);
-      const resultDate = result.instanceDate instanceof Date 
-        ? result.instanceDate.toISOString().split('T')[0]
-        : result.instanceDate;
+      const resultDate =
+        result.instanceDate instanceof Date
+          ? result.instanceDate.toISOString().split('T')[0]
+          : result.instanceDate;
       const expectedDate = instanceDate.toISOString().split('T')[0];
       expect(resultDate).toBe(expectedDate);
     });
@@ -324,9 +326,9 @@ describe('CalendarEventRepository Integration Tests', () => {
 
       // Assert
       for (let i = 0; i < results.length - 1; i++) {
-        expect(
-          results[i].startDate.getTime()
-        ).toBeLessThanOrEqual(results[i + 1].startDate.getTime());
+        expect(results[i].startDate.getTime()).toBeLessThanOrEqual(
+          results[i + 1].startDate.getTime()
+        );
       }
     });
 
@@ -394,15 +396,15 @@ describe('CalendarEventRepository Integration Tests', () => {
 
       // Assert
       expect(results).toHaveLength(3);
-      expect(
-        results.every(r => r.recurringEventId === recurringEvent.id)
-      ).toBe(true);
-      
+      expect(results.every(r => r.recurringEventId === recurringEvent.id)).toBe(
+        true
+      );
+
       results.forEach(result => {
         expect(result.instanceDate).toBeDefined();
         expect(result.instanceDate).not.toBeNull();
       });
-      
+
       const resultDates = results.map(r => {
         const date = r.instanceDate;
         if (date instanceof Date) {
@@ -413,7 +415,7 @@ describe('CalendarEventRepository Integration Tests', () => {
         }
         return String(date);
       });
-      
+
       expect(resultDates.length).toBe(3);
       expect(new Set(resultDates).size).toBe(3);
     });
@@ -529,10 +531,10 @@ describe('CalendarEventRepository Integration Tests', () => {
 
       // Assert
       expect(results.length).toBe(3);
-      expect(
-        results.every(r => r.recurringEventId === recurringEvent.id)
-      ).toBe(true);
-      
+      expect(results.every(r => r.recurringEventId === recurringEvent.id)).toBe(
+        true
+      );
+
       const resultDates = results.map(r => {
         const date = r.instanceDate;
         if (date instanceof Date) {
@@ -540,7 +542,7 @@ describe('CalendarEventRepository Integration Tests', () => {
         }
         return date;
       });
-      
+
       expect(resultDates).toContain('2024-01-14');
       expect(resultDates).toContain('2024-01-19');
       expect(resultDates).toContain('2024-01-24');
@@ -593,9 +595,9 @@ describe('CalendarEventRepository Integration Tests', () => {
 
       // Assert
       for (let i = 0; i < results.length - 1; i++) {
-        expect(
-          results[i].startDate.getTime()
-        ).toBeLessThanOrEqual(results[i + 1].startDate.getTime());
+        expect(results[i].startDate.getTime()).toBeLessThanOrEqual(
+          results[i + 1].startDate.getTime()
+        );
       }
     });
   });
@@ -790,9 +792,9 @@ describe('CalendarEventRepository Integration Tests', () => {
       const otherUserId = generateRandomNumbers();
 
       // Act & Assert
-      await expect(
-        target.delete(created.id, otherUserId)
-      ).rejects.toThrow('Calendar event not found');
+      await expect(target.delete(created.id, otherUserId)).rejects.toThrow(
+        'Calendar event not found'
+      );
     });
   });
 });

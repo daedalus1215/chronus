@@ -161,9 +161,14 @@ export class TimeTrackRepository {
 
     const result = await this.repository
       .createQueryBuilder('timeTrack')
-      .select(['timeTrack.date as date', 'SUM(timeTrack.durationMinutes) as totalMinutes'])
+      .select([
+        'timeTrack.date as date',
+        'SUM(timeTrack.durationMinutes) as totalMinutes',
+      ])
       .where('timeTrack.userId = :userId', { userId })
-      .andWhere('timeTrack.date >= :startDate', { startDate: formatDate(startDate) })
+      .andWhere('timeTrack.date >= :startDate', {
+        startDate: formatDate(startDate),
+      })
       .andWhere('timeTrack.date <= :endDate', { endDate: formatDate(today) })
       .groupBy('timeTrack.date')
       .orderBy('timeTrack.date', 'ASC')

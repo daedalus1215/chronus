@@ -57,21 +57,23 @@ export class FetchCalendarEventsAction {
       user,
     };
     const events = await this.calendarEventService.fetchCalendarEvents(command);
-    
+
     // Fetch reminders for all events
     const eventIds = events.map(event => event.id);
-    const allReminders = eventIds.length > 0
-      ? await this.eventReminderRepository.findByEventIds(eventIds)
-      : [];
-    
+    const allReminders =
+      eventIds.length > 0
+        ? await this.eventReminderRepository.findByEventIds(eventIds)
+        : [];
+
     // Group reminders by event ID
     const remindersByEventId = new Map<number, EventReminderResponseDto[]>();
     allReminders.forEach(reminder => {
-      const eventReminders = remindersByEventId.get(reminder.calendarEventId) || [];
+      const eventReminders =
+        remindersByEventId.get(reminder.calendarEventId) || [];
       eventReminders.push(new EventReminderResponseDto(reminder));
       remindersByEventId.set(reminder.calendarEventId, eventReminders);
     });
-    
+
     // @TODO: Can move this to a responder
     return events.map(
       (event: {

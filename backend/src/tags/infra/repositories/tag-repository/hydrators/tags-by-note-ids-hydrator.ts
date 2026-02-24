@@ -23,14 +23,10 @@ export const tagsByNoteIdsHydrator = (
       };
       const existing = acc[noteId] || [];
       const hasDuplicate = existing.some(t => t.id === tag.id);
-      return hasDuplicate
-        ? acc
-        : { ...acc, [noteId]: [...existing, tag] };
+      return hasDuplicate ? acc : { ...acc, [noteId]: [...existing, tag] };
     },
     {} as Record<number, Tag[]>
   );
 
-  return new Map(
-    noteIds.map(noteId => [noteId, tagsByNoteId[noteId] || []])
-  );
+  return new Map(noteIds.map(noteId => [noteId, tagsByNoteId[noteId] || []]));
 };
