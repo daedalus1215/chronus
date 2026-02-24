@@ -20,6 +20,8 @@ $ cp .env.sample .env
    - **JWT_EXPIRES_IN**: JWT token expiration (e.g., `7d`, `24h`)
    - **COOKIE_KEY**: Key for cookie encryption (change in production!)
    - **NODE_ENV**: Environment (`development`, `production`, `test`)
+   - **ALLOW_REGISTRATION**: Set to `false` to disable public registration (recommended for production single-user apps)
+   - **FRONTEND_ORIGIN**: Comma-separated list of allowed CORS origins (omit to allow all; set in production for security)
    - **SMTP_***: Email configuration for event reminders (see Email Reminders section)
 
 ### Email Reminders
