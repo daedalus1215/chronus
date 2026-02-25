@@ -10,9 +10,14 @@ import { UpdatePasswordTransactionScript } from './domain/transaction-scripts/up
 import { UpdateUsernameAction } from './app/actions/update-username-action/update-username.action';
 import { UpdatePasswordAction } from './app/actions/update-password-action/update-password.action';
 import { UsersService } from './domain/users.service';
+import { SecurityEventsModule } from 'src/security-events/security-events.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ConfigModule],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    ConfigModule,
+    SecurityEventsModule,
+  ],
   providers: [
     UsersService,
     UserRepository,

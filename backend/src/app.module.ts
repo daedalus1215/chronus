@@ -15,10 +15,12 @@ import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 import { LoggingModule } from './shared-kernel/apps/logging/logging.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SharedKernelModule } from './shared-kernel/shared-kernel.module';
+import { SecurityEventsModule } from './security-events/security-events.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    SecurityEventsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60_000,
