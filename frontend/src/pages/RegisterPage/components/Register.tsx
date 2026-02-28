@@ -138,12 +138,12 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           </Button>
 
           <Box sx={{ textAlign: 'center', mt: 1 }}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2">
               Already have an account?{' '}
               <Link
                 to="/login"
                 style={{
-                  color: 'inherit',
+                  color: 'var(--color-primary)',
                   textDecoration: 'none',
                   fontWeight: 500,
                 }}
