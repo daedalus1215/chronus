@@ -133,6 +133,7 @@ export const EventCard: React.FC<EventCardProps> = ({
     zIndex: isDragging ? 1000 : layout.columnIndex + 1,
     opacity: isDragging ? 0 : 1,
     transform: CSS.Translate.toString(transform),
+    backgroundColor: eventColor,
     '--event-color': eventColor,
     '--event-color-light': colorData.light,
   } as React.CSSProperties;
@@ -151,8 +152,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   return (
     <Paper
       ref={setNodeRef}
-      className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${isResizing ? styles.resizing : ''
-        } ${layout.event.isRecurring ? styles.recurring : ''}`}
+      className={`${styles.eventCard} ${isDragging ? styles.dragging : ''} ${isResizing ? styles.resizing : ''} ${layout.event.isRecurring ? styles.recurring : ''}`}
       onClick={handleClick}
       style={style}
       {...listeners}
@@ -168,7 +168,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             top: 0,
             left: 0,
             right: 0,
-            height: '8px',
+            height: '2px',
             cursor: 'ns-resize',
             zIndex: 10,
           }}
@@ -213,7 +213,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             bottom: 0,
             left: 0,
             right: 0,
-            height: '8px',
+            height: '2px',
             cursor: 'ns-resize',
             zIndex: 10,
           }}
