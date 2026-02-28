@@ -113,14 +113,17 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </Button>
 
           <Box sx={{ textAlign: 'center', mt: 1 }}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2"> 
               Don't have an account?{' '}
               <Link
                 to="/register"
                 style={{
-                  color: 'inherit',
+                  color: 'var(--color-primary)',
                   textDecoration: 'none',
                   fontWeight: 500,
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
                 }}
               >
                 Register here
