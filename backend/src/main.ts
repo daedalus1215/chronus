@@ -1,4 +1,6 @@
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import * as express from 'express';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -8,14 +10,24 @@ import { join } from 'path';
 import { ServerOptions } from 'https';
 import { Logger } from 'nestjs-pino';
 
+const BODY_LIMIT = '10mb';
+
 async function bootstrap() {
   // Configure HTTPS if certificates are provided
   const httpsOptions = getHttpsOptions();
 
   // Create the app with HTTPS if configured
   const app = httpsOptions
-    ? await NestFactory.create(AppModule, { httpsOptions })
-    : await NestFactory.create(AppModule);
+    ? await NestFactory.create<NestExpressApplication>(AppModule, {
+        httpsOptions,
+        bodyParser: false,
+      })
+    : await NestFactory.create<NestExpressApplication>(AppModule, {
+        bodyParser: false,
+      });
+
+  app.use(express.json({ limit: BODY_LIMIT }));
+  app.use(express.urlencoded({ limit: BODY_LIMIT, extended: true }));
 
   app.setGlobalPrefix('api');
 
