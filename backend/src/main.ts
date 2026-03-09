@@ -10,9 +10,9 @@ import { join } from 'path';
 import { ServerOptions } from 'https';
 import { Logger } from 'nestjs-pino';
 
-const BODY_LIMIT = '10mb';
-
 async function bootstrap() {
+  const bodyLimit = process.env.BODY_LIMIT ?? '1mb';
+
   // Configure HTTPS if certificates are provided
   const httpsOptions = getHttpsOptions();
 
@@ -26,8 +26,8 @@ async function bootstrap() {
         bodyParser: false,
       });
 
-  app.use(express.json({ limit: BODY_LIMIT }));
-  app.use(express.urlencoded({ limit: BODY_LIMIT, extended: true }));
+  app.use(express.json({ limit: bodyLimit }));
+  app.use(express.urlencoded({ limit: bodyLimit, extended: true }));
 
   app.setGlobalPrefix('api');
 
