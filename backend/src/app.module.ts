@@ -11,9 +11,7 @@ import { CheckItemsModule } from './check-items/check-items.module';
 import * as Joi from 'joi';
 import { AudioModule } from './audio/audio.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 import { LoggingModule } from './shared-kernel/apps/logging/logging.module';
-import { ScheduleModule } from '@nestjs/schedule';
 import { SharedKernelModule } from './shared-kernel/shared-kernel.module';
 import { SecurityEventsModule } from './security-events/security-events.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -46,7 +44,6 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         FRONTEND_ORIGIN: Joi.string().optional(),
       }),
     }),
-    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -65,7 +62,6 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     TagsModule,
     CheckItemsModule,
     AudioModule,
-    CalendarEventsModule,
     EventEmitterModule.forRoot(),
     LoggingModule,
     SharedKernelModule,

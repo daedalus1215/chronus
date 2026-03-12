@@ -42,14 +42,6 @@ The frontend will be available at `http://localhost:5173` (or the port specified
   - Requires current password verification
   - Requires new password confirmation
 
-### Calendar
-- View calendar events in a monthly/weekly view
-- Create, edit, and delete events
-- Support for recurring events
-- Set email reminders for events (15 min, 1 hour, 1 day before, or custom time)
-  - Reminders are sent to your username email address
-  - Requires backend SMTP configuration
-
 ### Notes & Tags
 - Create and manage notes (memos and checklists)
 - Organize notes with tags
