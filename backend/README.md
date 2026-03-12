@@ -22,18 +22,7 @@ $ cp .env.sample .env
    - **NODE_ENV**: Environment (`development`, `production`, `test`)
    - **ALLOW_REGISTRATION**: Set to `false` to disable public registration (recommended for production single-user apps)
    - **FRONTEND_ORIGIN**: Comma-separated list of allowed CORS origins (omit to allow all; set in production for security)
-   - **SMTP_***: Email configuration for event reminders (see Email Reminders section)
-
-### Email Reminders
-
-The application supports email reminders for calendar events. To enable this feature:
-
-1. Configure SMTP settings in your `.env` file
-2. For Gmail:
-   - Use an [App Password](https://support.google.com/accounts/answer/185833) instead of your regular password
-   - Set `SMTP_HOST=smtp.gmail.com` and `SMTP_PORT=587`
-3. User usernames must be valid email addresses to receive reminders
-4. Reminders are sent via a cron job that runs every minute
+   - **SMTP_***: Email configuration (SMTP host, port, user, pass, from address)
 
 ## Running the app
 ```bash
@@ -47,12 +36,6 @@ The API will be available at `http://localhost:3000/api` (or the port specified 
 ### Account Management
 - **Username Changes**: Users can update their username from the Settings page. Requires password confirmation and triggers re-authentication.
 - **Password Changes**: Users can update their password from the Settings page. Requires current password and new password confirmation.
-
-### Calendar Events
-- Create, update, and delete calendar events
-- Support for recurring events
-- Email reminders for events (requires SMTP configuration)
-- Reminder scheduling with customizable timing (15 min, 1 hour, 1 day before, or custom)
 
 ## Test
 
