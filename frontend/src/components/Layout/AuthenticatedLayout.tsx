@@ -4,7 +4,6 @@ import { Box, Paper } from '@mui/material';
 import { Header, MOBILE_HEADER_HEIGHT_PX } from '../Header/Header';
 import { DesktopSidebar } from '../Header/Sidebar/DesktopSidebar';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { CalendarProvider } from '../../contexts/CalendarContext';
 
 /** True when the current route is a note detail (NotePage). */
 const isNotePageRoute = (pathname: string): boolean =>
@@ -17,7 +16,7 @@ export const AuthenticatedLayout: React.FC = () => {
   const showMobileHeader = isMobile && !isNotePage;
 
   return (
-    <CalendarProvider>
+    <>
       {showMobileHeader && <Header />}
       <main
         style={{
@@ -72,6 +71,6 @@ export const AuthenticatedLayout: React.FC = () => {
           </Box>
         )}
       </main>
-    </CalendarProvider>
+    </>
   );
 };

@@ -22,16 +22,7 @@ This document outlines the refactoring plan to bring the codebase into complianc
 
 **Solution**: Rename to use "Params" or "Projection" instead of "Dto".
 
-### 2. Services Depending on Converters
-
-**Issue**: Domain services should not directly depend on converters (violates dependency hierarchy).
-
-**Violation**:
-- `src/calendar-events/domain/services/calendar-event.service.ts` → `src/calendar-events/domain/transaction-scripts/create-recurring-event-TS/recurring-event-to-domain.converter.ts`
-
-**Solution**: Move converter usage to transaction script or create a mapper/assembler if needed.
-
-### 3. Domain Module Boundary Violations
+### 2. Domain Module Boundary Violations
 
 **Issue**: Domain modules are importing from other domains directly instead of through aggregators/ports.
 
@@ -40,7 +31,6 @@ This document outlines the refactoring plan to bring the codebase into complianc
 Multiple actions importing `src/auth/jwt-auth.guard`:
 - `src/users/app/controllers/users.controller.ts`
 - `src/time-tracks/apps/actions/*` (5 actions)
-- `src/calendar-events/apps/actions/*` (7 actions)
 - `src/audio/apps/actions/*` (2 actions)
 
 **Solution**: Move `jwt-auth.guard` to `shared-kernel` or create a shared auth module.
@@ -105,23 +95,15 @@ Multiple actions importing `src/auth/jwt-auth.guard`:
   - Update imports in consuming files
   - Update spec file name and references
 
-### Phase 2: Service Dependency Fixes
+### Phase 2: Auth Guard Cross-Domain Fix
 
-- [ ] **Task 2.1**: Fix calendar-event.service.ts converter dependency
-  - Review how `recurring-event-to-domain.converter.ts` is used
-  - Move converter usage to transaction script if appropriate
-  - Or create mapper/assembler if needed
-  - Update service to use transaction script instead
-
-### Phase 3: Auth Guard Cross-Domain Fix
-
-- [ ] **Task 3.1**: Move jwt-auth.guard to shared-kernel
+- [ ] **Task 2.1**: Move jwt-auth.guard to shared-kernel
   - Move `src/auth/jwt-auth.guard.ts` to `src/shared-kernel/apps/guards/jwt-auth.guard.ts`
   - Update all imports across domains
   - Update auth module exports if needed
   - Verify all actions can still use the guard
 
-### Phase 4: Notes ↔ Check-Items Domain Boundary
+### Phase 3: Notes ↔ Check-Items Domain Boundary
 
 - [ ] **Task 4.1**: Create CheckItemAggregator
   - Create `src/check-items/domain/aggregators/check-item.aggregator.ts`
@@ -139,14 +121,14 @@ Multiple actions importing `src/auth/jwt-auth.guard`:
   - Move to `src/shared-kernel/domain/types/`
   - Update imports
 
-### Phase 5: Tags ↔ Notes Domain Boundary
+### Phase 4: Tags ↔ Notes Domain Boundary
 
 - [ ] **Task 5.1**: Fix tags swagger importing notes DTO
   - Review `add-tag-to-note.swagger.ts`
   - Use NoteAggregator or move shared DTO to shared-kernel
   - Update swagger file
 
-### Phase 6: Auth ↔ Users Domain Boundary
+### Phase 5: Auth ↔ Users Domain Boundary
 
 - [ ] **Task 6.1**: Create UserAggregator
   - Create `src/users/domain/aggregators/user.aggregator.ts`
@@ -158,7 +140,7 @@ Multiple actions importing `src/auth/jwt-auth.guard`:
   - Remove direct imports of users service and entity
   - Update auth module to import users aggregator
 
-### Phase 7: Orphaned Files
+### Phase 6: Orphaned Files
 
 - [ ] **Task 7.1**: Review and fix orphaned files
   - For each orphaned file:
@@ -167,53 +149,28 @@ Multiple actions importing `src/auth/jwt-auth.guard`:
     - If no: Remove the file
   - Update tests if files are removed
 
-### Phase 8: Code Cleanup
+### Phase 7: Verification
 
-- [ ] **Task 8.1**: Remove unused EventInstance entity and repository
-  - **Issue**: `EventInstance` domain entity and `EventInstanceRepository` are unused dead code
-  - **Context**: The codebase uses a unified `CalendarEvent` entity that handles both one-time events and recurring event instances (via `recurringEventId` field)
-  - **Files to remove**:
-    - `src/calendar-events/domain/entities/event-instance.entity.ts`
-    - `src/calendar-events/infra/entities/event-instance.entity.ts`
-    - `src/calendar-events/infra/repositories/event-instance.repository.ts`
-  - **Steps**:
-    1. Verify `EventInstanceRepository` is not registered in `calendar-events.module.ts` (confirmed: it's not)
-    2. Search codebase for any remaining references to `EventInstance` or `EventInstanceRepository`
-    3. Remove the domain entity file
-    4. Remove the infrastructure entity file
-    5. Remove the repository file
-    6. Run tests to ensure nothing breaks
-    7. Consider: These domain entities feel like projections (pure data structures for reading) - may want to reorganize as projections in the future
-
-- [ ] **Task 8.2**: Review domain entity organization
-  - **Note**: Domain entities (`CalendarEvent`, `RecurringEvent`, etc.) are currently pure TypeScript types used primarily for reading/displaying
-  - Consider if some should be reorganized as projections for specific use cases
-  - This is a future improvement, not a blocking issue
-
-### Phase 9: Verification
-
-- [ ] **Task 9.1**: Run architecture checks
+- [ ] **Task 7.1**: Run architecture checks
   - Run `npm run test:fitness`
   - Verify all violations are resolved
   - Fix any remaining issues
 
-- [ ] **Task 9.2**: Run tests
+- [ ] **Task 7.2**: Run tests
   - Run `npm test` to ensure no regressions
   - Fix any broken tests
 
-- [ ] **Task 9.3**: Manual verification
+- [ ] **Task 7.3**: Manual verification
   - Test affected features manually
   - Verify cross-domain operations work correctly
 
 ## Implementation Order
 
 1. **Start with naming fixes** (Phase 1) - Simple, low risk
-2. **Fix service dependencies** (Phase 2) - Clear violation
-3. **Move auth guard** (Phase 3) - Affects many files but straightforward
-4. **Fix domain boundaries** (Phases 4-6) - Most complex, requires aggregators
-5. **Clean up orphans** (Phase 7) - Can be done in parallel
-6. **Code cleanup** (Phase 8) - Remove dead code, improve organization
-7. **Verify everything** (Phase 9) - Final validation
+2. **Move auth guard** (Phase 2) - Affects many files but straightforward
+3. **Fix domain boundaries** (Phases 3-5) - Most complex, requires aggregators
+4. **Clean up orphans** (Phase 6) - Can be done in parallel
+5. **Verify everything** (Phase 7) - Final validation
 
 ## Notes
 

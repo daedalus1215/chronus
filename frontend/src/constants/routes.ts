@@ -10,7 +10,6 @@ export const ROUTES = {
   CHECKLISTS: '/checklist',
   TAGS: '/tags',
   ACTIVITY: '/activity',
-  CALENDAR: '/calendar',
   YEARLY_NOTES: '/yearly-notes',
   SETTINGS: '/settings',
   TAG_NOTES: (tagId: string | number) => `/tag-notes/${tagId}`,

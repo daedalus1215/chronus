@@ -27,28 +27,9 @@
 
 ---
 
-### Phase 2: Service Dependency Fixes
+### Phase 2: Auth Guard Cross-Domain Fix
 
-#### Task 2.1: Fix calendar-event.service.ts converter dependency
-
-**File**: `src/calendar-events/domain/services/calendar-event.service.ts`
-
-**Current violation**: Service directly injects `RecurringEventToDomainConverter`
-
-**Steps**:
-1. Review `RecurringEventToDomainConverter` usage in the service
-2. Move converter usage to a transaction script (likely `GenerateEventInstancesTransactionScript` or create a new one)
-3. Update service to remove converter injection
-4. Update transaction script to handle the conversion
-5. Update module to remove converter from service providers
-
-**Alternative approach**: If the converter is needed at service level, create a mapper that wraps the converter, and inject the mapper into the transaction script instead.
-
----
-
-### Phase 3: Auth Guard Cross-Domain Fix
-
-#### Task 3.1: Move jwt-auth.guard to shared-kernel
+#### Task 2.1: Move jwt-auth.guard to shared-kernel
 
 **Files to modify**:
 - Move: `src/auth/jwt-auth.guard.ts` → `src/shared-kernel/apps/guards/jwt-auth.guard.ts`
@@ -59,7 +40,6 @@
 2. Move `jwt-auth.guard.ts` to new location
 3. Update auth module if it exports the guard
 4. Update all imports:
-   - `src/calendar-events/apps/actions/*` (7 files)
    - `src/audio/apps/actions/*` (2 files)
    - `src/users/app/controllers/users.controller.ts`
    - `src/time-tracks/apps/actions/*` (5 files)
@@ -71,9 +51,9 @@
 
 ---
 
-### Phase 4: Notes ↔ Check-Items Domain Boundary
+### Phase 3: Notes ↔ Check-Items Domain Boundary
 
-#### Task 4.1: Create CheckItemAggregator
+#### Task 3.1: Create CheckItemAggregator
 
 **File to create**: `src/check-items/domain/aggregators/check-item.aggregator.ts`
 
@@ -107,7 +87,7 @@ export class CheckItemAggregator {
 }
 ```
 
-#### Task 4.2: Update notes domain to use CheckItemAggregator
+#### Task 3.2: Update notes domain to use CheckItemAggregator
 
 **Files to modify**:
 - `src/notes/infra/repositories/check-items.repository.ts` - Remove or refactor
@@ -128,7 +108,7 @@ export class CheckItemAggregator {
 - Either remove it and use CheckItemAggregator
 - Or move it to check-items domain if it's a notes-specific query
 
-#### Task 4.3: Move shared types to shared-kernel
+#### Task 3.3: Move shared types to shared-kernel
 
 **Steps**:
 1. Identify types that need to be shared between notes and check-items
@@ -138,9 +118,9 @@ export class CheckItemAggregator {
 
 ---
 
-### Phase 5: Tags ↔ Notes Domain Boundary
+### Phase 4: Tags ↔ Notes Domain Boundary
 
-#### Task 5.1: Fix tags swagger importing notes DTO
+#### Task 4.1: Fix tags swagger importing notes DTO
 
 **File**: `src/tags/app/actions/add-tag-to-note-action/swagger/add-tag-to-note.swagger.ts`
 
@@ -155,9 +135,9 @@ export class CheckItemAggregator {
 
 ---
 
-### Phase 6: Auth ↔ Users Domain Boundary
+### Phase 5: Auth ↔ Users Domain Boundary
 
-#### Task 6.1: Create UserAggregator
+#### Task 5.1: Create UserAggregator
 
 **File to create**: `src/users/domain/aggregators/user.aggregator.ts`
 
@@ -170,7 +150,7 @@ export class CheckItemAggregator {
 3. Inject necessary repositories/transaction scripts
 4. Export aggregator in `users.module.ts`
 
-#### Task 6.2: Update auth service to use UserAggregator
+#### Task 5.2: Update auth service to use UserAggregator
 
 **File**: `src/auth/domain/auth.service.ts`
 
@@ -183,9 +163,9 @@ export class CheckItemAggregator {
 
 ---
 
-### Phase 7: Orphaned Files
+### Phase 6: Orphaned Files
 
-#### Task 7.1: Review and fix orphaned files
+#### Task 6.1: Review and fix orphaned files
 
 **Files to review**:
 1. `src/shared-kernel/test-utils.ts` - Should be used in tests
@@ -207,46 +187,21 @@ export class CheckItemAggregator {
 
 ---
 
-### Phase 8: Code Cleanup
+### Phase 8: Verification
 
-#### Task 8.1: Remove unused EventInstance entity and repository
-
-**Issue**: `EventInstance` domain entity and `EventInstanceRepository` are unused dead code. The codebase uses a unified `CalendarEvent` entity that handles both one-time events and recurring event instances (via `recurringEventId` field).
-
-**Files to remove**:
-- `src/calendar-events/domain/entities/event-instance.entity.ts`
-- `src/calendar-events/infra/entities/event-instance.entity.ts`
-- `src/calendar-events/infra/repositories/event-instance.repository.ts`
-
-**Steps**:
-1. Verify `EventInstanceRepository` is not registered in `calendar-events.module.ts` (confirmed: it's not)
-2. Search codebase for any remaining references to `EventInstance` or `EventInstanceRepository`
-3. Remove the domain entity file
-4. Remove the infrastructure entity file
-5. Remove the repository file
-6. Run tests to ensure nothing breaks
-7. Consider: These domain entities feel like projections (pure data structures for reading) - may want to reorganize as projections in the future
-
-**Note**: Domain entities (`CalendarEvent`, `RecurringEvent`, etc.) are currently pure TypeScript types used primarily for reading/displaying. Consider if some should be reorganized as projections for specific use cases in the future (not blocking).
-
----
-
-### Phase 9: Verification
-
-#### Task 9.1: Run architecture checks
+#### Task 7.1: Run architecture checks
 ```bash
 cd backend
 npm run test:fitness
 ```
 
-#### Task 9.2: Run tests
+#### Task 7.2: Run tests
 ```bash
 npm test
 ```
 
-#### Task 9.3: Manual verification
+#### Task 7.3: Manual verification
 - Test authentication
-- Test calendar events
 - Test notes with check items
 - Test tags with notes
 - Test time tracks
@@ -256,18 +211,16 @@ npm test
 ## Implementation Checklist
 
 ### Quick Wins (Low Risk, High Impact)
-- [ ] Task 3.1: Move jwt-auth.guard (affects many files but straightforward)
-- [ ] Task 7.1: Fix orphaned files (can be done incrementally)
-- [ ] Task 8.1: Remove unused EventInstance code (dead code removal)
+- [ ] Task 2.1: Move jwt-auth.guard (affects many files but straightforward)
+- [ ] Task 6.1: Fix orphaned files (can be done incrementally)
 
 ### Medium Complexity
 - [ ] Task 1.1: Rename converter (requires understanding DTO vs Params)
-- [ ] Task 2.1: Fix service converter dependency
-- [ ] Task 5.1: Fix tags swagger
+- [ ] Task 4.1: Fix tags swagger
 
 ### High Complexity (Requires Aggregators)
-- [ ] Task 4.1-4.3: Notes ↔ Check-Items boundary
-- [ ] Task 6.1-6.2: Auth ↔ Users boundary
+- [ ] Task 3.1-3.3: Notes ↔ Check-Items boundary
+- [ ] Task 5.1-5.2: Auth ↔ Users boundary
 
 ---
 
@@ -285,6 +238,4 @@ npm test
 3. **Cross-domain commands**: Are these being used? If not, should they be removed or implemented?
 
 4. **DTOs in shared-kernel**: Should response DTOs be shared, or should we use projections/aggregators?
-
-5. **Domain entities as projections**: The calendar-events domain entities (`CalendarEvent`, `RecurringEvent`, etc.) are pure TypeScript types used primarily for reading. Should some be reorganized as projections for specific use cases? (Future improvement, not blocking)
 
