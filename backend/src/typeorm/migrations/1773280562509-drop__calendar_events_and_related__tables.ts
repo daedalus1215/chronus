@@ -61,7 +61,7 @@ export class Drop_calendar_events_and_related_tables1773280562509
       CREATE TABLE "event_reminders" (
         "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
         "calendar_event_id" integer NOT NULL,
-        "user_id" integer NOT NULL,
+        "user_id" integer NOT NULL,                                                                                                                                                                                                                                                                                                                                                                                                                         
         "reminder_time" datetime NOT NULL,
         "sent_at" datetime,
         "created_at" datetime NOT NULL DEFAULT (datetime('now'))

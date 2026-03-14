@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
 import { NoteAudio } from '../../../../../../api/requests/audio.requests';
-import { IconButton, Chip } from '@mui/material';
+import {
+  IconButton,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
+import DeleteIcon from '@mui/icons-material/Delete';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -18,6 +27,8 @@ type AudioHistoryViewProps = {
   error?: string | null;
   onDownload: (audioId: number, fileName: string) => void;
   isDownloading: boolean;
+  onDelete: (audioId: number) => void;
+  isDeleting: boolean;
 };
 
 export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
@@ -29,8 +40,17 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
   error,
   onDownload,
   isDownloading,
+  onDelete,
+  isDeleting,
 }) => {
   const { currentTrack, isPlaying, loadAudio, togglePlay } = useAudioPlayer();
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirmId === null) return;
+    onDelete(deleteConfirmId);
+    setDeleteConfirmId(null);
+  };
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -144,12 +164,44 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
                   >
                     <DownloadIcon fontSize="small" />
                   </IconButton>
+                  <IconButton
+                    aria-label="Delete audio"
+                    size="small"
+                    onClick={() => setDeleteConfirmId(audio.id)}
+                    disabled={isDeleting}
+                    className={styles.deleteButton}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      <Dialog
+        open={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+        aria-labelledby="delete-audio-dialog-title"
+      >
+        <DialogTitle id="delete-audio-dialog-title">Delete Audio</DialogTitle>
+        <DialogContent>
+          Are you sure you want to permanently delete this audio file? This
+          action cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+            disabled={isDeleting}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </BottomSheet>
   );
 };

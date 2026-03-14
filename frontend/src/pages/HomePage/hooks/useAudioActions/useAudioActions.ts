@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import {
   convertTextToSpeech,
+  deleteAudio,
   downloadAudio,
   getNoteAudios,
   NoteAudio,
@@ -9,6 +10,7 @@ import {
 export const useAudioActions = (noteId: number) => {
   const [isConverting, setIsConverting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [audioHistory, setAudioHistory] = useState<NoteAudio[]>([]);
@@ -65,13 +67,29 @@ export const useAudioActions = (noteId: number) => {
     }
   };
 
+  const handleDeleteAudio = async (audioId: number) => {
+    try {
+      setIsDeleting(true);
+      setError(null);
+      await deleteAudio(audioId);
+      setAudioHistory((prev) => prev.filter((a) => a.id !== audioId));
+    } catch (err) {
+      setError('Failed to delete audio');
+      console.error('Error deleting audio:', err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return {
     handleTextToSpeech,
     handleDownloadAudio,
+    handleDeleteAudio,
     fetchAudioHistory,
     audioHistory,
     isConverting,
     isDownloading,
+    isDeleting,
     isHistoryLoading,
     error,
     noteId,
