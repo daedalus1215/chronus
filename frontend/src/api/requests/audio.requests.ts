@@ -29,6 +29,10 @@ export const getNoteAudios = async (
   return response.data;
 };
 
+export const deleteAudio = async (audioId: number): Promise<void> => {
+  await api.delete(`/audio/${audioId}`);
+};
+
 /**
  * Get the streaming URL for an audio file.
  * This URL supports HTTP Range requests for seeking.

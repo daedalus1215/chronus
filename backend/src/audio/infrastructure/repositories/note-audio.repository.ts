@@ -38,6 +38,10 @@ export class NoteAudioRepository {
     });
   }
 
+  async deleteById(id: number): Promise<void> {
+    await this.repository.delete({ id });
+  }
+
   async deleteByNoteId(noteId: number): Promise<void> {
     await this.repository.delete({ noteId });
   }

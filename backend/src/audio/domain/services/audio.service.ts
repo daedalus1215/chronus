@@ -14,6 +14,7 @@ import { SaveNoteAudioTransactionScript } from '../transaction-scripts/save-note
 import { DownloadAudioTransactionScript } from '../transaction-scripts/download-audio.transaction.script';
 import { GetNoteAudiosTransactionScript } from '../transaction-scripts/get-note-audios-TS/get-note-audios.transaction.script';
 import { GetNoteAudioByIdTransactionScript } from '../transaction-scripts/get-note-audio-by-id-TS/get-note-audio-by-id.transaction.script';
+import { DeleteAudioTransactionScript } from '../transaction-scripts/delete-audio-TS/delete-audio.transaction.script';
 import { NoteAggregator } from 'src/notes/domain/aggregators/note.aggregator';
 import { NoteAudio } from '../entities/note-audio.entity';
 
@@ -30,6 +31,7 @@ export class AudioService {
     private readonly downloadAudioTS: DownloadAudioTransactionScript,
     private readonly getNoteAudiosTS: GetNoteAudiosTransactionScript,
     private readonly getNoteAudioByIdTS: GetNoteAudioByIdTransactionScript,
+    private readonly deleteAudioTS: DeleteAudioTransactionScript,
     private readonly noteAggregator: NoteAggregator
   ) {}
 
@@ -83,6 +85,11 @@ export class AudioService {
     }
 
     return audio;
+  }
+
+  async deleteAudio(audioId: number, userId: number): Promise<void> {
+    const audio = await this.getNoteAudioById(audioId, userId);
+    await this.deleteAudioTS.apply(audioId, audio.filePath);
   }
 
   async downloadAudioById(

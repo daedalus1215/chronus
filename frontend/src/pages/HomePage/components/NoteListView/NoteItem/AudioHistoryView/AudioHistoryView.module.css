@@ -116,3 +116,11 @@
 .downloadButton {
   margin-left: 0;
 }
+
+.deleteButton {
+  color: var(--destructive);
+}
+
+.deleteButton:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}

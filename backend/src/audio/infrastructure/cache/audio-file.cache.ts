@@ -88,7 +88,7 @@ export class AudioFileCache implements OnModuleInit {
 
     const age = Date.now() - entry.cachedAt;
     if (age > this.cacheTtlMs) {
-      this.deleteEntry(audioId);
+      this.evictEntry(audioId);
       return false;
     }
 
@@ -154,14 +154,14 @@ export class AudioFileCache implements OnModuleInit {
     for (const entry of entries) {
       if (freedSpace >= spaceNeeded) break;
 
-      this.deleteEntry(entry.audioId);
+      this.evictEntry(entry.audioId);
       freedSpace += entry.fileSize;
     }
 
     this.logger.log(`Evicted ${this.formatBytes(freedSpace)} from cache`);
   }
 
-  private deleteEntry(audioId: number): void {
+  evictEntry(audioId: number): void {
     const entry = this.cache.get(audioId);
     if (entry) {
       try {
@@ -185,7 +185,7 @@ export class AudioFileCache implements OnModuleInit {
     for (const [audioId, entry] of this.cache.entries()) {
       const age = now - entry.cachedAt;
       if (age > this.cacheTtlMs) {
-        this.deleteEntry(audioId);
+        this.evictEntry(audioId);
         cleaned++;
       }
     }

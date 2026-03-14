@@ -66,10 +66,12 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   const {
     handleTextToSpeech,
     handleDownloadAudio,
+    handleDeleteAudio,
     fetchAudioHistory,
     audioHistory,
     isConverting,
     isDownloading,
+    isDeleting: isAudioDeleting,
     isHistoryLoading,
     error: audioError,
   } = useAudioActions(note.id);
@@ -320,6 +322,8 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         error={audioError}
         onDownload={handleDownloadAudio}
         isDownloading={isDownloading}
+        onDelete={handleDeleteAudio}
+        isDeleting={isAudioDeleting}
       />
 
       <Dialog

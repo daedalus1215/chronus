@@ -121,6 +121,23 @@ export class HermesRemoteCaller {
     };
   }
 
+  async deleteAudioByPath(filePath: string): Promise<void> {
+    const url = `${this.hermesApiUrl}delete-by-path`;
+    try {
+      await firstValueFrom(
+        this.httpService.delete(url, { params: { file_path: filePath } })
+      );
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        this.logger.warn(
+          `Audio file not found on Hermes (already deleted?): ${filePath}`
+        );
+        return;
+      }
+      throw error;
+    }
+  }
+
   async downloadAudioByPath(filePath: string): Promise<AudioResponse> {
     const url = `${this.hermesApiUrl}download-by-path`;
     const response = await firstValueFrom(
