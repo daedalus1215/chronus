@@ -21,14 +21,10 @@ export class LoginAction {
     @Body() loginDto: { username: string; password: string },
     @Req() req: Request
   ) {
-    return this.authService.attemptLogin(
-      loginDto.username,
-      loginDto.password,
-      {
-        username: loginDto.username,
-        ip: req.ip ?? req.socket?.remoteAddress,
-        userAgent: req.headers['user-agent'],
-      }
-    );
+    return this.authService.attemptLogin(loginDto.username, loginDto.password, {
+      username: loginDto.username,
+      ip: req.ip ?? req.socket?.remoteAddress,
+      userAgent: req.headers['user-agent'],
+    });
   }
 }

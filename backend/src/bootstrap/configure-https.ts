@@ -19,7 +19,7 @@ export const getHttpsOptions = (): ServerOptions | undefined => {
 
 const loadCertificatesFromPaths = (
   keyPath: string,
-  certPath: string,
+  certPath: string
 ): ServerOptions | undefined => {
   try {
     if (!existsSync(keyPath) || !existsSync(certPath)) {
@@ -32,7 +32,7 @@ const loadCertificatesFromPaths = (
     };
   } catch (error) {
     console.warn(
-      `Failed to load SSL certificates: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to load SSL certificates: ${error instanceof Error ? error.message : String(error)}`
     );
     console.warn('Falling back to HTTP');
     return undefined;
@@ -57,7 +57,7 @@ const loadCertificatesFromDefaults = (): ServerOptions | undefined => {
     };
   } catch (error) {
     console.warn(
-      `Failed to read SSL certificates: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to read SSL certificates: ${error instanceof Error ? error.message : String(error)}`
     );
     return undefined;
   }

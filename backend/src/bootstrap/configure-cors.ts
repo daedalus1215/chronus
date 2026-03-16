@@ -15,12 +15,12 @@ const DEFAULT_CONFIG: CorsConfig = {
  */
 export const configureCors = (
   app: NestExpressApplication,
-  config: Partial<CorsConfig> = {},
+  config: Partial<CorsConfig> = {}
 ): void => {
   const mergedConfig = { ...DEFAULT_CONFIG, ...config };
 
   const corsOrigin = process.env.FRONTEND_ORIGIN
-    ? process.env.FRONTEND_ORIGIN.split(',').map((s) => s.trim())
+    ? process.env.FRONTEND_ORIGIN.split(',').map(s => s.trim())
     : true;
 
   app.enableCors({

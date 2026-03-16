@@ -19,6 +19,8 @@ import { UpdateNoteTitleTransactionScript } from './domain/transaction-scripts/u
 import { DeleteNoteAction } from './apps/actions/notes/delete-note.action';
 import { ArchiveNoteAction } from './apps/actions/archive-note/archive-note.action';
 import { ArchiveNoteTransactionScript } from './domain/transaction-scripts/archive-note/archive-note.transaction.script';
+import { ConvertChecklistToMemoTransactionScript } from './domain/transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script';
+import { ConvertChecklistToMemoAction } from './apps/actions/notes/convert-checklist-to-memo-action/convert-checklist-to-memo.action';
 import { NoteService } from './domain/services/note.service';
 import { GetNoteNamesByIdsTransactionScript } from './domain/transaction-scripts/get-note-names-by-ids.transaction.script';
 import { VerifyNoteAccessListener } from './apps/listeners/verify-note-access.listener';
@@ -45,6 +47,7 @@ import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
     UpdateNoteTransactionScript,
     UpdateNoteTitleTransactionScript,
     ArchiveNoteTransactionScript,
+    ConvertChecklistToMemoTransactionScript,
     UpdateNoteParamsToEntityConverter,
     NoteService,
     GetNoteNamesByIdsTransactionScript,
@@ -67,6 +70,7 @@ import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
     UpdateNoteTitleAction,
     DeleteNoteAction,
     ArchiveNoteAction,
+    ConvertChecklistToMemoAction,
   ],
   exports: [
     NoteMemoTagRepository,

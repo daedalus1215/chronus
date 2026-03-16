@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Note } from '../entities/notes/note.entity';
 import { ArchiveNoteTransactionScript } from '../transaction-scripts/archive-note/archive-note.transaction.script';
+import { ConvertChecklistToMemoTransactionScript } from '../transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script';
 import { GetNoteByIdTransactionScript } from '../transaction-scripts/get-note-by-id.transaction.script';
 import { UpdateNoteTransactionScript } from '../transaction-scripts/update-note-TS/update-note.transaction.script';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
@@ -21,6 +22,7 @@ export type NoteWithCheckItems = {
 export class NoteService {
   constructor(
     private readonly archiveNoteTransactionScript: ArchiveNoteTransactionScript,
+    private readonly convertChecklistToMemoTransactionScript: ConvertChecklistToMemoTransactionScript,
     private readonly getNoteByIdTransactionScript: GetNoteByIdTransactionScript,
     private readonly updateNoteTransactionScript: UpdateNoteTransactionScript,
     private readonly eventEmitter: EventEmitter2,
@@ -33,6 +35,14 @@ export class NoteService {
       noteId,
       authUser.userId
     );
+  }
+
+  async convertChecklistToMemo(
+    noteId: number,
+    userId: number
+  ): Promise<NoteWithCheckItems> {
+    await this.convertChecklistToMemoTransactionScript.apply(noteId, userId);
+    return this.getNoteByIdWithCheckItems(noteId, userId);
   }
 
   async getNoteByIdWithCheckItems(
