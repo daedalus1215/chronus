@@ -19,7 +19,7 @@ const DEFAULT_CONFIG: BodyParserConfig = {
  */
 export const configureBodyParser = (
   app: NestExpressApplication,
-  config: Partial<BodyParserConfig> = {},
+  config: Partial<BodyParserConfig> = {}
 ): void => {
   const envLimit = process.env.BODY_LIMIT;
   const mergedConfig: BodyParserConfig = {
@@ -33,6 +33,6 @@ export const configureBodyParser = (
     express.urlencoded({
       limit: mergedConfig.urlencodedLimit,
       extended: mergedConfig.extended,
-    }),
+    })
   );
 };

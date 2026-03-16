@@ -1,7 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class Create_SecurityEventsTable1771981543980
-  implements MigrationInterface {
+  implements MigrationInterface
+{
   name = 'Create_SecurityEventsTable1771981543980';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
