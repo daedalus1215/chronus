@@ -19,6 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import {
+  convertChecklistToMemo,
   deleteNote,
   updateNoteTimestamp,
 } from '../../../../../api/requests/notes.requests';
@@ -77,7 +78,10 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   } = useAudioActions(note.id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [convertDialogOpen, setConvertDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isConvertingToMemo, setIsConvertingToMemo] = useState(false);
+  const [convertError, setConvertError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [archiveError, setArchiveError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -204,10 +208,44 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     navigate(`/notes/${note.id}/kanban`);
   };
 
+  const handleConvertToMemo = () => {
+    setIsActionsOpen(false);
+    setConvertDialogOpen(true);
+  };
+
   const handleViewAudioHistory = () => {
     setIsActionsOpen(false);
     setIsAudioHistoryOpen(true);
     fetchAudioHistory();
+  };
+
+  const confirmConvertToMemo = async () => {
+    setIsConvertingToMemo(true);
+    setConvertError(null);
+    try {
+      await convertChecklistToMemo(note.id);
+      setConvertDialogOpen(false);
+      window.location.reload();
+    } catch (err: unknown) {
+      let message = 'Failed to convert note to memo';
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'message' in err.response.data &&
+        typeof (err.response.data as { message?: unknown }).message === 'string'
+      ) {
+        message = (err.response.data as { message: string }).message;
+      }
+      setConvertError(message);
+    } finally {
+      setIsConvertingToMemo(false);
+    }
   };
 
   const handleTimeTrackingSubmit = async (data: TimeTrackingData) => {
@@ -281,6 +319,8 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onLabel={handleTimeTracking}
         onExport={handleTimeTracking}
         onLock={handleTimeTracking}
+        onConvertToMemo={handleConvertToMemo}
+        isMemo={Boolean(note.isMemo)}
         isConverting={isConverting}
         isDownloading={isDownloading}
         audioError={audioError}
@@ -388,6 +428,41 @@ export const NoteItem: React.FC<NoteItemProps> = ({
             disabled={isArchiving}
           >
             {isArchiving ? 'Archiving...' : 'Archive'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={convertDialogOpen}
+        onClose={() => setConvertDialogOpen(false)}
+        aria-labelledby="convert-dialog-title"
+      >
+        <DialogTitle id="convert-dialog-title">
+          Convert to Memo?
+        </DialogTitle>
+        <DialogContent>
+          Convert this checklist to a memo note? Your check items will be
+          available in the sidebar checklist, and time tracks will be preserved.
+          {convertError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {convertError}
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setConvertDialogOpen(false)}
+            disabled={isConvertingToMemo}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmConvertToMemo}
+            color="primary"
+            variant="contained"
+            disabled={isConvertingToMemo}
+          >
+            {isConvertingToMemo ? 'Converting...' : 'Convert'}
           </Button>
         </DialogActions>
       </Dialog>

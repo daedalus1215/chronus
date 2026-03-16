@@ -15,7 +15,7 @@ type ShutdownState = {
  */
 export const configureGracefulShutdown = (
   app: NestExpressApplication,
-  logger: Logger,
+  logger: Logger
 ): void => {
   const state: ShutdownState = {
     shutdownInProgress: false,

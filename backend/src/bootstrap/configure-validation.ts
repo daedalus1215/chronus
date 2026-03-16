@@ -10,6 +10,6 @@ export const configureValidation = (app: NestExpressApplication): void => {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-    }),
+    })
   );
 };

@@ -14,6 +14,7 @@ import {
   AccessTimeOutlined,
   LockOutlined,
   ViewKanbanOutlined,
+  NoteAltOutlined,
 } from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
 import { ActionButton } from '@/components/ActionButton/ActionButton';
@@ -37,6 +38,8 @@ type NoteActionsProps = {
   onDownloadAudio: () => void;
   onViewAudioHistory: () => void;
   onViewBoard: () => void;
+  onConvertToMemo?: () => void;
+  isMemo?: boolean;
   isConverting?: boolean;
   isDownloading?: boolean;
   audioError?: string | null;
@@ -60,6 +63,8 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onLabel,
   onViewAudioHistory,
   onViewBoard,
+  onConvertToMemo,
+  isMemo = false,
   isConverting = false,
   isDownloading = false,
   audioError = null,
@@ -83,6 +88,12 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         <ActionButton label="Board" onClick={onViewBoard}>
           <ViewKanbanOutlined className={styles.icon} />
         </ActionButton>
+
+        {!isMemo && onConvertToMemo && (
+          <ActionButton label="Convert to Memo" onClick={onConvertToMemo}>
+            <NoteAltOutlined className={styles.icon} />
+          </ActionButton>
+        )}
 
         <ActionButton
           label="To Speech"
