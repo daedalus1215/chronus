@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
-export type SecurityEventType = 'failed_login' | 'disabled_registration_attempt';
+export type SecurityEventType =
+  | 'failed_login'
+  | 'disabled_registration_attempt';
 
 @Entity('security_events')
 export class SecurityEvent {

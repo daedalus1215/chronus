@@ -33,12 +33,9 @@ export class SecurityEventAggregator {
   async logDisabledRegistrationAttempt(
     context: DisabledRegistrationContext
   ): Promise<void> {
-    await this.securityEventRepository.create(
-      'disabled_registration_attempt',
-      {
-        ip: context.ip,
-        userAgent: context.userAgent,
-      }
-    );
+    await this.securityEventRepository.create('disabled_registration_attempt', {
+      ip: context.ip,
+      userAgent: context.userAgent,
+    });
   }
 }

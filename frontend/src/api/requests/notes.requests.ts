@@ -16,6 +16,15 @@ export const archiveNote = async (noteId: number): Promise<NoteResponse> => {
   return response.data;
 };
 
+export const convertChecklistToMemo = async (
+  noteId: number
+): Promise<NoteResponse> => {
+  const response = await api.patch<NoteResponse>(
+    `/notes/${noteId}/convert-to-memo`
+  );
+  return response.data;
+};
+
 export const createNote = async (
   type: keyof typeof NOTE_TYPES
 ): Promise<NoteResponse> => {

@@ -25,7 +25,7 @@ export const createLoggerMock = () =>
     error: jest.fn(),
   });
 
-type MockScriptConfig<T = any> = {
+export type MockScriptConfig<T = any> = {
   script: { apply: jest.MockInstance<any, any> | jest.Mock };
   return?: T;
   error?: Error;
