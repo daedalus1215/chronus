@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+/**
+ * Merges conditional class names (no Tailwind — use with CSS modules or plain strings).
+ */
+export const cn = (...inputs: ClassValue[]): string => clsx(inputs);

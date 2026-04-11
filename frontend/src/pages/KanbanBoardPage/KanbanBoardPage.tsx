@@ -36,15 +36,22 @@ import CardContent from '@mui/material/CardContent';
 type KanbanColumnConfig = {
   id: CheckItemStatus;
   title: string;
-  statusColorClass: string;
+  statusColor: string;
 };
 
 const KANBAN_COLUMNS: KanbanColumnConfig[] = [
-  { id: 'ready', title: 'Ready for Work', statusColorClass: '#4f46e5' },
-  { id: 'in_progress', title: 'In Progress', statusColorClass: 'bg-yellow-400' },
-  { id: 'review', title: 'Ready for Review', statusColorClass: 'bg-orange-400' },
-  { id: 'done', title: 'Done', statusColorClass: 'bg-green-500' },
+  { id: 'ready', title: 'Ready for Work', statusColor: '#4f46e5' },
+  { id: 'in_progress', title: 'In Progress', statusColor: '#facc15' },
+  { id: 'review', title: 'Ready for Review', statusColor: '#fb923c' },
+  { id: 'done', title: 'Done', statusColor: '#22c55e' },
 ];
+
+const STATUS_DOT_COLORS: Record<CheckItemStatus, string> = {
+  ready: '#4f46e5',
+  in_progress: '#facc15',
+  review: '#fb923c',
+  done: '#22c55e',
+};
 
 const normalizeStatus = (item: CheckItem): CheckItemStatus => {
   if (item.doneDate) {
@@ -164,11 +171,12 @@ export const KanbanBoardPage: React.FC = () => {
     ? items.find(item => item.id === activeId) || null
     : null;
 
-  const getStatusDotClass = (item: CheckItem): string => {
-    if (item.doneDate) return 'bg-green-500';
-    if (item.status === 'in_progress') return 'bg-yellow-400';
-    if (item.status === 'review') return 'bg-orange-400';
-    return 'bg-green-500';
+  const getStatusDotColor = (item: CheckItem): string => {
+    if (item.doneDate) {
+      return STATUS_DOT_COLORS.done;
+    }
+    const status = normalizeStatus(item);
+    return STATUS_DOT_COLORS[status] ?? STATUS_DOT_COLORS.ready;
   };
 
   const handleCreateOrEditCard = async () => {
@@ -253,35 +261,61 @@ export const KanbanBoardPage: React.FC = () => {
 
   if (!noteId || Number.isNaN(noteId)) {
     return (
-      <main className="flex h-full items-center justify-center text-sm text-gray-500">
+      <Box
+        component="main"
+        sx={{
+          display: 'flex',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '0.875rem',
+          color: 'var(--color-text-secondary)',
+        }}
+      >
         Missing note information.
-      </main>
+      </Box>
     );
   }
 
   return (
-    <main
-      className="flex h-full flex-col gap-4 p-4"
-      style={{
+    <Box
+      component="main"
+      sx={{
         backgroundColor: 'var(--color-bg)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px',
+        gap: 2,
         height: '100%',
-        padding: '16px',
+        p: 2,
         color: 'var(--color-text)',
       }}
     >
-      <header className="flex items-center justify-center py-2">
-        <span className="text-lg font-semibold">
+      <Box
+        component="header"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          py: 1,
+        }}
+      >
+        <Box component="span" sx={{ fontSize: '1.125rem', fontWeight: 600 }}>
           {note?.name || 'Kanban Board'}
-        </span>
-      </header>
+        </Box>
+      </Box>
 
       {(isNoteLoading || isCheckItemsLoading) && (
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            fontSize: '0.875rem',
+            color: 'var(--color-text-secondary)',
+          }}
+        >
           <CircularProgress size={18} /> Loading board...
-        </div>
+        </Box>
       )}
       {noteError && (
         <Alert severity="error">Failed to load note information.</Alert>
@@ -325,7 +359,7 @@ export const KanbanBoardPage: React.FC = () => {
                 key={column.id}
                 columnId={column.id}
                 title={column.title}
-                statusColorClass={column.statusColorClass}
+                statusColor={column.statusColor}
                 items={itemsByStatus[column.id]}
                 onEditItem={handleEditClick}
                 onViewItemDetails={handleViewItemDetails}
@@ -337,7 +371,8 @@ export const KanbanBoardPage: React.FC = () => {
               <Card className={cardStyles.card}>
                 <CardContent className={cardStyles.cardContent}>
                   <span
-                    className={`${cardStyles.statusDot} ${getStatusDotClass(activeItem)}`}
+                    className={cardStyles.statusDot}
+                    style={{ backgroundColor: getStatusDotColor(activeItem) }}
                     aria-hidden="true"
                   />
                   <span className={cardStyles.cardText}>{activeItem.name}</span>
@@ -377,6 +412,6 @@ export const KanbanBoardPage: React.FC = () => {
       >
         <AddIcon />
       </Fab>
-    </main>
+    </Box>
   );
 };

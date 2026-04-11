@@ -179,12 +179,25 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
   };
 
   return (
-    <form
-      className="flex flex-col h-[90vh] max-h-[90vh]"
+    <Box
+      component="form"
       onSubmit={handleAddTag}
       aria-label="Add tag to note"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '90vh',
+        maxHeight: '90vh',
+      }}
     >
-      <div className="flex items-center gap-2 mb-4">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          mb: 2,
+        }}
+      >
         <TextField
           inputRef={inputRef}
           value={newTagName}
@@ -193,7 +206,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
           placeholder="Enter tag name or use ↑↓ to navigate"
           variant="outlined"
           size="small"
-          className="flex-1"
+          sx={{ flex: 1 }}
           autoFocus
           aria-label="New tag name"
           disabled={isLoading}
@@ -216,22 +229,30 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
         >
           Close
         </Button>
-      </div>
+      </Box>
       {error && (
-        <Alert severity="error" className="mb-2">
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
-      <Box className="overflow-y-auto flex-1" aria-label="Tag list">
+      <Box sx={{ overflowY: 'auto', flex: 1 }} aria-label="Tag list">
         {filteredTags.length === 0 ? (
-          <Box className="flex flex-col items-center justify-center py-8">
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              py: 4,
+            }}
+          >
             <Typography variant="body2" color="text.secondary">
               {newTagName.trim()
                 ? `No tags found matching "${newTagName}"`
                 : 'No tags available'}
             </Typography>
             {newTagName.trim() && (
-              <Typography variant="caption" color="text.secondary" className="mt-2">
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
                 Press "Add" to create a new tag
               </Typography>
             )}
@@ -242,7 +263,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
             direction="row"
             flexWrap="wrap"
             spacing={1}
-            className="py-2"
+            sx={{ py: 1 }}
             aria-label="Available tags"
           >
             {filteredTags.map((tag, index) => (
@@ -266,15 +287,15 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
                         handleAddExistingTag(tag.id);
                     }}
                     disabled={isLoading}
-                    className="cursor-pointer"
-                    sx={
-                      selectedIndex === index
+                    sx={{
+                      cursor: 'pointer',
+                      ...(selectedIndex === index
                         ? {
                             transform: 'scale(1.05)',
                             transition: 'all 0.2s ease',
                           }
-                        : {}
-                    }
+                        : {}),
+                    }}
                   />
                 </Box>
               </Tooltip>
@@ -282,6 +303,6 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
           </Stack>
         )}
       </Box>
-    </form>
+    </Box>
   );
 };

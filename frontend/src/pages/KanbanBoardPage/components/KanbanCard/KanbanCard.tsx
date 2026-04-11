@@ -16,14 +16,14 @@ import styles from './KanbanCard.module.css';
 
 type KanbanCardProps = {
   item: CheckItem;
-  statusColorClass: string;
+  statusColor: string;
   onEdit: (id: number, name: string) => void;
   onViewDetails: (item: CheckItem) => void;
 };
 
 export const KanbanCard: React.FC<KanbanCardProps> = ({
   item,
-  statusColorClass,
+  statusColor,
   onEdit,
   onViewDetails,
 }) => {
@@ -81,7 +81,8 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
           {...listeners}
         >
           <span
-            className={`${styles.statusDot} ${statusColorClass}`}
+            className={styles.statusDot}
+            style={{ backgroundColor: statusColor }}
             aria-hidden="true"
           />
           <span className={styles.cardText}>

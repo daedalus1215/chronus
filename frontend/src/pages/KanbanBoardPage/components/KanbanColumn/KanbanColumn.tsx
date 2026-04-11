@@ -8,7 +8,7 @@ import { KanbanCard } from '../KanbanCard/KanbanCard';
 type KanbanColumnProps = {
   columnId: string;
   title: string;
-  statusColorClass: string;
+  statusColor: string;
   items: CheckItem[];
   onEditItem: (id: number, name: string) => void;
   onViewItemDetails: (item: CheckItem) => void;
@@ -17,7 +17,7 @@ type KanbanColumnProps = {
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   columnId,
   title,
-  statusColorClass,
+  statusColor,
   items,
   onEditItem,
   onViewItemDetails,
@@ -52,19 +52,38 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           padding: '8px 12px',
         }}
       >
-        <span
-          className={`h-2.5 w-2.5 rounded-full ${statusColorClass}`}
+        <Box
+          component="span"
+          sx={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            flexShrink: 0,
+            backgroundColor: statusColor,
+          }}
           aria-hidden="true"
         />
-        <h3 className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>
+        <Box
+          component="h3"
+          sx={{
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            color: 'var(--color-text)',
+            m: 0,
+          }}
+        >
           {title}
-        </h3>
-        <span
-          className="ml-auto text-[11px]"
-          style={{ color: 'var(--color-text-secondary)' }}
+        </Box>
+        <Box
+          component="span"
+          sx={{
+            marginLeft: 'auto',
+            fontSize: '11px',
+            color: 'var(--color-text-secondary)',
+          }}
         >
           {items.length}
-        </span>
+        </Box>
       </Box>
       <SortableContext
         items={items.map(item => item.id)}
@@ -85,7 +104,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
             <KanbanCard
               key={item.id}
               item={item}
-              statusColorClass={statusColorClass}
+              statusColor={statusColor}
               onEdit={onEditItem}
               onViewDetails={onViewItemDetails}
             />

@@ -182,7 +182,15 @@ export const NotePage: React.FC = () => {
             minHeight: 0,
           }}
         >
-          <Box className="flex items-center gap-2 overflow-x-auto py-2">
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              overflowX: 'auto',
+              py: 1,
+            }}
+          >
             <IconButton
               onClick={() => setAddTagOpen(true)}
               color="secondary"
@@ -200,7 +208,7 @@ export const NotePage: React.FC = () => {
                 variant="outlined"
                 color="primary"
                 size="small"
-                className="whitespace-nowrap"
+                sx={{ whiteSpace: 'nowrap' }}
                 onClick={() => navigate(`/tag-notes/${tag.id}`)}
                 onDelete={async () => {
                   try {
@@ -224,11 +232,13 @@ export const NotePage: React.FC = () => {
             <DialogTitle id="add-tag-dialog-title">Add tag to note</DialogTitle>
             <DialogContent>
               {allTagsLoading ? (
-                <span className="text-gray-400 ml-2">Loading all tags...</span>
+                <Box component="span" sx={{ color: 'var(--color-text-secondary)', ml: 1 }}>
+                  Loading all tags...
+                </Box>
               ) : allTagsError ? (
-                <span className="text-red-500 ml-2">
+                <Box component="span" sx={{ color: 'var(--color-destructive)', ml: 1 }}>
                   Error loading all tags
-                </span>
+                </Box>
               ) : (
                 <AddTagForm
                   noteId={Number(id)}
