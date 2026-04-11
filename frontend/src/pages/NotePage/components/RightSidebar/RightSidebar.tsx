@@ -24,7 +24,16 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       aria-hidden={!isOpen}
       role="complementary"
     >
-      <Box className="flex items-center justify-between px-3 py-2 border-b border-[var(--color-overlay-stronger)]">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 1.5,
+          py: 1,
+          borderBottom: '1px solid var(--color-overlay-stronger)',
+        }}
+      >
         <Typography
           variant="body2"
           component="h2"

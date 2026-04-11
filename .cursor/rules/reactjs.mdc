@@ -30,8 +30,8 @@ The user asks questions about the following coding languages:
 ### Code Implementation Guidelines
 Follow these rules when you write code:
 - Use early returns whenever possible to make the code more readable.
-- Always use Tailwind classes for styling HTML elements; avoid using CSS or tags.
-- Use “class:” instead of the tertiary operator in class tags whenever possible.
+- Style with **MUI** (`sx`, theme) and **modular CSS or SCSS** (CSS Modules `.module.css` / `.module.scss`, or scoped partials). Avoid utility-class frameworks unless the project adds them back.
+- Prefer **`clsx`** (or the local `cn` helper) only for combining **CSS module class names**, not for long utility strings.
 - Use descriptive variable and function/const names. Also, event functions should be named with a “handle” prefix, like “handleClick” for onClick and “handleKeyDown” for onKeyDown.
 - Implement accessibility features on elements. For example, a tag should have a tabindex=“0”, aria-label, on:click, and on:keydown, and similar attributes.
 - Use consts instead of functions, for example, “const toggle = () =>”. Also, define a type if possible.

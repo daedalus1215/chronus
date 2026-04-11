@@ -138,7 +138,16 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
           </Typography>
         </div>
       </Box>
-      <Box className="flex items-center justify-between px-3 py-2 border-b border-[var(--color-overlay-stronger)]">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 1.5,
+          py: 1,
+          borderBottom: '1px solid var(--color-overlay-stronger)',
+        }}
+      >
         <IconButton
           size="small"
           aria-label="Add checklist item"
@@ -269,8 +278,13 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
                     }
                   }}
                 >
-                  <span
-                    className="block break-words whitespace-pre-wrap"
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'block',
+                      overflowWrap: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                    }}
                     style={{
                       textDecoration: item.doneDate
                         ? 'line-through'
@@ -281,7 +295,7 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
                     }}
                   >
                     {item.name}
-                  </span>
+                  </Box>
                 </Box>
               </Box>
               <IconButton

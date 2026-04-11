@@ -1,4 +1,4 @@
-/* Color variables are now defined in index.css */
+/* Color variables are defined in src/styles/global.scss */
 
 #root {
   max-width: 1280px;

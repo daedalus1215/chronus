@@ -140,7 +140,7 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
                   <KanbanCard
                     key={item.id}
                     item={item}
-                    statusColorClass={activeColumn.statusColor}
+                    statusColor={activeColumn.statusColor}
                     onEdit={onEditItem}
                     onViewDetails={onViewItemDetails}
                   />
@@ -153,7 +153,7 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
               <div className={styles.dragOverlay}>
                 <KanbanCard
                   item={activeItem}
-                  statusColorClass={activeColumn.statusColor}
+                  statusColor={activeColumn.statusColor}
                   onEdit={() => {}}
                   onViewDetails={() => {}}
                 />

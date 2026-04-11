@@ -1,19 +1,67 @@
-# Architectural Conventions for Chronus
+# Chronus — Agent instructions
 
-## Project Overview
-
-This is a monorepo with a **NestJS backend** and **React frontend** using DDD, Hexagonal Architecture, and Layered Architecture.
+This file is the **canonical instruction set** for AI assistants working in this repository (including Claude). Editor-specific copies may exist under `.cursor/` for IDE features; when they disagree, **treat this document as authoritative** unless the team updates it.
 
 ---
 
-## Backend Architecture
+## 1. Agent (default behavior)
 
-### Directory Structure
+You are a senior engineer on **Chronus**: a monorepo with a **NestJS** backend and a **React** frontend. The codebase follows **DDD**, **Hexagonal (ports/adapters)**, and **layered** architecture.
+
+### 1.1 Non‑negotiables
+
+- **Backend**: Actions call **Services** only; Services orchestrate **Transaction Scripts**; domain logic lives in Transaction Scripts; **Aggregators** handle cross-domain reads/coordination; **Repositories** are data-only.
+- **No same-level injection** among Transaction Scripts, Mappers, Assemblers, or Aggregators (orchestrate one level up).
+- **Blackbox rule**: If a Mapper uses a Converter, the Transaction Script uses the Mapper—not the Converter directly (unless no Mapper/Assembler uses that Converter).
+- **Cross-domain**: No entity references across bounded contexts; use **Aggregators** (and shared-kernel join entities when appropriate).
+- **Tests**: Co-locate in `__specs__/` next to the subject; name the system under test `target`; prefer Arrange–Act–Assert.
+- **Types**: Prefer `type` over `interface` for object shapes unless extending declaration merging is required.
+- **Style**: Match existing files; avoid drive-by refactors; keep changes minimal and purposeful.
+
+### 1.2 How to work in this repo
+
+1. **Locate** the module under `src/{module}/` (or shared areas) before editing.
+2. **Follow** the request path: Action → Service → Transaction Script → Repository.
+3. **Verify** naming and folder layout against the reference sections below.
+4. **Run** or add tests next to code you change when the area already uses tests.
+
+### 1.3 Stack snapshot
+
+| Area | Stack |
+|------|--------|
+| Backend | NestJS, TypeORM, class-validator DTOs |
+| Frontend | React, TypeScript, MUI, modular CSS/SCSS, React Query |
+
+---
+
+## 2. Skills (procedures — when to apply what)
+
+In Claude terms, **skills** are *procedural*: “when task X, do steps Y.” This repo does not require separate `SKILL.md` files for you to be effective; use the **Skill triggers** below and jump to the linked **Reference** section.
+
+| Skill trigger | Goal | Read first |
+|---------------|------|------------|
+| **Add or change an API endpoint** | New/changed HTTP surface | §3.1 Request flow, §3.2 Dependency rules, §3.5 Naming |
+| **Domain rule or use case change** | Business logic | §3.1, §3.3 Blackbox, §3.4 Cross-domain |
+| **Cross-module read/write** | Avoid coupling | §3.4 Cross-domain, Aggregators |
+| **Persistence only** | Queries, mappings | §3.2 Repositories, §3.7 DDD + TypeORM |
+| **React UI** | Components, a11y, MUI + SCSS | §3.8 Frontend |
+| **Tests** | Unit/integration style | §3.9 Testing |
+| **UI polish / responsive** | UX constraints | §3.10 UI/UX |
+
+If you maintain optional **Claude Code**-style skills as separate files later, each should map to one row above and point back to the same reference § for detail.
+
+---
+
+## 3. References (depth — consult as needed)
+
+### 3.1 Backend — directory shape and request flow
+
+**Directory structure (conceptual)**
 
 ```
 src/
 ├── {module-name}/
-│   ├── application/           # Controllers, DTOs, request/response handling
+│   ├── application/
 │   │   ├── controllers/
 │   │   │   └── actions/
 │   │   │       └── {action-name}/
@@ -23,7 +71,7 @@ src/
 │   │   └── dtos/
 │   │       ├── requests/{dto-name}.dto.ts
 │   │       └── responses/{dto-name}.dto.ts
-│   ├── domain/                # Core business logic
+│   ├── domain/
 │   │   ├── services/{service-name}.service.ts
 │   │   ├── transaction-scripts/{transaction-name}-ts/
 │   │   │   ├── {transaction-name}.transaction.script.ts
@@ -33,79 +81,69 @@ src/
 │   │   ├── exceptions/
 │   │   ├── converters/
 │   │   └── aggregators/
-│   ├── infrastructure/         # Data access, external adapters
+│   ├── infrastructure/
 │   │   └── repositories/{repository-name}.repository.ts
-│   ├── registries/           # Module wiring
+│   ├── registries/
 │   └── {module}.module.ts
-└── shared/shared-entities/    # Cross-domain entities
+└── shared/shared-entities/
 ```
 
-### Module Interaction Flow
+**Module interaction flow**
 
-1. **Action** receives request → validates input
-2. **Action** calls **Service** (never transaction script directly)
-3. **Service** uses **Aggregator** for cross-domain logic
-4. **Service** delegates to **Transaction Script** for business operation
-5. **Transaction Script** uses **Repositories** for data access
-6. **Responder** maps entity to response DTO
+1. **Action** receives the request and validates input.
+2. **Action** calls **Service** (never a Transaction Script directly).
+3. **Service** uses an **Aggregator** for cross-domain concerns.
+4. **Service** delegates to **Transaction Script** for the use case.
+5. **Transaction Script** uses **Repositories** for persistence.
+6. **Responder** maps entities to response DTOs.
 
-### Dependency Rules
+---
 
-| Component | Can Inject | Cannot Inject |
-|-----------|-----------|---------------|
+### 3.2 Dependency rules
+
+| Component | Can inject | Cannot inject |
+|-----------|------------|----------------|
 | Converters | Nothing | Repositories, Transaction Scripts, Services, other Converters |
 | Assemblers | Converters, Repositories (shallow) | Transaction Scripts, Services, Mappers |
 | Mappers | Assemblers, Converters, Repositories | Transaction Scripts, Services |
 | Transaction Scripts | Repositories, Mappers, Aggregators, Converters* | Services, other Transaction Scripts |
-| Domain Services | Transaction Scripts, Aggregators, Repositories | Services, Mappers, Converters |
+| Domain Services | Transaction Scripts, Aggregators, Repositories | Other Domain Services, Mappers, Converters |
 | Aggregators | Transaction Scripts, Repositories | Services, other Aggregators |
-| Repositories | TypeORM Repository | Transaction Scripts, Services, Converters |
+| Repositories | TypeORM `Repository`, other Repositories | Transaction Scripts, Services, Converters |
 
-*Only if Converter is NOT used by a Mapper (Blackbox Principle)
+\*Converter only if **not** already used inside a Mapper/Assembler (Blackbox Principle).
 
-### Key Rules
+**Key rules**
 
-1. **No Same-Level Injection** - Transaction Scripts don't inject other Transaction Scripts; use Domain Service or Aggregator instead
-2. **Blackbox Principle** - If a lower pattern is used by an intermediate pattern, the higher pattern uses the intermediate, not the lower one
-3. **Domain Boundaries** - Entities stay within their domain; use Aggregators for cross-domain communication
-4. **Transaction Scripts** - All domain logic lives here
-5. **Join Entities in Shared-Kernel** - Many-to-many join tables belong in `shared-kernel/domain/entities/`
+1. **No same-level injection** — orchestrate via Domain Service or Aggregator.
+2. **Blackbox** — higher layers depend on composed abstractions, not every leaf dependency.
+3. **Domain boundaries** — entities stay in their domain; cross-domain via Aggregators.
+4. **Transaction Scripts** own domain logic for a use case.
+5. **Join entities** that only model M:N persistence may live under `shared-kernel/domain/entities/`.
 
 ---
 
-## Blackbox Principle
+### 3.3 Blackbox principle
 
-The Blackbox Principle ensures that higher-level patterns don't need to know about the internal composition of lower-level patterns.
+If pattern A uses B, and B uses C, then A should only depend on B. B is a **blackbox** for A.
 
-### Rule
-If a pattern A uses pattern B, and pattern B uses pattern C, then pattern A should only know about pattern B. Pattern B becomes a **blackbox**.
-
-### Dependency Hierarchy
+**Dependency hierarchy (high → low)**
 
 ```
-Entry Points (Application Layer)
-    ↓
-Domain Services
-    ↓
-Aggregators (via ports)
-    ↓
-Transaction Scripts
-    ↓
-Mappers
-    ↓
-Assemblers
-    ↓
-Converters (cannot have any dependencies)
-    ↓
-Repositories (shallow, data only)
-    ↓
-Dispatchers / RemoteCallers
+Entry points (application)
+  → Domain Services
+  → Aggregators
+  → Transaction Scripts
+  → Mappers
+  → Assemblers
+  → Converters (no dependencies)
+  → Repositories
+  → Dispatchers / RemoteCallers
 ```
 
-### Correct Pattern
+**Correct (Transaction Script uses Mapper that uses Converter)**
 
 ```typescript
-// Converter used by Mapper - Mapper is blackbox
 @Injectable()
 export class InvoiceToDtoConverter {
   apply(entity: Invoice): InvoiceDto {
@@ -120,11 +158,11 @@ export class InvoiceToDtoConverter {
 @Injectable()
 export class InvoiceWithPaymentsMapper {
   constructor(private readonly invoiceToDtoConverter: InvoiceToDtoConverter) {}
-  
+
   map(invoice: Invoice, payments: Payment[]): InvoiceWithPaymentsDto {
     return {
       invoice: this.invoiceToDtoConverter.apply(invoice),
-      payments: payments.map(p => ({ id: p.id, amount: p.amount })),
+      payments: payments.map((p) => ({ id: p.id, amount: p.amount })),
     };
   }
 }
@@ -134,7 +172,7 @@ export class GetInvoiceWithPaymentsTransactionScript {
   constructor(
     private readonly invoiceRepository: InvoiceRepository,
     private readonly paymentRepository: PaymentApplicationRepository,
-    private readonly invoiceWithPaymentsMapper: InvoiceWithPaymentsMapper, // ✅ Uses Mapper, not Converter
+    private readonly invoiceWithPaymentsMapper: InvoiceWithPaymentsMapper,
   ) {}
 
   async execute(invoiceId: number): Promise<InvoiceWithPaymentsDto> {
@@ -145,403 +183,117 @@ export class GetInvoiceWithPaymentsTransactionScript {
 }
 ```
 
-### Incorrect Pattern
+**Incorrect**: Transaction Script also injects `InvoiceToDtoConverter` when the Mapper already uses it.
 
-```typescript
-// ❌ Transaction Script should NOT directly use Converter if Mapper uses it
-@Injectable()
-export class GetInvoiceWithPaymentsTransactionScript {
-  constructor(
-    private readonly invoiceRepository: InvoiceRepository,
-    private readonly invoiceWithPaymentsMapper: InvoiceWithPaymentsMapper,
-    private readonly invoiceToDtoConverter: InvoiceToDtoConverter, // ❌ Converter already used by Mapper
-  ) {}
-}
-```
-
-### Exception
-If a Converter is **NOT** used by any Mapper/Assembler, then a Transaction Script can use it directly.
+**Exception**: If no Mapper/Assembler uses the Converter, a Transaction Script may use the Converter directly.
 
 ---
 
-## Cross-Domain Communication Rules
+### 3.4 Cross-domain communication
 
-### No Cross-Domain Pollination
+- **Do not** reference entities from another domain inside an entity (no cross-domain ORM graph for unrelated aggregates).
+- **Do** expose behavior/data through **Aggregators** in the owning domain.
 
-Entities from one domain should **NOT** directly reference entities from another domain. Use Aggregators and ports for cross-domain communication.
-
-### Correct Pattern
-
-```typescript
-// Invoice entity in invoices domain - NO reference to Payment
-@Entity({ name: 'invoices' })
-export class Invoice {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id: number;
-  
-  // No @OneToMany(() => Payment, ...) here
-}
-
-// Use Aggregator for cross-domain access
-@Injectable()
-export class InvoiceService {
-  constructor(
-    private readonly cancelInvoiceTransactionScript: CancelInvoiceTransactionScript,
-    private readonly paymentAggregator: PaymentAggregator, // ✅ Via aggregator
-  ) {}
-
-  async cancelInvoice(invoiceId: number, issuerUserId: number): Promise<Invoice> {
-    const hasPayments = await this.paymentAggregator.hasPaymentApplications(invoiceId);
-    if (hasPayments) {
-      throw new Error('Cannot cancel invoice with payments');
-    }
-    return await this.cancelInvoiceTransactionScript.execute(invoiceId);
-  }
-}
-```
-
-### Incorrect Pattern
+**Join entity exception** (shared-kernel, anemic):
 
 ```typescript
-// ❌ Cross-domain entity reference
-@Entity({ name: 'invoices' })
-export class Invoice {
-  @OneToMany(() => Payment, (payment) => payment.invoice) // ❌ Payment is in payments domain
-  payments!: Payment[];
-}
-```
-
-### Join Entities Exception
-
-Many-to-many join tables belong in `shared-kernel/domain/entities/`:
-
-```typescript
-// shared-kernel/domain/entities/tag-note.entity.ts
 @Entity({ name: 'tag_notes' })
 export class TagNote {
   @PrimaryColumn({ name: 'tag_id' })
   tagId: number;
-  
+
   @PrimaryColumn({ name: 'note_id' })
   noteId: number;
 }
 ```
 
-Rationale: Join entities don't represent business concepts; they exist purely for persistence. Neither domain "owns" the relationship.
+---
 
-### Cross-Domain Aggregator Usage
+### 3.5 Pattern glossary (quick)
 
-```typescript
-// payments/domain/aggregators/payment.aggregator.ts
-@Injectable()
-export class PaymentAggregator {
-  constructor(
-    private readonly paymentRepository: PaymentRepository,
-  ) {}
-
-  async hasPaymentApplications(invoiceId: number): Promise<boolean> {
-    const applications = await this.paymentApplicationRepository.findByInvoiceId(invoiceId);
-    return applications.length > 0;
-  }
-}
-
-// invoices/domain/services/invoice.service.ts
-@Injectable()
-export class InvoiceService {
-  constructor(
-    private readonly paymentAggregator: PaymentAggregator, // ✅ Direct injection from other domain
-  ) {}
-}
-```
+- **Transaction Script** — one use case; `{feature}.transaction.script.ts`; main method typically `execute` or `apply` per module convention.
+- **Domain Service** — orchestrates scripts + aggregators; `{feature}.service.ts`.
+- **Aggregator** — cross-domain queries/operations for other modules to call.
+- **Repository** — persistence wrapper around TypeORM.
+- **Entity** — TypeORM entity in `domain/entities/` or shared entities path as per module.
 
 ---
 
-## TypeScript Coding Guidelines
+### 3.6 TypeScript and NestJS style
 
-### Function Guidelines
-
-- **Maximum 20 instructions** per function
-- **Single purpose** - each function does one thing
-- **Name with verbs** - `createInvoice`, `findById`, `hasPaymentApplications`
-- **Use verbs for booleans** - `isLoading`, `hasError`, `canDelete`
-- **Reduce parameters using RO-RO** (Release-Request/Response Object pattern)
-  - Use objects to pass multiple parameters
-  - Use objects to return results
-
-```typescript
-// ❌ Too many parameters
-async createInvoice(userId: number, debtorId: number, amount: number, dueDate: Date, description: string): Promise<Invoice>
-
-// ✅ Use object parameter
-async createInvoice(dto: CreateInvoiceRequestDto): Promise<Invoice>
-```
-
-### Class Guidelines
-
-- **Maximum 200 instructions** per class
-- **Maximum 10 public methods** per class
-- **Maximum 10 properties** per class
-- **Single responsibility** - one reason to change
-
-### Variable Naming
-
-| Type | Pattern | Example |
-|------|---------|---------|
-| Boolean | is/has/can prefix | `isLoading`, `hasError`, `canDelete` |
-| Collection | plural or suffix | `users`, `invoiceItems` |
-| Constants | UPPERCASE with underscores | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT` |
-| Test variables | inputX, mockX, actualX, expectedX | `inputDto`, `mockRepository` |
-
-### Data Immutability
-
-- **Use `const`** instead of `let` wherever possible
-- **Use `readonly`** for class properties that don't change
-- **Use `as const`** for literal values
-
-```typescript
-const CONFIG = { timeout: 5000 } as const;
-readonly MAX_ITEMS = 100;
-```
-
-### Error Handling
-
-- Use exceptions for unexpected errors
-- Catch exceptions to fix expected problems or add context
-- Use global exception handler for unexpected errors
-- Use early returns to avoid nesting
-
-```typescript
-// ❌ Deep nesting
-if (entity) {
-  if (isValid) {
-    if (hasPermission) {
-      // do something
-    }
-  }
-}
-
-// ✅ Early returns
-if (!entity) {
-  throw new NotFoundException('Entity not found');
-}
-if (!isValid) {
-  throw new BadRequestException('Invalid data');
-}
-if (!hasPermission) {
-  throw new ForbiddenException('Access denied');
-}
-// do something
-```
-
-### Imports
-
-- One export per file
-- Group imports: external → internal → relative
-- Use path aliases (`@/` for src paths)
+- Prefer **short functions** (single purpose); **early returns** over deep nesting.
+- **RO-RO**: pass/return objects when arity grows.
+- **Naming**: PascalCase classes; camelCase members; kebab-case files; `is`/`has`/`can` for booleans; UPPER_SNAKE for env and stable constants.
+- **Immutability**: `const`, `readonly`, `as const` where appropriate.
+- **Imports**: one export per file; order external → internal → relative; use project path aliases (e.g. `@/`).
+- **Errors**: `NotFoundException`, `BadRequestException`, etc. for API-facing failures; add context when catching to rethrow.
 
 ---
 
-## Pattern Glossary
+### 3.7 DDD + TypeORM split
 
-### Transaction Script
-Encapsulates a single business transaction. Named `{feature}.transaction.script.ts`.
+| Layer | TypeORM in domain? | Cross-domain imports | Business logic |
+|-------|--------------------|----------------------|----------------|
+| Domain | No | No (types from shared-kernel only) | Yes |
+| Infrastructure | Yes | Yes (infra concerns) | No |
 
-```typescript
-@Injectable()
-export class CreateInvoiceTransactionScript {
-  constructor(private readonly invoiceRepository: InvoiceRepository) {}
-
-  async execute(dto: CreateInvoiceRequestDto, issuerUserId: number): Promise<Invoice> {
-    // Business logic here
-  }
-}
-```
-
-### Domain Service
-Orchestrates business logic, coordinates Transaction Scripts. Named `{feature}.service.ts`.
-
-```typescript
-@Injectable()
-export class InvoiceService {
-  constructor(
-    private readonly createInvoiceTransactionScript: CreateInvoiceTransactionScript,
-    private readonly paymentAggregator: PaymentAggregator,
-  ) {}
-
-  async createInvoice(dto: CreateInvoiceRequestDto, issuerUserId: number): Promise<Invoice> {
-    return await this.createInvoiceTransactionScript.execute(dto, issuerUserId);
-  }
-}
-```
-
-### Aggregator
-Provides domain-specific operations for cross-domain communication.
-
-```typescript
-@Injectable()
-export class PaymentAggregator {
-  constructor(
-    private readonly paymentRepository: PaymentRepository,
-  ) {}
-
-  async hasPaymentApplications(invoiceId: number): Promise<boolean> {
-    // Cross-domain query logic
-  }
-}
-```
-
-### Repository
-Handles persistence. Wraps TypeORM repositories.
-
-```typescript
-@Injectable()
-export class InvoiceRepository {
-  constructor(@InjectRepository(Invoice) private readonly repository: Repository<Invoice>) {}
-
-  async findById(id: number): Promise<Invoice | null> {
-    return this.repository.findOne({ where: { id } });
-  }
-}
-```
-
-### Entity
-TypeORM entity representing domain object. Located in `domain/entities/` or `shared/shared-entities/entities/`.
-
-```typescript
-@Entity({ name: 'invoices' })
-export class Invoice {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id: number;
-  
-  @Column({ name: 'issuer_user_id', type: 'int' })
-  issuerUserId: number;
-}
-```
+Pure domain types without ORM are ideal in domain; persistence models live in infrastructure when you use this split strictly.
 
 ---
 
-## Frontend Architecture
+### 3.8 Frontend (React + MUI + modular CSS/SCSS)
 
-### Tech Stack
-- React with TypeScript
-- MUI (Material UI) for components
-- Tailwind CSS for styling
-- React Query for data fetching
+- **Styling**: Use **MUI** (`sx`, theme) for component styling and layout. Use **CSS Modules** (`.module.css`) or **SCSS** partials colocated with components for complex or reusable rules. Global tokens live in `frontend/src/styles/global.scss`. Do **not** add Tailwind or other utility-class frameworks unless the team explicitly reintroduces them.
+- **Events**: name handlers `handleClick`, `handleKeyDown`, etc.
+- **Accessibility**: keyboard support, labels, and focus order for interactive controls.
+- **Components**: prefer `const` component declarations; keep props as a `type` alias.
 
-### Coding Conventions
-
-1. **Styling**: Use Tailwind classes exclusively; avoid CSS or tags
-2. **Components**: Use descriptive names; event handlers prefixed with `handle` (e.g., `handleClick`)
-3. **Accessibility**: Include `tabindex`, `aria-label`, keyboard handlers on interactive elements
-4. **Immutability**: Use `const` instead of `let`; use `as const` for literals
-5. **Early Returns**: Use early returns to reduce nesting
-6. **Class Tags**: Use `class:` instead of ternary operators where possible
-7. **TypeScript**: Avoid `any`; declare types for all variables and functions
-
-### Component Patterns
+Example:
 
 ```typescript
-// Event handlers
-const handleClick = () => { /* ... */ };
+type MyComponentProps = {
+  readonly title: string;
+  readonly onAction: () => void;
+};
 
-// Boolean variables
-const isLoading = true;
-const hasError = false;
-
-// Component with props
-interface ComponentProps {
-  title: string;
-  onAction: () => void;
-}
-
-const MyComponent: React.FC<ComponentProps> = ({ title, onAction }) => {
+const MyComponent = ({ title, onAction }: MyComponentProps) => {
   return (
-    <button 
-      onClick={onAction}
-      aria-label={title}
-      tabIndex={0}
-    >
+    <button type="button" onClick={onAction} aria-label={title}>
       {title}
     </button>
   );
 };
 ```
 
----
-
-## Naming Conventions
-
-| Type | Convention | Example |
-|------|------------|---------|
-| Classes | PascalCase | `InvoiceService`, `UserRepository` |
-| Variables/Functions | camelCase | `createInvoice`, `userId` |
-| Files/Directories | kebab-case | `create-invoice.action.ts`, `user-repository.ts` |
-| Environment Variables | UPPERCASE | `DATABASE_URL`, `API_KEY` |
-| Types/Interfaces | PascalCase | `InvoiceDto`, `UserResponse` |
-| Boolean Variables | is/has/can prefix | `isLoading`, `hasError`, `canDelete` |
-| Test Variables | inputX, mockX, actualX, expectedX | `inputUser`, `mockRepository` |
+**MUI X / Data Grid / Pickers**: when behavior or API is non-obvious, consult **current** MUI X docs (project may use MCP or official docs)—do not rely on memorized APIs alone.
 
 ---
 
-## Testing Conventions
+### 3.9 Testing
 
-### Backend Tests (Jest)
-- Follow **Arrange-Act-Assert** pattern
-- Place tests in `__specs__/` folder next to the file being tested
-- Name test subjects as `target`
-- Write unit tests for each public function
-- Write acceptance tests for each module
-
-```typescript
-describe('CreateInvoiceTransactionScript', () => {
-  it('should create invoice with valid data', async () => {
-    // Arrange
-    const inputDto = { debtorUserId: 2, amount: 100, dueDate: '2024-12-31' };
-    
-    // Act
-    const actual = await target.execute(inputDto, 1);
-    
-    // Assert
-    expect(actual.id).toBeDefined();
-  });
-});
-```
-
-### Frontend Tests
-- Test public component interfaces
-- Mock external dependencies
-- Test error states and edge cases
+- **Backend (Jest)**: Arrange–Act–Assert; `__specs__/` adjacent to subject; SUT variable name `target`.
+- **Frontend**: exercise public component behavior; mock network and external modules as the project already does.
 
 ---
 
-## UI/UX Guidelines
+### 3.10 UI/UX expectations
 
-1. **Visual Hierarchy** - Clear hierarchy to guide user attention
-2. **Consistency** - Maintain consistent style, terminology, and element positioning
-3. **Accessibility** - Follow WCAG 2.1 AA standards; ensure keyboard navigation
-4. **Feedback** - Loading indicators, clear error messages, success confirmations
-5. **Mobile-First** - Design for mobile first, scale up; use responsive breakpoints
-6. **Touch Targets** - Minimum 44x44 pixels for interactive elements
+- Clear hierarchy, consistent patterns, WCAG-oriented accessibility, visible loading and error states, responsive/mobile-first layout, adequate touch targets (~44px minimum where applicable).
 
 ---
 
-## DDD + TypeORM Pattern
+## 4. Optional: Claude Code hooks
 
-| Layer | TypeORM | Cross-Domain Imports | Business Logic |
-|-------|---------|---------------------|----------------|
-| Domain | No | No | Yes |
-| Infrastructure | Yes | Yes (infra only) | No |
+If you use **Claude Code** with project skills:
 
-**Domain Layer**: Pure TypeScript, no TypeORM decorators
-**Infrastructure Layer**: TypeORM entities, repositories, database logic
-**Mapping Layer**: Converts between domain entities and TypeORM entities
+- Keep **Agent** material short at the top of this file (§1).
+- Move rarely needed prose to `docs/` only when duplication hurts maintenance.
+- Add `SKILL.md` files under `.claude/skills/<name>/` whose **description** frontmatter matches the Skill trigger table in §2 and points to the same §3 reference headings.
+
+This repository may add those files later; nothing here requires them.
 
 ---
 
-## Design Principles
+## 5. Document history note
 
-1. **Functional Cohesion** - Each class/module has single, well-defined responsibility
-2. **Loose Coupling** - Aggregators decouple services from other domains
-3. **SOLID Principles** - Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion
-4. **Functional Paradigm** - Prefer `const`, use `map` over loops, avoid mutating variables
-5. **Larry Constantine's Structured Design** - Minimize coupling, maximize cohesion
+Content originated from team architecture rules and was consolidated for **portable agent use** (not tied to a single editor). Update §1–§3 when architecture changes; avoid scattering duplicate rules.
