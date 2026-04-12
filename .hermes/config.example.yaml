@@ -1,0 +1,77 @@
+# Hermes configuration for Chronus development
+# Copy to ~/.hermes/config.yaml and adjust paths/model settings.
+
+model:
+  # Your private LLM settings
+  default: "your-model-name"        # e.g. "llama-3.1-70b", "qwen-2.5-72b", etc.
+  provider: "openai"                 # API format: "openai", "anthropic", "ollama"
+  base_url: "http://localhost:8080/v1"  # your local inference endpoint
+  context_length: 120000             # match your model's actual context window
+  max_tokens: 8192                   # output token limit (tune to your model)
+
+# Context compression -- critical for 120k window
+compression:
+  threshold: 0.75                    # compress when conversation reaches 75% of context
+  target_ratio: 0.5                  # compress down to 50% of current size
+  protect_last_n: 4                  # keep the 4 most recent turns intact
+
+# Skills -- Hermes loads SKILL.md name+description into prompt,
+# full body loads on demand via skill_view (saves tokens).
+skills:
+  creation_nudge_interval: 20        # suggest skill creation every N interactions
+  external_dirs:
+    # Point to the project's .hermes/skills/ directory
+    - /path/to/chronus-react-nestjs/.hermes/skills
+
+# Delegation settings
+delegation:
+  max_iterations: 30
+  default_toolsets: ["terminal", "file", "web"]
+
+# Platform toolsets
+platform_toolsets:
+  cli: [hermes-cli]
+
+# Optional: MCP servers for live documentation lookups
+# Uncomment and configure if you want real-time framework doc access.
+#
+# mcp_servers:
+#   # NestJS documentation via context7
+#   nestjs-docs:
+#     command: "npx"
+#     args: ["-y", "@context7/mcp"]
+#     env:
+#       CONTEXT7_LIBRARY: "nestjs/nest"
+#
+#   # MUI documentation (similar to the Cursor MUI MCP)
+#   mui-docs:
+#     command: "npx"
+#     args: ["-y", "@context7/mcp"]
+#     env:
+#       CONTEXT7_LIBRARY: "mui/material-ui"
+#
+#   # TypeORM documentation
+#   typeorm-docs:
+#     command: "npx"
+#     args: ["-y", "@context7/mcp"]
+#     env:
+#       CONTEXT7_LIBRARY: "typeorm/typeorm"
+
+# Notes:
+#
+# 1. Context budget (approximate):
+#    - Hermes internal system prompt:   ~4,000 tokens
+#    - AGENTS.md (root, trimmed):       ~2,500 tokens
+#    - Subdirectory hint (when active): ~1,000 tokens
+#    - Skill body (when loaded):        ~1,500 tokens
+#    - Available for conversation:     ~111,000 tokens
+#
+# 2. The project has local reference docs in docs/references/ that the agent
+#    can read_file on demand. This is more reliable than MCP for self-hosted setups:
+#    - docs/references/nestjs-decorators.md
+#    - docs/references/typeorm-patterns.md
+#    - docs/references/mui-components.md
+#
+# 3. Hermes auto-discovers AGENTS.md at the project root. Subdirectory hints
+#    load progressively from backend/AGENTS.md and frontend/AGENTS.md when
+#    the agent touches files in those directories.
