@@ -67,16 +67,23 @@
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
+  width: 60px;
+  height: 60px;
   transition: background-color 0.2s ease;
 }
 
 .moreButton:hover {
   background-color: var(--hover-color);
+  width: 60px;
+  height: 60px;
 }
 
 .moreButton:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
+  width: 60px;
+  height: 60px; 
+  background-color: var(--color-primary-light);
 }
 
 /* Compact variant: smaller padding and font so more items fit (e.g. desktop list). */
