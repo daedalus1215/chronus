@@ -21,6 +21,13 @@ export class CheckItemsAggregator {
     private readonly getCheckItemsByNoteTransactionScript: GetCheckItemsByNoteTransactionScript
   ) {}
 
+  async searchByQuery(
+    userId: number,
+    query: string
+  ): Promise<{ noteId: number; noteName: string; checkItemName: string }[]> {
+    return this.checkItemsRepository.searchByQuery(userId, query);
+  }
+
   async deleteCheckItemsByNoteId(noteId: number): Promise<void> {
     return this.checkItemsRepository.deleteByNoteId(noteId);
   }

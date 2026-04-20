@@ -12,10 +12,16 @@ import { DELETE_CHECK_ITEMS_BY_NOTE_COMMAND } from 'src/shared-kernel/domain/cro
 import { DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/tags/delete-note-tag-associations.command';
 import { CheckItemsAggregator } from 'src/check-items/domain/aggregators/check-items.aggregator';
 import { CheckItemProjection } from 'src/check-items/domain/aggregators/check-items.aggregator';
+import { SearchNotesTransactionScript, NoteSearchMatches } from '../transaction-scripts/search-notes.transaction.script';
 
 export type NoteWithCheckItems = {
   note: Note;
   checkItems: CheckItemProjection[];
+};
+
+export type SearchResults = NoteSearchMatches & {
+  query: string;
+  checkItemMatches: { noteId: number; noteName: string; checkItemName: string }[];
 };
 
 @Injectable()
@@ -25,6 +31,7 @@ export class NoteService {
     private readonly convertChecklistToMemoTransactionScript: ConvertChecklistToMemoTransactionScript,
     private readonly getNoteByIdTransactionScript: GetNoteByIdTransactionScript,
     private readonly updateNoteTransactionScript: UpdateNoteTransactionScript,
+    private readonly searchNotesTransactionScript: SearchNotesTransactionScript,
     private readonly eventEmitter: EventEmitter2,
     private readonly noteRepository: NoteMemoTagRepository,
     private readonly checkItemsAggregator: CheckItemsAggregator
@@ -78,6 +85,15 @@ export class NoteService {
       note,
       checkItems,
     };
+  }
+
+  async search(userId: number, query: string): Promise<SearchResults> {
+    const [noteMatches, checkItemMatches] = await Promise.all([
+      this.searchNotesTransactionScript.apply(userId, query),
+      this.checkItemsAggregator.searchByQuery(userId, query),
+    ]);
+
+    return { query, ...noteMatches, checkItemMatches };
   }
 
   async deleteNote(noteId: number, userId: number): Promise<void> {

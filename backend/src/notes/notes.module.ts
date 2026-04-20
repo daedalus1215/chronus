@@ -21,6 +21,9 @@ import { ArchiveNoteAction } from './apps/actions/archive-note/archive-note.acti
 import { ArchiveNoteTransactionScript } from './domain/transaction-scripts/archive-note/archive-note.transaction.script';
 import { ConvertChecklistToMemoTransactionScript } from './domain/transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script';
 import { ConvertChecklistToMemoAction } from './apps/actions/notes/convert-checklist-to-memo-action/convert-checklist-to-memo.action';
+import { SearchNotesAction } from './apps/actions/notes/search-notes-action/search-notes.action';
+import { SearchNotesTransactionScript } from './domain/transaction-scripts/search-notes.transaction.script';
+import { SearchNotesResponder } from './apps/actions/notes/search-notes-action/search-notes.responder';
 import { NoteService } from './domain/services/note.service';
 import { GetNoteNamesByIdsTransactionScript } from './domain/transaction-scripts/get-note-names-by-ids.transaction.script';
 import { VerifyNoteAccessListener } from './apps/listeners/verify-note-access.listener';
@@ -55,6 +58,8 @@ import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
     GetNoteDetailsListener,
     GetNoteByIdResponder,
     UpdateNoteResponder,
+    SearchNotesTransactionScript,
+    SearchNotesResponder,
     NoteOwnershipAdapter,
     {
       provide: NOTE_OWNERSHIP_PORT,
@@ -71,6 +76,7 @@ import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
     DeleteNoteAction,
     ArchiveNoteAction,
     ConvertChecklistToMemoAction,
+    SearchNotesAction,
   ],
   exports: [
     NoteMemoTagRepository,

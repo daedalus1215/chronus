@@ -104,6 +104,26 @@ export class CheckItemsRepository {
     return result?.maxOrder ?? -1;
   }
 
+  async searchByQuery(
+    userId: number,
+    query: string
+  ): Promise<{ noteId: number; noteName: string; checkItemName: string }[]> {
+    return this.checkItemRepository
+      .createQueryBuilder('checkItem')
+      .select('note.id', 'noteId')
+      .addSelect('note.name', 'noteName')
+      .addSelect('checkItem.name', 'checkItemName')
+      .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
+      .where('note.user_id = :userId', { userId })
+      .andWhere('LOWER(checkItem.name) LIKE LOWER(:query)', {
+        query: `%${query}%`,
+      })
+      .andWhere('checkItem.archived_date IS NULL')
+      .orderBy('note.updated_at', 'DESC')
+      .limit(20)
+      .getRawMany();
+  }
+
   async getMinOrderByNoteId(noteId: number): Promise<number> {
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
