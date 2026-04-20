@@ -35,6 +35,16 @@ export type CreateTimeTrackResponse = {
   updatedAt: string;
 };
 
+export type SearchResult = {
+  noteId: number;
+  noteName: string;
+  isMemo: boolean;
+  matchType: 'note_name' | 'memo_content' | 'check_item';
+  contextBefore: string;
+  matchText: string;
+  contextAfter: string;
+};
+
 export type TimeTrackTotalResponseDto = {
   totalMinutes: number;
   totalDays: number;

@@ -1,6 +1,6 @@
 import { NOTE_TYPES } from '../../constant';
 import api from '../axios.interceptor';
-import { NamesOfNotesResponse, NoteResponse } from '../dtos/note.dtos';
+import { NamesOfNotesResponse, NoteResponse, SearchResult } from '../dtos/note.dtos';
 
 export const updateNoteTimestamp = async (noteId: number): Promise<void> => {
   const response = await api.patch(`/notes/${noteId}/timestamp`);
@@ -50,6 +50,13 @@ export const getNamesOfNotes = async (
       type,
       tagId,
     },
+  });
+  return response.data;
+};
+
+export const searchNotes = async (query: string): Promise<SearchResult[]> => {
+  const response = await api.get<SearchResult[]>('/notes/search', {
+    params: { query },
   });
   return response.data;
 };

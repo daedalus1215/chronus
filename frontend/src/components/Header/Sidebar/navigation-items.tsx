@@ -5,6 +5,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import HistoryIcon from '@mui/icons-material/History';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SearchIcon from '@mui/icons-material/Search';
 
 export const navigationItems = [
   {
@@ -36,6 +37,11 @@ export const navigationItems = [
     label: 'Yearly Notes',
     path: '/yearly-notes',
     icon: HistoryIcon,
+  },
+  {
+    label: 'Search',
+    path: '/search',
+    icon: SearchIcon,
   },
   {
     label: 'Settings',

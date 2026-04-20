@@ -1,0 +1,80 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.searchBar {
+  flex-shrink: 0;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 0.5rem;
+}
+
+.resultList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.resultItem {
+  border: 1px solid;
+  border-color: var(--mui-palette-divider, rgba(255, 255, 255, 0.12));
+  border-radius: 8px !important;
+}
+
+.resultButton {
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.resultContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.resultHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.noteName {
+  flex: 1;
+  font-weight: 600 !important;
+}
+
+.matchChip {
+  font-size: 0.7rem !important;
+}
+
+.context {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem !important;
+  line-height: 1.5 !important;
+}
+
+.contextText {
+  color: inherit;
+}
+
+.highlight {
+  background-color: rgba(255, 215, 0, 0.35);
+  color: #ffd700;
+  padding: 0 2px;
+  border-radius: 2px;
+  font-style: normal;
+}

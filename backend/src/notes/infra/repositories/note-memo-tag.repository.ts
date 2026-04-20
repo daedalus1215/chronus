@@ -108,6 +108,47 @@ export class NoteMemoTagRepository {
     await this.repository.delete({ id, userId });
   }
 
+  async searchNoteNames(
+    userId: number,
+    query: string
+  ): Promise<{ noteId: number; noteName: string; isMemo: boolean }[]> {
+    const rows = await this.repository
+      .createQueryBuilder('note')
+      .select('note.id', 'noteId')
+      .addSelect('note.name', 'noteName')
+      .addSelect(
+        'CASE WHEN note.memo_id IS NOT NULL THEN 1 ELSE 0 END',
+        'isMemo'
+      )
+      .where('note.user_id = :userId', { userId })
+      .andWhere('LOWER(note.name) LIKE LOWER(:query)', {
+        query: `%${query}%`,
+      })
+      .orderBy('note.updated_at', 'DESC')
+      .limit(20)
+      .getRawMany();
+    return rows.map(r => ({ ...r, isMemo: Boolean(r.isMemo) }));
+  }
+
+  async searchMemoDescriptions(
+    userId: number,
+    query: string
+  ): Promise<{ noteId: number; noteName: string; description: string }[]> {
+    return this.repository
+      .createQueryBuilder('note')
+      .select('note.id', 'noteId')
+      .addSelect('note.name', 'noteName')
+      .addSelect('memo.description', 'description')
+      .innerJoin('note.memo', 'memo')
+      .where('note.user_id = :userId', { userId })
+      .andWhere('LOWER(memo.description) LIKE LOWER(:query)', {
+        query: `%${query}%`,
+      })
+      .orderBy('note.updated_at', 'DESC')
+      .limit(20)
+      .getRawMany();
+  }
+
   async getNoteNamesByIds(
     noteIds: number[],
     userId: number
