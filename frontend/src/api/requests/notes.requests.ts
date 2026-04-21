@@ -1,6 +1,6 @@
 import { NOTE_TYPES } from '../../constant';
 import api from '../axios.interceptor';
-import { NamesOfNotesResponse, NoteResponse, SearchResult } from '../dtos/note.dtos';
+import { ExplorerNoteItem, NamesOfNotesResponse, NoteResponse, SearchResult } from '../dtos/note.dtos';
 
 export const updateNoteTimestamp = async (noteId: number): Promise<void> => {
   const response = await api.patch(`/notes/${noteId}/timestamp`);
@@ -43,14 +43,25 @@ export const getNamesOfNotes = async (
   tagId?: string
 ): Promise<NamesOfNotesResponse> => {
   const response = await api.get<NamesOfNotesResponse>(`/notes/names`, {
-    params: {
-      cursor,
-      limit,
-      query,
-      type,
-      tagId,
-    },
+    params: { cursor, limit, query, type, tagId },
   });
+  return response.data;
+};
+
+export const getNotesForExplorer = async (
+  folderId?: string
+): Promise<ExplorerNoteItem[]> => {
+  const response = await api.get<ExplorerNoteItem[]>(`/notes/explorer-names`, {
+    params: { folderId },
+  });
+  return response.data;
+};
+
+export const moveNoteToFolder = async (
+  noteId: number,
+  folderId: number | null
+): Promise<{ id: number; folderId: number | null }> => {
+  const response = await api.patch(`/notes/${noteId}/folder`, { folderId });
   return response.data;
 };
 

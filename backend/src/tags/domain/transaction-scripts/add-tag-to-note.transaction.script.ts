@@ -21,7 +21,7 @@ export class AddTagToNoteTransactionScript {
     dto: AddTagToNoteDto,
     userId: number
   ): Promise<Tag> {
-    if (dto.tagId) {
+    if (dto.tagId !== undefined && dto.tagId !== null) {
       const tag = await this.tagRepository.findTagByIdAndUserId(
         dto.tagId,
         userId

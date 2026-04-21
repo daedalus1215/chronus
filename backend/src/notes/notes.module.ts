@@ -34,6 +34,11 @@ import { GetNoteByIdResponder } from './apps/actions/notes/get-note-by-id-action
 import { UpdateNoteResponder } from './apps/actions/notes/update-note-action/update-note.responder';
 import { NoteOwnershipAdapter } from './apps/adapters/note-ownership.adapter';
 import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
+import { MoveNoteToFolderTransactionScript } from './domain/transaction-scripts/move-note-to-folder.transaction-script';
+import { MoveNoteToFolderAction } from './apps/actions/notes/move-note-to-folder-action/move-note-to-folder.action';
+import { GetNoteNamesForExplorerAction } from './apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action';
+import { NoteFolderAdapter } from './apps/adapters/note-folder.adapter';
+import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
 
 @Module({
   imports: [
@@ -61,9 +66,15 @@ import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
     SearchNotesTransactionScript,
     SearchNotesResponder,
     NoteOwnershipAdapter,
+    MoveNoteToFolderTransactionScript,
     {
       provide: NOTE_OWNERSHIP_PORT,
       useExisting: NoteOwnershipAdapter,
+    },
+    NoteFolderAdapter,
+    {
+      provide: NOTE_FOLDER_PORT,
+      useExisting: NoteFolderAdapter,
     },
   ],
   controllers: [
@@ -77,12 +88,15 @@ import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
     ArchiveNoteAction,
     ConvertChecklistToMemoAction,
     SearchNotesAction,
+    MoveNoteToFolderAction,
+    GetNoteNamesForExplorerAction,
   ],
   exports: [
     NoteMemoTagRepository,
     NoteAggregator,
     NoteService,
     NOTE_OWNERSHIP_PORT,
+    NOTE_FOLDER_PORT,
   ],
 })
 export class NotesModule {}

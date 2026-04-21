@@ -1,0 +1,139 @@
+/* ── Sidebar shell ─────────────────────────────────────────────── */
+.tree {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  user-select: none;
+}
+
+/* ── Section header row ────────────────────────────────────────── */
+.treeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 4px 4px 12px;
+  flex-shrink: 0;
+}
+
+.heading {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35) !important;
+  line-height: 1 !important;
+}
+
+.headerBtn {
+  padding: 3px !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 3px !important;
+}
+.headerBtn:hover {
+  color: rgba(255, 255, 255, 0.75) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ── Loading ───────────────────────────────────────────────────── */
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+}
+
+/* ── Tree rows (shared by both FolderTree + FolderTreeItem) ─────── */
+.item {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 26px !important;
+  max-height: 26px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-right: 4px !important;
+  border-radius: 3px !important;
+  margin: 0 4px !important;
+  width: calc(100% - 8px) !important;
+  cursor: pointer;
+  gap: 2px;
+}
+
+.item:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.item:hover .itemActions {
+  opacity: 1;
+}
+
+/* MUI selected state override */
+.item.Mui-selected,
+.item[aria-selected='true'] {
+  background-color: rgba(255, 255, 255, 0.09) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.item.Mui-selected:hover {
+  background-color: rgba(255, 255, 255, 0.11) !important;
+}
+
+/* ── Chevron toggle area ───────────────────────────────────────── */
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Folder / file icon ───────────────────────────────────────── */
+.icon {
+  min-width: 20px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Label ─────────────────────────────────────────────────────── */
+.label {
+  font-size: 13px !important;
+  line-height: 1 !important;
+  color: rgba(255, 255, 255, 0.72);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.labelSelected {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* ── Inline rename input ─────────────────────────────────────── */
+.renameInput input {
+  font-size: 13px !important;
+  padding: 1px 4px !important;
+  height: 20px;
+}
+
+/* ── Row action buttons (visible on hover) ──────────────────── */
+.itemActions {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.1s;
+  flex-shrink: 0;
+  gap: 0;
+}
+
+.actionBtn {
+  padding: 2px !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  border-radius: 3px !important;
+}
+.actionBtn:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}

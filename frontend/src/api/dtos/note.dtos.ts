@@ -1,7 +1,20 @@
+export type NoteNameItem = {
+  name: string;
+  id: number;
+  isMemo: number;
+};
+
 export type NamesOfNotesResponse = {
-  notes: { name: string; id: number; isMemo: number }[];
+  notes: NoteNameItem[];
   hasMore: boolean;
   nextCursor: number;
+};
+
+export type ExplorerNoteItem = {
+  name: string;
+  id: number;
+  isMemo: number;
+  folderId: number | null;
 };
 
 export type NoteResponse = {

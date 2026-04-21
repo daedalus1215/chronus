@@ -14,6 +14,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { LoggingModule } from './shared-kernel/apps/logging/logging.module';
 import { SharedKernelModule } from './shared-kernel/shared-kernel.module';
 import { SecurityEventsModule } from './security-events/security-events.module';
+import { FoldersModule } from './folders/folders.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
@@ -65,6 +66,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     EventEmitterModule.forRoot(),
     LoggingModule,
     SharedKernelModule,
+    FoldersModule,
   ],
   controllers: [],
   providers: [
