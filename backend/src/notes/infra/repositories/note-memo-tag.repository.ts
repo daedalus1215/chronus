@@ -88,6 +88,35 @@ export class NoteMemoTagRepository {
       .getRawMany();
   }
 
+  async getNoteNamesForExplorer(
+    userId: number,
+    folderId?: string
+  ): Promise<{ name: string; id: number; isMemo: number; folderId: number | null }[]> {
+    const qb = this.repository
+      .createQueryBuilder('note')
+      .select('note.name', 'name')
+      .addSelect('note.id', 'id')
+      .addSelect(
+        'CASE WHEN note.memo_id IS NOT NULL THEN 1 ELSE 0 END',
+        'isMemo'
+      )
+      .addSelect('note.folder_id', 'folderId')
+      .where('note.user_id = :userId', { userId });
+
+    if (folderId === 'root') {
+      qb.andWhere('note.folder_id IS NULL');
+    } else if (folderId) {
+      qb.andWhere('note.folder_id = :folderId', {
+        folderId: parseInt(folderId, 10),
+      });
+    }
+
+    return await qb
+      .orderBy('note.updated_at', 'DESC')
+      .take(500)
+      .getRawMany();
+  }
+
   async updateNoteTimestamp(id: number): Promise<UpdateResult> {
     const result = await this.repository
       .createQueryBuilder('note')

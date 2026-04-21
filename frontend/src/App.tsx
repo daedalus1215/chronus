@@ -21,6 +21,7 @@ import { YearlyNotesPage } from './pages/YearlyNotesPage/YearlyNotesPage';
 import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 import { KanbanBoardPage } from './pages/KanbanBoardPage/KanbanBoardPage';
 import { SearchPage } from './pages/SearchPage/SearchPage';
+import { ExplorerPage } from './pages/ExplorerPage/ExplorerPage';
 import { ROUTES, ROUTE_PATTERNS } from './constants/routes';
 import { AuthenticatedLayout } from './components/Layout/AuthenticatedLayout';
 import { PersistentAudioPlayer } from './components/PersistentAudioPlayer/PersistentAudioPlayer';
@@ -60,6 +61,9 @@ function AppRoutes() {
           <Route path={ROUTES.YEARLY_NOTES} element={<YearlyNotesPage />} />
           <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
           <Route path={ROUTES.SEARCH} element={<SearchPage />} />
+          <Route path={ROUTES.EXPLORER} element={<ExplorerPage />}>
+            <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
+          </Route>
 
           {/* Redirect authenticated users trying to access auth pages */}
           <Route

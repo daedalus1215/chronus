@@ -18,7 +18,7 @@ type DesktopSidebarProps = {
 
 export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
   const location = useLocation();
-  const fixedWidth = 85;
+  const fixedWidth = 52;
 
   return (
     <Box
@@ -100,7 +100,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
                         color: isActive ? 'primary.main' : 'text.secondary',
                       }}
                     >
-                      <item.icon />
+                      <item.icon sx={{ fontSize: 18 }} />
                     </ListItemIcon>
                   </ListItemButton>
                 </Tooltip>

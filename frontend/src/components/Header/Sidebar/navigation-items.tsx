@@ -6,6 +6,7 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import HistoryIcon from '@mui/icons-material/History';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SearchIcon from '@mui/icons-material/Search';
+import FolderIcon from '@mui/icons-material/Folder';
 
 export const navigationItems = [
   {
@@ -42,6 +43,11 @@ export const navigationItems = [
     label: 'Search',
     path: '/search',
     icon: SearchIcon,
+  },
+  {
+    label: 'Explorer',
+    path: '/explorer',
+    icon: FolderIcon,
   },
   {
     label: 'Settings',

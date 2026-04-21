@@ -1,0 +1,131 @@
+/* ── Panel shell ───────────────────────────────────────────────── */
+.browser {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+/* ── Top bar: path + search ────────────────────────────────────── */
+.topBar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 10px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.breadcrumb {
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1;
+}
+
+.breadcrumbSep {
+  opacity: 0.4;
+}
+
+.breadcrumbCurrent {
+  color: rgba(255, 255, 255, 0.65) !important;
+  font-weight: 500;
+}
+
+/* ── Search input override ─────────────────────────────────────── */
+.searchInput input {
+  font-size: 12px !important;
+  padding: 5px 8px !important;
+  height: 22px;
+}
+
+.searchInput fieldset {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.searchInput:hover fieldset {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ── File list ─────────────────────────────────────────────────── */
+.list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+/* ── Individual note row ───────────────────────────────────────── */
+.noteRow {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 26px !important;
+  max-height: 26px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 10px !important;
+  padding-right: 4px !important;
+  border-radius: 3px !important;
+  margin: 0 4px !important;
+  width: calc(100% - 8px) !important;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.noteRow:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.noteRow:hover .noteMenuBtn {
+  opacity: 1;
+}
+
+.noteRow.Mui-selected {
+  background-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+.noteIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.noteLabel {
+  font-size: 13px !important;
+  color: rgba(255, 255, 255, 0.72);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.noteMenuBtn {
+  opacity: 0 !important;
+  padding: 2px !important;
+  transition: opacity 0.1s;
+  color: rgba(255, 255, 255, 0.45) !important;
+  border-radius: 3px !important;
+  flex-shrink: 0;
+}
+
+.noteMenuBtn:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ── Empty / loading states ────────────────────────────────────── */
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyText {
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+}

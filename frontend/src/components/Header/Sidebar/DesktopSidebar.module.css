@@ -8,7 +8,7 @@
   overflow-y: hidden;
   scrollbar-width: none;
   scroll-behavior: none;
-  margin-top: 6em;
+  padding-top: 8px;
 }
 
 .header {
@@ -38,13 +38,12 @@
 }
 
 .nav {
-  flex: 1;
   padding: 0;
 }
 
 .navItem {
-  padding: 0.5rem 0.75rem !important;
-  margin: 0.25rem 0 !important;
+  padding: 0.4rem 0.5rem !important;
+  margin: 0.15rem 0 !important;
   border-radius: 6px !important;
   transition: all 0.2s ease-in-out !important;
 }

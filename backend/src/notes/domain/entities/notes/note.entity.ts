@@ -41,4 +41,7 @@ export class Note {
 
   @DeleteDateColumn({ name: 'archived_at', nullable: true })
   archivedAt: Date | null;
+
+  @Column({ name: 'folder_id', nullable: true, type: 'integer' })
+  folderId: number | null;
 }
