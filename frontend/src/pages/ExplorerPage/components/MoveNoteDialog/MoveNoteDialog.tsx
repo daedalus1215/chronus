@@ -26,9 +26,20 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onConfirm: (folder: FolderDto | null) => void;
+  /** Folder ids that cannot be chosen (e.g. selected folders and their descendants). */
+  disabledFolderIds?: ReadonlySet<number>;
+  dialogTitle?: string;
+  helperText?: string;
 };
 
-export const MoveNoteDialog: React.FC<Props> = ({ open, onClose, onConfirm }) => {
+export const MoveNoteDialog: React.FC<Props> = ({
+  open,
+  onClose,
+  onConfirm,
+  disabledFolderIds,
+  dialogTitle = 'Move to folder',
+  helperText,
+}) => {
   const [folders, setFolders] = useState<FolderDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<FolderDto | null>(null);
@@ -36,16 +47,25 @@ export const MoveNoteDialog: React.FC<Props> = ({ open, onClose, onConfirm }) =>
   useEffect(() => {
     if (!open) return;
     setSelected(null);
+    setLoading(true);
     fetchFolders()
       .then(setFolders)
       .finally(() => setLoading(false));
   }, [open]);
 
   const tree = buildFolderTree(folders);
+  const disabled = disabledFolderIds ?? new Set<number>();
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Move to Folder</DialogTitle>
+      <DialogTitle>{dialogTitle}</DialogTitle>
+      {helperText ? (
+        <Box sx={{ px: 3, pb: 0 }}>
+          <Typography variant="caption" color="text.secondary">
+            {helperText}
+          </Typography>
+        </Box>
+      ) : null}
       <DialogContent dividers sx={{ p: 0, minHeight: 200 }}>
         {loading ? (
           <Box
@@ -75,6 +95,7 @@ export const MoveNoteDialog: React.FC<Props> = ({ open, onClose, onConfirm }) =>
                 node={node}
                 depth={0}
                 selected={selected}
+                disabledFolderIds={disabled}
                 onSelect={setSelected}
               />
             ))}
@@ -92,6 +113,7 @@ export const MoveNoteDialog: React.FC<Props> = ({ open, onClose, onConfirm }) =>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
+          disabled={selected !== null && disabled.has(selected.id)}
           onClick={() => onConfirm(selected)}
         >
           Move here
@@ -105,6 +127,7 @@ type PickerItemProps = {
   node: FolderTreeNode;
   depth: number;
   selected: FolderDto | null;
+  disabledFolderIds: ReadonlySet<number>;
   onSelect: (f: FolderDto) => void;
 };
 
@@ -112,27 +135,35 @@ const FolderPickerItem: React.FC<PickerItemProps> = ({
   node,
   depth,
   selected,
+  disabledFolderIds,
   onSelect,
-}) => (
-  <>
-    <ListItemButton
-      selected={selected?.id === node.id}
-      onClick={() => onSelect(node)}
-      sx={{ pl: `${1 + depth * 1.5}rem` }}
-    >
-      <ListItemIcon sx={{ minWidth: 32 }}>
-        <FolderIcon fontSize="small" />
-      </ListItemIcon>
-      <ListItemText primary={node.name} />
-    </ListItemButton>
-    {node.children.map(child => (
-      <FolderPickerItem
-        key={child.id}
-        node={child}
-        depth={depth + 1}
-        selected={selected}
-        onSelect={onSelect}
-      />
-    ))}
-  </>
-);
+}) => {
+  const isDisabled = disabledFolderIds.has(node.id);
+  return (
+    <>
+      <ListItemButton
+        selected={selected?.id === node.id}
+        disabled={isDisabled}
+        onClick={() => {
+          if (!isDisabled) onSelect(node);
+        }}
+        sx={{ pl: `${1 + depth * 1.5}rem` }}
+      >
+        <ListItemIcon sx={{ minWidth: 32 }}>
+          <FolderIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={node.name} />
+      </ListItemButton>
+      {node.children.map(child => (
+        <FolderPickerItem
+          key={child.id}
+          node={child}
+          depth={depth + 1}
+          selected={selected}
+          disabledFolderIds={disabledFolderIds}
+          onSelect={onSelect}
+        />
+      ))}
+    </>
+  );
+};
