@@ -25,3 +25,11 @@ export const updateFolder = async (
 export const deleteFolder = async (id: number): Promise<void> => {
   await api.delete(`/folders/${id}`);
 };
+
+export const bulkReparentFolders = async (data: {
+  folderIds: number[];
+  parentId: number | null;
+}): Promise<FolderDto[]> => {
+  const res = await api.patch('/folders/bulk-reparent', data);
+  return res.data;
+};

@@ -22,9 +22,19 @@
   justify-content: space-between;
   padding: 10px 4px 6px 12px;
   flex-shrink: 0;
+  gap: 8px;
+  min-width: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .heading {
+  flex: 1;
+  min-width: 0;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.07em;
@@ -97,6 +107,16 @@
 
 .rowActive:hover {
   background-color: rgba(255, 255, 255, 0.11) !important;
+}
+
+/* ── Pick-mode checkbox column ─────────────────────────────────── */
+.rowCheck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  flex-shrink: 0;
+  margin-right: 2px;
 }
 
 /* ── Chevron slot ──────────────────────────────────────────────── */
