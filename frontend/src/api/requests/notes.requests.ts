@@ -1,4 +1,4 @@
-import { NOTE_TYPES } from '../../constant';
+import { NOTE_TYPES, NoteTypes } from '../../constant';
 import api from '../axios.interceptor';
 import { ExplorerNoteItem, NamesOfNotesResponse, NoteResponse, SearchResult } from '../dtos/note.dtos';
 
@@ -26,11 +26,13 @@ export const convertChecklistToMemo = async (
 };
 
 export const createNote = async (
-  type: keyof typeof NOTE_TYPES
+  type: NoteTypes,
+  folderId?: number | null
 ): Promise<NoteResponse> => {
   const response = await api.post<NoteResponse>('/notes', {
     name: type === NOTE_TYPES.MEMO ? 'Memo' : 'Checklist',
     isMemo: type === NOTE_TYPES.MEMO,
+    folderId: folderId ?? undefined,
   });
   return response.data;
 };
