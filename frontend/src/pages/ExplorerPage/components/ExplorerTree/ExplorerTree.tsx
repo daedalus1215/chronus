@@ -210,21 +210,6 @@ export const ExplorerTree: React.FC = () => {
       />
 
       <Box className={styles.body}>
-        {rootNotes.map(note => (
-          <NoteRow
-            key={note.id}
-            note={note}
-            depth={0}
-            active={activeNoteId === String(note.id)}
-            selected={selectedNoteIds.has(note.id)}
-            pickItemsMode={pickItemsMode}
-            onOpen={id => navigate(`notes/${id}`)}
-            onRowClick={handleNoteRowClick}
-            onMenuOpen={(anchor, id) => setNoteMenu({ anchor, id })}
-            onTogglePick={() => toggleNoteInSelection(note.id)}
-          />
-        ))}
-
         {tree.map(node => (
           <FolderSubtree
             key={node.id}
@@ -254,6 +239,21 @@ export const ExplorerTree: React.FC = () => {
             pickItemsMode={pickItemsMode}
             toggleFolderInSelection={toggleFolderInSelection}
             toggleNoteInSelection={toggleNoteInSelection}
+          />
+        ))}
+
+        {rootNotes.map(note => (
+          <NoteRow
+            key={note.id}
+            note={note}
+            depth={0}
+            active={activeNoteId === String(note.id)}
+            selected={selectedNoteIds.has(note.id)}
+            pickItemsMode={pickItemsMode}
+            onOpen={id => navigate(`notes/${id}`)}
+            onRowClick={handleNoteRowClick}
+            onMenuOpen={(anchor, id) => setNoteMenu({ anchor, id })}
+            onTogglePick={() => toggleNoteInSelection(note.id)}
           />
         ))}
 
