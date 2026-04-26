@@ -76,7 +76,6 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
       {/* top bar */}
       <Box className={styles.topBar}>
         <Typography className={styles.breadcrumb} component="div">
-          <span>vault</span>
           <ChevronRightIcon sx={{ fontSize: 11 }} className={styles.breadcrumbSep} />
           <span className={styles.breadcrumbCurrent}>{folderLabel}</span>
         </Typography>
