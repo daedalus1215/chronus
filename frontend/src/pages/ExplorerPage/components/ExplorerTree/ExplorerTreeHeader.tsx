@@ -28,7 +28,6 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
 }) => {
   return (
     <Box className={styles.header}>
-      <span className={styles.heading}>vault</span>
       <Box
         className={styles.headerActions}
         sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}
@@ -39,7 +38,7 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
               component="span"
               sx={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
             >
-              {selectionCount} selected
+              {selectionCount}
             </Typography>
             <IconButton
               size="small"
@@ -80,7 +79,7 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
             backgroundColor: pickItemsMode ? 'rgba(255,255,255,0.1)' : 'transparent',
           }}
         >
-          {pickItemsMode ? 'Done' : 'Select'}
+          {/* {pickItemsMode ? 'Done' : 'Select'} */}
         </Button>
         <IconButton
           size="small"
