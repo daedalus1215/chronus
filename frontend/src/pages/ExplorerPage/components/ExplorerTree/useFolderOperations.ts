@@ -80,9 +80,16 @@ export const useFolderOperations = (
     const folderId = selectedFolderIds.size > 0
       ? Math.min(...selectedFolderIds)
       : null;
-    const note = await createNote(NOTE_TYPES.MEMO, folderId);
-    setNotes(prev => [...prev, { id: note.id, name: note.name, isMemo: 1, folderId }]);
-  }, [selectedFolderIds]);
+    await createNote(NOTE_TYPES.MEMO, folderId);
+    await load();
+    if (folderId !== null) {
+      setExpanded(prev => {
+        const next = new Set(prev);
+        next.add(folderId);
+        return next;
+      });
+    }
+  }, [selectedFolderIds, load]);
 
   // Create folder
   const handleCreateFolder = useCallback(async () => {
