@@ -32,8 +32,6 @@ export const ExplorerTree: React.FC = () => {
     visibleFolderIds,
     newFolderParentId,
     setNewFolderParentId,
-    newFolderName,
-    setNewFolderName,
     deleteConfirmId,
     setDeleteConfirmId,
     renaming,
@@ -203,10 +201,7 @@ export const ExplorerTree: React.FC = () => {
           if (pickItemsMode) exitPickItemsMode();
           else setPickItemsMode(true);
         }}
-        onNewFolder={() => {
-          setNewFolderName('');
-          setNewFolderParentId(null);
-        }}
+        onNewFolder={() => setNewFolderParentId(null)}
         onNewMemo={handleCreateMemo}
       />
 
@@ -230,10 +225,7 @@ export const ExplorerTree: React.FC = () => {
             onChevronClick={toggle}
             onNoteOpen={id => navigate(`notes/${id}`)}
             onNoteMenu={(anchor, id) => setNoteMenu({ anchor, id })}
-            onNewSubfolder={id => {
-              setNewFolderName('');
-              setNewFolderParentId(id);
-            }}
+            onNewSubfolder={id => setNewFolderParentId(id)}
             selectedFolderIds={selectedFolderIds}
             selectedNoteIds={selectedNoteIds}
             onNoteRowClick={handleNoteRowClick}
@@ -269,8 +261,6 @@ export const ExplorerTree: React.FC = () => {
       <ExplorerTreeDialogs
         newFolderParentId={newFolderParentId}
         setNewFolderParentId={setNewFolderParentId}
-        newFolderName={newFolderName}
-        setNewFolderName={setNewFolderName}
         handleCreateFolder={handleCreateFolder}
         deleteConfirmId={deleteConfirmId}
         setDeleteConfirmId={setDeleteConfirmId}
@@ -289,7 +279,6 @@ export const ExplorerTree: React.FC = () => {
         startRename={startRename}
         setReparentTarget={setReparentTarget}
         setNewFolderParentId={setNewFolderParentId}
-        setNewFolderName={setNewFolderName}
         setDeleteConfirmId={setDeleteConfirmId}
         noteMenu={noteMenu}
         setNoteMenu={setNoteMenu}

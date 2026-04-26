@@ -11,7 +11,6 @@ type ExplorerTreeMenusProps = {
   startRename: (id: number, currentName: string) => void;
   setReparentTarget: (v: { folderIds: number[]; noteIds: number[] } | null) => void;
   setNewFolderParentId: (v: number | null | undefined) => void;
-  setNewFolderName: (v: string) => void;
   setDeleteConfirmId: (v: number | null) => void;
 
   // Note menu
@@ -26,7 +25,6 @@ export const ExplorerTreeMenus: React.FC<ExplorerTreeMenusProps> = ({
   startRename,
   setReparentTarget,
   setNewFolderParentId,
-  setNewFolderName,
   setDeleteConfirmId,
   noteMenu,
   setNoteMenu,
@@ -67,7 +65,6 @@ export const ExplorerTreeMenus: React.FC<ExplorerTreeMenusProps> = ({
           onClick={() => {
             if (folderMenu) {
               setNewFolderParentId(folderMenu.id);
-              setNewFolderName('');
             }
             setFolderMenu(null);
           }}

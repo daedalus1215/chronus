@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -15,9 +15,7 @@ type ExplorerTreeDialogsProps = {
   // New folder dialog
   newFolderParentId: number | null | undefined;
   setNewFolderParentId: (v: number | null | undefined) => void;
-  newFolderName: string;
-  setNewFolderName: (v: string) => void;
-  handleCreateFolder: () => void;
+  handleCreateFolder: (name: string) => void;
 
   // Delete dialog
   deleteConfirmId: number | null;
@@ -34,8 +32,6 @@ type ExplorerTreeDialogsProps = {
 export const ExplorerTreeDialogs: React.FC<ExplorerTreeDialogsProps> = ({
   newFolderParentId,
   setNewFolderParentId,
-  newFolderName,
-  setNewFolderName,
   handleCreateFolder,
   deleteConfirmId,
   setDeleteConfirmId,
@@ -45,6 +41,12 @@ export const ExplorerTreeDialogs: React.FC<ExplorerTreeDialogsProps> = ({
   handleReparentConfirm,
   disabledMoveDestFolderIds,
 }) => {
+  const [folderName, setFolderName] = useState('');
+
+  useEffect(() => {
+    if (newFolderParentId === undefined) setFolderName('');
+  }, [newFolderParentId]);
+
   return (
     <>
       {/* New folder dialog */}
@@ -60,16 +62,16 @@ export const ExplorerTreeDialogs: React.FC<ExplorerTreeDialogsProps> = ({
             autoFocus
             fullWidth
             label="Folder name"
-            value={newFolderName}
-            onChange={e => setNewFolderName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleCreateFolder()}
+            value={folderName}
+            onChange={e => setFolderName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleCreateFolder(folderName)}
             size="small"
             sx={{ mt: 1 }}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setNewFolderParentId(undefined)}>Cancel</Button>
-          <Button variant="contained" disabled={!newFolderName.trim()} onClick={handleCreateFolder}>
+          <Button variant="contained" disabled={!folderName.trim()} onClick={() => handleCreateFolder(folderName)}>
             Create
           </Button>
         </DialogActions>

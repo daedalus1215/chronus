@@ -29,7 +29,6 @@ export const useFolderOperations = (
 
   // Dialog state
   const [newFolderParentId, setNewFolderParentId] = useState<number | null | undefined>(undefined);
-  const [newFolderName, setNewFolderName] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
   // Rename state
@@ -92,10 +91,10 @@ export const useFolderOperations = (
   }, [selectedFolderIds, load]);
 
   // Create folder
-  const handleCreateFolder = useCallback(async () => {
-    const name = newFolderName.trim();
-    if (!name) return;
-    const folder = await createFolder({ name, parentId: newFolderParentId ?? null });
+  const handleCreateFolder = useCallback(async (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const folder = await createFolder({ name: trimmed, parentId: newFolderParentId ?? null });
     setFolders(prev => [...prev, folder]);
     setExpanded(prev => {
       const next = new Set(prev);
@@ -103,8 +102,7 @@ export const useFolderOperations = (
       return next;
     });
     setNewFolderParentId(undefined);
-    setNewFolderName('');
-  }, [newFolderName, newFolderParentId]);
+  }, [newFolderParentId]);
 
   // Delete folder
   const handleDeleteFolder = useCallback(async () => {
@@ -172,8 +170,6 @@ export const useFolderOperations = (
     // Dialogs
     newFolderParentId,
     setNewFolderParentId,
-    newFolderName,
-    setNewFolderName,
     deleteConfirmId,
     setDeleteConfirmId,
     handleCreateMemo,
