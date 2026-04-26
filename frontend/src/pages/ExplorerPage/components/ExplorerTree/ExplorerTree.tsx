@@ -138,9 +138,10 @@ export const ExplorerTree: React.FC = () => {
         setSelectedFolderIds(new Set([folderId]));
         setFolderRangeAnchorId(folderId);
         setSelectedNoteIds(new Set());
+        toggle(folderId);
       }
     },
-    [folderRangeAnchorId, pickItemsMode, toggleFolderInSelection, visibleFolderIds]
+    [folderRangeAnchorId, pickItemsMode, toggle, toggleFolderInSelection, visibleFolderIds]
   );
 
   const handleNoteRowClick = useCallback(
