@@ -1,4 +1,5 @@
 import React from 'react';
+import { Collapse } from '@mui/material';
 import { FolderTreeNode, ExplorerNoteItem } from '../../../../../api/dtos/folder.dtos';
 import { FolderRow } from './FolderRow';
 import { NoteRow } from '../NoteRow';
@@ -78,7 +79,7 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = ({
         onTogglePick={toggleFolderInSelection}
       />
 
-      {isOpen && (
+      <Collapse in={isOpen} timeout={150} unmountOnExit>
         <>
           {folderNotes.map(note => (
             <NoteRow
@@ -123,7 +124,7 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = ({
             />
           ))}
         </>
-      )}
+      </Collapse>
     </>
   );
 };
