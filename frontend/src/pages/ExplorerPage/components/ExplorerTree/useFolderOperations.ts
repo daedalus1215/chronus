@@ -11,13 +11,16 @@ import {
   fetchFolders,
   updateFolder,
 } from '../../../../api/requests/folders.requests';
-import { getNotesForExplorer, moveNoteToFolder } from '../../../../api/requests/notes.requests';
+import { getNotesForExplorer, moveNoteToFolder, createNote } from '../../../../api/requests/notes.requests';
+import { NOTE_TYPES } from '../../../../constant';
 import {
   collectSubtreeIds,
   visibleFolderIdsInOrder,
 } from './utils';
 
-export const useFolderOperations = () => {
+export const useFolderOperations = (
+  selectedFolderIds: Set<number> = new Set()
+) => {
   // Data state
   const [folders, setFolders] = useState<FolderDto[]>([]);
   const [notes, setNotes] = useState<ExplorerNoteItem[]>([]);
@@ -71,6 +74,15 @@ export const useFolderOperations = () => {
     }),
     []
   );
+
+  // Create memo in selected folder (or root if none selected)
+  const handleCreateMemo = useCallback(async () => {
+    const folderId = selectedFolderIds.size > 0
+      ? Math.min(...selectedFolderIds)
+      : null;
+    const note = await createNote(NOTE_TYPES.MEMO, folderId);
+    setNotes(prev => [...prev, { id: note.id, name: note.name, isMemo: 1, folderId }]);
+  }, [selectedFolderIds]);
 
   // Create folder
   const handleCreateFolder = useCallback(async () => {
@@ -157,6 +169,7 @@ export const useFolderOperations = () => {
     setNewFolderName,
     deleteConfirmId,
     setDeleteConfirmId,
+    handleCreateMemo,
     handleCreateFolder,
     handleDeleteFolder,
 

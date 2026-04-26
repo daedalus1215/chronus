@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ExplorerNoteItem } from '../../../../api/dtos/note.dtos';
 import { ExplorerTreeDialogs } from './ExplorerTreeDialogs';
 import { ExplorerTreeHeader } from './ExplorerTreeHeader';
 import { ExplorerTreeMenus } from './ExplorerTreeMenus';
@@ -13,6 +12,16 @@ import styles from './ExplorerTree.module.css';
 export const ExplorerTree: React.FC = () => {
   const navigate = useNavigate();
   const { id: activeNoteId } = useParams<{ id: string }>();
+
+  // Menu state
+  const [folderMenu, setFolderMenu] = useState<{ anchor: HTMLElement; id: number } | null>(null);
+  const [noteMenu, setNoteMenu] = useState<{ anchor: HTMLElement; id: number } | null>(null);
+
+  // Selection state
+  const [selectedFolderIds, setSelectedFolderIds] = useState<Set<number>>(new Set());
+  const [selectedNoteIds, setSelectedNoteIds] = useState<Set<number>>(new Set());
+  const [folderRangeAnchorId, setFolderRangeAnchorId] = useState<number | null>(null);
+  const [pickItemsMode, setPickItemsMode] = useState(false);
 
   // Folder operations hook (data, dialogs, CRUD)
   const {
@@ -38,20 +47,11 @@ export const ExplorerTree: React.FC = () => {
     reparentTarget,
     setReparentTarget,
     disabledMoveDestFolderIds,
+    handleCreateMemo,
     handleCreateFolder,
     handleDeleteFolder,
     handleReparentConfirm,
-  } = useFolderOperations();
-
-  // Menu state
-  const [folderMenu, setFolderMenu] = useState<{ anchor: HTMLElement; id: number } | null>(null);
-  const [noteMenu, setNoteMenu] = useState<{ anchor: HTMLElement; id: number } | null>(null);
-
-  // Selection state
-  const [selectedFolderIds, setSelectedFolderIds] = useState<Set<number>>(new Set());
-  const [selectedNoteIds, setSelectedNoteIds] = useState<Set<number>>(new Set());
-  const [folderRangeAnchorId, setFolderRangeAnchorId] = useState<number | null>(null);
-  const [pickItemsMode, setPickItemsMode] = useState(false);
+  } = useFolderOperations(selectedFolderIds);
 
   // Selection helpers
   const clearSelection = useCallback(() => {
@@ -207,6 +207,7 @@ export const ExplorerTree: React.FC = () => {
           setNewFolderName('');
           setNewFolderParentId(null);
         }}
+        onNewMemo={handleCreateMemo}
       />
 
       <Box className={styles.body}>

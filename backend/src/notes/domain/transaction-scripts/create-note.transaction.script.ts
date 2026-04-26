@@ -18,11 +18,12 @@ export class CreateNoteTransactionScript {
   async apply(
     createNoteDto: CreateNoteDto & { userId: number }
   ): Promise<Note> {
-    const { name, userId, isMemo } = createNoteDto;
+    const { name, userId, isMemo, folderId } = createNoteDto;
 
     const note = new Note();
     note.name = name;
     note.userId = userId;
+    note.folderId = folderId ?? null;
     if (isMemo) {
       const memo = new Memo();
       memo.description = '';

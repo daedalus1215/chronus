@@ -4,6 +4,7 @@ import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ChecklistIcon from '@mui/icons-material/Checklist';
+import AddNoteIcon from '@mui/icons-material/NoteAdd';
 import styles from './ExplorerTree.module.css';
 
 type ExplorerTreeHeaderProps = {
@@ -13,6 +14,7 @@ type ExplorerTreeHeaderProps = {
   onClearSelection: () => void;
   onTogglePickItems: () => void;
   onNewFolder: () => void;
+  onNewMemo: () => void;
 };
 
 export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
@@ -22,6 +24,7 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
   onClearSelection,
   onTogglePickItems,
   onNewFolder,
+  onNewMemo,
 }) => {
   return (
     <Box className={styles.header}>
@@ -86,6 +89,14 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
           onClick={onNewFolder}
         >
           <CreateNewFolderIcon sx={{ fontSize: 14 }} />
+        </IconButton>
+        <IconButton
+          size="small"
+          className={styles.headerBtn}
+          title="New memo"
+          onClick={onNewMemo}
+        >
+          <AddNoteIcon sx={{ fontSize: 14 }} />
         </IconButton>
       </Box>
     </Box>
