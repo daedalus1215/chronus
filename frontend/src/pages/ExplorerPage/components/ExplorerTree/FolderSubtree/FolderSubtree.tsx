@@ -1,0 +1,129 @@
+import React from 'react';
+import { FolderTreeNode, ExplorerNoteItem } from '../../../../../api/dtos/folder.dtos';
+import { FolderRow } from './FolderRow';
+import { NoteRow } from '../NoteRow';
+
+type FolderSubtreeProps = {
+  node: FolderTreeNode;
+  depth: number;
+  notes: ExplorerNoteItem[];
+  expanded: Set<number>;
+  activeNoteId?: string;
+  renaming: number | null;
+  renameValue: string;
+  renameRef: React.RefObject<HTMLInputElement>;
+  onRenameChange: (v: string) => void;
+  onRenameCommit: () => void;
+  onRenameCancel: () => void;
+  onFolderMenu: (anchor: HTMLElement, id: number) => void;
+  onFolderRowClick: (e: React.MouseEvent, folderId: number) => void;
+  onChevronClick: (id: number) => void;
+  onNoteOpen: (id: number) => void;
+  onNoteMenu: (anchor: HTMLElement, id: number) => void;
+  onNewSubfolder: (parentId: number) => void;
+  selectedFolderIds: Set<number>;
+  selectedNoteIds: Set<number>;
+  onNoteRowClick: (e: React.MouseEvent, noteId: number, openNote: () => void) => void;
+  pickItemsMode: boolean;
+  toggleFolderInSelection: (id: number) => void;
+  toggleNoteInSelection: (id: number) => void;
+};
+
+export const FolderSubtree: React.FC<FolderSubtreeProps> = ({
+  node,
+  depth,
+  notes,
+  expanded,
+  activeNoteId,
+  renaming,
+  renameValue,
+  renameRef,
+  onRenameChange,
+  onRenameCommit,
+  onRenameCancel,
+  onFolderMenu,
+  onFolderRowClick,
+  onChevronClick,
+  onNoteOpen,
+  onNoteMenu,
+  onNewSubfolder,
+  selectedFolderIds,
+  selectedNoteIds,
+  onNoteRowClick,
+  pickItemsMode,
+  toggleFolderInSelection,
+  toggleNoteInSelection,
+}) => {
+  const isOpen = expanded.has(node.id);
+  const folderNotes = notes.filter(n => n.folderId === node.id);
+
+  return (
+    <>
+      <FolderRow
+        node={node}
+        depth={depth}
+        expanded={expanded}
+        renaming={renaming}
+        renameValue={renameValue}
+        renameRef={renameRef}
+        selected={selectedFolderIds.has(node.id)}
+        pickItemsMode={pickItemsMode}
+        onRenameChange={onRenameChange}
+        onRenameCommit={onRenameCommit}
+        onRenameCancel={onRenameCancel}
+        onFolderMenu={onFolderMenu}
+        onFolderRowClick={onFolderRowClick}
+        onChevronClick={onChevronClick}
+        onNewSubfolder={onNewSubfolder}
+        onTogglePick={toggleFolderInSelection}
+      />
+
+      {isOpen && (
+        <>
+          {folderNotes.map(note => (
+            <NoteRow
+              key={note.id}
+              note={note}
+              depth={depth + 1}
+              active={activeNoteId === String(note.id)}
+              selected={selectedNoteIds.has(note.id)}
+              pickItemsMode={pickItemsMode}
+              onOpen={onNoteOpen}
+              onRowClick={onNoteRowClick}
+              onMenuOpen={onNoteMenu}
+              onTogglePick={() => toggleNoteInSelection(note.id)}
+            />
+          ))}
+          {node.children.map(child => (
+            <FolderSubtree
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              notes={notes}
+              expanded={expanded}
+              activeNoteId={activeNoteId}
+              renaming={renaming}
+              renameValue={renameValue}
+              renameRef={renameRef}
+              onRenameChange={onRenameChange}
+              onRenameCommit={onRenameCommit}
+              onRenameCancel={onRenameCancel}
+              onFolderMenu={onFolderMenu}
+              onFolderRowClick={onFolderRowClick}
+              onChevronClick={onChevronClick}
+              onNoteOpen={onNoteOpen}
+              onNoteMenu={onNoteMenu}
+              onNewSubfolder={onNewSubfolder}
+              selectedFolderIds={selectedFolderIds}
+              selectedNoteIds={selectedNoteIds}
+              onNoteRowClick={onNoteRowClick}
+              pickItemsMode={pickItemsMode}
+              toggleFolderInSelection={toggleFolderInSelection}
+              toggleNoteInSelection={toggleNoteInSelection}
+            />
+          ))}
+        </>
+      )}
+    </>
+  );
+};

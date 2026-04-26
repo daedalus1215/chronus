@@ -2,34 +2,20 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Box,
   Button,
-  Checkbox,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  Menu,
   MenuItem,
+  Menu,
   TextField,
   Typography,
 } from '@mui/material';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FolderIcon from '@mui/icons-material/Folder';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import ChecklistIcon from '@mui/icons-material/Checklist';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   buildFolderTree,
   FolderDto,
-  FolderTreeNode,
 } from '../../../../api/dtos/folder.dtos';
 import { ExplorerNoteItem } from '../../../../api/dtos/note.dtos';
 import {
@@ -41,60 +27,40 @@ import {
 } from '../../../../api/requests/folders.requests';
 import { getNotesForExplorer, moveNoteToFolder } from '../../../../api/requests/notes.requests';
 import { MoveNoteDialog } from '../MoveNoteDialog/MoveNoteDialog';
+import { ExplorerTreeHeader } from './ExplorerTreeHeader';
+import { FolderSubtree } from './FolderSubtree/FolderSubtree';
+import { NoteRow } from './NoteRow';
+import {
+  collectSubtreeIds,
+  visibleFolderIdsInOrder,
+} from './utils';
 import styles from './ExplorerTree.module.css';
-
-const collectSubtreeIds = (rootId: number, folders: FolderDto[]): Set<number> => {
-  const byParent = new Map<number | null, number[]>();
-  folders.forEach(f => {
-    const p = f.parentId ?? null;
-    if (!byParent.has(p)) byParent.set(p, []);
-    byParent.get(p)!.push(f.id);
-  });
-  const out = new Set<number>();
-  const q = [rootId];
-  while (q.length) {
-    const id = q.pop()!;
-    out.add(id);
-    (byParent.get(id) ?? []).forEach(c => q.push(c));
-  }
-  return out;
-};
-
-const visibleFolderIdsInOrder = (
-  nodes: FolderTreeNode[],
-  expanded: Set<number>
-): number[] => {
-  const out: number[] = [];
-  const walk = (list: FolderTreeNode[]) => {
-    for (const n of list) {
-      out.push(n.id);
-      if (expanded.has(n.id)) walk(n.children);
-    }
-  };
-  walk(nodes);
-  return out;
-};
 
 export const ExplorerTree: React.FC = () => {
   const navigate = useNavigate();
   const { id: activeNoteId } = useParams<{ id: string }>();
 
+  // Data state
   const [folders, setFolders] = useState<FolderDto[]>([]);
   const [notes, setNotes] = useState<ExplorerNoteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
+  // Dialog state
   const [newFolderParentId, setNewFolderParentId] = useState<number | null | undefined>(undefined);
   const [newFolderName, setNewFolderName] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
+  // Rename state
   const [renaming, setRenaming] = useState<number | null>(null);
   const [renameValue, setRenameValue] = useState('');
   const renameRef = useRef<HTMLInputElement>(null);
 
+  // Menu state
   const [folderMenu, setFolderMenu] = useState<{ anchor: HTMLElement; id: number } | null>(null);
   const [noteMenu, setNoteMenu] = useState<{ anchor: HTMLElement; id: number } | null>(null);
 
+  // Selection state
   const [selectedFolderIds, setSelectedFolderIds] = useState<Set<number>>(new Set());
   const [selectedNoteIds, setSelectedNoteIds] = useState<Set<number>>(new Set());
   const [folderRangeAnchorId, setFolderRangeAnchorId] = useState<number | null>(null);
@@ -104,6 +70,7 @@ export const ExplorerTree: React.FC = () => {
   } | null>(null);
   const [pickItemsMode, setPickItemsMode] = useState(false);
 
+  // Data loading
   const load = useCallback(async () => {
     const [folderData, noteData] = await Promise.all([
       fetchFolders(),
@@ -118,12 +85,14 @@ export const ExplorerTree: React.FC = () => {
     load();
   }, [load]);
 
+  // Derived data
   const tree = useMemo(() => buildFolderTree(folders), [folders]);
   const visibleFolderIds = useMemo(
     () => visibleFolderIdsInOrder(tree, expanded),
     [tree, expanded]
   );
 
+  // Selection helpers
   const clearSelection = useCallback(() => {
     setSelectedFolderIds(new Set());
     setSelectedNoteIds(new Set());
@@ -154,6 +123,7 @@ export const ExplorerTree: React.FC = () => {
     });
   }, []);
 
+  // Keyboard shortcuts
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -176,6 +146,7 @@ export const ExplorerTree: React.FC = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [clearSelection, exitPickItemsMode, pickItemsMode, selectedFolderIds, selectedNoteIds]);
 
+  // Folder operations
   const toggle = (id: number) =>
     setExpanded(prev => {
       const next = new Set(prev);
@@ -223,6 +194,7 @@ export const ExplorerTree: React.FC = () => {
     setRenaming(null);
   };
 
+  // Click handlers
   const handleFolderRowClick = useCallback(
     (e: React.MouseEvent, folderId: number) => {
       e.stopPropagation();
@@ -289,6 +261,7 @@ export const ExplorerTree: React.FC = () => {
     [pickItemsMode, toggleNoteInSelection]
   );
 
+  // Reparent helpers
   const disabledMoveDestFolderIds = useMemo(() => {
     if (!reparentTarget || reparentTarget.folderIds.length === 0) return new Set<number>();
     const out = new Set<number>();
@@ -297,8 +270,6 @@ export const ExplorerTree: React.FC = () => {
     });
     return out;
   }, [reparentTarget, folders]);
-
-  const selectionCount = selectedFolderIds.size + selectedNoteIds.size;
 
   const handleReparentConfirm = async (folder: FolderDto | null) => {
     if (!reparentTarget) return;
@@ -320,6 +291,9 @@ export const ExplorerTree: React.FC = () => {
     }
   };
 
+  const selectionCount = selectedFolderIds.size + selectedNoteIds.size;
+
+  // Loading state
   if (loading) {
     return (
       <Box className={styles.loading}>
@@ -332,82 +306,25 @@ export const ExplorerTree: React.FC = () => {
 
   return (
     <Box className={styles.tree}>
-      <Box className={styles.header}>
-        <span className={styles.heading}>vault</span>
-        <Box
-          className={styles.headerActions}
-          sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}
-        >
-          {selectionCount > 0 && (
-            <>
-              <Typography
-                component="span"
-                sx={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-              >
-                {selectionCount} selected
-              </Typography>
-              <IconButton
-                size="small"
-                className={styles.headerBtn}
-                title="Move to folder (Ctrl+M)"
-                onClick={() =>
-                  setReparentTarget({
-                    folderIds: [...selectedFolderIds],
-                    noteIds: [...selectedNoteIds],
-                  })
-                }
-              >
-                <DriveFileMoveIcon sx={{ fontSize: 14 }} />
-              </IconButton>
-              <IconButton size="small" className={styles.headerBtn} title="Clear selection" onClick={clearSelection}>
-                <CloseRoundedIcon sx={{ fontSize: 14 }} />
-              </IconButton>
-            </>
-          )}
-          <Button
-            size="small"
-            variant="text"
-            color="inherit"
-            startIcon={<ChecklistIcon sx={{ fontSize: 16, opacity: 0.85 }} />}
-            title={
-              pickItemsMode
-                ? 'Exit select mode (clears selection)'
-                : 'Select notes & folders to move'
-            }
-            aria-pressed={pickItemsMode}
-            onClick={() => {
-              if (pickItemsMode) exitPickItemsMode();
-              else setPickItemsMode(true);
-            }}
-            sx={{
-              flexShrink: 0,
-              minWidth: 'max-content',
-              px: 0.5,
-              py: 0.25,
-              fontSize: 11,
-              lineHeight: 1.2,
-              textTransform: 'none',
-              letterSpacing: 0.01,
-              whiteSpace: 'nowrap',
-              color: pickItemsMode ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)',
-              backgroundColor: pickItemsMode ? 'rgba(255,255,255,0.1)' : 'transparent',
-            }}
-          >
-            {pickItemsMode ? 'Done' : 'Select'}
-          </Button>
-          <IconButton
-            size="small"
-            className={styles.headerBtn}
-            title="New folder"
-            onClick={() => {
-              setNewFolderName('');
-              setNewFolderParentId(null);
-            }}
-          >
-            <CreateNewFolderIcon sx={{ fontSize: 14 }} />
-          </IconButton>
-        </Box>
-      </Box>
+      <ExplorerTreeHeader
+        selectionCount={selectionCount}
+        pickItemsMode={pickItemsMode}
+        onMoveSelected={() =>
+          setReparentTarget({
+            folderIds: [...selectedFolderIds],
+            noteIds: [...selectedNoteIds],
+          })
+        }
+        onClearSelection={clearSelection}
+        onTogglePickItems={() => {
+          if (pickItemsMode) exitPickItemsMode();
+          else setPickItemsMode(true);
+        }}
+        onNewFolder={() => {
+          setNewFolderName('');
+          setNewFolderParentId(null);
+        }}
+      />
 
       <Box className={styles.body}>
         {rootNotes.map(note => (
@@ -464,6 +381,7 @@ export const ExplorerTree: React.FC = () => {
         )}
       </Box>
 
+      {/* Folder context menu */}
       <Menu
         anchorEl={folderMenu?.anchor}
         open={Boolean(folderMenu)}
@@ -514,6 +432,7 @@ export const ExplorerTree: React.FC = () => {
         </MenuItem>
       </Menu>
 
+      {/* Note context menu */}
       <Menu
         anchorEl={noteMenu?.anchor}
         open={Boolean(noteMenu)}
@@ -540,6 +459,7 @@ export const ExplorerTree: React.FC = () => {
         </MenuItem>
       </Menu>
 
+      {/* New folder dialog */}
       <Dialog
         open={newFolderParentId !== undefined}
         onClose={() => setNewFolderParentId(undefined)}
@@ -567,6 +487,7 @@ export const ExplorerTree: React.FC = () => {
         </DialogActions>
       </Dialog>
 
+      {/* Delete confirmation dialog */}
       <Dialog open={deleteConfirmId !== null} onClose={() => setDeleteConfirmId(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Delete Folder</DialogTitle>
         <DialogContent>
@@ -582,6 +503,7 @@ export const ExplorerTree: React.FC = () => {
         </DialogActions>
       </Dialog>
 
+      {/* Move to folder dialog */}
       {reparentTarget !== null && (
         <MoveNoteDialog
           open
@@ -600,242 +522,6 @@ export const ExplorerTree: React.FC = () => {
           }
         />
       )}
-    </Box>
-  );
-};
-
-type FolderSubtreeProps = {
-  node: FolderTreeNode;
-  depth: number;
-  notes: ExplorerNoteItem[];
-  expanded: Set<number>;
-  activeNoteId?: string;
-  renaming: number | null;
-  renameValue: string;
-  renameRef: React.RefObject<HTMLInputElement>;
-  onRenameChange: (v: string) => void;
-  onRenameCommit: () => void;
-  onRenameCancel: () => void;
-  onFolderMenu: (anchor: HTMLElement, id: number) => void;
-  onFolderRowClick: (e: React.MouseEvent, folderId: number) => void;
-  onChevronClick: (id: number) => void;
-  onNoteOpen: (id: number) => void;
-  onNoteMenu: (anchor: HTMLElement, id: number) => void;
-  onNewSubfolder: (parentId: number) => void;
-  selectedFolderIds: Set<number>;
-  selectedNoteIds: Set<number>;
-  onNoteRowClick: (e: React.MouseEvent, noteId: number, openNote: () => void) => void;
-  pickItemsMode: boolean;
-  toggleFolderInSelection: (id: number) => void;
-  toggleNoteInSelection: (id: number) => void;
-};
-
-const FolderSubtree: React.FC<FolderSubtreeProps> = ({
-  node,
-  depth,
-  notes,
-  expanded,
-  activeNoteId,
-  renaming,
-  renameValue,
-  renameRef,
-  onRenameChange,
-  onRenameCommit,
-  onRenameCancel,
-  onFolderMenu,
-  onFolderRowClick,
-  onChevronClick,
-  onNoteOpen,
-  onNoteMenu,
-  onNewSubfolder,
-  selectedFolderIds,
-  selectedNoteIds,
-  onNoteRowClick,
-  pickItemsMode,
-  toggleFolderInSelection,
-  toggleNoteInSelection,
-}) => {
-  const isOpen = expanded.has(node.id);
-  const folderNotes = notes.filter(n => n.folderId === node.id);
-  const indent = 10 + depth * 16;
-
-  return (
-    <>
-      <Box
-        className={`${styles.row} ${selectedFolderIds.has(node.id) ? styles.rowActive : ''}`}
-        sx={{ pl: `${indent}px` }}
-        onClick={e => onFolderRowClick(e, node.id)}
-      >
-        {pickItemsMode && (
-          <span className={styles.rowCheck} onClick={e => e.stopPropagation()}>
-            <Checkbox
-              size="small"
-              checked={selectedFolderIds.has(node.id)}
-              onChange={() => toggleFolderInSelection(node.id)}
-              inputProps={{ 'aria-label': `Select folder ${node.name}` }}
-              sx={{ p: 0.25, color: 'rgba(255,255,255,0.45)' }}
-            />
-          </span>
-        )}
-        <span
-          className={styles.chevron}
-          onClick={ev => {
-            ev.stopPropagation();
-            onChevronClick(node.id);
-          }}
-        >
-          {isOpen ? (
-            <ExpandMoreIcon sx={{ fontSize: 14 }} />
-          ) : (
-            <ChevronRightIcon sx={{ fontSize: 14 }} />
-          )}
-        </span>
-        <span className={styles.rowIcon}>
-          {isOpen ? (
-            <FolderOpenIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }} />
-          ) : (
-            <FolderIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }} />
-          )}
-        </span>
-
-        {renaming === node.id ? (
-          <TextField
-            inputRef={renameRef}
-            value={renameValue}
-            onChange={e => onRenameChange(e.target.value)}
-            onBlur={onRenameCommit}
-            onKeyDown={e => {
-              if (e.key === 'Enter') onRenameCommit();
-              if (e.key === 'Escape') onRenameCancel();
-            }}
-            onClick={e => e.stopPropagation()}
-            autoFocus
-            variant="standard"
-            size="small"
-            className={styles.renameInput}
-            sx={{ flex: 1 }}
-          />
-        ) : (
-          <span className={styles.label}>{node.name}</span>
-        )}
-
-        {renaming !== node.id && (
-          <Box className={styles.rowActions} onClick={e => e.stopPropagation()}>
-            <IconButton size="small" className={styles.actionBtn} title="New subfolder" onClick={() => onNewSubfolder(node.id)}>
-              <CreateNewFolderIcon sx={{ fontSize: 13 }} />
-            </IconButton>
-            <IconButton size="small" className={styles.actionBtn} onClick={e => onFolderMenu(e.currentTarget, node.id)}>
-              <MoreHorizIcon sx={{ fontSize: 13 }} />
-            </IconButton>
-          </Box>
-        )}
-      </Box>
-
-      {isOpen && (
-        <>
-          {folderNotes.map(note => (
-            <NoteRow
-              key={note.id}
-              note={note}
-              depth={depth + 1}
-              active={activeNoteId === String(note.id)}
-              selected={selectedNoteIds.has(note.id)}
-              pickItemsMode={pickItemsMode}
-              onOpen={onNoteOpen}
-              onRowClick={onNoteRowClick}
-              onMenuOpen={onNoteMenu}
-              onTogglePick={() => toggleNoteInSelection(note.id)}
-            />
-          ))}
-          {node.children.map(child => (
-            <FolderSubtree
-              key={child.id}
-              node={child}
-              depth={depth + 1}
-              notes={notes}
-              expanded={expanded}
-              activeNoteId={activeNoteId}
-              renaming={renaming}
-              renameValue={renameValue}
-              renameRef={renameRef}
-              onRenameChange={onRenameChange}
-              onRenameCommit={onRenameCommit}
-              onRenameCancel={onRenameCancel}
-              onFolderMenu={onFolderMenu}
-              onFolderRowClick={onFolderRowClick}
-              onChevronClick={onChevronClick}
-              onNoteOpen={onNoteOpen}
-              onNoteMenu={onNoteMenu}
-              onNewSubfolder={onNewSubfolder}
-              selectedFolderIds={selectedFolderIds}
-              selectedNoteIds={selectedNoteIds}
-              onNoteRowClick={onNoteRowClick}
-              pickItemsMode={pickItemsMode}
-              toggleFolderInSelection={toggleFolderInSelection}
-              toggleNoteInSelection={toggleNoteInSelection}
-            />
-          ))}
-        </>
-      )}
-    </>
-  );
-};
-
-type NoteRowProps = {
-  note: ExplorerNoteItem;
-  depth: number;
-  active: boolean;
-  selected: boolean;
-  pickItemsMode: boolean;
-  onOpen: (id: number) => void;
-  onRowClick: (e: React.MouseEvent, noteId: number, openNote: () => void) => void;
-  onMenuOpen: (anchor: HTMLElement, id: number) => void;
-  onTogglePick: () => void;
-};
-
-const NoteRow: React.FC<NoteRowProps> = ({
-  note,
-  depth,
-  active,
-  selected,
-  pickItemsMode,
-  onOpen,
-  onRowClick,
-  onMenuOpen,
-  onTogglePick,
-}) => {
-  const indent = 10 + depth * 16 + 14;
-
-  return (
-    <Box
-      className={`${styles.row} ${active || selected ? styles.rowActive : ''}`}
-      sx={{ pl: `${indent}px` }}
-      onClick={e => onRowClick(e, note.id, () => onOpen(note.id))}
-    >
-      {pickItemsMode && (
-        <span className={styles.rowCheck} onClick={e => e.stopPropagation()}>
-          <Checkbox
-            size="small"
-            checked={selected}
-            onChange={() => onTogglePick()}
-            inputProps={{ 'aria-label': `Select note ${note.name}` }}
-            sx={{ p: 0.25, color: 'rgba(255,255,255,0.45)' }}
-          />
-        </span>
-      )}
-      <span className={styles.rowIcon}>
-        {note.isMemo ? (
-          <StickyNote2Icon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
-        ) : (
-          <CheckBoxIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
-        )}
-      </span>
-      <span className={`${styles.label} ${active ? styles.labelActive : ''}`}>{note.name}</span>
-      <Box className={styles.rowActions} onClick={e => e.stopPropagation()}>
-        <IconButton size="small" className={styles.actionBtn} onClick={e => onMenuOpen(e.currentTarget, note.id)}>
-          <MoreHorizIcon sx={{ fontSize: 13 }} />
-        </IconButton>
-      </Box>
     </Box>
   );
 };
