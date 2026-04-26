@@ -12,7 +12,6 @@ import { useAllTags } from './hooks/useAllTags';
 import {
   Chip,
   IconButton,
-  Fab,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -24,14 +23,14 @@ import {
 import {
   Add,
   Close,
-  Edit,
   ViewKanban,
   ViewList,
-  EditOff,
-  MoreVert,
+  MoreHoriz,
   Label,
   Mic,
   Stop,
+  MenuBook,
+  Create,
 } from '@mui/icons-material';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { DesktopNoteEditor } from './components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor';
@@ -85,15 +84,6 @@ export const NotePage: React.FC = () => {
     setFabMenuAnchor(null);
   };
 
-  const handleFabEdit = () => {
-    handleFabMenuClose();
-    if (isEditMode) {
-      handleCancelEdit();
-    } else {
-      handleEditClick();
-    }
-  };
-
   const handleFabKanban = () => {
     handleFabMenuClose();
     navigate(`/notes/${note.id}/kanban`);
@@ -142,14 +132,6 @@ export const NotePage: React.FC = () => {
     }
   };
 
-  const handleEditClick = () => {
-    setIsEditMode(true);
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditMode(false);
-  };
-
   const availableTags = allTags
     ? allTags.filter(
       (tag: { id: number }) =>
@@ -182,6 +164,55 @@ export const NotePage: React.FC = () => {
             minHeight: 0,
           }}
         >
+          {note?.isMemo && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 0.5, py: 0.5 }}>
+              <IconButton
+                size="small"
+                title={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
+                onClick={() => setIsEditMode(prev => !prev)}
+                sx={{ color: 'primary.main' }}
+              >
+                {isEditMode ? <Create sx={{ fontSize: 16 }} /> : <MenuBook sx={{ fontSize: 16 }} />}
+              </IconButton>
+              <IconButton size="small" title="More actions" onClick={handleFabMenuOpen}>
+                <MoreHoriz sx={{ fontSize: 16 }} />
+              </IconButton>
+              <Menu
+                anchorEl={fabMenuAnchor}
+                open={isFabMenuOpen}
+                onClose={handleFabMenuClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{ paper: { sx: { minWidth: 180 } } }}
+              >
+                <MenuItem onClick={handleFabKanban}>
+                  <ListItemIcon><ViewKanban fontSize="small" /></ListItemIcon>
+                  <ListItemText>Kanban</ListItemText>
+                </MenuItem>
+                {note?.isMemo && isEditMode && (
+                  <MenuItem onClick={handleFabToggleRecording} disabled={!transcriptionController}>
+                    <ListItemIcon>
+                      {transcriptionController?.isRecording ? <Stop fontSize="small" /> : <Mic fontSize="small" />}
+                    </ListItemIcon>
+                    <ListItemText>
+                      {transcriptionController?.isRecording ? 'Stop recording' : 'Start recording'}
+                    </ListItemText>
+                  </MenuItem>
+                )}
+                {!isMobile && (
+                  <MenuItem onClick={handleFabShowChecklist}>
+                    <ListItemIcon><ViewList fontSize="small" /></ListItemIcon>
+                    <ListItemText>{isSidebarOpen ? 'Hide checklist' : 'Show checklist'}</ListItemText>
+                  </MenuItem>
+                )}
+                <MenuItem onClick={handleFabAddTag}>
+                  <ListItemIcon><Label fontSize="small" /></ListItemIcon>
+                  <ListItemText>Add tag</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Box>
+          )}
+
           <Box
             sx={{
               display: 'flex',
@@ -199,27 +230,26 @@ export const NotePage: React.FC = () => {
             >
               <Add />
             </IconButton>
-
-          {tags &&
-            tags.map((tag: Tag) => (
-              <Chip
-                key={tag.id}
-                label={tag.name}
-                variant="outlined"
-                color="primary"
-                size="small"
-                sx={{ whiteSpace: 'nowrap' }}
-                onClick={() => navigate(`/tag-notes/${tag.id}`)}
-                onDelete={async () => {
-                  try {
-                    await removeTagFromNote({ tagId: tag.id, noteId: note.id });
-                  } catch (err) {
-                    console.error('Failed to remove tag from note', err);
-                  }
-                }}
-                deleteIcon={<Close />}
-              />
-            ))}
+            {tags &&
+              tags.map((tag: Tag) => (
+                <Chip
+                  key={tag.id}
+                  label={tag.name}
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  sx={{ whiteSpace: 'nowrap' }}
+                  onClick={() => navigate(`/tag-notes/${tag.id}`)}
+                  onDelete={async () => {
+                    try {
+                      await removeTagFromNote({ tagId: tag.id, noteId: note.id });
+                    } catch (err) {
+                      console.error('Failed to remove tag from note', err);
+                    }
+                  }}
+                  deleteIcon={<Close />}
+                />
+              ))}
           </Box>
 
           <Dialog
@@ -335,90 +365,6 @@ export const NotePage: React.FC = () => {
             </Box>
           </Box>
 
-          {note?.isMemo && (
-            <>
-              <Fab
-                color="primary"
-                aria-label="Note actions"
-                aria-haspopup="menu"
-                aria-expanded={isFabMenuOpen}
-                onClick={handleFabMenuOpen}
-                sx={{
-                  position: 'fixed',
-                  bottom: 24,
-                  right: 24,
-                }}
-              >
-                <MoreVert />
-              </Fab>
-              <Menu
-                anchorEl={fabMenuAnchor}
-                open={isFabMenuOpen}
-                onClose={handleFabMenuClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                slotProps={{
-                  paper: {
-                    sx: { minWidth: 200 },
-                  },
-                }}
-              >
-                <MenuItem onClick={handleFabEdit}>
-                  <ListItemIcon>
-                    {isEditMode ? (
-                      <EditOff fontSize="small" />
-                    ) : (
-                      <Edit fontSize="small" />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText>
-                    {isEditMode ? 'Read mode' : 'Edit mode'}
-                  </ListItemText>
-                </MenuItem>
-                <MenuItem onClick={handleFabKanban}>
-                  <ListItemIcon>
-                    <ViewKanban fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Kanban</ListItemText>
-                </MenuItem>
-                {note?.isMemo && isEditMode && (
-                  <MenuItem
-                    onClick={handleFabToggleRecording}
-                    disabled={!transcriptionController}
-                  >
-                    <ListItemIcon>
-                      {transcriptionController?.isRecording ? (
-                        <Stop fontSize="small" />
-                      ) : (
-                        <Mic fontSize="small" />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText>
-                      {transcriptionController?.isRecording
-                        ? 'Stop recording'
-                        : 'Start recording'}
-                    </ListItemText>
-                  </MenuItem>
-                )}
-                {!isMobile && (
-                  <MenuItem onClick={handleFabShowChecklist}>
-                    <ListItemIcon>
-                      <ViewList fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>
-                      {isSidebarOpen ? 'Hide checklist' : 'Show checklist'}
-                    </ListItemText>
-                  </MenuItem>
-                )}
-                <MenuItem onClick={handleFabAddTag}>
-                  <ListItemIcon>
-                    <Label fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Add tag</ListItemText>
-                </MenuItem>
-              </Menu>
-            </>
-          )}
         </Box>
         {!isMobile && note?.isMemo && (
           <RightSidebar
