@@ -120,6 +120,8 @@ export const useFolderOperations = (
     setTimeout(() => renameRef.current?.select(), 0);
   }, []);
 
+  const cancelRename = useCallback(() => setRenaming(null), []);
+
   const commitRename = useCallback(async () => {
     if (renaming === null) return;
     const trimmed = renameValue.trim();
@@ -162,7 +164,9 @@ export const useFolderOperations = (
   return {
     // Data
     folders,
+    setFolders,
     notes,
+    setNotes,
     loading,
     tree,
     visibleFolderIds,
@@ -183,6 +187,7 @@ export const useFolderOperations = (
     setRenameValue,
     startRename,
     commitRename,
+    cancelRename,
 
     // Expand
     expanded,

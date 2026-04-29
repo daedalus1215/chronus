@@ -1,13 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { ExplorerTreeDialogs } from './ExplorerTreeDialogs';
 import { ExplorerTreeHeader } from './ExplorerTreeHeader';
 import { ExplorerTreeMenus } from './ExplorerTreeMenus';
 import { FolderSubtree } from './FolderSubtree/FolderSubtree';
 import { NoteRow } from './NoteRow';
+import { DragGhostRow } from './DragGhostRow';
 import { useFolderOperations } from './useFolderOperations';
+import { useDragOperations } from './useDragOperations';
 import styles from './ExplorerTree.module.css';
+
+export type DragMode = 'off' | 'on';
 
 export const ExplorerTree: React.FC = () => {
   const navigate = useNavigate();
@@ -23,10 +29,23 @@ export const ExplorerTree: React.FC = () => {
   const [folderRangeAnchorId, setFolderRangeAnchorId] = useState<number | null>(null);
   const [pickItemsMode, setPickItemsMode] = useState(false);
 
+  // Drag mode state
+  const [dragMode, setDragMode] = useState<DragMode>('off');
+
+  const cycleDragMode = useCallback(() => {
+    setDragMode(prev => prev === 'off' ? 'on' : 'off');
+    setPickItemsMode(false);
+    setSelectedFolderIds(new Set());
+    setSelectedNoteIds(new Set());
+    setFolderRangeAnchorId(null);
+  }, []);
+
   // Folder operations hook (data, dialogs, CRUD)
   const {
     folders,
+    setFolders,
     notes,
+    setNotes,
     loading,
     tree,
     visibleFolderIds,
@@ -40,6 +59,7 @@ export const ExplorerTree: React.FC = () => {
     setRenameValue,
     startRename,
     commitRename,
+    cancelRename,
     expanded,
     toggle,
     reparentTarget,
@@ -50,6 +70,15 @@ export const ExplorerTree: React.FC = () => {
     handleDeleteFolder,
     handleReparentConfirm,
   } = useFolderOperations(selectedFolderIds);
+
+  // Drag operations
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const { activeId, dropIntent, onDragStart, onDragCancel, onDragMove, onDragEnd } = useDragOperations({
+    folders,
+    notes,
+    setFolders,
+    setNotes,
+  });
 
   // Selection helpers
   const clearSelection = useCallback(() => {
@@ -184,13 +213,18 @@ export const ExplorerTree: React.FC = () => {
     );
   }
 
-  const rootNotes = notes.filter(n => n.folderId === null);
+  const rootNotes = notes.filter(n => n.folderId === null).sort((a, b) => a.sortOrder - b.sortOrder);
+  const rootSortableItems = [
+    ...tree.map(n => `folder-${n.id}`),
+    ...rootNotes.map(n => `note-${n.id}`),
+  ];
 
   return (
     <Box className={styles.tree}>
       <ExplorerTreeHeader
         selectionCount={selectionCount}
         pickItemsMode={pickItemsMode}
+        dragMode={dragMode}
         onMoveSelected={() =>
           setReparentTarget({
             folderIds: [...selectedFolderIds],
@@ -200,63 +234,84 @@ export const ExplorerTree: React.FC = () => {
         onClearSelection={clearSelection}
         onTogglePickItems={() => {
           if (pickItemsMode) exitPickItemsMode();
-          else setPickItemsMode(true);
+          else {
+            setPickItemsMode(true);
+            setDragMode('off');
+          }
         }}
+        onCycleDragMode={cycleDragMode}
         onNewFolder={() => setNewFolderParentId(null)}
         onNewMemo={handleCreateMemo}
       />
 
-      <Box className={styles.body}>
-        {tree.map(node => (
-          <FolderSubtree
-            key={node.id}
-            node={node}
-            depth={0}
-            notes={notes}
-            expanded={expanded}
-            activeNoteId={activeNoteId}
-            renaming={renaming}
-            renameValue={renameValue}
-            renameRef={renameRef}
-            onRenameChange={setRenameValue}
-            onRenameCommit={commitRename}
-            onRenameCancel={() => setRenaming(null)}
-            onFolderMenu={(anchor, id) => setFolderMenu({ anchor, id })}
-            onFolderRowClick={handleFolderRowClick}
-            onChevronClick={toggle}
-            onNoteOpen={id => navigate(`notes/${id}`)}
-            onNoteMenu={(anchor, id) => setNoteMenu({ anchor, id })}
-            onNewSubfolder={id => setNewFolderParentId(id)}
-            selectedFolderIds={selectedFolderIds}
-            selectedNoteIds={selectedNoteIds}
-            onNoteRowClick={handleNoteRowClick}
-            pickItemsMode={pickItemsMode}
-            toggleFolderInSelection={toggleFolderInSelection}
-            toggleNoteInSelection={toggleNoteInSelection}
-          />
-        ))}
+      <DndContext
+        sensors={sensors}
+        onDragStart={onDragStart}
+        onDragMove={onDragMove}
+        onDragEnd={onDragEnd}
+        onDragCancel={onDragCancel}
+      >
+        <Box className={styles.body}>
+          <SortableContext items={rootSortableItems} strategy={verticalListSortingStrategy}>
+            {tree.map(node => (
+              <FolderSubtree
+                key={node.id}
+                node={node}
+                depth={0}
+                notes={notes}
+                expanded={expanded}
+                activeNoteId={activeNoteId}
+                renaming={renaming}
+                renameValue={renameValue}
+                renameRef={renameRef}
+                onRenameChange={setRenameValue}
+                onRenameCommit={commitRename}
+                onRenameCancel={cancelRename}
+                onFolderMenu={(anchor, id) => setFolderMenu({ anchor, id })}
+                onFolderRowClick={handleFolderRowClick}
+                onChevronClick={toggle}
+                onNoteOpen={id => navigate(`notes/${id}`)}
+                onNoteMenu={(anchor, id) => setNoteMenu({ anchor, id })}
+                onNewSubfolder={id => setNewFolderParentId(id)}
+                selectedFolderIds={selectedFolderIds}
+                selectedNoteIds={selectedNoteIds}
+                onNoteRowClick={handleNoteRowClick}
+                pickItemsMode={pickItemsMode}
+                dragMode={dragMode}
+                dropIntent={dropIntent}
+                toggleFolderInSelection={toggleFolderInSelection}
+                toggleNoteInSelection={toggleNoteInSelection}
+              />
+            ))}
 
-        {rootNotes.map(note => (
-          <NoteRow
-            key={note.id}
-            note={note}
-            depth={0}
-            active={activeNoteId === String(note.id)}
-            selected={selectedNoteIds.has(note.id)}
-            pickItemsMode={pickItemsMode}
-            onOpen={id => navigate(`notes/${id}`)}
-            onRowClick={handleNoteRowClick}
-            onMenuOpen={(anchor, id) => setNoteMenu({ anchor, id })}
-            onTogglePick={() => toggleNoteInSelection(note.id)}
-          />
-        ))}
+            {rootNotes.map(note => (
+              <NoteRow
+                key={note.id}
+                note={note}
+                depth={0}
+                active={activeNoteId === String(note.id)}
+                selected={selectedNoteIds.has(note.id)}
+                pickItemsMode={pickItemsMode}
+                dragMode={dragMode}
+                onOpen={id => navigate(`notes/${id}`)}
+                onRowClick={handleNoteRowClick}
+                onMenuOpen={(anchor, id) => setNoteMenu({ anchor, id })}
+                onTogglePick={() => toggleNoteInSelection(note.id)}
+              />
+            ))}
+          </SortableContext>
 
-        {rootNotes.length === 0 && tree.length === 0 && (
-          <Box sx={{ px: 2, py: 1 }}>
-            <Typography sx={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>No notes or folders yet</Typography>
-          </Box>
-        )}
-      </Box>
+          {rootNotes.length === 0 && tree.length === 0 && (
+            <Box sx={{ px: 2, py: 1 }}>
+              <Typography sx={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>No notes or folders yet</Typography>
+            </Box>
+          )}
+        </Box>
+
+        <DragOverlay>
+          {activeId ? <DragGhostRow id={activeId} folders={folders} notes={notes} /> : null}
+        </DragOverlay>
+      </DndContext>
 
       {/* Dialogs */}
       <ExplorerTreeDialogs

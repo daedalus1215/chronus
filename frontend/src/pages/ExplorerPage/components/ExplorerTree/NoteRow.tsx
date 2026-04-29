@@ -3,7 +3,11 @@ import { Box, Checkbox, IconButton } from '@mui/material';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { ExplorerNoteItem } from '../../../../api/dtos/note.dtos';
+import { DragMode } from './ExplorerTree';
 import styles from './ExplorerTree.module.css';
 
 type NoteRowProps = {
@@ -12,18 +16,20 @@ type NoteRowProps = {
   active: boolean;
   selected: boolean;
   pickItemsMode: boolean;
+  dragMode: DragMode;
   onOpen: (id: number) => void;
   onRowClick: (e: React.MouseEvent, noteId: number, openNote: () => void) => void;
   onMenuOpen: (anchor: HTMLElement, id: number) => void;
   onTogglePick: () => void;
 };
 
-export const NoteRow: React.FC<NoteRowProps> = ({
+export const NoteRow: React.FC<NoteRowProps> = React.memo(({
   note,
   depth,
   active,
   selected,
   pickItemsMode,
+  dragMode,
   onOpen,
   onRowClick,
   onMenuOpen,
@@ -31,12 +37,33 @@ export const NoteRow: React.FC<NoteRowProps> = ({
 }) => {
   const indent = 10 + depth * 16 + 14;
 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: `note-${note.id}`,
+    disabled: dragMode === 'off',
+  });
+
+  const style = dragMode !== 'off'
+    ? { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }
+    : undefined;
+
   return (
     <Box
+      ref={setNodeRef}
+      style={style}
       className={`${styles.row} ${active || selected ? styles.rowActive : ''}`}
       sx={{ pl: `${indent}px` }}
       onClick={e => onRowClick(e, note.id, () => onOpen(note.id))}
     >
+      {dragMode !== 'off' && (
+        <span
+          className={styles.dragHandle}
+          {...attributes}
+          {...listeners}
+          onClick={e => e.stopPropagation()}
+        >
+          <DragIndicatorIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }} />
+        </span>
+      )}
       {pickItemsMode && (
         <span className={styles.rowCheck} onClick={e => e.stopPropagation()}>
           <Checkbox
@@ -63,5 +90,5 @@ export const NoteRow: React.FC<NoteRowProps> = ({
       </Box>
     </Box>
   );
-};
+});
 

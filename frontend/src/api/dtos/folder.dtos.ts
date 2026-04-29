@@ -2,6 +2,7 @@ export type FolderDto = {
   id: number;
   name: string;
   parentId: number | null;
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -22,13 +23,14 @@ export function buildFolderTree(folders: FolderDto[]): FolderTreeNode[] {
       roots.push(node);
     } else {
       const parent = map.get(f.parentId);
-      if (parent) {
-        parent.children.push(node);
-      } else {
-        roots.push(node);
-      }
+      (parent ?? { children: roots }).children.push(node);
     }
   });
 
+  const sortByOrder = (nodes: FolderTreeNode[]) => {
+    nodes.sort((a, b) => a.sortOrder - b.sortOrder);
+    nodes.forEach(n => sortByOrder(n.children));
+  };
+  sortByOrder(roots);
   return roots;
 }

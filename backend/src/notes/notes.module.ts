@@ -36,6 +36,8 @@ import { NoteOwnershipAdapter } from './apps/adapters/note-ownership.adapter';
 import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
 import { MoveNoteToFolderTransactionScript } from './domain/transaction-scripts/move-note-to-folder.transaction-script';
 import { MoveNoteToFolderAction } from './apps/actions/notes/move-note-to-folder-action/move-note-to-folder.action';
+import { ReorderNotesTransactionScript } from './domain/transaction-scripts/reorder-notes.transaction-script';
+import { ReorderNotesAction } from './apps/actions/notes/reorder-notes-action/reorder-notes.action';
 import { GetNoteNamesForExplorerAction } from './apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action';
 import { NoteFolderAdapter } from './apps/adapters/note-folder.adapter';
 import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
@@ -67,6 +69,7 @@ import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
     SearchNotesResponder,
     NoteOwnershipAdapter,
     MoveNoteToFolderTransactionScript,
+    ReorderNotesTransactionScript,
     {
       provide: NOTE_OWNERSHIP_PORT,
       useExisting: NoteOwnershipAdapter,
@@ -89,6 +92,7 @@ import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
     ConvertChecklistToMemoAction,
     SearchNotesAction,
     MoveNoteToFolderAction,
+    ReorderNotesAction,
     GetNoteNamesForExplorerAction,
   ],
   exports: [

@@ -20,6 +20,9 @@ export class Folder {
   @Column({ name: 'parent_id', nullable: true, type: 'integer' })
   parentId: number | null;
 
+  @Column({ name: 'sort_order', default: 0 })
+  sortOrder: number;
+
   @CreateDateColumn({ name: 'created_at', type: 'text' })
   createdAt: string;
 

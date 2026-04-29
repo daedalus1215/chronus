@@ -101,6 +101,7 @@ export class NoteMemoTagRepository {
         'isMemo'
       )
       .addSelect('note.folder_id', 'folderId')
+      .addSelect('note.sort_order', 'sortOrder')
       .where('note.user_id = :userId', { userId });
 
     if (folderId === 'root') {
@@ -112,7 +113,7 @@ export class NoteMemoTagRepository {
     }
 
     return await qb
-      .orderBy('note.updated_at', 'DESC')
+      .orderBy('note.sort_order', 'ASC')
       .take(500)
       .getRawMany();
   }

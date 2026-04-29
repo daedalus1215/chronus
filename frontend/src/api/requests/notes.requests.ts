@@ -67,6 +67,13 @@ export const moveNoteToFolder = async (
   return response.data;
 };
 
+export const reorderNotes = async (data: {
+  items: { id: number; sortOrder: number }[];
+  folderId: number | null;
+}): Promise<void> => {
+  await api.patch('/notes/reorder', data);
+};
+
 export const searchNotes = async (query: string): Promise<SearchResult[]> => {
   const response = await api.get<SearchResult[]>('/notes/search', {
     params: { query },

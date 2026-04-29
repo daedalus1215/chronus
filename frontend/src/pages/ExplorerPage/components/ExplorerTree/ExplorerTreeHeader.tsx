@@ -5,14 +5,18 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import AddNoteIcon from '@mui/icons-material/NoteAdd';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
 import styles from './ExplorerTree.module.css';
+import { DragMode } from './ExplorerTree';
 
 type ExplorerTreeHeaderProps = {
   selectionCount: number;
   pickItemsMode: boolean;
+  dragMode: DragMode;
   onMoveSelected: () => void;
   onClearSelection: () => void;
   onTogglePickItems: () => void;
+  onCycleDragMode: () => void;
   onNewFolder: () => void;
   onNewMemo: () => void;
 };
@@ -20,12 +24,16 @@ type ExplorerTreeHeaderProps = {
 export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
   selectionCount,
   pickItemsMode,
+  dragMode,
   onMoveSelected,
   onClearSelection,
   onTogglePickItems,
+  onCycleDragMode,
   onNewFolder,
   onNewMemo,
 }) => {
+  const dragTitle = dragMode === 'off' ? 'Enter drag mode' : 'Exit drag mode';
+
   return (
     <Box className={styles.header}>
       <Box
@@ -81,6 +89,16 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
         >
           {/* {pickItemsMode ? 'Done' : 'Select'} */}
         </Button>
+        <IconButton
+          size="small"
+          className={styles.headerBtn}
+          title={dragTitle}
+          aria-pressed={dragMode !== 'off'}
+          onClick={onCycleDragMode}
+          sx={{ color: dragMode !== 'off' ? 'rgba(255,255,255,0.95)' : undefined }}
+        >
+          <SwapVertIcon sx={{ fontSize: 14 }} />
+        </IconButton>
         <IconButton
           size="small"
           className={styles.headerBtn}

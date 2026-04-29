@@ -19,7 +19,7 @@ export class FolderRepository {
   }
 
   async findAllByUserId(userId: number): Promise<Folder[]> {
-    return this.repo.find({ where: { userId }, order: { name: 'ASC' } });
+    return this.repo.find({ where: { userId }, order: { sortOrder: 'ASC', name: 'ASC' } });
   }
 
   async update(folder: Folder): Promise<Folder> {
