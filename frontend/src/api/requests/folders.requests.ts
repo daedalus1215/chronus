@@ -33,3 +33,10 @@ export const bulkReparentFolders = async (data: {
   const res = await api.patch('/folders/bulk-reparent', data);
   return res.data;
 };
+
+export const reorderFolders = async (data: {
+  items: { id: number; sortOrder: number }[];
+  parentId: number | null;
+}): Promise<void> => {
+  await api.patch('/folders/reorder', data);
+};

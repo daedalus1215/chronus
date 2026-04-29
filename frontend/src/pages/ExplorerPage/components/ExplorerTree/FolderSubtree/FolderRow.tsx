@@ -6,7 +6,12 @@ import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { FolderTreeNode } from '../../../../../api/dtos/folder.dtos';
+import { DragMode } from '../ExplorerTree';
+import { DropIntent } from '../useDragOperations';
 import styles from '../ExplorerTree.module.css';
 
 type FolderRowProps = {
@@ -18,6 +23,8 @@ type FolderRowProps = {
   renameRef: React.RefObject<HTMLInputElement>;
   selected: boolean;
   pickItemsMode: boolean;
+  dragMode: DragMode;
+  dropIntent: DropIntent;
   onRenameChange: (v: string) => void;
   onRenameCommit: () => void;
   onRenameCancel: () => void;
@@ -28,7 +35,7 @@ type FolderRowProps = {
   onTogglePick: (id: number) => void;
 };
 
-export const FolderRow: React.FC<FolderRowProps> = ({
+export const FolderRow: React.FC<FolderRowProps> = React.memo(({
   node,
   depth,
   expanded,
@@ -37,6 +44,8 @@ export const FolderRow: React.FC<FolderRowProps> = ({
   renameRef,
   selected,
   pickItemsMode,
+  dragMode,
+  dropIntent,
   onRenameChange,
   onRenameCommit,
   onRenameCancel,
@@ -48,13 +57,35 @@ export const FolderRow: React.FC<FolderRowProps> = ({
 }) => {
   const isOpen = expanded.has(node.id);
   const indent = 10 + depth * 16;
+  const isDropTarget = dropIntent?.type === 'into' && dropIntent.overId === `folder-${node.id}`;
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: `folder-${node.id}`,
+    disabled: dragMode === 'off',
+  });
+
+  const style = dragMode !== 'off'
+    ? { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }
+    : undefined;
 
   return (
     <Box
-      className={`${styles.row} ${selected ? styles.rowActive : ''}`}
+      ref={setNodeRef}
+      style={style}
+      className={`${styles.row} ${selected ? styles.rowActive : ''} ${isDropTarget ? styles.rowDropTarget : ''}`}
       sx={{ pl: `${indent}px` }}
       onClick={e => onFolderRowClick(e, node.id)}
     >
+      {dragMode !== 'off' && (
+        <span
+          className={styles.dragHandle}
+          {...attributes}
+          {...listeners}
+          onClick={e => e.stopPropagation()}
+        >
+          <DragIndicatorIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }} />
+        </span>
+      )}
       {pickItemsMode && (
         <span className={styles.rowCheck} onClick={e => e.stopPropagation()}>
           <Checkbox
@@ -120,4 +151,4 @@ export const FolderRow: React.FC<FolderRowProps> = ({
       )}
     </Box>
   );
-};
+});

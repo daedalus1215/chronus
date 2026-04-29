@@ -7,6 +7,7 @@ export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
   userId: 1,
   archivedAt: null,
   folderId: null,
+  sortOrder: 0,
   memo: null,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),

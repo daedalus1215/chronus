@@ -15,6 +15,7 @@ export type ExplorerNoteItem = {
   id: number;
   isMemo: number;
   folderId: number | null;
+  sortOrder: number;
 };
 
 export type NoteResponse = {

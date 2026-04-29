@@ -1,6 +1,9 @@
 import React from 'react';
 import { Collapse } from '@mui/material';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { FolderTreeNode, ExplorerNoteItem } from '../../../../../api/dtos/folder.dtos';
+import { DragMode } from '../ExplorerTree';
+import { DropIntent } from '../useDragOperations';
 import { FolderRow } from './FolderRow';
 import { NoteRow } from '../NoteRow';
 
@@ -26,11 +29,13 @@ type FolderSubtreeProps = {
   selectedNoteIds: Set<number>;
   onNoteRowClick: (e: React.MouseEvent, noteId: number, openNote: () => void) => void;
   pickItemsMode: boolean;
+  dragMode: DragMode;
+  dropIntent: DropIntent;
   toggleFolderInSelection: (id: number) => void;
   toggleNoteInSelection: (id: number) => void;
 };
 
-export const FolderSubtree: React.FC<FolderSubtreeProps> = ({
+export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(({
   node,
   depth,
   notes,
@@ -52,11 +57,70 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = ({
   selectedNoteIds,
   onNoteRowClick,
   pickItemsMode,
+  dragMode,
+  dropIntent,
   toggleFolderInSelection,
   toggleNoteInSelection,
 }) => {
   const isOpen = expanded.has(node.id);
-  const folderNotes = notes.filter(n => n.folderId === node.id);
+  const folderNotes = notes
+    .filter(n => n.folderId === node.id)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const sortableItems = [
+    ...node.children.map(c => `folder-${c.id}`),
+    ...folderNotes.map(n => `note-${n.id}`),
+  ];
+
+  const children = (
+    <>
+      {node.children.map(child => (
+        <FolderSubtree
+          key={child.id}
+          node={child}
+          depth={depth + 1}
+          notes={notes}
+          expanded={expanded}
+          activeNoteId={activeNoteId}
+          renaming={renaming}
+          renameValue={renameValue}
+          renameRef={renameRef}
+          onRenameChange={onRenameChange}
+          onRenameCommit={onRenameCommit}
+          onRenameCancel={onRenameCancel}
+          onFolderMenu={onFolderMenu}
+          onFolderRowClick={onFolderRowClick}
+          onChevronClick={onChevronClick}
+          onNoteOpen={onNoteOpen}
+          onNoteMenu={onNoteMenu}
+          onNewSubfolder={onNewSubfolder}
+          selectedFolderIds={selectedFolderIds}
+          selectedNoteIds={selectedNoteIds}
+          onNoteRowClick={onNoteRowClick}
+          pickItemsMode={pickItemsMode}
+          dragMode={dragMode}
+          dropIntent={dropIntent}
+          toggleFolderInSelection={toggleFolderInSelection}
+          toggleNoteInSelection={toggleNoteInSelection}
+        />
+      ))}
+      {folderNotes.map(note => (
+        <NoteRow
+          key={note.id}
+          note={note}
+          depth={depth + 1}
+          active={activeNoteId === String(note.id)}
+          selected={selectedNoteIds.has(note.id)}
+          pickItemsMode={pickItemsMode}
+          dragMode={dragMode}
+          onOpen={onNoteOpen}
+          onRowClick={onNoteRowClick}
+          onMenuOpen={onNoteMenu}
+          onTogglePick={() => toggleNoteInSelection(note.id)}
+        />
+      ))}
+    </>
+  );
 
   return (
     <>
@@ -69,6 +133,8 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = ({
         renameRef={renameRef}
         selected={selectedFolderIds.has(node.id)}
         pickItemsMode={pickItemsMode}
+        dragMode={dragMode}
+        dropIntent={dropIntent}
         onRenameChange={onRenameChange}
         onRenameCommit={onRenameCommit}
         onRenameCancel={onRenameCancel}
@@ -80,51 +146,14 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = ({
       />
 
       <Collapse in={isOpen} timeout={150} unmountOnExit>
-        <>
-          {folderNotes.map(note => (
-            <NoteRow
-              key={note.id}
-              note={note}
-              depth={depth + 1}
-              active={activeNoteId === String(note.id)}
-              selected={selectedNoteIds.has(note.id)}
-              pickItemsMode={pickItemsMode}
-              onOpen={onNoteOpen}
-              onRowClick={onNoteRowClick}
-              onMenuOpen={onNoteMenu}
-              onTogglePick={() => toggleNoteInSelection(note.id)}
-            />
-          ))}
-          {node.children.map(child => (
-            <FolderSubtree
-              key={child.id}
-              node={child}
-              depth={depth + 1}
-              notes={notes}
-              expanded={expanded}
-              activeNoteId={activeNoteId}
-              renaming={renaming}
-              renameValue={renameValue}
-              renameRef={renameRef}
-              onRenameChange={onRenameChange}
-              onRenameCommit={onRenameCommit}
-              onRenameCancel={onRenameCancel}
-              onFolderMenu={onFolderMenu}
-              onFolderRowClick={onFolderRowClick}
-              onChevronClick={onChevronClick}
-              onNoteOpen={onNoteOpen}
-              onNoteMenu={onNoteMenu}
-              onNewSubfolder={onNewSubfolder}
-              selectedFolderIds={selectedFolderIds}
-              selectedNoteIds={selectedNoteIds}
-              onNoteRowClick={onNoteRowClick}
-              pickItemsMode={pickItemsMode}
-              toggleFolderInSelection={toggleFolderInSelection}
-              toggleNoteInSelection={toggleNoteInSelection}
-            />
-          ))}
-        </>
+        {dragMode === 'on' ? (
+          <SortableContext items={sortableItems} strategy={verticalListSortingStrategy}>
+            {children}
+          </SortableContext>
+        ) : (
+          children
+        )}
       </Collapse>
     </>
   );
-};
+});

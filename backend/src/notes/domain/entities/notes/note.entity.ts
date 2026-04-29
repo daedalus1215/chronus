@@ -44,4 +44,7 @@ export class Note {
 
   @Column({ name: 'folder_id', nullable: true, type: 'integer' })
   folderId: number | null;
+
+  @Column({ name: 'sort_order', default: 0 })
+  sortOrder: number;
 }
