@@ -37,6 +37,20 @@ export const useUpdateNoteMutation = (noteId: number) => {
       const response = await api.patch<Note>(`/notes/detail/${noteId}`, body);
       return response.data;
     },
+    onMutate: async (updatedNote) => {
+      await queryClient.cancelQueries({ queryKey: noteKeys.detail(noteId) });
+      const previousNote = queryClient.getQueryData<Note>(noteKeys.detail(noteId));
+      queryClient.setQueryData(noteKeys.detail(noteId), (prev: Note | undefined) => {
+        if (!prev) return prev;
+        return { ...prev, ...updatedNote };
+      });
+      return { previousNote };
+    },
+    onError: (_err, _updatedNote, context) => {
+      if (context?.previousNote) {
+        queryClient.setQueryData(noteKeys.detail(noteId), context.previousNote);
+      }
+    },
     onSuccess: (responseData) => {
       queryClient.setQueryData(noteKeys.detail(noteId), (prev: Note | undefined) => {
         if (!prev) return responseData;
