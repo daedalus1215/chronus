@@ -38,6 +38,7 @@ export const useNoteEditor = ({
   });
   const timeoutRef = React.useRef<number>();
   const contentRef = React.useRef(content);
+  const saveChangesRef = React.useRef<() => void>(() => {});
 
   // Update contentRef when content changes
   React.useEffect(() => {
@@ -48,6 +49,11 @@ export const useNoteEditor = ({
     const currentContent = contentRef.current;
     onSave({ description: currentContent.description });
   }, [onSave]);
+
+  // Keep saveChangesRef current so the unmount cleanup can flush the latest save
+  React.useEffect(() => {
+    saveChangesRef.current = saveChanges;
+  }, [saveChanges]);
 
   const debouncedSave = React.useCallback(() => {
     if (timeoutRef.current) {
@@ -70,11 +76,12 @@ export const useNoteEditor = ({
     handleContentChange({ description: e.target.value });
   };
 
-  // Cleanup timeout on unmount
+  // Flush any pending save on unmount so switching to read mode doesn't discard edits
   React.useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         window.clearTimeout(timeoutRef.current);
+        saveChangesRef.current();
       }
     };
   }, []);

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DndContext,
@@ -68,7 +68,6 @@ const normalizeStatus = (item: CheckItem): CheckItemStatus => {
 };
 
 export const KanbanBoardPage: React.FC = () => {
-  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const noteId = Number(id);
   const queryClient = useQueryClient();

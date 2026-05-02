@@ -40,6 +40,7 @@ export const ChangeUsernameForm: React.FC = () => {
       setSuccessMessage('Username updated successfully. You will be redirected to login.');
     } catch (err) {
       // Error is handled by the hook
+      console.log('error should be handled by the hook! Error:', err);
     }
   };
 

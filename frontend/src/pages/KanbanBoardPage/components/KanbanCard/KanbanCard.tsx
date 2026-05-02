@@ -24,7 +24,6 @@ type KanbanCardProps = {
 export const KanbanCard: React.FC<KanbanCardProps> = ({
   item,
   statusColor,
-  onEdit,
   onViewDetails,
 }) => {
   const {
@@ -53,11 +52,6 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
 
   const closeMenu = () => {
     setMenuAnchor(null);
-  };
-
-  const handleEditClick = () => {
-    closeMenu();
-    onEdit(item.id, item.name);
   };
 
   const handleViewDetailsClick = () => {

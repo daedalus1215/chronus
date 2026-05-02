@@ -12,7 +12,6 @@ import {
   EditOutlined,
   LabelOutlined,
   AccessTimeOutlined,
-  LockOutlined,
   ViewKanbanOutlined,
   NoteAltOutlined,
 } from '@mui/icons-material';
@@ -32,7 +31,6 @@ type NoteActionsProps = {
   onTextToSpeech: () => void;
   onStar: () => void;
   onExport: () => void;
-  onLock: () => void;
   onEdit: () => void;
   onLabel: () => void;
   onDownloadAudio: () => void;
@@ -57,7 +55,6 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onArchive,
   onStar,
   onExport,
-  onLock,
   onEdit,
   onTextToSpeech,
   onLabel,
@@ -140,10 +137,6 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
 
         <ActionButton label="Export" onClick={onExport}>
           <FileUploadOutlined className={styles.icon} />
-        </ActionButton>
-
-        <ActionButton label="Lock" onClick={onLock}>
-          <LockOutlined className={styles.icon} />
         </ActionButton>
 
         <ActionButton label="Delete" onClick={onDelete} danger={true}>
