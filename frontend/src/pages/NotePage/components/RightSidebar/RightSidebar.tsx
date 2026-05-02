@@ -41,13 +41,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         >
           {title}
         </Typography>
-        {/* <IconButton
+        <IconButton
           size="small"
           aria-label="Close sidebar"
           onClick={onClose}
         >
           <CloseIcon fontSize="small" />
-        </IconButton> */}
+        </IconButton>
       </Box>
       <div className={styles.content}>{children}</div>
     </aside>

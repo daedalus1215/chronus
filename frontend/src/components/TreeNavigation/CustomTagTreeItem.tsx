@@ -224,6 +224,11 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       }
     }, [noteId, archiveNote, queryClient, tagId, navigate]);
 
+    const handleViewBoard = useCallback(() => {
+      setIsActionsOpen(false);
+      navigate(ROUTES.KANBAN(noteId));
+    }, [noteId, navigate]);
+
     const noop = useCallback(() => setIsActionsOpen(false), []);
 
     const contentSlot = slotProps.content as { sx?: object } | undefined;
@@ -320,9 +325,10 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               onDownloadAudio={noop}
               onEdit={noop}
               onLabel={noop}
-              onExport={noop}
-              onLock={noop}
-            />
+              onExport={noop} onViewAudioHistory={function (): void {
+                throw new Error('Function not implemented.');
+              } }
+               onViewBoard={handleViewBoard}            />
             <TimeTrackingForm
               isOpen={isTimeTrackingOpen}
               onClose={() => setIsTimeTrackingOpen(false)}
