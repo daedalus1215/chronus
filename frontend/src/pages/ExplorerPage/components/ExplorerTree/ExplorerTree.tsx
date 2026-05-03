@@ -66,6 +66,7 @@ export const ExplorerTree: React.FC = () => {
     setReparentTarget,
     disabledMoveDestFolderIds,
     handleCreateMemo,
+    handleCreateMemoInFolder,
     handleCreateFolder,
     handleDeleteFolder,
     handleReparentConfirm,
@@ -336,6 +337,7 @@ export const ExplorerTree: React.FC = () => {
         setReparentTarget={setReparentTarget}
         setNewFolderParentId={setNewFolderParentId}
         setDeleteConfirmId={setDeleteConfirmId}
+        onCreateMemoInFolder={handleCreateMemoInFolder}
         noteMenu={noteMenu}
         setNoteMenu={setNoteMenu}
       />
