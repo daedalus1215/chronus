@@ -12,6 +12,7 @@ type ExplorerTreeMenusProps = {
   setReparentTarget: (v: { folderIds: number[]; noteIds: number[] } | null) => void;
   setNewFolderParentId: (v: number | null | undefined) => void;
   setDeleteConfirmId: (v: number | null) => void;
+  onCreateMemoInFolder: (id: number) => void;
 
   // Note menu
   noteMenu: { anchor: HTMLElement; id: number } | null;
@@ -26,6 +27,7 @@ export const ExplorerTreeMenus: React.FC<ExplorerTreeMenusProps> = ({
   setReparentTarget,
   setNewFolderParentId,
   setDeleteConfirmId,
+  onCreateMemoInFolder,
   noteMenu,
   setNoteMenu,
 }) => {
@@ -70,6 +72,15 @@ export const ExplorerTreeMenus: React.FC<ExplorerTreeMenusProps> = ({
           }}
         >
           New subfolder
+        </MenuItem>
+        <MenuItem
+          dense
+          onClick={() => {
+            if (folderMenu) onCreateMemoInFolder(folderMenu.id);
+            setFolderMenu(null);
+          }}
+        >
+          New memo
         </MenuItem>
         <MenuItem
           dense

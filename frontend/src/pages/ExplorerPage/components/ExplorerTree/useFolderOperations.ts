@@ -94,6 +94,16 @@ export const useFolderOperations = (
     }
   }, [selectedFolderIds, load]);
 
+  const handleCreateMemoInFolder = useCallback(async (folderId: number) => {
+    await createNote(NOTE_TYPES.MEMO, folderId);
+    await load();
+    setExpanded(prev => {
+      const next = new Set(prev);
+      next.add(folderId);
+      return next;
+    });
+  }, [load]);
+
   // Create folder
   const handleCreateFolder = useCallback(async (name: string) => {
     const trimmed = name.trim();
@@ -181,6 +191,7 @@ export const useFolderOperations = (
     deleteConfirmId,
     setDeleteConfirmId,
     handleCreateMemo,
+    handleCreateMemoInFolder,
     handleCreateFolder,
     handleDeleteFolder,
 
