@@ -6,7 +6,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import { SidebarToggleIcon } from './SidebarToggleIcon';
 import Logout from '@mui/icons-material/Logout';
 import Divider from '@mui/material/Divider';
 import Fade from '@mui/material/Fade';
@@ -103,7 +103,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
           </span>
         </Link>
         <IconButton onClick={onClose} aria-label="Close sidebar">
-          <CloseIcon />
+          <SidebarToggleIcon isOpen={true} size={20} />
         </IconButton>
       </div>
       <List>
