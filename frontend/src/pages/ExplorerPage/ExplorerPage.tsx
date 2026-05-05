@@ -4,12 +4,14 @@ import { Outlet, useMatch } from 'react-router-dom';
 import { ExplorerTree } from './components/ExplorerTree/ExplorerTree';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useResizablePane } from '../../hooks/useResizablePane';
+import { useSidebar } from '../../hooks/useSidebar';
 import styles from './ExplorerPage.module.css';
 
 const EXPLORER_NOTE_PATTERN = '/explorer/notes/:id';
 
 export const ExplorerPage: React.FC = () => {
   const isMobile = useIsMobile();
+  const { isNoteListOpen } = useSidebar();
   const noteMatch = useMatch(EXPLORER_NOTE_PATTERN);
   const hasNoteOpen = Boolean(noteMatch);
 
@@ -39,27 +41,36 @@ export const ExplorerPage: React.FC = () => {
       {/* left: unified file tree */}
       <Box
         sx={{
-          position: 'relative',
-          width: `${treeWidth}px`,
-          flex: '0 0 auto',
-          borderRight: '1px solid',
-          borderColor: 'divider',
-          height: '100%',
           overflow: 'hidden',
+          flexShrink: 0,
+          maxWidth: isNoteListOpen ? '450px' : '0px',
+          transition: 'max-width 0.2s ease',
         }}
       >
-        <ExplorerTree />
-        <div
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="Resize explorer"
-          tabIndex={0}
-          className={styles.resizeHandle}
-          onMouseDown={startResizing}
-          onPointerDown={startResizing}
-          onKeyDown={handleKeyDown}
-          onDoubleClick={handleDoubleClick}
-        />
+        <Box
+          sx={{
+            position: 'relative',
+            width: `${treeWidth}px`,
+            flex: '0 0 auto',
+            borderRight: '1px solid',
+            borderColor: 'divider',
+            height: '100%',
+            overflow: 'hidden',
+          }}
+        >
+          <ExplorerTree />
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize explorer"
+            tabIndex={0}
+            className={styles.resizeHandle}
+            onMouseDown={startResizing}
+            onPointerDown={startResizing}
+            onKeyDown={handleKeyDown}
+            onDoubleClick={handleDoubleClick}
+          />
+        </Box>
       </Box>
 
       {/* right: note detail or empty state */}

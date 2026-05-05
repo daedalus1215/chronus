@@ -7,6 +7,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(!isMobile);
+  const [isNoteListOpen, setIsNoteListOpen] = useState(true);
 
   useEffect(() => {
     if (!isMobile) {
@@ -17,7 +18,9 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [isMobile]);
 
   return (
-    <SidebarContext.Provider value={{ isOpen, setIsOpen, isMobile }}>
+    <SidebarContext.Provider
+      value={{ isOpen, setIsOpen, isMobile, isNoteListOpen, setIsNoteListOpen }}
+    >
       {children}
     </SidebarContext.Provider>
   );
