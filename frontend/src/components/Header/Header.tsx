@@ -5,7 +5,7 @@ import { Sidebar } from './Sidebar/Sidebar';
 import { Logo } from '../Logo/Logo';
 import { useSidebar } from '../../hooks/useSidebar';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
+import { SidebarToggleIcon } from './Sidebar/SidebarToggleIcon';
 import styles from './Header.module.css';
 
 export const MOBILE_HEADER_HEIGHT_PX = 48;
@@ -36,7 +36,7 @@ export const Header: React.FC = () => {
               size="small"
               sx={{ color: 'text.primary' }}
             >
-              <MenuIcon fontSize="small" />
+              <SidebarToggleIcon isOpen={false} size={20} />
             </IconButton>
           </div>
         </header>
