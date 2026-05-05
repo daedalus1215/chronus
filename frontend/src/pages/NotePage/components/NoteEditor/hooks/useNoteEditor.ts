@@ -40,6 +40,16 @@ export const useNoteEditor = ({
   const contentRef = React.useRef(content);
   const saveChangesRef = React.useRef<() => void>(() => {});
 
+  // Reset content and cancel pending save when switching to a different note
+  React.useEffect(() => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = undefined;
+    }
+    setContent({ description: note.description || '' });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [note.id]);
+
   // Update contentRef when content changes
   React.useEffect(() => {
     contentRef.current = content;
