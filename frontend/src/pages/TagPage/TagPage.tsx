@@ -6,12 +6,14 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useResizablePane } from '../../hooks/useResizablePane';
 import { useParams, useMatch, Outlet } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
+import { useSidebar } from '../../hooks/useSidebar';
 import styles from './TagPage.module.css';
 
 const TAG_NOTES_NOTE_PATTERN = '/tag-notes/:tagId/notes/:id';
 
 export const TagPage: React.FC = () => {
   const isMobile = useIsMobile();
+  const { isNoteListOpen } = useSidebar();
   const { tagId: routeTagId } = useParams<{ tagId: string }>();
   const noteMatch = useMatch(TAG_NOTES_NOTE_PATTERN);
   const isTagRoute = routeTagId != null;
@@ -90,26 +92,35 @@ export const TagPage: React.FC = () => {
 
             <Box
               sx={{
-                position: 'relative',
-                width: `${treeWidth}px`,
-                flex: '0 0 auto',
-                borderRight: '1px solid',
-                borderColor: 'divider',
-                height: '100%',
+                overflow: 'hidden',
+                flexShrink: 0,
+                maxWidth: isNoteListOpen ? '350px' : '0px',
+                transition: 'max-width 0.2s ease',
               }}
             >
-              <DesktopTagTreePanel />
-              <div
-                role="separator"
-                aria-orientation="vertical"
-                aria-label="Resize tag tree"
-                tabIndex={0}
-                className={styles.resizeHandle}
-                onMouseDown={startResizing}
-                onPointerDown={startResizing}
-                onKeyDown={handleKeyDown}
-                onDoubleClick={handleDoubleClick}
-              />
+              <Box
+                sx={{
+                  position: 'relative',
+                  width: `${treeWidth}px`,
+                  flex: '0 0 auto',
+                  borderRight: '1px solid',
+                  borderColor: 'divider',
+                  height: '100%',
+                }}
+              >
+                <DesktopTagTreePanel />
+                <div
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label="Resize tag tree"
+                  tabIndex={0}
+                  className={styles.resizeHandle}
+                  onMouseDown={startResizing}
+                  onPointerDown={startResizing}
+                  onKeyDown={handleKeyDown}
+                  onDoubleClick={handleDoubleClick}
+                />
+              </Box>
             </Box>
             <Box
               sx={{

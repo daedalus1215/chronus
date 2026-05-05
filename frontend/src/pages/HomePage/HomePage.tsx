@@ -8,6 +8,7 @@ import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import { NOTE_TYPES, NoteTypes } from '../../constant';
 import { useLocation, useParams, useNavigate, Outlet } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useSidebar } from '../../hooks/useSidebar';
 import { MobileNoteListView } from './components/NoteListView/MobileNoteListVIew/MobileNoteListView';
 import { ROUTES } from '../../constants/routes';
 import styles from './HomePage.module.css';
@@ -15,6 +16,7 @@ import styles from './HomePage.module.css';
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const { isNoteListOpen } = useSidebar();
   const { createNote, isCreating } = useCreateNote();
   const [showMenu, setShowMenu] = React.useState(false);
   const location = useLocation();
@@ -117,13 +119,22 @@ export const HomePage: React.FC = () => {
           <Box
             sx={{ display: 'flex', flex: 1, overflow: 'hidden', minWidth: 0 }}
           >
-            <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
-              <DesktopNoteListView
-                type={noteTypeParam}
-                tagId={tagId}
-                onNoteSelect={handleNoteSelect}
-                selectedNoteId={selectedNoteId}
-              />
+            <Box
+              sx={{
+                overflow: 'hidden',
+                flexShrink: 0,
+                maxWidth: isNoteListOpen ? '350px' : '0px',
+                transition: 'max-width 0.2s ease',
+              }}
+            >
+              <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
+                <DesktopNoteListView
+                  type={noteTypeParam}
+                  tagId={tagId}
+                  onNoteSelect={handleNoteSelect}
+                  selectedNoteId={selectedNoteId}
+                />
+              </Box>
             </Box>
             <Box
               sx={{
