@@ -3,6 +3,7 @@ export type TagTreeItem = {
   label: string;
   type: 'tag' | 'note';
   noteCount?: number;
+  isLoadingPlaceholder?: boolean;
   children?: TagTreeItem[];
 };
 
@@ -22,9 +23,21 @@ export type TagWithNoteCount = {
 
 export const buildTagTreeItems = (
   tags: TagWithNoteCount[],
-  notesByTagId: Record<number, NoteSummary[]>
+  notesByTagId: Record<number, NoteSummary[]>,
+  loadedTagIds: Set<number>
 ): TagTreeItem[] => {
   return tags.map((tag) => {
+    if (!loadedTagIds.has(tag.id)) {
+      return {
+        id: `${TAG_PREFIX}${tag.id}`,
+        label: tag.name,
+        type: 'tag' as const,
+        noteCount: tag.noteCount,
+        children: tag.noteCount > 0
+          ? [{ id: `loading-${tag.id}`, label: '...', type: 'note' as const, isLoadingPlaceholder: true }]
+          : undefined,
+      };
+    }
     const notes = notesByTagId[tag.id] ?? [];
     const seenNoteIds = new Set<number>();
     const uniqueNotes = notes.filter((note) => {
@@ -81,9 +94,10 @@ export const filterTagTreeItems = (
   for (const tag of items) {
     const tagMatches = matchesQuery(tag.label, q);
     const children = tag.children ?? [];
+    const realChildren = children.filter((c) => !c.isLoadingPlaceholder);
     const filteredChildren = tagMatches
-      ? children
-      : children.filter((note) => matchesQuery(note.label, q));
+      ? realChildren
+      : realChildren.filter((note) => matchesQuery(note.label, q));
     if (filteredChildren.length === 0 && !tagMatches) continue;
     filtered.push({
       ...tag,
