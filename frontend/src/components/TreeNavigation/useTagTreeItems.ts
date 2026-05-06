@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState, useCallback, useRef } from 'react';
 import { useTagsWithNotes } from '../../hooks/useTagsWithNotes';
 import {
   buildTagTreeItems,
@@ -9,48 +9,34 @@ export const useTagTreeItems = (): {
   treeItems: TagTreeItem[];
   isLoading: boolean;
   error: string | null;
+  loadNotesForTag: (tagId: number) => Promise<void>;
 } => {
   const { tags, tagsLoading, tagsError, fetchNotesForTag } = useTagsWithNotes();
   const [notesByTagId, setNotesByTagId] = useState<
     Record<number, { id: number; name: string }[]>
   >({});
-  const [notesLoading, setNotesLoading] = useState(true);
+  const [loadedTagIds, setLoadedTagIds] = useState<Set<number>>(new Set());
+  const inFlightTagIds = useRef<Set<number>>(new Set());
 
-  useEffect(() => {
-    if (tags.length === 0) {
-      setNotesLoading(false);
-      return;
+  const loadNotesForTag = useCallback(async (tagId: number) => {
+    if (loadedTagIds.has(tagId) || inFlightTagIds.current.has(tagId)) return;
+    inFlightTagIds.current.add(tagId);
+    try {
+      const notes = await fetchNotesForTag(tagId);
+      setNotesByTagId((prev) => ({ ...prev, [tagId]: notes }));
+      setLoadedTagIds((prev) => new Set(prev).add(tagId));
+    } finally {
+      inFlightTagIds.current.delete(tagId);
     }
-    let cancelled = false;
-    setNotesLoading(true);
-    Promise.all(
-      tags.map((tag) =>
-        fetchNotesForTag(tag.id).then((notes) => ({ tagId: tag.id, notes }))
-      )
-    )
-      .then((results) => {
-        if (cancelled) return;
-        const map: Record<number, { id: number; name: string }[]> = {};
-        results.forEach(({ tagId, notes }) => {
-          map[tagId] = notes;
-        });
-        setNotesByTagId(map);
-      })
-      .finally(() => {
-        if (!cancelled) setNotesLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [tags, fetchNotesForTag]);
+  }, [loadedTagIds, fetchNotesForTag]);
 
   const treeItems = useMemo(
-    () => buildTagTreeItems(tags, notesByTagId),
-    [tags, notesByTagId]
+    () => buildTagTreeItems(tags, notesByTagId, loadedTagIds),
+    [tags, notesByTagId, loadedTagIds]
   );
 
-  const isLoading = tagsLoading || notesLoading;
+  const isLoading = tagsLoading;
   const error = tagsError ? 'Failed to load tags' : null;
 
-  return { treeItems, isLoading, error };
+  return { treeItems, isLoading, error, loadNotesForTag };
 };

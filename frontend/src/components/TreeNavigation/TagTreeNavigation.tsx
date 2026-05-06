@@ -27,7 +27,7 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
 }) => {
   const navigate = useNavigate();
   const { tagId: routeTagId } = useParams<{ tagId: string }>();
-  const { treeItems, isLoading, error } = useTagTreeItems();
+  const { treeItems, isLoading, error, loadNotesForTag } = useTagTreeItems();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const filteredItems = useMemo(
@@ -37,9 +37,13 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
 
   const handleItemClick = (_event: React.MouseEvent, itemId: string) => {
     if (itemId.startsWith(TAG_PREFIX)) {
+      const isExpanding = !expandedItems.includes(itemId);
       setExpandedItems((prev) =>
-        prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]
+        isExpanding ? [...prev, itemId] : prev.filter((id) => id !== itemId)
       );
+      if (isExpanding) {
+        loadNotesForTag(Number(itemId.slice(TAG_PREFIX.length)));
+      }
       const tagId = itemId.slice(TAG_PREFIX.length);
       navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
       return;
@@ -56,6 +60,9 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
     _event: React.SyntheticEvent | null,
     itemIds: string[]
   ) => {
+    itemIds
+      .filter((id) => id.startsWith(TAG_PREFIX) && !expandedItems.includes(id))
+      .forEach((id) => loadNotesForTag(Number(id.slice(TAG_PREFIX.length))));
     setExpandedItems(itemIds);
   };
 
