@@ -34,7 +34,7 @@
 }
 .headerBtn:hover {
   color: rgba(255, 255, 255, 0.75) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: var(--color-overlay-medium) !important;
 }
 
 /* ── Loading ───────────────────────────────────────────────────── */
@@ -58,10 +58,11 @@
   width: calc(100% - 8px) !important;
   cursor: pointer;
   gap: 2px;
+  border-left: 2px solid transparent;
 }
 
 .item:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
+  background-color: var(--color-bg-elevated) !important;
 }
 
 .item:hover .itemActions {
@@ -71,12 +72,13 @@
 /* MUI selected state override */
 .item.Mui-selected,
 .item[aria-selected='true'] {
-  background-color: rgba(255, 255, 255, 0.09) !important;
+  background-color: var(--color-bg-elevated) !important;
+  border-left-color: var(--color-primary);
   color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .item.Mui-selected:hover {
-  background-color: rgba(255, 255, 255, 0.11) !important;
+  background-color: var(--color-bg-elevated-3) !important;
 }
 
 /* ── Chevron toggle area ───────────────────────────────────────── */
@@ -135,5 +137,5 @@
 }
 .actionBtn:hover {
   color: rgba(255, 255, 255, 0.9) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: var(--color-overlay-strong) !important;
 }

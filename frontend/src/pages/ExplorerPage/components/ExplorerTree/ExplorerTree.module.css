@@ -6,6 +6,7 @@
   font-size: 13px;
   user-select: none;
   overflow: hidden;
+  background-color: var(--color-bg-paper);
 }
 
 .loading {
@@ -49,7 +50,7 @@
 }
 .headerBtn:hover {
   color: rgba(255, 255, 255, 0.8) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: var(--color-overlay-medium) !important;
 }
 
 /* ── Scrollable body ───────────────────────────────────────────── */
@@ -91,10 +92,11 @@
   cursor: pointer;
   gap: 2px;
   box-sizing: border-box;
+  border-left: 2px solid transparent;
 }
 
 .row:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-bg-elevated);
 }
 
 .row:hover .rowActions {
@@ -102,11 +104,12 @@
 }
 
 .rowActive {
-  background-color: rgba(255, 255, 255, 0.09) !important;
+  background-color: var(--color-bg-elevated) !important;
+  border-left-color: var(--color-primary);
 }
 
 .rowActive:hover {
-  background-color: rgba(255, 255, 255, 0.11) !important;
+  background-color: var(--color-bg-elevated-3) !important;
 }
 
 /* ── Pick-mode checkbox column ─────────────────────────────────── */
@@ -175,7 +178,7 @@
 }
 .actionBtn:hover {
   color: rgba(255, 255, 255, 0.9) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: var(--color-overlay-strong) !important;
 }
 
 /* ── Drag handle ───────────────────────────────────────────────── */
@@ -195,5 +198,5 @@
 /* ── Drop target highlight (move mode) ─────────────────────────── */
 .rowDropTarget {
   outline: 1px solid rgba(255, 255, 255, 0.35) !important;
-  background-color: rgba(255, 255, 255, 0.07) !important;
+  background-color: var(--color-overlay-medium) !important;
 }
