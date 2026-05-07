@@ -19,8 +19,6 @@ import { DeleteCheckItemDialog } from '../CheckListView/components/DeleteCheckIt
 import { DraggableCheckItemList } from '../CheckListView/components/DraggableCheckItemList/DraggableCheckItemList';
 import { DraggableCheckItem } from '../CheckListView/components/DraggableCheckItem/DraggableCheckItem';
 import styles from './SidebarChecklistView.module.css';
-import { Typography } from '@mui/material';
-import { Logo } from '../../../../components/Logo/Logo';
 
 type SidebarChecklistViewProps = {
   note: Note;
@@ -130,14 +128,6 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
   };
   return (
     <Box className={styles.sidebarChecklist}>
-      <Box>
-      <div style={{ height: '100px' }}>
-        <Typography variant="h6" component="div"
-          style={{ justifyContent: 'center', textAlign: 'center', display: 'flex', alignItems: 'center', height: '100%' }}>
-            <Logo />
-          </Typography>
-        </div>
-      </Box>
       <Box
         sx={{
           display: 'flex',

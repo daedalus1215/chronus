@@ -5,15 +5,22 @@ import { Sidebar } from './Sidebar/Sidebar';
 import { Logo } from '../Logo/Logo';
 import { useSidebar } from '../../hooks/useSidebar';
 import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
 import { SidebarToggleIcon } from './Sidebar/SidebarToggleIcon';
+import { useTopRailActionsSlot } from '../../hooks/useTopRailActionsSlot';
 import styles from './Header.module.css';
 
 export const MOBILE_HEADER_HEIGHT_PX = 48;
 
-export const Header: React.FC = () => {
+type HeaderProps = {
+  readonly actionsOnly?: boolean;
+};
+
+export const Header: React.FC<HeaderProps> = ({ actionsOnly = false }) => {
   const { logout, user } = useAuth();
   const { isOpen, setIsOpen, isMobile } = useSidebar();
   const navigate = useNavigate();
+  const pageActions = useTopRailActionsSlot();
 
   const handleSignOut = () => {
     logout();
@@ -30,22 +37,38 @@ export const Header: React.FC = () => {
           style={{ height: MOBILE_HEADER_HEIGHT_PX }}
         >
           <div className={styles.container}>
-            <IconButton
-              onClick={toggleSidebar}
-              aria-label="Open menu"
-              size="small"
-              sx={{ color: 'text.primary' }}
-            >
-              <SidebarToggleIcon isOpen={false} size={20} />
-            </IconButton>
+            {!actionsOnly && (
+              <IconButton
+                onClick={toggleSidebar}
+                aria-label="Open menu"
+                size="small"
+                sx={{ color: 'text.primary' }}
+              >
+                <SidebarToggleIcon isOpen={false} size={20} />
+              </IconButton>
+            )}
+            {pageActions && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  ml: 'auto',
+                }}
+              >
+                {pageActions}
+              </Box>
+            )}
           </div>
         </header>
-        <Sidebar
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          onSignOut={handleSignOut}
-          username={user?.username}
-        />
+        {!actionsOnly && (
+          <Sidebar
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            onSignOut={handleSignOut}
+            username={user?.username}
+          />
+        )}
       </>
     );
   }

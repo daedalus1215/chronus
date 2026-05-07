@@ -15,7 +15,7 @@ export type AddTagFormProps = {
   noteId: number;
   tags: Tag[];
   onTagAdded: () => void;
-  onClose: () => void;
+  onClose?: () => void; // optional — only used in dialog mode
 };
 
 export const AddTagForm: React.FC<AddTagFormProps> = ({
@@ -186,8 +186,8 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '90vh',
-        maxHeight: '90vh',
+        flex: 1,
+        minHeight: 0,
       }}
     >
       <Box
@@ -221,14 +221,16 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
         >
           {isLoading ? <CircularProgress size={20} /> : 'Add'}
         </Button>
-        <Button
-          onClick={onClose}
-          variant="text"
-          color="secondary"
-          aria-label="Close add tag form"
-        >
-          Close
-        </Button>
+        {onClose && (
+          <Button
+            onClick={onClose}
+            variant="text"
+            color="secondary"
+            aria-label="Close add tag form"
+          >
+            Close
+          </Button>
+        )}
       </Box>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
