@@ -5,6 +5,7 @@
   height: 100%;
   overflow: hidden;
   font-size: 13px;
+  background-color: var(--color-bg-paper);
 }
 
 /* ── Top bar: path + search ────────────────────────────────────── */
@@ -14,7 +15,7 @@
   flex-direction: column;
   gap: 6px;
   padding: 10px 10px 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--color-overlay-medium);
 }
 
 .breadcrumb {
@@ -44,7 +45,7 @@
 }
 
 .searchInput fieldset {
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--color-overlay-stronger) !important;
 }
 
 .searchInput:hover fieldset {
@@ -66,17 +67,18 @@
   max-height: 26px !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  padding-left: 10px !important;
+  padding-left: 8px !important;
   padding-right: 4px !important;
   border-radius: 3px !important;
   margin: 0 4px !important;
   width: calc(100% - 8px) !important;
   gap: 6px;
   cursor: pointer;
+  border-left: 2px solid transparent;
 }
 
 .noteRow:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
+  background-color: var(--color-bg-elevated) !important;
 }
 
 .noteRow:hover .noteMenuBtn {
@@ -84,7 +86,8 @@
 }
 
 .noteRow.Mui-selected {
-  background-color: rgba(255, 255, 255, 0.09) !important;
+  background-color: var(--color-bg-elevated) !important;
+  border-left-color: var(--color-primary);
 }
 
 .noteIcon {
@@ -114,7 +117,7 @@
 
 .noteMenuBtn:hover {
   color: rgba(255, 255, 255, 0.9) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: var(--color-overlay-strong) !important;
 }
 
 /* ── Empty / loading states ────────────────────────────────────── */

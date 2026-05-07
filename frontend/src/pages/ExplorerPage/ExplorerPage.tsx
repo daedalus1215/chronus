@@ -88,7 +88,7 @@ export const ExplorerPage: React.FC = () => {
           <Outlet />
         ) : (
           <Box className={styles.emptyPane}>
-            <Typography sx={{ fontSize: 13, color: 'rgba(255,255,255,0.25)' }}>
+            <Typography className={styles.emptyText}>
               Select a note to open it
             </Typography>
           </Box>
