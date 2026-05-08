@@ -1,21 +1,17 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styles from './RightSidebar.module.css';
 
 type Tab = {
   id: string;
-  label: string;
-  icon?: React.ReactNode;
+  icon: React.ReactNode;
 };
 
 type RightSidebarProps = {
   isOpen: boolean;
-  onClose: () => void;
   title?: string;
   tabs?: Tab[];
   activeTab?: string;
@@ -25,7 +21,6 @@ type RightSidebarProps = {
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
   isOpen,
-  onClose,
   title,
   tabs,
   activeTab,
@@ -57,13 +52,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             {title}
           </Typography>
         )}
-        <IconButton
-          size="small"
-          aria-label="Close sidebar"
-          onClick={onClose}
-        >
-          <CloseIcon fontSize="small" />
-        </IconButton>
       </Box>
       {tabs && activeTab && onTabChange && (
         <ToggleButtonGroup
@@ -92,7 +80,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               }}
             >
               {tab.icon}
-              {tab.label}
             </ToggleButton>
           ))}
         </ToggleButtonGroup>

@@ -4,11 +4,11 @@ import {
   ViewKanban,
   Mic,
   Stop,
-  ViewList,
   Create,
   MenuBook,
 } from '@mui/icons-material';
-import type { Note } from '../../../types';
+import { SidebarToggleIcon } from '@components/Header/Sidebar/SidebarToggleIcon';
+import { Note } from '../../api/responses';
 
 interface TopRailActionsProps {
   note: Note | null;
@@ -75,7 +75,7 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
           aria-label={isSidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
           onClick={onToggleSidebar}
         >
-          <ViewList sx={{ fontSize: 16 }} />
+          <SidebarToggleIcon inverted isOpen={isSidebarOpen} size={16} />
         </IconButton>
       )}
     </>

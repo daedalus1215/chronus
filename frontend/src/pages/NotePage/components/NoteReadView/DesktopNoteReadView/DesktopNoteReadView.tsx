@@ -18,7 +18,6 @@ type NoteReadViewProps = {
 
 export const DesktopNoteReadView: React.FC<NoteReadViewProps> = ({ note }) => {
   const hasContent = note.description && note.description.trim().length > 0;
-
   return (
     <div className={styles.readView}>
       {hasContent ? (
