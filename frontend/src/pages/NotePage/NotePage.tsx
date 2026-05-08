@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useNote } from './hooks/useNote/useNote';
 import { useTitle } from './hooks/useTitle';
@@ -6,33 +6,10 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import { Tag, useNoteTags } from './hooks/useNoteTags';
-import { AddTagForm } from './components/AddTagForm/AddTagForm';
-import { useAllTags } from './hooks/useAllTags';
-import {
-  Chip,
-  IconButton,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-} from '@mui/material';
-import {
-  Add,
-  Close,
-  ViewKanban,
-  ViewList,
-  MoreHoriz,
-  Label,
-  Mic,
-  Stop,
-  MenuBook,
-  Create,
-} from '@mui/icons-material';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useTopRailActions } from '../../hooks/useTopRailActions';
+import { TopRailActions } from './components/TopRailActions/TopRailActions';
 import { DesktopNoteEditor } from './components/NoteEditor/DesktopNoteEditor/DesktopNoteEditor';
 import { MobileNoteEditor } from './components/NoteEditor/MobileNoteEditor/MobileNoteEditor';
 import { DesktopNoteReadView } from './components/NoteReadView/DesktopNoteReadView/DesktopNoteReadView';
@@ -43,31 +20,31 @@ import { TranscriptionRecorder } from './components/TranscriptionRecorder/Transc
 import { useTranscriptionCallback } from './hooks/useTranscriptionCallback/useTranscriptionCallback';
 import { RightSidebar } from './components/RightSidebar/RightSidebar';
 import { SidebarChecklistView } from './components/SidebarChecklistView/SidebarChecklistView';
+import { SidebarTagsView } from './components/SidebarTagsView/SidebarTagsView';
 import styles from './NotePage.module.css';
+import { ChecklistOutlined } from '@mui/icons-material';
+
+const SIDEBAR_TAB_STORAGE_KEY = 'chronus-sidebar-tab';
+
+const sidebarTabs = [
+  { id: 'checklist', icon: <ChecklistOutlined /> },
+  { id: 'tags', icon: <LocalOfferIcon /> },
+];
 
 export const NotePage: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { id } = useParams<{ id: string }>();
-  const { note, isLoading, error, updateNote } = useNote(Number(id));
+  const noteId = Number(id);
+  const { note, isLoading, error, updateNote } = useNote(noteId);
   const {
     title,
     setTitle,
     loading: titleLoading,
     error: titleError,
   } = useTitle(note);
-  const { tags, refetch, removeTagFromNote } = useNoteTags(Number(id));
-
-  const {
-    data: allTags,
-    isLoading: allTagsLoading,
-    error: allTagsError,
-  } = useAllTags();
-  const [isAddTagOpen, setAddTagOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [fabMenuAnchor, setFabMenuAnchor] = useState<null | HTMLElement>(null);
-  const isFabMenuOpen = Boolean(fabMenuAnchor);
   const [transcriptionController, setTranscriptionController] = useState<{
     toggleRecording: () => Promise<void> | void;
     isRecording: boolean;
@@ -76,44 +53,64 @@ export const NotePage: React.FC = () => {
     getStatusText: () => string;
   } | null>(null);
 
-  const handleFabMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setFabMenuAnchor(event.currentTarget);
+  // Active tab with localStorage persistence
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const stored = localStorage.getItem(SIDEBAR_TAB_STORAGE_KEY);
+    return stored && sidebarTabs.some(t => t.id === stored) ? stored : 'checklist';
+  });
+
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_TAB_STORAGE_KEY, activeTab);
+  }, [activeTab]);
+
+  const handleTabChange = (tabId: string): void => {
+    setActiveTab(tabId);
   };
 
-  const handleFabMenuClose = () => {
-    setFabMenuAnchor(null);
-  };
-
-  const handleFabKanban = () => {
-    handleFabMenuClose();
-    navigate(`/notes/${note.id}/kanban`);
-  };
-
-  const handleFabAddTag = () => {
-    handleFabMenuClose();
-    setAddTagOpen(true);
-  };
-
-  const handleFabShowChecklist = () => {
-    handleFabMenuClose();
-    setIsSidebarOpen(prev => !prev);
-  };
-
-  const handleFabToggleRecording = () => {
-    handleFabMenuClose();
-    if (!transcriptionController) {
-      return;
-    }
-    transcriptionController.toggleRecording();
-  };
-
-  const handleCloseSidebar = (): void => {
-    setIsSidebarOpen(false);
-  };
-
-  // Use custom hook to manage transcription callback chain
   const { setAppendToDescriptionFn, onTranscription: onTranscriptionCallback } =
     useTranscriptionCallback();
+
+  const handleToggleEditMode = useCallback(
+    () => setIsEditMode(prev => !prev),
+    []
+  );
+
+  const handleToggleSidebar = useCallback(
+    () => setIsSidebarOpen(prev => !prev),
+    []
+  );
+
+  const handleNavigateKanban = useCallback(
+    () => navigate(`/notes/${note?.id}/kanban`),
+    [navigate, note?.id]
+  );
+
+  const topRailActions = useMemo(
+    () => (
+      <TopRailActions
+        note={note}
+        isEditMode={isEditMode}
+        onToggleEditMode={handleToggleEditMode}
+        isMobile={isMobile}
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={handleToggleSidebar}
+        transcriptionController={transcriptionController}
+        onNavigateKanban={handleNavigateKanban}
+      />
+    ),
+    [
+      note,
+      isEditMode,
+      handleToggleEditMode,
+      isMobile,
+      isSidebarOpen,
+      handleToggleSidebar,
+      transcriptionController,
+      handleNavigateKanban,
+    ]
+  );
+
+  useTopRailActions(topRailActions);
 
   if (isLoading) {
     return (
@@ -131,18 +128,6 @@ export const NotePage: React.FC = () => {
       console.error('Failed to save note:', err);
     }
   };
-
-  const availableTags = allTags
-    ? allTags.filter(
-      (tag: { id: number }) =>
-        !tags.some((noteTag: { id: number }) => noteTag.id === tag.id)
-    )
-    : [];
-
-  const addTagOptions = availableTags.map(tag => ({
-    id: String(tag.id),
-    name: tag.name,
-  }));
 
   return (
     <main className={styles.main}>
@@ -164,126 +149,6 @@ export const NotePage: React.FC = () => {
             minHeight: 0,
           }}
         >
-          {note?.isMemo && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 0.5, py: 0.5 }}>
-              <IconButton
-                size="small"
-                title={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
-                onClick={() => setIsEditMode(prev => !prev)}
-                sx={{ color: 'primary.main' }}
-              >
-                {isEditMode ? <Create sx={{ fontSize: 16 }} /> : <MenuBook sx={{ fontSize: 16 }} />}
-              </IconButton>
-              <IconButton size="small" title="More actions" onClick={handleFabMenuOpen}>
-                <MoreHoriz sx={{ fontSize: 16 }} />
-              </IconButton>
-              <Menu
-                anchorEl={fabMenuAnchor}
-                open={isFabMenuOpen}
-                onClose={handleFabMenuClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                slotProps={{ paper: { sx: { minWidth: 180 } } }}
-              >
-                <MenuItem onClick={handleFabKanban}>
-                  <ListItemIcon><ViewKanban fontSize="small" /></ListItemIcon>
-                  <ListItemText>Kanban</ListItemText>
-                </MenuItem>
-                {note?.isMemo && isEditMode && (
-                  <MenuItem onClick={handleFabToggleRecording} disabled={!transcriptionController}>
-                    <ListItemIcon>
-                      {transcriptionController?.isRecording ? <Stop fontSize="small" /> : <Mic fontSize="small" />}
-                    </ListItemIcon>
-                    <ListItemText>
-                      {transcriptionController?.isRecording ? 'Stop recording' : 'Start recording'}
-                    </ListItemText>
-                  </MenuItem>
-                )}
-                {!isMobile && (
-                  <MenuItem onClick={handleFabShowChecklist}>
-                    <ListItemIcon><ViewList fontSize="small" /></ListItemIcon>
-                    <ListItemText>{isSidebarOpen ? 'Hide checklist' : 'Show checklist'}</ListItemText>
-                  </MenuItem>
-                )}
-                <MenuItem onClick={handleFabAddTag}>
-                  <ListItemIcon><Label fontSize="small" /></ListItemIcon>
-                  <ListItemText>Add tag</ListItemText>
-                </MenuItem>
-              </Menu>
-            </Box>
-          )}
-
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              overflowX: 'auto',
-              py: 1,
-            }}
-          >
-            <IconButton
-              onClick={() => setAddTagOpen(true)}
-              color="secondary"
-              size="small"
-              aria-label="Add tag"
-            >
-              <Add />
-            </IconButton>
-            {tags &&
-              tags.map((tag: Tag) => (
-                <Chip
-                  key={tag.id}
-                  label={tag.name}
-                  variant="outlined"
-                  color="primary"
-                  size="small"
-                  sx={{ whiteSpace: 'nowrap' }}
-                  onClick={() => navigate(`/tag-notes/${tag.id}`)}
-                  onDelete={async () => {
-                    try {
-                      await removeTagFromNote({ tagId: tag.id, noteId: note.id });
-                    } catch (err) {
-                      console.error('Failed to remove tag from note', err);
-                    }
-                  }}
-                  deleteIcon={<Close />}
-                />
-              ))}
-          </Box>
-
-          <Dialog
-            open={isAddTagOpen}
-            onClose={() => setAddTagOpen(false)}
-            maxWidth="sm"
-            fullWidth
-            aria-labelledby="add-tag-dialog-title"
-          >
-            <DialogTitle id="add-tag-dialog-title">Add tag to note</DialogTitle>
-            <DialogContent>
-              {allTagsLoading ? (
-                <Box component="span" sx={{ color: 'var(--color-text-secondary)', ml: 1 }}>
-                  Loading all tags...
-                </Box>
-              ) : allTagsError ? (
-                <Box component="span" sx={{ color: 'var(--color-destructive)', ml: 1 }}>
-                  Error loading all tags
-                </Box>
-              ) : (
-                <AddTagForm
-                  noteId={Number(id)}
-                  tags={addTagOptions}
-                  onTagAdded={refetch}
-                  onClose={() => setAddTagOpen(false)}
-                />
-              )}
-            </DialogContent>
-          </Dialog>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              Error loading note
-            </Alert>
-          )}
           <Box
             sx={{
               display: 'flex',
@@ -311,10 +176,16 @@ export const NotePage: React.FC = () => {
               {titleError}
             </Alert>
           )}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Error loading note
+            </Alert>
+          )}
           <Box
             sx={{
               flex: 1,
               minHeight: 0,
+              minWidth: 0,
               display: 'flex',
               flexDirection: isMobile ? 'column' : 'row',
             }}
@@ -323,6 +194,7 @@ export const NotePage: React.FC = () => {
               sx={{
                 flex: 1,
                 minHeight: 0,
+                minWidth: 0,
                 display: 'flex',
                 flexDirection: 'column',
               }}
@@ -370,9 +242,16 @@ export const NotePage: React.FC = () => {
           <RightSidebar
             isOpen={isSidebarOpen}
             title=""
-            onClose={handleCloseSidebar}
+            tabs={sidebarTabs}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
           >
-            <SidebarChecklistView note={note} />
+            {activeTab === 'checklist' && note && (
+              <SidebarChecklistView note={note} />
+            )}
+            {activeTab === 'tags' && (
+              <SidebarTagsView noteId={noteId} />
+            )}
           </RightSidebar>
         )}
       </Box>

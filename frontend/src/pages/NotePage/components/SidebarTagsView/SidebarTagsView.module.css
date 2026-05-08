@@ -1,0 +1,17 @@
+.sidebarTags {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.tagList {
+  scrollbar-width: none;
+}
+
+.tagList::-webkit-scrollbar {
+  display: none;
+}
+
+.formContainer {
+  margin-bottom: 16px;
+}

@@ -2,11 +2,13 @@ import React from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { SidebarToggleIcon } from '../Header/Sidebar/SidebarToggleIcon';
 import { useSidebar } from '../../hooks/useSidebar';
+import { useTopRailActionsSlot } from '../../hooks/useTopRailActionsSlot';
 
 export const TOP_RAIL_HEIGHT_PX = 36;
 
 export const TopRail: React.FC = () => {
   const { isNoteListOpen, setIsNoteListOpen } = useSidebar();
+  const pageActions = useTopRailActionsSlot();
 
   return (
     <Box
@@ -15,6 +17,7 @@ export const TopRail: React.FC = () => {
         flexShrink: 0,
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'space-between',
         px: 0.5,
         borderBottom: '1px solid',
         borderColor: 'divider',
@@ -40,6 +43,12 @@ export const TopRail: React.FC = () => {
           <SidebarToggleIcon isOpen={isNoteListOpen} size={18} />
         </IconButton>
       </Tooltip>
+
+      {pageActions && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          {pageActions}
+        </Box>
+      )}
     </Box>
   );
 };

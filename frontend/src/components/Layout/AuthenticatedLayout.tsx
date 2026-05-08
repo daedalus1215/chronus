@@ -4,6 +4,7 @@ import { Box, Paper } from '@mui/material';
 import { Header, MOBILE_HEADER_HEIGHT_PX } from '../Header/Header';
 import { DesktopSidebar } from '../Header/Sidebar/DesktopSidebar';
 import { TopRail } from '../TopRail/TopRail';
+import { TopRailActionsProvider } from '../../contexts/TopRailActionsContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
 /** True when the current route is a note detail (NotePage). */
@@ -14,17 +15,20 @@ export const AuthenticatedLayout: React.FC = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const isNotePage = isNotePageRoute(location.pathname);
-  const showMobileHeader = isMobile && !isNotePage;
+  const showFullMobileHeader = isMobile && !isNotePage;
+  const showMobileActionsBar = isMobile && isNotePage;
+  const hasMobileHeader = showFullMobileHeader || showMobileActionsBar;
 
   return (
-    <>
-      {showMobileHeader && <Header />}
+    <TopRailActionsProvider>
+      {showFullMobileHeader && <Header />}
+      {showMobileActionsBar && <Header actionsOnly />}
       <main
         style={{
           display: 'flex',
           flexDirection: 'column',
-          marginTop: showMobileHeader ? MOBILE_HEADER_HEIGHT_PX : 0,
-          height: showMobileHeader
+          marginTop: hasMobileHeader ? MOBILE_HEADER_HEIGHT_PX : 0,
+          height: hasMobileHeader
             ? `calc(100vh - ${MOBILE_HEADER_HEIGHT_PX}px)`
             : '100vh',
           width: '100%',
@@ -47,7 +51,6 @@ export const AuthenticatedLayout: React.FC = () => {
           <Box
             sx={{ display: 'flex', width: '100%', flex: 1, minHeight: 0 }}
           >
-            {/* Icon rail — always visible at 52px */}
             <Paper
               elevation={0}
               sx={{
@@ -64,13 +67,12 @@ export const AuthenticatedLayout: React.FC = () => {
               <DesktopSidebar isOpen={true} />
             </Paper>
 
-            {/* Page-specific content */}
             <Box sx={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
               <Outlet />
             </Box>
           </Box>
         )}
       </main>
-    </>
+    </TopRailActionsProvider>
   );
 };

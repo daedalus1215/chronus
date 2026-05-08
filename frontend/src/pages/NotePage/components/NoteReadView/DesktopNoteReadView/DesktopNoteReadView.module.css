@@ -1,20 +1,17 @@
 .readView {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  gap: 1rem;
   margin: 0;
   padding: 1rem;
   background-color: var(--background);
   border-radius: 0;
   position: relative;
   box-sizing: border-box;
-  height: calc(100vh - 180px);
   min-width: 0;
-  margin-left: auto;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-color: var(--color-primary) var(--background);
-  scrollbar-width: thin;
+  min-height: 0;
+  flex: 1;
+  overflow-x: hidden;
 }
 
 .readView::-webkit-scrollbar {
