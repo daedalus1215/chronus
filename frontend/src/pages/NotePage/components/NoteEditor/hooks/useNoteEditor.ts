@@ -69,7 +69,10 @@ export const useNoteEditor = ({
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current);
     }
-    timeoutRef.current = window.setTimeout(saveChanges, 1000);
+    timeoutRef.current = window.setTimeout(() => {
+      timeoutRef.current = undefined;
+      saveChanges();
+    }, 1000);
   }, [saveChanges]);
 
   const handleContentChange = React.useCallback(
