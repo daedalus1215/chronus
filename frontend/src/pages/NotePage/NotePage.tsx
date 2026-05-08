@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useNote } from './hooks/useNote/useNote';
 import { useTitle } from './hooks/useTitle';
@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useTopRailActions } from '../../hooks/useTopRailActions';
 import { TopRailActions } from './components/TopRailActions/TopRailActions';
@@ -21,12 +22,13 @@ import { RightSidebar } from './components/RightSidebar/RightSidebar';
 import { SidebarChecklistView } from './components/SidebarChecklistView/SidebarChecklistView';
 import { SidebarTagsView } from './components/SidebarTagsView/SidebarTagsView';
 import styles from './NotePage.module.css';
+import { ChecklistOutlined } from '@mui/icons-material';
 
 const SIDEBAR_TAB_STORAGE_KEY = 'chronus-sidebar-tab';
 
 const sidebarTabs = [
-  { id: 'checklist', label: 'Checklist' },
-  { id: 'tags', label: 'Tags' },
+  { id: 'checklist', icon: <ChecklistOutlined /> },
+  { id: 'tags', icon: <LocalOfferIcon /> },
 ];
 
 export const NotePage: React.FC = () => {
@@ -61,10 +63,6 @@ export const NotePage: React.FC = () => {
     localStorage.setItem(SIDEBAR_TAB_STORAGE_KEY, activeTab);
   }, [activeTab]);
 
-  const handleCloseSidebar = (): void => {
-    setIsSidebarOpen(false);
-  };
-
   const handleTabChange = (tabId: string): void => {
     setActiveTab(tabId);
   };
@@ -72,17 +70,44 @@ export const NotePage: React.FC = () => {
   const { setAppendToDescriptionFn, onTranscription: onTranscriptionCallback } =
     useTranscriptionCallback();
 
-  const topRailActions = (
-    <TopRailActions
-      note={note}
-      isEditMode={isEditMode}
-      onToggleEditMode={() => setIsEditMode(prev => !prev)}
-      isMobile={isMobile}
-      isSidebarOpen={isSidebarOpen}
-      onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
-      transcriptionController={transcriptionController}
-      onNavigateKanban={() => navigate(`/notes/${note?.id}/kanban`)}
-    />
+  const handleToggleEditMode = useCallback(
+    () => setIsEditMode(prev => !prev),
+    []
+  );
+
+  const handleToggleSidebar = useCallback(
+    () => setIsSidebarOpen(prev => !prev),
+    []
+  );
+
+  const handleNavigateKanban = useCallback(
+    () => navigate(`/notes/${note?.id}/kanban`),
+    [navigate, note?.id]
+  );
+
+  const topRailActions = useMemo(
+    () => (
+      <TopRailActions
+        note={note}
+        isEditMode={isEditMode}
+        onToggleEditMode={handleToggleEditMode}
+        isMobile={isMobile}
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={handleToggleSidebar}
+        transcriptionController={transcriptionController}
+        onNavigateKanban={handleNavigateKanban}
+      />
+    ),
+    [
+      note,
+      isEditMode,
+      handleToggleEditMode,
+      isMobile,
+      isSidebarOpen,
+      handleToggleSidebar,
+      transcriptionController,
+      handleNavigateKanban,
+    ]
   );
 
   useTopRailActions(topRailActions);
@@ -160,6 +185,7 @@ export const NotePage: React.FC = () => {
             sx={{
               flex: 1,
               minHeight: 0,
+              minWidth: 0,
               display: 'flex',
               flexDirection: isMobile ? 'column' : 'row',
             }}
@@ -168,6 +194,7 @@ export const NotePage: React.FC = () => {
               sx={{
                 flex: 1,
                 minHeight: 0,
+                minWidth: 0,
                 display: 'flex',
                 flexDirection: 'column',
               }}
@@ -215,7 +242,6 @@ export const NotePage: React.FC = () => {
           <RightSidebar
             isOpen={isSidebarOpen}
             title=""
-            onClose={handleCloseSidebar}
             tabs={sidebarTabs}
             activeTab={activeTab}
             onTabChange={handleTabChange}

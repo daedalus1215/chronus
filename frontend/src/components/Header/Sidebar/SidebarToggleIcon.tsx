@@ -5,10 +5,14 @@ type SidebarToggleIconProps = {
   size?: number;
 };
 
-export const SidebarToggleIcon: React.FC<SidebarToggleIconProps> = ({
+export const SidebarToggleIcon: React.FC<SidebarToggleIconProps & { inverted?: boolean }> = ({
   isOpen,
   size = 18,
+  inverted = false,
 }) => {
+  const dividerX = inverted ? 13.75 : 6.25;
+  const panelX = inverted ? 14.5 : 1.5;
+
   if (isOpen) {
     return (
       <svg
@@ -29,18 +33,18 @@ export const SidebarToggleIcon: React.FC<SidebarToggleIconProps> = ({
           stroke="currentColor"
           strokeWidth="1.5"
         />
-        {/* Vertical divider separating sidebar from content */}
+        {/* Vertical divider - solid when open */}
         <line
-          x1="6.25"
+          x1={dividerX}
           y1="0.75"
-          x2="6.25"
+          x2={dividerX}
           y2="15.25"
           stroke="currentColor"
           strokeWidth="1.5"
         />
-        {/* Filled sidebar panel indicating it is open */}
+        {/* Filled panel indicating it is open */}
         <rect
-          x="1.5"
+          x={panelX}
           y="1.5"
           width="4"
           height="13"
@@ -51,6 +55,7 @@ export const SidebarToggleIcon: React.FC<SidebarToggleIconProps> = ({
     );
   }
 
+  // Collapsed state
   return (
     <svg
       width={size}
@@ -70,11 +75,11 @@ export const SidebarToggleIcon: React.FC<SidebarToggleIconProps> = ({
         stroke="currentColor"
         strokeWidth="1.5"
       />
-      {/* Dashed divider showing sidebar is collapsed but available */}
+      {/* Dashed divider showing it is collapsed but available */}
       <line
-        x1="6.25"
+        x1={dividerX}
         y1="0.75"
-        x2="6.25"
+        x2={dividerX}
         y2="15.25"
         stroke="currentColor"
         strokeWidth="1.5"
