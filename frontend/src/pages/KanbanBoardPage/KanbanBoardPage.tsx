@@ -253,6 +253,25 @@ export const KanbanBoardPage: React.FC = () => {
 
   const isMobile = useIsMobile();
 
+  const handleMoveToStatus = async (itemId: number, status: CheckItemStatus) => {
+    const item = items.find(i => i.id === itemId);
+    if (!item) return;
+    const previousItems = items;
+    const nextItems = items.map(i =>
+      i.id === itemId
+        ? { ...i, status, doneDate: status === 'done' ? new Date().toISOString() : null }
+        : i
+    );
+    setItems(nextItems);
+    try {
+      await updateStatus({ id: itemId, status });
+      queryClient.setQueryData(checkItemKeys.list(noteId), nextItems);
+    } catch (error) {
+      console.error('Failed to move item:', error);
+      setItems(previousItems);
+    }
+  };
+
   const handleRefresh = async () => {
     await queryClient.invalidateQueries({ queryKey: checkItemKeys.list(noteId) });
     await queryClient.invalidateQueries({ queryKey: ['note', noteId] });
@@ -331,6 +350,7 @@ export const KanbanBoardPage: React.FC = () => {
           onDragCancel={handleDragCancel}
           onEditItem={handleEditClick}
           onViewItemDetails={handleViewItemDetails}
+          onMoveToStatus={handleMoveToStatus}
           activeItem={activeItem}
           onRefresh={handleRefresh}
         />
@@ -351,6 +371,14 @@ export const KanbanBoardPage: React.FC = () => {
               width: '100%',
               overflowX: 'auto',
               paddingBottom: 2,
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'var(--color-border) transparent',
+              '&::-webkit-scrollbar': { height: 4 },
+              '&::-webkit-scrollbar-track': { background: 'transparent' },
+              '&::-webkit-scrollbar-thumb': {
+                background: 'var(--color-border)',
+                borderRadius: 2,
+              },
             }}
           >
             {KANBAN_COLUMNS.map(column => (

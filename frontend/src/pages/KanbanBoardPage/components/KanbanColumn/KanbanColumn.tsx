@@ -98,6 +98,14 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
             flex: 1,
             minHeight: 120,
             overflowY: 'auto',
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'var(--color-border) transparent',
+            '&::-webkit-scrollbar': { width: 4 },
+            '&::-webkit-scrollbar-track': { background: 'transparent' },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'var(--color-border)',
+              borderRadius: 2,
+            },
           }}
         >
           {items.map(item => (
