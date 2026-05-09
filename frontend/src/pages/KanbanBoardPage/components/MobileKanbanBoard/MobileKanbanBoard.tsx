@@ -156,8 +156,7 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
                             label={`← ${prevColumn.title}`}
                             size="small"
                             onClick={() => onMoveToStatus(item.id, prevColumn.id)}
-                            className={styles.columnNavChip}
-                            sx={{ borderColor: prevColumn.statusColor, color: prevColumn.statusColor }}
+                            sx={{ borderColor: prevColumn.statusColor, color: prevColumn.statusColor, fontSize: '0.65rem', height: 22 }}
                             variant="outlined"
                           />
                         ) : <span />}
@@ -166,8 +165,7 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
                             label={`${nextColumn.title} →`}
                             size="small"
                             onClick={() => onMoveToStatus(item.id, nextColumn.id)}
-                            className={styles.columnNavChip}
-                            sx={{ borderColor: nextColumn.statusColor, color: nextColumn.statusColor }}
+                            sx={{ borderColor: nextColumn.statusColor, color: nextColumn.statusColor, fontSize: '0.65rem', height: 22 }}
                             variant="outlined"
                           />
                         )}

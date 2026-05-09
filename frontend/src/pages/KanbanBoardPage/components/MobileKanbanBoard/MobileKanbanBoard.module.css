@@ -58,11 +58,6 @@
   padding: 0 4px;
 }
 
-.columnNavChip {
-  font-size: 0.65rem !important;
-  height: 22px !important;
-  cursor: pointer;
-}
 
 .pullToRefresh :global(.ptr__children) {
   min-height: 100%;
