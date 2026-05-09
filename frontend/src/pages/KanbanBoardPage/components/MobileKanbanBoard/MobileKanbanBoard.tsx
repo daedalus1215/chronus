@@ -5,6 +5,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
+import Chip from '@mui/material/Chip';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, KeyboardSensor, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CheckItem } from '../../../NotePage/api/responses';
@@ -32,6 +33,7 @@ type MobileKanbanBoardProps = {
   onDragCancel: () => void;
   onEditItem: (id: number, name: string) => void;
   onViewItemDetails: (item: CheckItem) => void;
+  onMoveToStatus: (itemId: number, status: CheckItemStatus) => void;
   activeItem: CheckItem | null;
   onRefresh: () => Promise<unknown>;
 };
@@ -43,6 +45,7 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
   onDragCancel,
   onEditItem,
   onViewItemDetails,
+  onMoveToStatus,
   activeItem,
   onRefresh,
 }) => {
@@ -84,6 +87,8 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
   });
 
   const currentItems = itemsByStatus[activeColumn.id];
+  const prevColumn = activeTab > 0 ? KANBAN_COLUMNS[activeTab - 1] : null;
+  const nextColumn = activeTab < KANBAN_COLUMNS.length - 1 ? KANBAN_COLUMNS[activeTab + 1] : null;
 
   return (
     <Box className={styles.mobileContainer} {...swipeHandlers}>
@@ -137,13 +142,38 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
             >
               <Box className={styles.cardsContainer}>
                 {currentItems.map((item) => (
-                  <KanbanCard
-                    key={item.id}
-                    item={item}
-                    statusColor={activeColumn.statusColor}
-                    onEdit={onEditItem}
-                    onViewDetails={onViewItemDetails}
-                  />
+                  <Box key={item.id} className={styles.cardWrapper}>
+                    <KanbanCard
+                      item={item}
+                      statusColor={activeColumn.statusColor}
+                      onEdit={onEditItem}
+                      onViewDetails={onViewItemDetails}
+                    />
+                    {(prevColumn || nextColumn) && (
+                      <Box className={styles.columnNav}>
+                        {prevColumn ? (
+                          <Chip
+                            label={`← ${prevColumn.title}`}
+                            size="small"
+                            onClick={() => onMoveToStatus(item.id, prevColumn.id)}
+                            className={styles.columnNavChip}
+                            sx={{ borderColor: prevColumn.statusColor, color: prevColumn.statusColor }}
+                            variant="outlined"
+                          />
+                        ) : <span />}
+                        {nextColumn && (
+                          <Chip
+                            label={`${nextColumn.title} →`}
+                            size="small"
+                            onClick={() => onMoveToStatus(item.id, nextColumn.id)}
+                            className={styles.columnNavChip}
+                            sx={{ borderColor: nextColumn.statusColor, color: nextColumn.statusColor }}
+                            variant="outlined"
+                          />
+                        )}
+                      </Box>
+                    )}
+                  </Box>
                 ))}
               </Box>
             </SortableContext>

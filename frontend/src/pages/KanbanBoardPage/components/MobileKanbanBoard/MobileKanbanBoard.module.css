@@ -23,17 +23,45 @@
   overflow-y: auto;
   padding: 12px;
   background-color: var(--color-bg);
+  scrollbar-width: none;
+}
+
+.columnContainer::-webkit-scrollbar {
+  display: none;
 }
 
 .cardsContainer {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .pullToRefresh {
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.pullToRefresh::-webkit-scrollbar {
+  display: none;
+}
+
+.cardWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.columnNav {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.columnNavChip {
+  font-size: 0.65rem !important;
+  height: 22px !important;
+  cursor: pointer;
 }
 
 .pullToRefresh :global(.ptr__children) {
