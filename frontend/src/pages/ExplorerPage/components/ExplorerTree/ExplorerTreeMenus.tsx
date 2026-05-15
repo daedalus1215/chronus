@@ -113,6 +113,15 @@ export const ExplorerTreeMenus: React.FC<ExplorerTreeMenusProps> = ({
         <MenuItem
           dense
           onClick={() => {
+            if (noteMenu) navigate(`/notes/${noteMenu.id}/kanban`);
+            setNoteMenu(null);
+          }}
+        >
+          Board
+        </MenuItem>
+        <MenuItem
+          dense
+          onClick={() => {
             if (noteMenu) setReparentTarget({ folderIds: [], noteIds: [noteMenu.id] });
             setNoteMenu(null);
           }}
