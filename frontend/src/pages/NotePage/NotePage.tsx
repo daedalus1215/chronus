@@ -21,6 +21,7 @@ import { useTranscriptionCallback } from './hooks/useTranscriptionCallback/useTr
 import { RightSidebar } from './components/RightSidebar/RightSidebar';
 import { SidebarChecklistView } from './components/SidebarChecklistView/SidebarChecklistView';
 import { SidebarTagsView } from './components/SidebarTagsView/SidebarTagsView';
+import { MobileTagsView } from './components/MobileTagsView/MobileTagsView';
 import styles from './NotePage.module.css';
 import { ChecklistOutlined } from '@mui/icons-material';
 
@@ -45,6 +46,7 @@ export const NotePage: React.FC = () => {
   } = useTitle(note);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isTagsOpen, setIsTagsOpen] = useState(false);
   const [transcriptionController, setTranscriptionController] = useState<{
     toggleRecording: () => Promise<void> | void;
     isRecording: boolean;
@@ -80,6 +82,11 @@ export const NotePage: React.FC = () => {
     []
   );
 
+  const handleToggleTags = useCallback(
+    () => setIsTagsOpen(prev => !prev),
+    []
+  );
+
   const handleNavigateKanban = useCallback(
     () => navigate(`/notes/${note?.id}/kanban`),
     [navigate, note?.id]
@@ -96,6 +103,7 @@ export const NotePage: React.FC = () => {
         onToggleSidebar={handleToggleSidebar}
         transcriptionController={transcriptionController}
         onNavigateKanban={handleNavigateKanban}
+        onToggleTags={handleToggleTags}
       />
     ),
     [
@@ -107,6 +115,7 @@ export const NotePage: React.FC = () => {
       handleToggleSidebar,
       transcriptionController,
       handleNavigateKanban,
+      handleToggleTags,
     ]
   );
 
@@ -253,6 +262,13 @@ export const NotePage: React.FC = () => {
               <SidebarTagsView noteId={noteId} />
             )}
           </RightSidebar>
+        )}
+        {isMobile && note?.isMemo && (
+          <MobileTagsView
+            noteId={noteId}
+            isOpen={isTagsOpen}
+            onClose={() => setIsTagsOpen(false)}
+          />
         )}
       </Box>
     </main>
