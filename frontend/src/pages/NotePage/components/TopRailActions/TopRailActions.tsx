@@ -6,6 +6,7 @@ import {
   Stop,
   Create,
   MenuBook,
+  LocalOffer,
 } from '@mui/icons-material';
 import { SidebarToggleIcon } from '@components/Header/Sidebar/SidebarToggleIcon';
 import { Note } from '../../api/responses';
@@ -22,6 +23,7 @@ interface TopRailActionsProps {
     isRecording: boolean;
   } | null;
   onNavigateKanban: () => void;
+  onToggleTags?: () => void;
 }
 
 export const TopRailActions: React.FC<TopRailActionsProps> = ({
@@ -33,6 +35,7 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
   onToggleSidebar,
   transcriptionController,
   onNavigateKanban,
+  onToggleTags,
 }) => {
   if (!note?.isMemo) return null;
 
@@ -55,6 +58,16 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
       >
         <ViewKanban sx={{ fontSize: 16 }} />
       </IconButton>
+      {isMobile && note?.isMemo && onToggleTags && (
+        <IconButton
+          size="small"
+          title="Tags"
+          aria-label="Tags"
+          onClick={onToggleTags}
+        >
+          <LocalOffer sx={{ fontSize: 16 }} />
+        </IconButton>
+      )}
       {note.isMemo && isEditMode && (
         <IconButton
           size="small"
