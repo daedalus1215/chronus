@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { NoteActionsGrid } from './NoteActionGrid/NoteActionGrid';
 import { DateTimePicker } from './DateTimePicker/DateTimePicker';
 import {
@@ -43,6 +43,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   compact = false,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
@@ -145,7 +146,8 @@ export const NoteItem: React.FC<NoteItemProps> = ({
       await deleteNote(note.id);
       setIsDeleting(false);
       setDeleteDialogOpen(false);
-      window.location.reload();
+      const parentPath = location.pathname.split('/notes/')[0];
+      navigate(parentPath || '/', { replace: true });
     } catch (err: unknown) {
       setIsDeleting(false);
       let message = 'Failed to delete note';
@@ -172,7 +174,8 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     try {
       await archiveNote(note.id);
       setArchiveDialogOpen(false);
-      window.location.reload();
+      const parentPath = location.pathname.split('/notes/')[0];
+      navigate(parentPath || '/', { replace: true });
     } catch (err: unknown) {
       let message = 'Failed to archive note';
       if (
@@ -225,7 +228,8 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     try {
       await convertChecklistToMemo(note.id);
       setConvertDialogOpen(false);
-      window.location.reload();
+      const parentPath = location.pathname.split('/notes/')[0];
+      navigate(parentPath || '/', { replace: true });
     } catch (err: unknown) {
       let message = 'Failed to convert note to memo';
       if (
