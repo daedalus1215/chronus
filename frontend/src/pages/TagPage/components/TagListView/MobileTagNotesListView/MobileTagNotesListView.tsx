@@ -60,15 +60,15 @@ export const MobileTagNotesListView: React.FC = () => {
 
   const handleNoteClick = useCallback(
     async (noteId: number) => {
-      moveNoteToTop(noteId);
+      if (tagId != null) {
+        navigate(`${ROUTES.TAG_NOTES(tagId)}/notes/${noteId}`, { replace: false });
+      }
       try {
         await updateNoteTimestamp(noteId);
       } catch (err) {
         console.error('Failed to update note timestamp:', err);
       }
-      if (tagId != null) {
-        navigate(`${ROUTES.TAG_NOTES(tagId)}/notes/${noteId}`, { replace: false });
-      }
+      setTimeout(() => moveNoteToTop(noteId), 350);
     },
     [moveNoteToTop, navigate, tagId]
   );
