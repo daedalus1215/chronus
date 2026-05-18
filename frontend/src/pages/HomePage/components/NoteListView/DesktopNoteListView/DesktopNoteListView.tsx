@@ -92,17 +92,17 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
 
   const handleNoteClick = useCallback(
     async (noteId: number) => {
-      moveNoteToTop(noteId);
-      try {
-        await updateNoteTimestamp(noteId);
-      } catch (error) {
-        console.error('Failed to update note timestamp:', error);
-      }
       if (onNoteSelect) {
         onNoteSelect(noteId);
       } else {
         navigate(`/notes/${noteId}`);
       }
+      try {
+        await updateNoteTimestamp(noteId);
+      } catch (error) {
+        console.error('Failed to update note timestamp:', error);
+      }
+      setTimeout(() => moveNoteToTop(noteId), 350);
     },
     [moveNoteToTop, onNoteSelect, navigate]
   );
