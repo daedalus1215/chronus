@@ -69,13 +69,13 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
 
   const handleNoteClick = useCallback(
     async (noteId: number) => {
-      moveNoteToTop(noteId);
+      navigate(`/notes/${noteId}`);
       try {
         await updateNoteTimestamp(noteId);
       } catch (error) {
         console.error('Failed to update note timestamp:', error);
       }
-      navigate(`/notes/${noteId}`);
+      setTimeout(() => moveNoteToTop(noteId), 350);
     },
     [moveNoteToTop, navigate]
   );

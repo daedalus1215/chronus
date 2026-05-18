@@ -1,5 +1,5 @@
 import React from 'react';
-import { BottomSheet } from '@components/BottomSheet/BottomSheet';
+import { RightSheet } from '@components/RightSheet/RightSheet';
 import { SidebarTagsView } from '../SidebarTagsView/SidebarTagsView';
 
 type MobileTagsViewProps = {
@@ -13,7 +13,7 @@ export const MobileTagsView: React.FC<MobileTagsViewProps> = ({
   isOpen,
   onClose,
 }) => (
-  <BottomSheet isOpen={isOpen} onClose={onClose}>
+  <RightSheet isOpen={isOpen} onClose={onClose}>
     <SidebarTagsView noteId={noteId} />
-  </BottomSheet>
+  </RightSheet>
 );
