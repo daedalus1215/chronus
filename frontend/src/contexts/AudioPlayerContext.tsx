@@ -8,11 +8,13 @@ import React, {
   ReactNode,
 } from 'react';
 import api from '../api/axios.interceptor';
+import { useSavePlaybackPosition } from '../hooks/useSavePlaybackPosition';
 
 export interface AudioTrack {
   audioId: number;
   fileName: string;
   noteId: number;
+  lastPositionSeconds: number | null;
 }
 
 interface AudioPlayerContextType {
@@ -55,6 +57,7 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
   children,
 }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const savePosition = useSavePlaybackPosition();
 
   const [currentTrack, setCurrentTrack] = useState<AudioTrack | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -63,6 +66,23 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
   const [duration, setDuration] = useState(0);
   const [volume, setVolumeState] = useState(1);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Refs so the long-lived audio event listeners can read the latest values
+  const currentTrackRef = useRef<AudioTrack | null>(null);
+  const savePositionRef = useRef(savePosition);
+  useEffect(() => {
+    currentTrackRef.current = currentTrack;
+  }, [currentTrack]);
+  useEffect(() => {
+    savePositionRef.current = savePosition;
+  }, [savePosition]);
+
+  const savePlaybackPosition = useCallback(
+    (audioId: number, positionSeconds: number) => {
+      savePositionRef.current.mutate({ audioId, positionSeconds });
+    },
+    []
+  );
 
   // Initialize audio element
   useEffect(() => {
@@ -74,7 +94,16 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
     const handleCanPlay = () => setIsLoading(false);
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
     const handleDurationChange = () => setDuration(audio.duration);
-    const handleEnded = () => setIsPlaying(false);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      const track = currentTrackRef.current;
+      if (track) {
+        savePositionRef.current.mutate({
+          audioId: track.audioId,
+          positionSeconds: 0,
+        });
+      }
+    };
     const handleError = (e: Event) => {
       const audio = e.target as HTMLAudioElement;
       console.error('Audio error:', {
@@ -139,6 +168,11 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
       // Load new track
       const audio = audioRef.current;
 
+      // Save the previous track's position before switching away
+      if (currentTrack) {
+        savePlaybackPosition(currentTrack.audioId, audio.currentTime);
+      }
+
       // Reset state first
       setCurrentTrack(track);
       setIsPlaying(false);
@@ -165,8 +199,15 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
         audio.src = blobUrl;
         audio.load();
 
-        // Auto-play when loaded
+        // Auto-play when loaded, resuming from the saved position if any
         const playWhenReady = () => {
+          if (
+            typeof track.lastPositionSeconds === 'number' &&
+            track.lastPositionSeconds > 0
+          ) {
+            audio.currentTime = track.lastPositionSeconds;
+            setCurrentTime(track.lastPositionSeconds);
+          }
           audio
             .play()
             .then(() => {
@@ -195,8 +236,20 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
         setIsPlaying(false);
       }
     },
-    [currentTrack]
+    [currentTrack, savePlaybackPosition]
   );
+
+  // Periodic safety-net save while playing, so a crash loses at most 30s
+  useEffect(() => {
+    if (!isPlaying || !currentTrack) return;
+    const interval = setInterval(() => {
+      savePlaybackPosition(
+        currentTrack.audioId,
+        audioRef.current?.currentTime ?? 0
+      );
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [isPlaying, currentTrack, savePlaybackPosition]);
 
   const play = useCallback(() => {
     if (!audioRef.current || !currentTrack) return;
@@ -249,7 +302,10 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
 
     audioRef.current.pause();
     setIsPlaying(false);
-  }, []);
+    if (currentTrack) {
+      savePlaybackPosition(currentTrack.audioId, audioRef.current.currentTime);
+    }
+  }, [currentTrack, savePlaybackPosition]);
 
   const togglePlay = useCallback(() => {
     if (isPlaying) {
@@ -285,6 +341,12 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
 
   const close = useCallback(() => {
     if (audioRef.current) {
+      if (currentTrack) {
+        savePlaybackPosition(
+          currentTrack.audioId,
+          audioRef.current.currentTime
+        );
+      }
       audioRef.current.pause();
       // Clean up blob URL if exists
       if (audioRef.current.src && audioRef.current.src.startsWith('blob:')) {
@@ -297,7 +359,7 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
     setCurrentTime(0);
     setDuration(0);
     setIsExpanded(false);
-  }, []);
+  }, [currentTrack, savePlaybackPosition]);
 
   const value: AudioPlayerContextType = {
     currentTrack,

@@ -28,6 +28,14 @@ export class NoteAudio {
   @Column({ name: 'file_format', type: 'varchar', length: 10 })
   fileFormat: string;
 
+  @Column({
+    name: 'last_position_seconds',
+    type: 'real',
+    nullable: true,
+    default: null,
+  })
+  lastPositionSeconds: number | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'text' })
   createdAt: string;
 

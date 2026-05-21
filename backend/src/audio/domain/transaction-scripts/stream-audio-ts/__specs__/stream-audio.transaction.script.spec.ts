@@ -97,6 +97,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        lastPositionSeconds: null,
       };
 
       const mockCachedEntry = {
@@ -169,6 +170,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        lastPositionSeconds: null,
       };
 
       const mockCachedEntry = {
@@ -230,6 +232,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        lastPositionSeconds: null,
       };
 
       const mockAudioData = Buffer.from('mock audio data');
@@ -305,6 +308,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat: 'wav',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        lastPositionSeconds: null,
       };
 
       mockNoteAudioRepository.findById.mockResolvedValue(mockAudio);
@@ -334,6 +338,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        lastPositionSeconds: null,
       };
 
       const mockCachedEntry = {
@@ -394,6 +399,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        lastPositionSeconds: null,
       };
 
       const mockCachedEntry = {
@@ -451,6 +457,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        lastPositionSeconds: null,
       };
 
       const mockCachedEntry = {
