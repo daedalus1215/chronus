@@ -7,6 +7,7 @@ import { DownloadAudioAction } from './apps/actions/download-audio/download-audi
 import { GetNoteAudiosAction } from './apps/actions/get-note-audios/get-note-audios.action';
 import { StreamAudioAction } from './apps/actions/stream-audio/stream-audio.action';
 import { DeleteAudioAction } from './apps/actions/delete-audio/delete-audio.action';
+import { UpdatePlaybackPositionAction } from './apps/actions/update-playback-position-action/update-playback-position.action';
 import { AudioService } from './domain/services/audio.service';
 import { AudioStreamingService } from './domain/services/audio-streaming.service';
 import { TextToSpeechTransactionScript } from './domain/transaction-scripts/text-to-speech.transaction.script';
@@ -17,6 +18,7 @@ import { GetNoteAudioByIdTransactionScript } from './domain/transaction-scripts/
 import { DeleteNoteAudiosTransactionScript } from './domain/transaction-scripts/delete-note-audios-TS/delete-note-audios.transaction.script';
 import { DeleteAudioTransactionScript } from './domain/transaction-scripts/delete-audio-TS/delete-audio.transaction.script';
 import { StreamAudioTransactionScript } from './domain/transaction-scripts/stream-audio-ts/stream-audio.transaction.script';
+import { UpdatePlaybackPositionTransactionScript } from './domain/transaction-scripts/update-playback-position-TS/update-playback-position.transaction.script';
 import { HermesRemoteCaller } from './infrastructure/remote-callers/hermes.remote-caller';
 import { AudioFileCache } from './infrastructure/cache/audio-file.cache';
 import { NoteAudioRepository } from './infrastructure/repositories/note-audio.repository';
@@ -38,6 +40,7 @@ import { DownloadAudioResponder } from './apps/actions/download-audio/download-a
     GetNoteAudiosAction,
     StreamAudioAction,
     DeleteAudioAction,
+    UpdatePlaybackPositionAction,
   ],
   providers: [
     AudioService,
@@ -51,6 +54,7 @@ import { DownloadAudioResponder } from './apps/actions/download-audio/download-a
     DeleteNoteAudiosTransactionScript,
     DeleteAudioTransactionScript,
     StreamAudioTransactionScript,
+    UpdatePlaybackPositionTransactionScript,
     HermesRemoteCaller,
     NoteAudioRepository,
     DownloadAudioResponder,
