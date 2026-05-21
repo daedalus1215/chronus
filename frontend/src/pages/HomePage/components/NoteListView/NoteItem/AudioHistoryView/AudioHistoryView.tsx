@@ -77,6 +77,7 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
         audioId: audio.id,
         fileName: audio.fileName,
         noteId: noteId,
+        lastPositionSeconds: audio.lastPositionSeconds,
       });
     }
   };
