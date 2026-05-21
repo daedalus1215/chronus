@@ -45,4 +45,14 @@ export class NoteAudioRepository {
   async deleteByNoteId(noteId: number): Promise<void> {
     await this.repository.delete({ noteId });
   }
+
+  async updatePositionById(
+    audioId: number,
+    positionSeconds: number
+  ): Promise<void> {
+    await this.repository.update(audioId, {
+      lastPositionSeconds: positionSeconds,
+    });
+  }
 }
+
