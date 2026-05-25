@@ -6,9 +6,12 @@ export const useSavePlaybackPosition = () => {
     mutationFn: ({
       audioId,
       positionSeconds,
+      durationSeconds,
     }: {
       audioId: number;
       positionSeconds: number;
-    }) => updatePlaybackPosition(audioId, positionSeconds),
+      durationSeconds?: number;
+    }) => updatePlaybackPosition(audioId, positionSeconds, durationSeconds),
   });
 };
+

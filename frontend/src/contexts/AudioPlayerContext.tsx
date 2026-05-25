@@ -78,11 +78,18 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
   }, [savePosition]);
 
   const savePlaybackPosition = useCallback(
-    (audioId: number, positionSeconds: number) => {
-      savePositionRef.current.mutate({ audioId, positionSeconds });
+    (audioId: number, positionSeconds: number, durationSeconds?: number) => {
+      savePositionRef.current.mutate({
+        audioId,
+        positionSeconds,
+        durationSeconds,
+      });
     },
     []
   );
+
+  // Track whether we've already saved the duration for the current track
+  const durationSavedRef = useRef(false);
 
   // Initialize audio element
   useEffect(() => {
@@ -90,10 +97,31 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
     audioRef.current = audio;
 
     // Set up event listeners
-    const handleLoadStart = () => setIsLoading(true);
+    const handleLoadStart = () => {
+      setIsLoading(true);
+      durationSavedRef.current = false;
+    };
     const handleCanPlay = () => setIsLoading(false);
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const handleDurationChange = () => setDuration(audio.duration);
+    const handleDurationChange = () => {
+      setDuration(audio.duration);
+      // Persist duration once when it becomes known
+      if (
+        !isNaN(audio.duration) &&
+        audio.duration > 0 &&
+        !durationSavedRef.current
+      ) {
+        durationSavedRef.current = true;
+        const track = currentTrackRef.current;
+        if (track) {
+          savePlaybackPosition(
+            track.audioId,
+            audio.currentTime,
+            audio.duration
+          );
+        }
+      }
+    };
     const handleEnded = () => {
       setIsPlaying(false);
       const track = currentTrackRef.current;
@@ -146,7 +174,7 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
         URL.revokeObjectURL(audio.src);
       }
     };
-  }, []);
+  }, [savePlaybackPosition]);
 
   const loadAudio = useCallback(
     async (track: AudioTrack) => {

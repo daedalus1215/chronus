@@ -91,7 +91,9 @@ export class NoteMemoTagRepository {
   async getNoteNamesForExplorer(
     userId: number,
     folderId?: string
-  ): Promise<{ name: string; id: number; isMemo: number; folderId: number | null }[]> {
+  ): Promise<
+    { name: string; id: number; isMemo: number; folderId: number | null }[]
+  > {
     const qb = this.repository
       .createQueryBuilder('note')
       .select('note.name', 'name')
@@ -112,10 +114,7 @@ export class NoteMemoTagRepository {
       });
     }
 
-    return await qb
-      .orderBy('note.sort_order', 'ASC')
-      .take(500)
-      .getRawMany();
+    return await qb.orderBy('note.sort_order', 'ASC').take(500).getRawMany();
   }
 
   async updateNoteTimestamp(id: number): Promise<UpdateResult> {

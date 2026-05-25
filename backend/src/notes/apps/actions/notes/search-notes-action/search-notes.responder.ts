@@ -19,12 +19,17 @@ function extractContext(
   const lowerText = text.toLowerCase();
   const idx = lowerText.indexOf(query.toLowerCase());
   if (idx === -1) {
-    return { contextBefore: '', matchText: text.slice(0, query.length), contextAfter: '' };
+    return {
+      contextBefore: '',
+      matchText: text.slice(0, query.length),
+      contextAfter: '',
+    };
   }
   const beforeStart = Math.max(0, idx - contextLen);
   const afterEnd = Math.min(text.length, idx + query.length + contextLen);
   return {
-    contextBefore: (beforeStart > 0 ? '...' : '') + text.slice(beforeStart, idx),
+    contextBefore:
+      (beforeStart > 0 ? '...' : '') + text.slice(beforeStart, idx),
     matchText: text.slice(idx, idx + query.length),
     contextAfter:
       text.slice(idx + query.length, afterEnd) +

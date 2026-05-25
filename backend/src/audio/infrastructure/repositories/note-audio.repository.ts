@@ -48,11 +48,15 @@ export class NoteAudioRepository {
 
   async updatePositionById(
     audioId: number,
-    positionSeconds: number
+    positionSeconds: number,
+    durationSeconds?: number
   ): Promise<void> {
-    await this.repository.update(audioId, {
+    const updateData: Partial<NoteAudio> = {
       lastPositionSeconds: positionSeconds,
-    });
+    };
+    if (durationSeconds !== undefined) {
+      updateData.durationSeconds = durationSeconds;
+    }
+    await this.repository.update(audioId, updateData);
   }
 }
-

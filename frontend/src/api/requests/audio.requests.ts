@@ -7,6 +7,7 @@ export type NoteAudio = {
   fileName: string;
   fileFormat: string;
   lastPositionSeconds: number | null;
+  durationSeconds: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -36,9 +37,16 @@ export const deleteAudio = async (audioId: number): Promise<void> => {
 
 export const updatePlaybackPosition = async (
   audioId: number,
-  positionSeconds: number
+  positionSeconds: number,
+  durationSeconds?: number
 ): Promise<void> => {
-  await api.patch(`/audio/${audioId}/playback-position`, { positionSeconds });
+  const body: { positionSeconds: number; durationSeconds?: number } = {
+    positionSeconds,
+  };
+  if (durationSeconds !== undefined) {
+    body.durationSeconds = durationSeconds;
+  }
+  await api.patch(`/audio/${audioId}/playback-position`, body);
 };
 
 /**

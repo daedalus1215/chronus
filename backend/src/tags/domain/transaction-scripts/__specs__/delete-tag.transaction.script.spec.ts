@@ -73,7 +73,6 @@ describe('DeleteTagTransactionScript', () => {
     // Arrange
     const tagId = generateRandomNumbers();
     const userId = generateRandomNumbers();
-    const differentUserId = generateRandomNumbers();
 
     mockRepository.findTagByIdAndUserId.mockResolvedValue(null);
 

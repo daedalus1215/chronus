@@ -69,7 +69,8 @@ export class AudioService {
     return this.downloadAudioTS.execute(userId, assetId);
   }
 
-  async getNoteAudios(noteId: number): Promise<NoteAudio[]> {
+  async getNoteAudios(noteId: number, userId: number): Promise<NoteAudio[]> {
+    await this.noteAggregator.getReference(noteId, userId);
     return this.getNoteAudiosTS.execute(noteId);
   }
 
@@ -92,10 +93,15 @@ export class AudioService {
   async updatePlaybackPosition(
     audioId: number,
     positionSeconds: number,
+    durationSeconds: number | undefined,
     userId: number
   ): Promise<void> {
     await this.getNoteAudioById(audioId, userId);
-    await this.updatePlaybackPositionTS.apply(audioId, positionSeconds);
+    await this.updatePlaybackPositionTS.apply(
+      audioId,
+      positionSeconds,
+      durationSeconds
+    );
   }
 
   async deleteAudio(audioId: number, userId: number): Promise<void> {

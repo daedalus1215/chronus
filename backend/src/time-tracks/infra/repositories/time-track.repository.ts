@@ -136,14 +136,11 @@ export class TimeTrackRepository {
       checkDate.setDate(checkDate.getDate() - 1);
     }
 
-    while (true) {
-      const dateStr = formatDate(checkDate);
-      if (activeDates.has(dateStr)) {
-        streak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else {
-        break;
-      }
+    let dateStr = formatDate(checkDate);
+    while (activeDates.has(dateStr)) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+      dateStr = formatDate(checkDate);
     }
 
     return streak;

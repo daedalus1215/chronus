@@ -24,7 +24,6 @@ import { AudioFileCache } from './infrastructure/cache/audio-file.cache';
 import { NoteAudioRepository } from './infrastructure/repositories/note-audio.repository';
 import { NoteAudio } from './domain/entities/note-audio.entity';
 import { NotesModule } from 'src/notes/notes.module';
-import { NOTE_OWNERSHIP_PORT } from './domain/ports/note-ownership.port';
 import { DownloadAudioResponder } from './apps/actions/download-audio/download-audio.responder';
 
 @Module({

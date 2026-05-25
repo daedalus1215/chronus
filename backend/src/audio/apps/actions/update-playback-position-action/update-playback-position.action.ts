@@ -30,6 +30,7 @@ export class UpdatePlaybackPositionAction {
     await this.audioService.updatePlaybackPosition(
       audioId,
       body.positionSeconds,
+      body.durationSeconds,
       userId
     );
   }

@@ -15,6 +15,6 @@ export class Alter_add_last_position_seconds_column_note_audios_table17790000000
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `ALTER TABLE "note_audios" REMOVE COLUMN "last_position_seconds`
-    )
+    );
   }
 }
