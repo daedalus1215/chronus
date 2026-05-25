@@ -6,11 +6,16 @@ import { ReorderFoldersDto } from './dtos/reorder-folders.dto';
 
 @Controller('folders')
 export class ReorderFoldersAction {
-  constructor(private readonly reorderFoldersTS: ReorderFoldersTransactionScript) {}
+  constructor(
+    private readonly reorderFoldersTS: ReorderFoldersTransactionScript
+  ) {}
 
   @Patch('reorder')
   @HttpCode(204)
-  @ProtectedAction({ tag: 'Folders', summary: 'Reorder folders within the same parent' })
+  @ProtectedAction({
+    tag: 'Folders',
+    summary: 'Reorder folders within the same parent',
+  })
   async apply(
     @Body() dto: ReorderFoldersDto,
     @GetAuthUser('userId') userId: number

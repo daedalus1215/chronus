@@ -12,7 +12,10 @@ import { DELETE_CHECK_ITEMS_BY_NOTE_COMMAND } from 'src/shared-kernel/domain/cro
 import { DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/tags/delete-note-tag-associations.command';
 import { CheckItemsAggregator } from 'src/check-items/domain/aggregators/check-items.aggregator';
 import { CheckItemProjection } from 'src/check-items/domain/aggregators/check-items.aggregator';
-import { SearchNotesTransactionScript, NoteSearchMatches } from '../transaction-scripts/search-notes.transaction.script';
+import {
+  SearchNotesTransactionScript,
+  NoteSearchMatches,
+} from '../transaction-scripts/search-notes.transaction.script';
 
 export type NoteWithCheckItems = {
   note: Note;
@@ -21,7 +24,11 @@ export type NoteWithCheckItems = {
 
 export type SearchResults = NoteSearchMatches & {
   query: string;
-  checkItemMatches: { noteId: number; noteName: string; checkItemName: string }[];
+  checkItemMatches: {
+    noteId: number;
+    noteName: string;
+    checkItemName: string;
+  }[];
 };
 
 @Injectable()

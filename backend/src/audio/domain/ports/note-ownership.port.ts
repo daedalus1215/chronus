@@ -1,5 +1,3 @@
-import { Injectable } from '@nestjs/common';
-
 /**
  * Port for checking note ownership.
  * Implemented by the notes module, used by the audio module.

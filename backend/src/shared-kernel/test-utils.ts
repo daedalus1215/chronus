@@ -25,11 +25,13 @@ export const createLoggerMock = () =>
     error: jest.fn(),
   });
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type MockScriptConfig<T = any> = {
   script: { apply: jest.MockInstance<any, any> | jest.Mock };
   return?: T;
   error?: Error;
 };
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 /**
  * Sets up a transaction mock for testing.

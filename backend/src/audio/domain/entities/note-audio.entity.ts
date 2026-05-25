@@ -36,6 +36,14 @@ export class NoteAudio {
   })
   lastPositionSeconds: number | null;
 
+  @Column({
+    name: 'duration_seconds',
+    type: 'real',
+    nullable: true,
+    default: null,
+  })
+  durationSeconds: number | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'text' })
   createdAt: string;
 

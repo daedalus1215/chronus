@@ -97,6 +97,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        durationSeconds: null,
         lastPositionSeconds: null,
       };
 
@@ -123,7 +124,7 @@ describe('StreamAudioTransactionScript', () => {
       mockAudioFileCache.getEntry.mockReturnValue(mockCachedEntry);
 
       // Act
-      await target.apply(audioId, userId, rangeHeader, mockResponse as any);
+      await target.apply(audioId, userId, rangeHeader, mockResponse);
 
       // Assert
       expect(mockNoteAudioRepository.findById).toHaveBeenCalledWith(audioId);
@@ -170,6 +171,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        durationSeconds: null,
         lastPositionSeconds: null,
       };
 
@@ -196,7 +198,7 @@ describe('StreamAudioTransactionScript', () => {
       mockAudioFileCache.getEntry.mockReturnValue(mockCachedEntry);
 
       // Act
-      await target.apply(audioId, userId, rangeHeader, mockResponse as any);
+      await target.apply(audioId, userId, rangeHeader, mockResponse);
 
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(206);
@@ -232,6 +234,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        durationSeconds: null,
         lastPositionSeconds: null,
       };
 
@@ -263,7 +266,7 @@ describe('StreamAudioTransactionScript', () => {
       mockAudioFileCache.saveAudio.mockResolvedValue(mockCachedEntry);
 
       // Act
-      await target.apply(audioId, userId, rangeHeader, mockResponse as any);
+      await target.apply(audioId, userId, rangeHeader, mockResponse);
 
       // Assert
       expect(mockAudioFileCache.isCached).toHaveBeenCalledWith(audioId);
@@ -287,7 +290,7 @@ describe('StreamAudioTransactionScript', () => {
 
       // Act & Assert
       await expect(
-        target.apply(audioId, userId, rangeHeader, mockResponse as any)
+        target.apply(audioId, userId, rangeHeader, mockResponse)
       ).rejects.toThrow(NotFoundException);
 
       expect(mockNoteAudioRepository.findById).toHaveBeenCalledWith(audioId);
@@ -308,6 +311,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat: 'wav',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        durationSeconds: null,
         lastPositionSeconds: null,
       };
 
@@ -316,7 +320,7 @@ describe('StreamAudioTransactionScript', () => {
 
       // Act & Assert
       await expect(
-        target.apply(audioId, userId, rangeHeader, mockResponse as any)
+        target.apply(audioId, userId, rangeHeader, mockResponse)
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -338,6 +342,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        durationSeconds: null,
         lastPositionSeconds: null,
       };
 
@@ -364,7 +369,7 @@ describe('StreamAudioTransactionScript', () => {
       mockAudioFileCache.getEntry.mockReturnValue(mockCachedEntry);
 
       // Act
-      await target.apply(audioId, userId, rangeHeader, mockResponse as any);
+      await target.apply(audioId, userId, rangeHeader, mockResponse);
 
       // Assert
       expect(mockResponse.setHeader).toHaveBeenCalledWith(
@@ -399,6 +404,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        durationSeconds: generateRandomNumbers(1, 1000),
         lastPositionSeconds: null,
       };
 
@@ -425,7 +431,7 @@ describe('StreamAudioTransactionScript', () => {
       mockAudioFileCache.getEntry.mockReturnValue(mockCachedEntry);
 
       // Act
-      await target.apply(audioId, userId, rangeHeader, mockResponse as any);
+      await target.apply(audioId, userId, rangeHeader, mockResponse);
 
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(200);
@@ -457,6 +463,7 @@ describe('StreamAudioTransactionScript', () => {
         fileFormat,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        durationSeconds: generateRandomNumbers(1, 1000),
         lastPositionSeconds: null,
       };
 
@@ -483,7 +490,7 @@ describe('StreamAudioTransactionScript', () => {
       mockAudioFileCache.getEntry.mockReturnValue(mockCachedEntry);
 
       // Act
-      await target.apply(audioId, userId, rangeHeader, mockResponse as any);
+      await target.apply(audioId, userId, rangeHeader, mockResponse);
 
       // Assert
       expect(mockResponse.setHeader).toHaveBeenCalledWith(

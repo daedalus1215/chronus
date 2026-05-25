@@ -15,7 +15,10 @@ export class GetNoteNamesForExplorerAction {
   constructor(private readonly noteRepository: NoteMemoTagRepository) {}
 
   @Get('explorer-names')
-  @ProtectedAction({ tag: 'Notes', summary: 'Get note names for the explorer, optionally filtered by folder' })
+  @ProtectedAction({
+    tag: 'Notes',
+    summary: 'Get note names for the explorer, optionally filtered by folder',
+  })
   async apply(
     @GetAuthUser('userId') userId: number,
     @Query('folderId') folderId?: string

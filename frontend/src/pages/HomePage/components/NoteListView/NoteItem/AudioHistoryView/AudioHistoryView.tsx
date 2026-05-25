@@ -31,6 +31,13 @@ type AudioHistoryViewProps = {
   isDeleting: boolean;
 };
 
+const formatTime = (seconds: number | null): string => {
+  if (seconds == null || seconds <= 0) return '--:--';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+};
+
 export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
   isOpen,
   onClose,
@@ -139,23 +146,28 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
                   <div className={styles.audioFileName}>{audio.fileName}</div>
                 </div>
                 <div className={styles.actionButtons}>
-                  <IconButton
-                    aria-label={
-                      isCurrentTrack(audio.id) && isPlaying
-                        ? 'Pause audio'
-                        : 'Play audio'
-                    }
-                    size="small"
-                    onClick={() => handlePlay(audio)}
-                    className={styles.playButton}
-                    color={isCurrentTrack(audio.id) ? 'primary' : 'default'}
-                  >
-                    {isCurrentTrack(audio.id) && isPlaying ? (
-                      <PauseIcon fontSize="small" />
-                    ) : (
-                      <PlayArrowIcon fontSize="small" />
-                    )}
-                  </IconButton>
+                  <div className={styles.playColumn}>
+                    <IconButton
+                      aria-label={
+                        isCurrentTrack(audio.id) && isPlaying
+                          ? 'Pause audio'
+                          : 'Play audio'
+                      }
+                      size="small"
+                      onClick={() => handlePlay(audio)}
+                      className={styles.playButton}
+                      color={isCurrentTrack(audio.id) ? 'primary' : 'default'}
+                    >
+                      {isCurrentTrack(audio.id) && isPlaying ? (
+                        <PauseIcon fontSize="small" />
+                      ) : (
+                        <PlayArrowIcon fontSize="small" />
+                      )}
+                    </IconButton>
+                    <span className={styles.audioTime}>
+                      {formatTime(audio.lastPositionSeconds)} / {formatTime(audio.durationSeconds)}
+                    </span>
+                  </div>
                   <IconButton
                     aria-label="Download audio"
                     size="small"
@@ -206,3 +218,4 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
     </BottomSheet>
   );
 };
+

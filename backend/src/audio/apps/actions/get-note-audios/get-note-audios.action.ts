@@ -20,7 +20,7 @@ export class GetNoteAudiosAction {
     @GetAuthUser('userId') userId: number
   ) {
     const noteIdNum = parseInt(noteId, 10);
-    const audios = await this.audioService.getNoteAudios(noteIdNum);
+    const audios = await this.audioService.getNoteAudios(noteIdNum, userId);
     return { audios };
   }
 }

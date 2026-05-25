@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  TextToSpeechRequestDto,
-} from 'src/audio/apps/dtos/requests/text-to-speech.dto';
+import { TextToSpeechRequestDto } from 'src/audio/apps/dtos/requests/text-to-speech.dto';
 import { HermesRemoteCaller } from '../../infrastructure/remote-callers/hermes.remote-caller';
 
 export type TextToSpeechResult = {

@@ -10,7 +10,10 @@ export class ReorderNotesAction {
 
   @Patch('reorder')
   @HttpCode(204)
-  @ProtectedAction({ tag: 'Notes', summary: 'Reorder notes within the same folder' })
+  @ProtectedAction({
+    tag: 'Notes',
+    summary: 'Reorder notes within the same folder',
+  })
   async apply(
     @Body() dto: ReorderNotesDto,
     @GetAuthUser('userId') userId: number
