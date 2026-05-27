@@ -133,7 +133,7 @@ export const ExplorerTree: React.FC = () => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [clearSelection, exitPickItemsMode, pickItemsMode, selectedFolderIds, selectedNoteIds]);
+  }, [clearSelection, exitPickItemsMode, pickItemsMode, selectedFolderIds, selectedNoteIds, setReparentTarget]);
 
   // Click handlers
   const handleFolderRowClick = useCallback(

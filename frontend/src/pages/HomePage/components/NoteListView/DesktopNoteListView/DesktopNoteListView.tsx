@@ -7,7 +7,6 @@ import styles from './DesktopNoteListView.module.css';
 import { useResizablePane } from '../../../../../hooks/useResizablePane';
 import Fade from '@mui/material/Fade';
 import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
-import { Typography } from '@mui/material';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
