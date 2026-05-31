@@ -8,6 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import HeadsetMicOutlined from '@mui/icons-material/HeadsetMicOutlined';
+import AccessTimeOutlined from '@mui/icons-material/AccessTimeOutlined';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useTopRailActions } from '../../hooks/useTopRailActions';
 import { TopRailActions } from './components/TopRailActions/TopRailActions';
@@ -26,6 +27,7 @@ import { MobileTagsView } from './components/MobileTagsView/MobileTagsView';
 import styles from './NotePage.module.css';
 import { ChecklistOutlined } from '@mui/icons-material';
 import { AudioHistoryView } from './components/AudioHistoryView/AudioHistoryView';
+import { TimeTrackHistoryView } from './components/TimeTrackHistoryView/TimeTrackHistoryView';
 
 const SIDEBAR_TAB_STORAGE_KEY = 'chronus-sidebar-tab';
 
@@ -33,6 +35,7 @@ const sidebarTabs = [
   { id: 'checklist', icon: <ChecklistOutlined /> },
   { id: 'tags', icon: <LocalOfferIcon /> },
   { id: 'audio', icon: <HeadsetMicOutlined /> },
+  { id: 'time', icon: <AccessTimeOutlined /> },
 ];
 
 export const NotePage: React.FC = () => {
@@ -266,6 +269,9 @@ export const NotePage: React.FC = () => {
             )}
             {activeTab === 'audio' && noteId && (
               <AudioHistoryView noteId={noteId} />
+            )}
+            {activeTab === 'time' && noteId && (
+              <TimeTrackHistoryView noteId={noteId} />
             )}
           </RightSidebar>
         )}
