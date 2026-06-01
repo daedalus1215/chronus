@@ -62,6 +62,17 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           }}
           sx={{
             borderBottom: '1px solid var(--color-overlay-stronger)',
+            '& .MuiToggleButtonGroup-grouped': {
+              margin: 0,
+              border: 0,
+              borderRadius: 0,
+            },
+            '& .MuiToggleButtonGroup-grouped:not(:first-of-type)': {
+              borderLeft: '1px solid var(--color-overlay-stronger)',
+            },
+            '& .MuiToggleButtonGroup-grouped:hover': {
+              borderLeftColor: 'var(--color-overlay-stronger)',
+            },
             '& .Mui-selected': {
               backgroundColor: 'rgba(99,102,241,0.12)',
               color: 'primary.main',
