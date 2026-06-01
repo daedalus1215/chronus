@@ -277,7 +277,11 @@ export const NotePage: React.FC = () => {
         )}
         {isMobile && note?.isMemo && (
           <MobileTagsView
+            note={note}
             noteId={noteId}
+            tabs={sidebarTabs}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
             isOpen={isTagsOpen}
             onClose={() => setIsTagsOpen(false)}
           />

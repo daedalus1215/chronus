@@ -61,8 +61,8 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
       {isMobile && note?.isMemo && onToggleTags && (
         <IconButton
           size="small"
-          title="Tags"
-          aria-label="Tags"
+          title="Open side panel"
+          aria-label="Open side panel"
           onClick={onToggleTags}
         >
           <LocalOffer sx={{ fontSize: 16 }} />
