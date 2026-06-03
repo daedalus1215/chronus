@@ -33,26 +33,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       aria-hidden={!isOpen}
       role="complementary"
     >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          px: 1.5,
-          py: 1,
-          borderBottom: '1px solid var(--color-overlay-stronger)',
-        }}
-      >
-        {title && (
-          <Typography
-            variant="body2"
-            component="h2"
-            sx={{ fontSize: '0.875rem', fontWeight: 600 }}
-          >
-            {title}
-          </Typography>
-        )}
-      </Box>
       {tabs && activeTab && onTabChange && (
         <ToggleButtonGroup
           value={activeTab}
