@@ -71,3 +71,5 @@ e2e/.env.development
 node_modules
 
 frontend/vite.env.config.ts
+
+.continue/*
