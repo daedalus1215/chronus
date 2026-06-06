@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import { useAudioPlayer } from '../../../../../../contexts/AudioPlayerContext';
+import { useAudioPlayer } from '@/contexts/useAudioPlayer';
 import styles from './AudioHistoryView.module.css';
 
 type AudioHistoryViewProps = {

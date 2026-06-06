@@ -2,15 +2,11 @@ import {
   Injectable,
   Inject,
   NotFoundException,
-  ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
 import { NoteAggregator } from '../../../notes/domain/aggregators/note.aggregator';
 import { CheckItemsAggregator } from '../../../check-items/domain/aggregators/check-items.aggregator';
-import {
-  NOTE_WRITER_PORT,
-  NoteWriterPort,
-} from '../ports/note-writer.port';
+import { NOTE_WRITER_PORT, NoteWriterPort } from '../ports/note-writer.port';
 import {
   CHECK_ITEM_WRITER_PORT,
   CheckItemWriterPort,
@@ -19,10 +15,7 @@ import {
   TIME_TRACK_WRITER_PORT,
   TimeTrackWriterPort,
 } from '../ports/time-track-writer.port';
-import {
-  TAG_ATTACH_PORT,
-  TagAttacherPort,
-} from '../ports/tag-attacher.port';
+import { TAG_ATTACH_PORT, TagAttacherPort } from '../ports/tag-attacher.port';
 import { ImportNoteDto } from '../../apps/dtos/requests/import-note.dto';
 import { MergeIntoNoteDto } from '../../apps/dtos/requests/merge-into-note.dto';
 import { NoteExportResponse } from '../../apps/dtos/responses/note-export.response';
@@ -67,7 +60,10 @@ export class NoteTransferService {
     // Try to get memo description (will be empty for checklists)
     let description = '';
     try {
-      const noteWithMemo = await this.noteAggregator.getMemoById(noteId, userId);
+      const noteWithMemo = await this.noteAggregator.getMemoById(
+        noteId,
+        userId
+      );
       description = noteWithMemo?.memo?.description ?? '';
     } catch {
       // Not a memo - description stays empty
@@ -106,8 +102,12 @@ export class NoteTransferService {
           description: item.description,
           status: item.status,
           order: index,
-          doneDate: item.doneDate ? new Date(item.doneDate).toISOString() : null,
-          archiveDate: item.archiveDate ? new Date(item.archiveDate).toISOString() : null,
+          doneDate: item.doneDate
+            ? new Date(item.doneDate).toISOString()
+            : null,
+          archiveDate: item.archiveDate
+            ? new Date(item.archiveDate).toISOString()
+            : null,
         })),
         timeTracks,
       },
@@ -119,10 +119,7 @@ export class NoteTransferService {
    * Creates a new note with the provided data sections.
    * @returns The newly created note ID
    */
-  async importNote(
-    payload: ImportNoteDto,
-    userId: number
-  ): Promise<number> {
+  async importNote(payload: ImportNoteDto, userId: number): Promise<number> {
     // Validate version
     if (payload.version !== 1) {
       throw new BadRequestException(

@@ -1,6 +1,4 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styles from './RightSidebar.module.css';
@@ -21,7 +19,6 @@ type RightSidebarProps = {
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
   isOpen,
-  title,
   tabs,
   activeTab,
   onTabChange,

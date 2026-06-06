@@ -14,8 +14,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './TimeTrackListView.module.css';
 import { TimeTrack } from '../../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
-import { TimeTrackTotalResponseDto } from '../../../../../../../api/dtos/note.dtos';
 import { formatDateForDisplay } from '../../../../../../utils/dateUtils';
+import { TimeTrackTotalResponseDto } from '@/api/dtos/note.dtos';
 
 type TimeTrackListProps = {
   isOpen: boolean;
