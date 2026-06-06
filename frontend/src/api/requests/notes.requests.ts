@@ -110,3 +110,31 @@ export const importNote = async (data: {
   const response = await api.post<{ noteId: number }>('/notes/import', data);
   return response.data;
 };
+
+export const mergeIntoNote = async (
+  noteId: number,
+  data: {
+    version: number;
+    description?: string;
+    tags?: string[];
+    checkItems?: Array<{
+      name: string;
+      description?: string | null;
+      status: 'ready' | 'in_progress' | 'review' | 'done';
+      order: number;
+      doneDate?: string | null;
+      archiveDate?: string | null;
+    }>;
+    timeTracks?: Array<{
+      date: string;
+      startTime: string;
+      durationMinutes: number;
+    }>;
+  }
+): Promise<{ success: boolean }> => {
+  const response = await api.post<{ success: boolean }>(
+    `/notes/${noteId}/merge`,
+    data
+  );
+  return response.data;
+};

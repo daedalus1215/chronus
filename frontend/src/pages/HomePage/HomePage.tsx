@@ -6,6 +6,10 @@ import { DesktopNoteListView } from './components/NoteListView/DesktopNoteListVi
 import { useCreateNote } from './hooks/useCreateNote';
 import { useImportNote, ImportNoteData } from './hooks/useImportNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
+import {
+  ImportSelectionDialog,
+  ParsedMemo,
+} from './components/ImportSelectionDialog/ImportSelectionDialog';
 import { NOTE_TYPES, NoteTypes } from '../../constant';
 import { useLocation, useParams, useNavigate, Outlet } from 'react-router-dom';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -19,9 +23,13 @@ export const HomePage: React.FC = () => {
   const isMobile = useIsMobile();
   const { isNoteListOpen } = useSidebar();
   const { createNote, isCreating } = useCreateNote();
-  const { importNote } = useImportNote();
+  const { importNote, isImporting } = useImportNote();
   const [showMenu, setShowMenu] = React.useState(false);
   const [importError, setImportError] = React.useState<string | null>(null);
+  const [pendingImport, setPendingImport] = React.useState<{
+    version: number;
+    memo: ParsedMemo;
+  } | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { id: routeNoteId } = useParams<{ id: string }>();
@@ -83,19 +91,28 @@ export const HomePage: React.FC = () => {
         return;
       }
 
-      const result = await importNote({
-        version: parsed.version,
-        ...parsed.memo,
-      });
+      // Open the selection picker; the actual import happens on confirm.
       setShowMenu(false);
-      
+      setPendingImport({ version: parsed.version, memo: parsed.memo });
+    } catch (err) {
+      console.error('Failed to import note:', err);
+      setImportError('Failed to import note. Please check the file format.');
+    }
+  };
+
+  const handleConfirmImport = async (payload: ImportNoteData) => {
+    setImportError(null);
+    try {
+      const result = await importNote(payload);
+      setPendingImport(null);
+
       // Navigate to the new note
       if (result.noteId) {
         navigate(`/notes/${result.noteId}`);
       }
     } catch (err) {
       console.error('Failed to import note:', err);
-      setImportError('Failed to import note. Please check the file format.');
+      setImportError('Failed to import note. Please try again.');
     }
   };
 
@@ -229,6 +246,16 @@ export const HomePage: React.FC = () => {
           onSelect={handleCreateNote}
           onImport={handleImportNote}
           onClose={() => setShowMenu(false)}
+        />
+      )}
+      {pendingImport && (
+        <ImportSelectionDialog
+          open
+          memo={pendingImport.memo}
+          version={pendingImport.version}
+          isImporting={isImporting}
+          onCancel={() => setPendingImport(null)}
+          onConfirm={handleConfirmImport}
         />
       )}
       <Snackbar
