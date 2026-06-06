@@ -14,6 +14,7 @@ import {
   AccessTimeOutlined,
   ViewKanbanOutlined,
   NoteAltOutlined,
+  FileDownloadOutlined,
 } from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
 import { ActionButton } from '@/components/ActionButton/ActionButton';
@@ -31,6 +32,7 @@ type NoteActionsProps = {
   onTextToSpeech: () => void;
   onStar: () => void;
   onExport: () => void;
+  onImportIntoNote?: () => void;
   onEdit: () => void;
   onLabel: () => void;
   onDownloadAudio: () => void;
@@ -55,6 +57,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onArchive,
   onStar,
   onExport,
+  onImportIntoNote,
   onEdit,
   onTextToSpeech,
   onLabel,
@@ -138,6 +141,12 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         <ActionButton label="Export" onClick={onExport}>
           <FileUploadOutlined className={styles.icon} />
         </ActionButton>
+
+        {onImportIntoNote && (
+          <ActionButton label="Import Into" onClick={onImportIntoNote}>
+            <FileDownloadOutlined className={styles.icon} />
+          </ActionButton>
+        )}
 
         <ActionButton label="Delete" onClick={onDelete} danger={true}>
           <DeleteOutlineOutlined className={styles.icon} />

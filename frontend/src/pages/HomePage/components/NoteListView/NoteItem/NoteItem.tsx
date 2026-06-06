@@ -26,6 +26,11 @@ import {
 import styles from './NoteItem.module.css';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
 import { useExportNote } from '../../../hooks/useExportNote';
+import { useMergeIntoNote, MergeIntoNoteData } from '../../../hooks/useMergeIntoNote';
+import {
+  MergeSelectionDialog,
+} from '../../MergeSelectionDialog/MergeSelectionDialog';
+import { ParsedMemo } from '../../ImportSelectionDialog/ImportSelectionDialog';
 
 type Note = { name: string; id: number; isMemo: number };
 
@@ -45,7 +50,12 @@ export const NoteItem: React.FC<NoteItemProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const mergeFileInputRef = React.useRef<HTMLInputElement>(null);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [mergeMemo, setMergeMemo] = useState<{
+    version: number;
+    memo: ParsedMemo;
+  } | null>(null);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
   const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
@@ -57,6 +67,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
   const { exportNote, isExporting } = useExportNote();
+  const { mergeIntoNote, isMerging } = useMergeIntoNote(note.id);
   const {
     timeTracks,
     isLoadingTimeTracks,
@@ -65,7 +76,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     timeTrackError,
   }: ReturnType<typeof useNoteTimeTracks> = useNoteTimeTracks(
     note.id,
-    isTimeTrackListOpen
+    isTimeTrackListOpen || mergeMemo !== null
   );
   const {
     handleTextToSpeech,
@@ -237,6 +248,61 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     }
   };
 
+  const handleImportIntoNote = () => {
+    setIsActionsOpen(false);
+    mergeFileInputRef.current?.click();
+  };
+
+  const handleMergeFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    // Reset so picking the same file again re-triggers onChange.
+    event.target.value = '';
+    if (!file) {
+      return;
+    }
+    try {
+      const text = await file.text();
+      // Export files are nested: { version, exportedAt, memo: { ... } }.
+      const parsed = JSON.parse(text) as {
+        version: number;
+        memo: ParsedMemo;
+      };
+
+      if (parsed.version !== 1) {
+        setToastSeverity('error');
+        setToastMessage(`Unsupported file version: ${parsed.version}`);
+        return;
+      }
+
+      if (!parsed.memo?.name) {
+        setToastSeverity('error');
+        setToastMessage('Invalid .chronus file: missing memo name.');
+        return;
+      }
+
+      setMergeMemo({ version: parsed.version, memo: parsed.memo });
+    } catch (err) {
+      console.error('Failed to read .chronus file:', err);
+      setToastSeverity('error');
+      setToastMessage('Failed to read file. Please check the file format.');
+    }
+  };
+
+  const handleConfirmMerge = async (payload: MergeIntoNoteData) => {
+    try {
+      await mergeIntoNote(payload);
+      setMergeMemo(null);
+      setToastSeverity('success');
+      setToastMessage('Imported into memo successfully');
+    } catch (err) {
+      console.error('Failed to import into memo:', err);
+      setToastSeverity('error');
+      setToastMessage('Failed to import into memo');
+    }
+  };
+
   const confirmConvertToMemo = async () => {
     setIsConvertingToMemo(true);
     setConvertError(null);
@@ -336,6 +402,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onEdit={handleTimeTracking}
         onLabel={handleTimeTracking}
         onExport={handleExport}
+        onImportIntoNote={handleImportIntoNote}
         onLock={handleTimeTracking}
         onConvertToMemo={handleConvertToMemo}
         isMemo={Boolean(note.isMemo)}
@@ -344,6 +411,26 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         audioError={audioError}
         audioCount={audioHistory.length}
       />
+
+      <input
+        ref={mergeFileInputRef}
+        type="file"
+        accept=".chronus"
+        style={{ display: 'none' }}
+        onChange={handleMergeFileChange}
+      />
+
+      {mergeMemo && !isLoadingTimeTracks && (
+        <MergeSelectionDialog
+          open
+          memo={mergeMemo.memo}
+          version={mergeMemo.version}
+          existingTimeTracks={timeTracks}
+          isMerging={isMerging}
+          onCancel={() => setMergeMemo(null)}
+          onConfirm={handleConfirmMerge}
+        />
+      )}
 
       <DateTimePicker
         isOpen={isDatePickerOpen}
