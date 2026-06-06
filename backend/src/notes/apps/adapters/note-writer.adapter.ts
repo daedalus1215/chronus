@@ -38,10 +38,7 @@ export class NoteWriterAdapter implements NoteWriterPort {
     return savedNote.id;
   }
 
-  async replaceDescription(
-    noteId: number,
-    description: string
-  ): Promise<void> {
+  async replaceDescription(noteId: number, description: string): Promise<void> {
     // Find the note
     const note = await this.rawNoteRepository.findOne({
       where: { id: noteId },

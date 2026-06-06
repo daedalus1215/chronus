@@ -66,7 +66,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     error: createTimeTrackError,
   } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
-  const { exportNote, isExporting } = useExportNote();
+  const { exportNote } = useExportNote();
   const { mergeIntoNote, isMerging } = useMergeIntoNote(note.id);
   const {
     timeTracks,
@@ -135,10 +135,6 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   };
 
   const handleShare = () => {
-    setIsActionsOpen(false);
-  };
-
-  const handleDuplicate = () => {
     setIsActionsOpen(false);
   };
 

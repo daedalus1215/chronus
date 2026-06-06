@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Res,
-  NotFoundException,
-} from '@nestjs/common';
+import { Controller, Get, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from '../../../../shared-kernel/apps/decorators/get-auth-user.decorator';
@@ -38,10 +32,7 @@ export class ExportNoteAction {
     const filename = `${sanitizedName || 'memo'}.chronus`;
 
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename="${filename}"`
-    );
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
     res.json(exportData);
   }

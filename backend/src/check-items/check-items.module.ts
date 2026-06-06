@@ -6,7 +6,6 @@ import { CreateCheckItemAction } from './apps/actions/create-check-item/create-c
 import { GetCheckItemAction } from './apps/actions/get-check-item/get-check-item.action';
 import { ToggleCheckItemAction } from './apps/actions/toggle-check-item/toggle-check-item.action';
 import { DeleteCheckItemAction } from './apps/actions/delete-check-item/delete-check-item.action';
-import { UpdateCheckItemAction } from './apps/actions/update-check-item/update-check-item.action';
 import { UpdateCheckItemStatusAction } from './apps/actions/update-check-item-status/update-check-item-status.action';
 import { GetCheckItemsByNoteAction } from './apps/actions/get-check-items-by-note/get-check-items-by-note.action';
 import { ReorderCheckItemsAction } from './apps/actions/reorder-check-items/reorder-check-items.action';
@@ -60,11 +59,6 @@ import { CHECK_ITEM_WRITER_PORT } from '../note-transfer/domain/ports/check-item
     GetCheckItemsByNoteAction,
     ReorderCheckItemsAction,
   ],
-
-
-
-
-
 
   exports: [CheckItemsAggregator, CHECK_ITEM_WRITER_PORT],
 })

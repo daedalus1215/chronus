@@ -237,7 +237,8 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
 
     const CustomNoteLabel = useCallback(
       (labelProps: Record<string, unknown>) => {
-        const { ownerState, editable, ...labelPropsForDom } = labelProps;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { ownerState: _ownerState, editable: _editable, ...labelPropsForDom } = labelProps;
         return (
           <Box
             sx={{

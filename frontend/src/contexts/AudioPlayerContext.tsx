@@ -1,6 +1,4 @@
 import React, {
-  createContext,
-  useContext,
   useRef,
   useState,
   useCallback,
@@ -9,45 +7,8 @@ import React, {
 } from 'react';
 import api from '../api/axios.interceptor';
 import { useSavePlaybackPosition } from '../hooks/useSavePlaybackPosition';
-
-export interface AudioTrack {
-  audioId: number;
-  fileName: string;
-  noteId: number;
-  lastPositionSeconds: number | null;
-}
-
-interface AudioPlayerContextType {
-  currentTrack: AudioTrack | null;
-  isPlaying: boolean;
-  isLoading: boolean;
-  currentTime: number;
-  duration: number;
-  volume: number;
-  isExpanded: boolean;
-  loadAudio: (track: AudioTrack) => void;
-  play: () => void;
-  pause: () => void;
-  togglePlay: () => void;
-  seek: (time: number) => void;
-  setVolume: (volume: number) => void;
-  toggleExpanded: () => void;
-  close: () => void;
-}
-
-const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(
-  undefined
-);
-
-export const useAudioPlayer = (): AudioPlayerContextType => {
-  const context = useContext(AudioPlayerContext);
-  if (!context) {
-    throw new Error(
-      'useAudioPlayer must be used within an AudioPlayerProvider'
-    );
-  }
-  return context;
-};
+import { AudioPlayerContext, AudioTrack } from './AudioPlayerContextDefinition';
+import type { AudioPlayerContextType } from './AudioPlayerContextDefinition';
 
 interface AudioPlayerProviderProps {
   children: ReactNode;

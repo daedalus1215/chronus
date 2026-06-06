@@ -18,8 +18,8 @@ import {
   VolumeOff,
   GraphicEq,
 } from '@mui/icons-material';
-import { useAudioPlayer } from '../../contexts/AudioPlayerContext';
 import styles from './PersistentAudioPlayer.module.css';
+import { useAudioPlayer } from '@/contexts/useAudioPlayer';
 
 const formatTime = (seconds: number): string => {
   if (!isFinite(seconds) || seconds < 0) return '0:00';
