@@ -5,6 +5,7 @@ import { GetCheckItemsByNoteTransactionScript } from '../transaction-scripts/get
 export type CheckItemProjection = {
   id: number;
   name: string;
+  status: 'ready' | 'in_progress' | 'review' | 'done';
   doneDate: Date | null;
   archiveDate: Date | null;
   noteId: number;
@@ -56,6 +57,7 @@ export class CheckItemsAggregator {
     return sortedCheckItems.map(item => ({
       id: item.id,
       name: item.name,
+      status: item.status,
       doneDate: item.doneDate,
       archiveDate: item.archiveDate,
       noteId: item.noteId,

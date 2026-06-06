@@ -15,6 +15,7 @@ import { LoggingModule } from './shared-kernel/apps/logging/logging.module';
 import { SharedKernelModule } from './shared-kernel/shared-kernel.module';
 import { SecurityEventsModule } from './security-events/security-events.module';
 import { FoldersModule } from './folders/folders.module';
+import { NoteTransferModule } from './note-transfer/note-transfer.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
@@ -63,6 +64,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     TagsModule,
     CheckItemsModule,
     AudioModule,
+    NoteTransferModule,
     EventEmitterModule.forRoot(),
     LoggingModule,
     SharedKernelModule,

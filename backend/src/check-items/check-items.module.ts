@@ -23,6 +23,8 @@ import { CheckItemsHydrator } from './infra/repositories/check-items/check-items
 import { CheckItemsAggregator } from './domain/aggregators/check-items.aggregator';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DeleteCheckItemsByNoteListener } from './apps/listeners/delete-check-items-by-note.listener';
+import { CheckItemWriterAdapter } from './apps/adapters/check-item-writer.adapter';
+import { CHECK_ITEM_WRITER_PORT } from '../note-transfer/domain/ports/check-item-writer.port';
 
 @Module({
   imports: [
@@ -43,17 +45,27 @@ import { DeleteCheckItemsByNoteListener } from './apps/listeners/delete-check-it
     CheckItemService,
     CheckItemsAggregator,
     DeleteCheckItemsByNoteListener,
+    CheckItemWriterAdapter,
+    {
+      provide: CHECK_ITEM_WRITER_PORT,
+      useExisting: CheckItemWriterAdapter,
+    },
   ],
   controllers: [
     CreateCheckItemAction,
     GetCheckItemAction,
     ToggleCheckItemAction,
     DeleteCheckItemAction,
-    UpdateCheckItemAction,
     UpdateCheckItemStatusAction,
     GetCheckItemsByNoteAction,
     ReorderCheckItemsAction,
   ],
-  exports: [CheckItemsRepository, CheckItemService, CheckItemsAggregator],
+
+
+
+
+
+
+  exports: [CheckItemsAggregator, CHECK_ITEM_WRITER_PORT],
 })
 export class CheckItemsModule {}
