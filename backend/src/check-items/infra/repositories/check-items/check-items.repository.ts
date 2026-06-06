@@ -16,6 +16,10 @@ export class CheckItemsRepository {
     return this.checkItemRepository.save(checkItem);
   }
 
+  async saveMany(checkItems: CheckItem[]): Promise<CheckItem[]> {
+    return this.checkItemRepository.save(checkItems);
+  }
+
   async findByNoteId(noteId: number): Promise<CheckItem[]> {
     return this.checkItemRepository.find({
       where: { noteId },

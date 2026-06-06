@@ -24,6 +24,9 @@ import { GetStreakAction } from './apps/actions/get-streak-action/get-streak.act
 import { GetStreakTransactionScript } from './domain/transaction-scripts/get-streak-TS/get-streak.transaction.script';
 import { GetNotesByYearAction } from './apps/actions/get-notes-by-year-action/get-notes-by-year.action';
 import { GetNotesByYearTransactionScript } from './domain/transaction-scripts/get-notes-by-year-TS/get-notes-by-year.transaction.script';
+import { TimeTracksAggregator } from './domain/aggregators/time-tracks.aggregator';
+import { TimeTrackWriterAdapter } from './apps/adapters/time-track-writer.adapter';
+import { TIME_TRACK_WRITER_PORT } from '../note-transfer/domain/ports/time-track-writer.port';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TimeTrack]), NotesModule, TagsModule],
@@ -40,6 +43,12 @@ import { GetNotesByYearTransactionScript } from './domain/transaction-scripts/ge
     GetWeeklyTrendTransactionScript,
     GetStreakTransactionScript,
     GetNotesByYearTransactionScript,
+    TimeTracksAggregator,
+    TimeTrackWriterAdapter,
+    {
+      provide: TIME_TRACK_WRITER_PORT,
+      useExisting: TimeTrackWriterAdapter,
+    },
   ],
   controllers: [
     CreateTimeTrackAction,
@@ -49,9 +58,8 @@ import { GetNotesByYearTransactionScript } from './domain/transaction-scripts/ge
     DeleteTimeTrackAction,
     GetWeeklyMostActiveNoteAction,
     GetWeeklyTrendAction,
-    GetStreakAction,
     GetNotesByYearAction,
   ],
-  exports: [TimeTrackRepository],
+  exports: [TimeTracksAggregator, TIME_TRACK_WRITER_PORT],
 })
 export class TimeTracksModule {}

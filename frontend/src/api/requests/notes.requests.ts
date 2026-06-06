@@ -80,3 +80,33 @@ export const searchNotes = async (query: string): Promise<SearchResult[]> => {
   });
   return response.data;
 };
+
+export const exportNote = async (noteId: number): Promise<Blob> => {
+  const response = await api.get(`/notes/${noteId}/export`, {
+    responseType: 'blob',
+  });
+  return response.data;
+};
+
+export const importNote = async (data: {
+  version: number;
+  name: string;
+  description?: string;
+  tags?: string[];
+  checkItems?: Array<{
+    name: string;
+    description?: string | null;
+    status: 'ready' | 'in_progress' | 'review' | 'done';
+    order: number;
+    doneDate?: string | null;
+    archiveDate?: string | null;
+  }>;
+  timeTracks?: Array<{
+    date: string;
+    startTime: string;
+    durationMinutes: number;
+  }>;
+}): Promise<{ noteId: number }> => {
+  const response = await api.post<{ noteId: number }>('/notes/import', data);
+  return response.data;
+};

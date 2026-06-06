@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { GetTagsByNoteIdsTransactionScript } from '../transaction-scripts/get-tags-by-note-ids.transaction.script';
+import { GetTagsByNoteIdTransactionScript } from '../transaction-scripts/get-tags-by-note-id.transaction.script';
 
 @Injectable()
 export class TagAggregator {
   constructor(
-    private readonly getTagsByNoteIdsTS: GetTagsByNoteIdsTransactionScript
+    private readonly getTagsByNoteIdsTS: GetTagsByNoteIdsTransactionScript,
+    private readonly getTagsByNoteIdTS: GetTagsByNoteIdTransactionScript
   ) {}
 
   async getTagsByNoteIds(
@@ -18,5 +20,10 @@ export class TagAggregator {
         ]
       )
     );
+  }
+
+  async getTagNamesByNoteId(noteId: number): Promise<string[]> {
+    const tags = await this.getTagsByNoteIdTS.apply(noteId);
+    return tags.map(tag => tag.name);
   }
 }

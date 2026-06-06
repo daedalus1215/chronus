@@ -21,6 +21,8 @@ import { RemoveTagFromNoteAction } from './app/actions/remove-tag-from-note-acti
 import { RemoveTagFromNoteTransactionScript } from './domain/transaction-scripts/remove-tag-from-note/remove-tag-from-note.transaction.script';
 import { TagNoteRepository } from './infra/repositories/tag-note.repository';
 import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-tag-associations.listener';
+import { TagAttacherAdapter } from './app/adapters/tag-attacher.adapter';
+import { TAG_ATTACH_PORT } from '../note-transfer/domain/ports/tag-attacher.port';
 
 /**
  * Tags module: encapsulates all tag-related logic, actions, and persistence.
@@ -40,6 +42,11 @@ import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-
     TagService,
     TagAggregator,
     DeleteNoteTagAssociationsListener,
+    TagAttacherAdapter,
+    {
+      provide: TAG_ATTACH_PORT,
+      useExisting: TagAttacherAdapter,
+    },
   ],
   controllers: [
     AddTagToNoteAction,
@@ -60,6 +67,7 @@ import { DeleteNoteTagAssociationsListener } from './apps/listeners/delete-note-
     TagService,
     TagAggregator,
     DeleteNoteTagAssociationsListener,
+    TAG_ATTACH_PORT,
   ],
 })
 export class TagsModule {}

@@ -25,6 +25,7 @@ import {
 } from '../../../../../api/requests/notes.requests';
 import styles from './NoteItem.module.css';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
+import { useExportNote } from '../../../hooks/useExportNote';
 
 type Note = { name: string; id: number; isMemo: number };
 
@@ -55,6 +56,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     error: createTimeTrackError,
   } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
+  const { exportNote, isExporting } = useExportNote();
   const {
     timeTracks,
     isLoadingTimeTracks,
@@ -222,6 +224,19 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     fetchAudioHistory();
   };
 
+  const handleExport = async () => {
+    setIsActionsOpen(false);
+    try {
+      await exportNote(note.id, note.name);
+      setToastSeverity('success');
+      setToastMessage('Note exported successfully');
+    } catch (err) {
+      console.error('Failed to export note:', err);
+      setToastSeverity('error');
+      setToastMessage('Failed to export note');
+    }
+  };
+
   const confirmConvertToMemo = async () => {
     setIsConvertingToMemo(true);
     setConvertError(null);
@@ -308,7 +323,6 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         isOpen={isActionsOpen}
         onClose={() => setIsActionsOpen(false)}
         onShare={handleShare}
-        onDuplicate={handleDuplicate}
         onDelete={handleDelete}
         onArchive={handleArchive}
         onTimeTracking={handleTimeTracking}
@@ -321,7 +335,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onViewBoard={handleViewBoard}
         onEdit={handleTimeTracking}
         onLabel={handleTimeTracking}
-        onExport={handleTimeTracking}
+        onExport={handleExport}
         onLock={handleTimeTracking}
         onConvertToMemo={handleConvertToMemo}
         isMemo={Boolean(note.isMemo)}

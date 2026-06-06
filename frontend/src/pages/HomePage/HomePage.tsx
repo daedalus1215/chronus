@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { Fab, CircularProgress, Box } from '@mui/material';
+import { Fab, CircularProgress, Box, Snackbar, Alert } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useAuth } from '../../auth/useAuth';
 import { DesktopNoteListView } from './components/NoteListView/DesktopNoteListView/DesktopNoteListView';
 import { useCreateNote } from './hooks/useCreateNote';
+import { useImportNote, ImportNoteData } from './hooks/useImportNote';
 import { CreateNoteMenu } from './components/CreateNoteMenu/CreateNoteMenu';
 import { NOTE_TYPES, NoteTypes } from '../../constant';
 import { useLocation, useParams, useNavigate, Outlet } from 'react-router-dom';
@@ -18,7 +19,9 @@ export const HomePage: React.FC = () => {
   const isMobile = useIsMobile();
   const { isNoteListOpen } = useSidebar();
   const { createNote, isCreating } = useCreateNote();
+  const { importNote } = useImportNote();
   const [showMenu, setShowMenu] = React.useState(false);
+  const [importError, setImportError] = React.useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { id: routeNoteId } = useParams<{ id: string }>();
@@ -55,6 +58,44 @@ export const HomePage: React.FC = () => {
       setShowMenu(false);
     } catch {
       // Error is already handled in the hook
+    }
+  };
+
+  const handleImportNote = async (file: File) => {
+    setImportError(null);
+    try {
+      const text = await file.text();
+      // Export files are nested: { version, exportedAt, memo: { ... } }.
+      // The import payload is flat, so lift `memo` up alongside `version`.
+      const parsed = JSON.parse(text) as {
+        version: number;
+        memo: Omit<ImportNoteData, 'version'>;
+      };
+
+      // Validate version
+      if (parsed.version !== 1) {
+        setImportError(`Unsupported file version: ${parsed.version}`);
+        return;
+      }
+
+      if (!parsed.memo?.name) {
+        setImportError('Invalid .chronus file: missing memo name.');
+        return;
+      }
+
+      const result = await importNote({
+        version: parsed.version,
+        ...parsed.memo,
+      });
+      setShowMenu(false);
+      
+      // Navigate to the new note
+      if (result.noteId) {
+        navigate(`/notes/${result.noteId}`);
+      }
+    } catch (err) {
+      console.error('Failed to import note:', err);
+      setImportError('Failed to import note. Please check the file format.');
     }
   };
 
@@ -186,9 +227,24 @@ export const HomePage: React.FC = () => {
       {showMenu && (
         <CreateNoteMenu
           onSelect={handleCreateNote}
+          onImport={handleImportNote}
           onClose={() => setShowMenu(false)}
         />
       )}
+      <Snackbar
+        open={!!importError}
+        autoHideDuration={6000}
+        onClose={() => setImportError(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity="error"
+          onClose={() => setImportError(null)}
+          sx={{ width: '100%' }}
+        >
+          {importError}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
