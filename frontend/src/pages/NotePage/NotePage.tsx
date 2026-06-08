@@ -26,7 +26,7 @@ import { SidebarTagsView } from './components/SidebarTagsView/SidebarTagsView';
 import { MobileTagsView } from './components/MobileTagsView/MobileTagsView';
 import styles from './NotePage.module.css';
 import { ChecklistOutlined } from '@mui/icons-material';
-import { AudioHistoryView } from './components/AudioHistoryView/AudioHistoryView';
+import { SidebarAudioHistoryView } from './components/SidebarAudioHistoryView/SidebarAudioHistoryView';
 import { TimeTrackHistoryView } from './components/TimeTrackHistoryView/TimeTrackHistoryView';
 
 const SIDEBAR_TAB_STORAGE_KEY = 'chronus-sidebar-tab';
@@ -268,7 +268,7 @@ export const NotePage: React.FC = () => {
               <SidebarTagsView noteId={noteId} />
             )}
             {activeTab === 'audio' && noteId && (
-              <AudioHistoryView noteId={noteId} />
+              <SidebarAudioHistoryView noteId={noteId} />
             )}
             {activeTab === 'time' && noteId && (
               <TimeTrackHistoryView noteId={noteId} />
