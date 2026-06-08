@@ -6,7 +6,7 @@ import { RightSheet } from '@components/RightSheet/RightSheet';
 import { Note } from '../../api/responses';
 import { SidebarChecklistView } from '../SidebarChecklistView/SidebarChecklistView';
 import { SidebarTagsView } from '../SidebarTagsView/SidebarTagsView';
-import { AudioHistoryView } from '../AudioHistoryView/AudioHistoryView';
+import { SidebarAudioHistoryView } from '../SidebarAudioHistoryView/SidebarAudioHistoryView';
 import { TimeTrackHistoryView } from '../TimeTrackHistoryView/TimeTrackHistoryView';
 
 type Tab = {
@@ -78,7 +78,7 @@ export const MobileTagsView: React.FC<MobileTagsViewProps> = ({
       <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
         {activeTab === 'checklist' && <SidebarChecklistView note={note} />}
         {activeTab === 'tags' && <SidebarTagsView noteId={noteId} />}
-        {activeTab === 'audio' && <AudioHistoryView noteId={noteId} />}
+        {activeTab === 'audio' && <SidebarAudioHistoryView noteId={noteId} />}
         {activeTab === 'time' && <TimeTrackHistoryView noteId={noteId} />}
       </Box>
     </Box>

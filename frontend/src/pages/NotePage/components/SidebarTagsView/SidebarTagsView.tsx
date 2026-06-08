@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Alert from '@mui/material/Alert';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import { useNoteTags } from '../../hooks/useNoteTags';
 import { useAllTags } from '../../hooks/useAllTags';
 import { AddTagForm } from '../AddTagForm/AddTagForm';
@@ -59,6 +59,36 @@ export const SidebarTagsView: React.FC<SidebarTagsViewProps> = ({ noteId }) => {
         </Alert>
       )}
 
+      <div className={styles.formContainer}>
+        {showAddForm ? (
+          <AddTagForm
+            noteId={noteId}
+            tags={availableTags}
+            onTagAdded={handleAddTag}
+            onClose={() => setShowAddForm(false)}
+          />
+        ) : (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 1.5,
+              py: 1,
+              borderBottom: '1px solid var(--color-overlay-stronger)',
+            }}
+          >
+            <IconButton
+              size="small"
+              aria-label="Add tag"
+              onClick={() => setShowAddForm(true)}
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        )}
+      </div>
+
       <List
         className={styles.tagList}
         sx={{
@@ -100,33 +130,6 @@ export const SidebarTagsView: React.FC<SidebarTagsViewProps> = ({ noteId }) => {
           </ListItem>
         ))}
       </List>
-
-      <div className={styles.formContainer}>
-        {showAddForm ? (
-          <AddTagForm
-            noteId={noteId}
-            tags={availableTags}
-            onTagAdded={handleAddTag}
-            onClose={() => setShowAddForm(false)}
-          />
-        ) : (
-          <Box
-            sx={{
-              px: 2,
-              py: 1,
-              borderTop: '1px solid var(--color-overlay-stronger)',
-            }}
-          >
-            <Chip
-              label="+ Add Tag"
-              onClick={() => setShowAddForm(true)}
-              sx={{
-                cursor: 'pointer',
-              }}
-            />
-          </Box>
-        )}
-      </div>
     </Box>
   );
 };
