@@ -367,7 +367,9 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         }}
       >
         <div className={styles.noteInfo}>
-          <span className={styles.noteName}>{note.name}</span>
+          <span className={styles.noteName} title={note.name}>
+            {note.name}
+          </span>
           <span className={styles.noteType}>
             {note.isMemo ? 'Memo' : 'List'}
           </span>
