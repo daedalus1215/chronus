@@ -42,12 +42,21 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  /* Allow this flex child to shrink below its content width so long titles
+     don't squeeze the more button. */
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .noteName {
   color: var(--color-text);
   font-size: 1rem;
   font-weight: 500;
+  /* Truncate long titles instead of letting them push the layout. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .noteType {
@@ -69,6 +78,8 @@
   border-radius: 50%;
   width: 60px;
   height: 60px;
+  /* Never let the title shrink the action button. */
+  flex-shrink: 0;
   transition: background-color 0.2s ease;
 }
 
