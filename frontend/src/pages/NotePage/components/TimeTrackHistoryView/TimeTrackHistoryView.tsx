@@ -233,11 +233,6 @@ export const TimeTrackHistoryView: React.FC<TimeTrackHistoryViewProps> = ({
           flexShrink: 0,
         }}
       >
-        <Chip
-          label="+ Add Time"
-          onClick={handleAddClick}
-          sx={{ cursor: 'pointer' }}
-        />
       </Box>
       <TimeTrackingForm
         isOpen={isAddFormOpen}
