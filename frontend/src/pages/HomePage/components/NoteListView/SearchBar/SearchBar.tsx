@@ -33,7 +33,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon color="action" style={{ marginTop: '10px' }} />
+              <SearchIcon color="action" />
             </InputAdornment>
           ),
           endAdornment: value ? (
@@ -42,7 +42,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 aria-label="clear search"
                 onClick={onClear}
                 edge="end"
-                style={{ marginTop: '10px' }}
                 size="small"
               >
                 <ClearIcon />
@@ -54,7 +53,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           '& .MuiOutlinedInput-root': {
             height: '40px',
             marginBottom: '10px',
-            paddingBottom: '10px',
             backgroundColor: 'background.paper',
           },
         }}
