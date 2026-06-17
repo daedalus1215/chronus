@@ -15,6 +15,8 @@ import { TimeTrackService } from './domain/services/time-track-service/time-trac
 import { TimeTrackWithNoteNamesResponder } from './apps/actions/get-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
 import { DeleteTimeTrackAction } from './apps/actions/delete-time-track-action/delete-time-track.action';
 import { DeleteTimeTrackTransactionScript } from './domain/transaction-scripts/delete-time-track.transaction.script';
+import { UpdateTimeTrackNoteAction } from './apps/actions/update-time-track-note-action/update-time-track-note.action';
+import { UpdateTimeTrackNoteTransactionScript } from './domain/transaction-scripts/update-time-track-note.transaction.script';
 import { GetDailyTimeTracksAction } from './apps/actions/get-daily-time-tracks-aggregation-action/get-daily-time-tracks-aggregation.action';
 import { GetWeeklyMostActiveNoteAction } from './apps/actions/get-weekly-most-active-note-action/get-weekly-most-active-note.action';
 import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script';
@@ -36,6 +38,7 @@ import { TIME_TRACK_WRITER_PORT } from '../note-transfer/domain/ports/time-track
     GetTimeTracksTotalByNoteIdTransactionScript,
     GetDailyTimeTracksAggregationTransactionScript,
     DeleteTimeTrackTransactionScript,
+    UpdateTimeTrackNoteTransactionScript,
     TimeTrackService,
     TimeTrackWithNoteNamesResponder,
     GetWeeklyMostActiveNoteTransactionScript,
@@ -55,6 +58,7 @@ import { TIME_TRACK_WRITER_PORT } from '../note-transfer/domain/ports/time-track
     GetTimeTracksTotalByNoteIdAction,
     GetDailyTimeTracksAction,
     DeleteTimeTrackAction,
+    UpdateTimeTrackNoteAction,
     GetWeeklyMostActiveNoteAction,
     GetWeeklyTrendAction,
     GetNotesByYearAction,
