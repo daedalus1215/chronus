@@ -32,3 +32,34 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.worklogEntry {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--color-overlay-stronger);
+}
+
+.worklogMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.worklogDate {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #e5e7eb);
+}
+
+.worklogDuration {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+.worklogNote {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text-secondary, #cbd5e1);
+}

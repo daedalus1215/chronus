@@ -64,6 +64,18 @@ export class TimeTrackRepository {
     return result.affected > 0;
   }
 
+  async updateNoteByIdAndUserId(
+    id: number,
+    userId: number,
+    note: string | null
+  ): Promise<TimeTrack | null> {
+    const result = await this.repository.update({ id, userId }, { note });
+    if (!result.affected) {
+      return null;
+    }
+    return this.findById(id);
+  }
+
   async getDailyTimeTracksAggregation(
     userId: number,
     date: string
