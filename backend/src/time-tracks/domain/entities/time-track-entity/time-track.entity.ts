@@ -31,4 +31,7 @@ export class TimeTrack {
 
   @Column({ name: 'duration_minutes' })
   durationMinutes: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  note?: string;
 }
