@@ -31,6 +31,14 @@ export const deleteTimeTrack = async (id: number): Promise<void> => {
   await api.delete(`/time-tracks/${id}`);
 };
 
+export const updateTimeTrackNote = async (
+  id: number,
+  note: string
+): Promise<NoteTimeTracksResponse> => {
+  const { data } = await api.patch(`/time-tracks/${id}`, { note });
+  return data;
+};
+
 export const createTimeTrack = async (
   data: CreateTimeTrackRequest
 ): Promise<CreateTimeTrackResponse> => {
