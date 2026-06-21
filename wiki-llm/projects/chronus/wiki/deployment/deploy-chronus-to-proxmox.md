@@ -64,6 +64,17 @@ Pass = "frontend dist/index.html produced" and "backend boot probe: HTTP <code>"
 (any HTTP code means the server booted). If this fails, the VM deploy will fail
 too — fix it here first.
 
+**Status: validated.** A full run passes end-to-end — backend installs (905 pkgs),
+builds, runs all 39 migrations against the symlinked db, frontend produces `dist`,
+and the backend boots ("Nest application successfully started", routes mapped under
+`/api/...`). This confirms all four gotchas above are handled.
+
+> **Local DNS note:** on some hosts the default Docker container DNS
+> (`172.17.0.1` forwarder) can't resolve the npm registry — `npm ci` then dies
+> with the misleading `Exit handler never called!` (the real error, `EAI_AGAIN`,
+> is only in the npm debug log). The script passes `--dns 1.1.1.1 --dns 8.8.8.8`
+> to avoid this. It's a local-test quirk only; real VMs use normal LAN DNS.
+
 ---
 
 ## Step 1 — Proxmox prerequisites
@@ -179,6 +190,7 @@ ansible-playbook playbooks/deploy.yml --check --diff      # dry run
 | `/api/...` returns 404 for real routes | prefix stripped by proxy | ensure `nginx_strip_prefix = false` |
 | `plan` errors on a provider field | bpg/proxmox vs your PVE version | adjust the field; first apply is the integration test |
 | sqlite3 build error | template missing compiler | cloud-init installs `build-essential` + `python3`; check apt logs |
+| Smoke test: `npm ci` → "Exit handler never called!" | container can't resolve npm registry (`EAI_AGAIN`) | run with `--dns 1.1.1.1` (already in the script); local-only, not a VM issue |
 
 ---
 
