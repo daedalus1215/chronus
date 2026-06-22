@@ -22,6 +22,7 @@ export class DeleteAudioAction {
     @GetAuthUser('userId') userId: number,
     @Param('audioId', ParseIntPipe) audioId: number
   ) {
+    console.log('temp log')
     await this.audioService.deleteAudio(audioId, userId);
     return { success: true };
   }
