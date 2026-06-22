@@ -126,7 +126,8 @@
       "node-gyp": "^10.3.2"
     },
     "make-fetch-happen": "^14.0.1",
-    "cacache": "^18.0.5"
+    "cacache": "^18.0.5",
+    "multer": "^2.2.0"
   },
   "lint-staged": {
     "*.ts": [
