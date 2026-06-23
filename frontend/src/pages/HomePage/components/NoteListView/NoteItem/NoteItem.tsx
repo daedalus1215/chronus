@@ -51,6 +51,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const mergeFileInputRef = React.useRef<HTMLInputElement>(null);
+  const moreButtonRef = React.useRef<HTMLButtonElement>(null);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [mergeMemo, setMergeMemo] = useState<{
     version: number;
@@ -375,6 +376,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
           </span>
         </div>
         <button
+          ref={moreButtonRef}
           className={styles.moreButton}
           onClick={handleMoreClick}
           aria-label="More options"
@@ -386,6 +388,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
       <NoteActionsGrid
         isOpen={isActionsOpen}
         onClose={() => setIsActionsOpen(false)}
+        anchorEl={moreButtonRef.current}
         onShare={handleShare}
         onDelete={handleDelete}
         onArchive={handleArchive}

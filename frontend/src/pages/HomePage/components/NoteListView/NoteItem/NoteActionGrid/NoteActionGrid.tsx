@@ -1,5 +1,8 @@
 import React from 'react';
+import Popover from '@mui/material/Popover';
+import Box from '@mui/material/Box';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import {
   TimerOutlined,
   RecordVoiceOverOutlined,
@@ -22,6 +25,8 @@ import { ActionButton } from '@/components/ActionButton/ActionButton';
 type NoteActionsProps = {
   isOpen: boolean;
   onClose: () => void;
+  /** The ⋮ button the desktop popover anchors to. Ignored on mobile (bottom sheet). */
+  anchorEl?: HTMLElement | null;
   onTimeTracking: () => void;
   onViewTimeEntries: () => void;
   onDelete: () => void;
@@ -49,6 +54,7 @@ type NoteActionsProps = {
 export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   isOpen,
   onClose,
+  anchorEl,
   onTimeTracking,
   onViewTimeEntries,
   onDelete,
@@ -70,9 +76,10 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   audioError = null,
   audioCount = 0,
 }) => {
-  return (
-    <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <div className={styles.actionGrid}>
+  const isMobile = useIsMobile();
+
+  const content = (
+    <div className={styles.actionGrid}>
         <ActionButton label="Time Entry" onClick={onTimeTracking}>
           <TimerOutlined className={styles.icon} />
         </ActionButton>
@@ -152,6 +159,30 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
           <DeleteOutlineOutlined className={styles.icon} />
         </ActionButton>
       </div>
-    </BottomSheet>
+  );
+
+  if (isMobile) {
+    return (
+      <BottomSheet isOpen={isOpen} onClose={onClose}>
+        {content}
+      </BottomSheet>
+    );
+  }
+
+  return (
+    <Popover
+      open={isOpen}
+      anchorEl={anchorEl}
+      onClose={onClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      slotProps={{
+        paper: {
+          sx: { borderRadius: 2, width: 420, maxWidth: '90vw' },
+        },
+      }}
+    >
+      <Box sx={{ p: 1 }}>{content}</Box>
+    </Popover>
   );
 };
