@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
@@ -11,6 +11,8 @@ import { NoteRow } from './NoteRow';
 import { DragGhostRow } from './DragGhostRow';
 import { useFolderOperations } from './useFolderOperations';
 import { useDragOperations } from './useDragOperations';
+import { useExplorerFilter, useMergedExpanded } from './useExplorerFilter';
+import { ExplorerFilterBar } from './ExplorerFilterBar';
 import styles from './ExplorerTree.module.css';
 
 export type DragMode = 'off' | 'on';
@@ -71,6 +73,23 @@ export const ExplorerTree: React.FC = () => {
     handleDeleteFolder,
     handleReparentConfirm,
   } = useFolderOperations(selectedFolderIds);
+
+  // Filter hook
+  const filter = useExplorerFilter(tree, notes);
+  const mergedExpanded = useMergedExpanded(expanded, filter.folderMatches, filter.active);
+
+  // Pause/resume rename when filter activates/deactivates
+  const pausedRenameRef = useRef<{ id: number; value: string } | null>(null);
+  useEffect(() => {
+    if (filter.active && renaming !== null) {
+      pausedRenameRef.current = { id: renaming, value: renameValue };
+      cancelRename();
+    } else if (!filter.active && pausedRenameRef.current) {
+      const { id, value } = pausedRenameRef.current;
+      startRename(id, value);
+      pausedRenameRef.current = null;
+    }
+  }, [filter.active, renaming, renameValue, cancelRename, startRename]);
 
   // Drag operations
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
@@ -243,7 +262,17 @@ export const ExplorerTree: React.FC = () => {
         onCycleDragMode={cycleDragMode}
         onNewFolder={() => setNewFolderParentId(null)}
         onNewMemo={handleCreateMemo}
+        onToggleFilter={filter.toggle}
       />
+
+      {/* Filter bar */}
+      {filter.active && (
+        <ExplorerFilterBar
+          query={filter.query}
+          setQuery={filter.setQuery}
+          onClear={filter.clear}
+        />
+      )}
 
       <DndContext
         sensors={sensors}
@@ -260,7 +289,7 @@ export const ExplorerTree: React.FC = () => {
                 node={node}
                 depth={0}
                 notes={notes}
-                expanded={expanded}
+                expanded={mergedExpanded}
                 activeNoteId={activeNoteId}
                 renaming={renaming}
                 renameValue={renameValue}
@@ -282,6 +311,9 @@ export const ExplorerTree: React.FC = () => {
                 dropIntent={dropIntent}
                 toggleFolderInSelection={toggleFolderInSelection}
                 toggleNoteInSelection={toggleNoteInSelection}
+                folderMatches={filter.folderMatches}
+                noteMatches={filter.noteMatches}
+                filterActive={filter.active}
               />
             ))}
 
@@ -298,6 +330,8 @@ export const ExplorerTree: React.FC = () => {
                 onRowClick={handleNoteRowClick}
                 onMenuOpen={(anchor, id) => setNoteMenu({ anchor, id })}
                 onTogglePick={() => toggleNoteInSelection(note.id)}
+                isMatch={filter.noteMatches.has(note.id)}
+                filterActive={filter.active}
               />
             ))}
           </SortableContext>

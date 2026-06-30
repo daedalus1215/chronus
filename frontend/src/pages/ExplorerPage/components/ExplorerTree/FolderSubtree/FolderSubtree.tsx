@@ -6,6 +6,7 @@ import { DragMode } from '../ExplorerTree';
 import { DropIntent } from '../useDragOperations';
 import { FolderRow } from './FolderRow';
 import { NoteRow } from '../NoteRow';
+import styles from '../ExplorerTree.module.css';
 
 type FolderSubtreeProps = {
   node: FolderTreeNode;
@@ -33,6 +34,10 @@ type FolderSubtreeProps = {
   dropIntent: DropIntent;
   toggleFolderInSelection: (id: number) => void;
   toggleNoteInSelection: (id: number) => void;
+  // Filter state
+  folderMatches: Set<number>;
+  noteMatches: Set<number>;
+  filterActive: boolean;
 };
 
 export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(({
@@ -61,6 +66,10 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(({
   dropIntent,
   toggleFolderInSelection,
   toggleNoteInSelection,
+  // Filter
+  folderMatches,
+  noteMatches,
+  filterActive,
 }) => {
   const isOpen = expanded.has(node.id);
   const folderNotes = notes
@@ -71,6 +80,10 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(({
     ...node.children.map(c => `folder-${c.id}`),
     ...folderNotes.map(n => `note-${n.id}`),
   ];
+
+  // A folder is dimmed only if filter is active AND the folder itself is NOT a match
+  // (not directly matching and not containing a matching descendant)
+  const folderDimmed = filterActive && !folderMatches.has(node.id);
 
   const children = (
     <>
@@ -102,6 +115,9 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(({
           dropIntent={dropIntent}
           toggleFolderInSelection={toggleFolderInSelection}
           toggleNoteInSelection={toggleNoteInSelection}
+          folderMatches={folderMatches}
+          noteMatches={noteMatches}
+          filterActive={filterActive}
         />
       ))}
       {folderNotes.map(note => (
@@ -117,6 +133,8 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(({
           onRowClick={onNoteRowClick}
           onMenuOpen={onNoteMenu}
           onTogglePick={() => toggleNoteInSelection(note.id)}
+          isMatch={noteMatches.has(note.id)}
+          filterActive={filterActive}
         />
       ))}
     </>
@@ -143,6 +161,7 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(({
         onChevronClick={onChevronClick}
         onNewSubfolder={onNewSubfolder}
         onTogglePick={toggleFolderInSelection}
+        dimmed={folderDimmed}
       />
 
       <Collapse in={isOpen} timeout={150} unmountOnExit>

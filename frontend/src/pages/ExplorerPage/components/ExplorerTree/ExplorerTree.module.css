@@ -53,6 +53,13 @@
   background: var(--color-overlay-medium) !important;
 }
 
+.headerSep {
+  width: 1px;
+  height: 16px;
+  background-color: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
 /* ── Scrollable body ───────────────────────────────────────────── */
 .body {
   flex: 1;
@@ -199,4 +206,46 @@
 .rowDropTarget {
   outline: 1px solid rgba(255, 255, 255, 0.35) !important;
   background-color: var(--color-overlay-medium) !important;
+}
+
+/* ── Filter bar ────────────────────────────────────────────────── */
+.filterBar {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  flex-shrink: 0;
+  min-height: 38px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.filterInput {
+  width: 100%;
+}
+
+.filterInput .MuiInputBase-root {
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.filterInput .MuiInputBase-input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.filterInput .MuiInputBase-input:focus {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+
+.filterClear {
+  padding: 2px !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.filterClear:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ── Dimmed row (filter non-match) ─────────────────────────────── */
+.rowDimmed {
+  opacity: 0.35 !important;
 }
