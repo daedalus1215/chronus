@@ -6,6 +6,7 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import AddNoteIcon from '@mui/icons-material/NoteAdd';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import SearchIcon from '@mui/icons-material/Search';
 import styles from './ExplorerTree.module.css';
 import { DragMode } from './ExplorerTree';
 
@@ -19,6 +20,7 @@ type ExplorerTreeHeaderProps = {
   onCycleDragMode: () => void;
   onNewFolder: () => void;
   onNewMemo: () => void;
+  onToggleFilter: () => void;
 };
 
 export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
@@ -31,6 +33,7 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
   onCycleDragMode,
   onNewFolder,
   onNewMemo,
+  onToggleFilter,
 }) => {
   const dragTitle = dragMode === 'off' ? 'Enter drag mode' : 'Exit drag mode';
 
@@ -40,6 +43,15 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
         className={styles.headerActions}
         sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}
       >
+        <IconButton
+          size="small"
+          className={styles.headerBtn}
+          title="Filter (Ctrl+.)"
+          onClick={onToggleFilter}
+        >
+          <SearchIcon sx={{ fontSize: 14 }} />
+        </IconButton>
+        <span className={styles.headerSep} />
         {selectionCount > 0 && (
           <>
             <Typography
