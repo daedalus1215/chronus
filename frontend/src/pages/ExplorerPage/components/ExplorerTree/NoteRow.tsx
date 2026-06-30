@@ -21,6 +21,8 @@ type NoteRowProps = {
   onRowClick: (e: React.MouseEvent, noteId: number, openNote: () => void) => void;
   onMenuOpen: (anchor: HTMLElement, id: number) => void;
   onTogglePick: () => void;
+  isMatch?: boolean;
+  filterActive?: boolean;
 };
 
 export const NoteRow: React.FC<NoteRowProps> = React.memo(({
@@ -34,6 +36,8 @@ export const NoteRow: React.FC<NoteRowProps> = React.memo(({
   onRowClick,
   onMenuOpen,
   onTogglePick,
+  isMatch = false,
+  filterActive = false,
 }) => {
   const indent = 10 + depth * 16 + 14;
 
@@ -46,11 +50,14 @@ export const NoteRow: React.FC<NoteRowProps> = React.memo(({
     ? { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }
     : undefined;
 
+  // A note is dimmed only if filter is active AND the note itself does NOT match
+  const dimmed = filterActive && !isMatch;
+
   return (
     <Box
       ref={setNodeRef}
       style={style}
-      className={`${styles.row} ${active || selected ? styles.rowActive : ''}`}
+      className={`${styles.row} ${active || selected ? styles.rowActive : ''} ${dimmed ? styles.rowDimmed : ''}`}
       sx={{ pl: `${indent}px` }}
       onClick={e => onRowClick(e, note.id, () => onOpen(note.id))}
     >
@@ -91,4 +98,3 @@ export const NoteRow: React.FC<NoteRowProps> = React.memo(({
     </Box>
   );
 });
-

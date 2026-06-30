@@ -25,6 +25,7 @@ type FolderRowProps = {
   pickItemsMode: boolean;
   dragMode: DragMode;
   dropIntent: DropIntent;
+  dimmed?: boolean;
   onRenameChange: (v: string) => void;
   onRenameCommit: () => void;
   onRenameCancel: () => void;
@@ -46,6 +47,7 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(({
   pickItemsMode,
   dragMode,
   dropIntent,
+  dimmed = false,
   onRenameChange,
   onRenameCommit,
   onRenameCancel,
@@ -72,7 +74,7 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(({
     <Box
       ref={setNodeRef}
       style={style}
-      className={`${styles.row} ${selected ? styles.rowActive : ''} ${isDropTarget ? styles.rowDropTarget : ''}`}
+      className={`${styles.row} ${selected ? styles.rowActive : ''} ${isDropTarget ? styles.rowDropTarget : ''} ${dimmed ? styles.rowDimmed : ''}`}
       sx={{ pl: `${indent}px` }}
       onClick={e => onFolderRowClick(e, node.id)}
     >
