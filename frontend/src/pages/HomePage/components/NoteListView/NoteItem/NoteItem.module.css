@@ -84,7 +84,7 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--text-color-secondary);
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
@@ -92,21 +92,25 @@
   height: 60px;
   /* Never let the title shrink the action button. */
   flex-shrink: 0;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .moreButton:hover {
-  background-color: var(--hover-color);
+  background-color: var(--accent-soft);
+  color: #fff;
+  box-shadow: var(--glow-accent-soft);
   width: 60px;
   height: 60px;
 }
 
-.moreButton:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
+.moreButton:focus-visible {
+  outline: none;
+  color: #fff;
   width: 60px;
-  height: 60px; 
-  background-color: var(--color-primary-light);
+  height: 60px;
+  background-color: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 /* Compact variant: smaller padding and font so more items fit (e.g. desktop list). */
