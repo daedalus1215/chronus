@@ -31,7 +31,7 @@
 
 .resultItem {
   border: 1px solid;
-  border-color: var(--mui-palette-divider, rgba(255, 255, 255, 0.12));
+  border-color: var(--color-border, rgba(255, 255, 255, 0.12));
   border-radius: 8px !important;
 }
 
