@@ -247,7 +247,12 @@ export const HomePage: React.FC = () => {
           {isCreating ? (
             <CircularProgress size={24} color="inherit" />
           ) : (
-            <AddIcon />
+            <AddIcon
+              sx={{
+                transition: 'transform 0.28s var(--ease-spring, ease)',
+                transform: showMenu ? 'rotate(135deg)' : 'none',
+              }}
+            />
           )}
         </Fab>
       )}
