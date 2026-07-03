@@ -2,55 +2,81 @@
   position: fixed;
   bottom: calc(2rem + 64px); /* Position above FAB */
   right: 2rem;
-  background-color: var(--color-bg-elevated-4);
-  border-radius: 8px;
+  background-color: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 14px;
   padding: 8px 0;
-  box-shadow:
-    0 2px 6px var(--color-shadow-xl),
-    0 8px 24px var(--color-overlay-dark-max);
+  box-shadow: var(--elevation-4);
   display: flex;
   flex-direction: column;
   min-width: 280px;
   transform-origin: bottom right;
   animation: slideIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid var(--color-overlay-stronger);
+  border: 1px solid var(--glass-border);
 }
 
 .menuButton {
   display: flex;
   align-items: center;
   padding: 12px 24px;
+  margin: 2px 6px;
+  border-radius: 8px;
   background: none;
   border: none;
   color: var(--color-text-quaternary);
   font-size: 0.9375rem;
   cursor: pointer;
-  transition: all 0.2s;
-  width: 100%;
+  transition: background-color 0.18s ease, transform 0.18s var(--ease-out),
+    color 0.18s ease;
+  width: auto;
   text-align: left;
   font-weight: 500;
   position: relative;
   overflow: hidden;
+  /* Cascade each item in; per-item delay set below. `backwards` fills the
+     hidden start-state during the delay but releases transform when done, so
+     the :hover translateX still applies afterward. */
+  animation: itemIn 0.28s var(--ease-out) backwards;
 }
 
-.menuButton::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: currentColor;
-  opacity: 0;
-  transition: opacity 0.2s;
+.menuButton:hover {
+  background-color: var(--accent-soft);
+  color: #fff;
+  transform: translateX(3px);
 }
 
-.menuButton:hover::after {
-  opacity: 0.08;
+.menuButton:hover .icon {
+  opacity: 1;
+  color: var(--accent);
 }
 
-.menuButton:active::after {
-  opacity: 0.12;
+.menuButton:active {
+  background-color: var(--accent-soft-2);
+}
+
+/* Staggered entrance — items fade up one after another. Buttons are
+   interleaved with <div> dividers, so count by type, not child index. */
+.menuButton:nth-of-type(1) {
+  animation-delay: 0.03s;
+}
+.menuButton:nth-of-type(2) {
+  animation-delay: 0.08s;
+}
+.menuButton:nth-of-type(3) {
+  animation-delay: 0.13s;
+}
+.menuButton:nth-of-type(4) {
+  animation-delay: 0.18s;
+}
+.menuButton:nth-of-type(5) {
+  animation-delay: 0.23s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menuButton {
+    animation: none;
+  }
 }
 
 .icon {
@@ -62,6 +88,7 @@
   margin-right: 16px;
   font-size: 1.25rem;
   opacity: 0.9;
+  transition: color 0.18s ease, opacity 0.18s ease;
 }
 
 .menuDivider {
@@ -78,5 +105,16 @@
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes itemIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
