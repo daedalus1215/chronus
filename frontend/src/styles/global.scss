@@ -22,8 +22,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.645 0.246 16.439);
-  --primary-foreground: oklch(0.969 0.015 12.422);
+  --primary: oklch(0.585 0.222 277.1);
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
@@ -33,7 +33,7 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.645 0.246 16.439);
+  --ring: oklch(0.585 0.222 277.1);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -41,12 +41,12 @@
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.21 0.006 285.885);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.645 0.246 16.439);
-  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
+  --sidebar-primary: oklch(0.585 0.222 277.1);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.274 0.006 286.033);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.645 0.246 16.439);
+  --sidebar-ring: oklch(0.585 0.222 277.1);
 
   /* Hex-based color variables for compatibility with existing CSS modules */
   --color-primary: #6366f1;
@@ -54,13 +54,13 @@
   --color-primary-light: rgba(99, 102, 241, 0.1);
   --color-primary-light-2: rgba(99, 102, 241, 0.2);
   --color-secondary: #ffd700;
-  --color-bg: #000;
-  --color-bg-paper: #111;
-  --color-bg-elevated: #1a1a1a;
-  --color-bg-elevated-2: #1e1e1e;
-  --color-bg-elevated-3: #222;
-  --color-bg-elevated-4: #2d2d2d;
-  --color-bg-elevated-5: #121212;
+  --color-bg: #08080c;
+  --color-bg-paper: #101017;
+  --color-bg-elevated: #17171f;
+  --color-bg-elevated-2: #1b1b24;
+  --color-bg-elevated-3: #202029;
+  --color-bg-elevated-4: #2b2b36;
+  --color-bg-elevated-5: #131319;
   --color-text: #fff;
   --color-text-secondary: #9ca3af;
   --color-text-tertiary: #e5e7eb;
@@ -90,6 +90,39 @@
   --color-shadow-lg: rgba(0, 0, 0, 0.2);
   --color-shadow-xl: rgba(0, 0, 0, 0.3);
   --border-radius: 8px;
+
+  /* ── Premium layer: signature accent, glass, glow, elevation ── */
+  --accent: #6366f1;
+  --accent-2: #8b5cf6;
+  --accent-3: #a855f7;
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 55%, #a855f7 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #6d70f5 0%, #966ef8 55%, #b366fa 100%);
+  --accent-soft: rgba(99, 102, 241, 0.12);
+  --accent-soft-2: rgba(139, 92, 246, 0.16);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(20, 20, 30, 0.6);
+  --glass-bg-strong: rgba(16, 16, 24, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: saturate(160%) blur(14px);
+
+  /* Colored glow for active / primary surfaces */
+  --glow-accent: 0 0 0 1px rgba(99, 102, 241, 0.35),
+    0 8px 24px -6px rgba(99, 102, 241, 0.45);
+  --glow-accent-soft: 0 4px 20px -8px rgba(99, 102, 241, 0.55);
+
+  /* Layered soft elevation (premium depth) */
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --elevation-2: 0 2px 8px -2px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+  --elevation-3: 0 8px 24px -8px rgba(0, 0, 0, 0.6),
+    0 2px 6px -2px rgba(0, 0, 0, 0.45);
+  --elevation-4: 0 16px 48px -12px rgba(0, 0, 0, 0.7),
+    0 4px 12px -4px rgba(0, 0, 0, 0.5);
+
+  /* Motion */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .dark {
@@ -136,13 +169,44 @@
 body {
   margin: 0;
   height: calc(100vh - 64px);
-  background-color: var(--background);
+  background-color: var(--color-bg);
+  /* Ambient depth: subtle accent glows radiating from the corners */
+  background-image:
+    radial-gradient(1200px 600px at 12% -10%, rgba(99, 102, 241, 0.12), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, rgba(168, 85, 247, 0.1), transparent 55%);
+  background-attachment: fixed;
   color: var(--foreground);
   overflow: hidden;
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* Refined, unobtrusive scrollbars app-wide */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.28);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 a {
