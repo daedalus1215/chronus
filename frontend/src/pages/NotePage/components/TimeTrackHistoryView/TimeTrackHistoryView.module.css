@@ -47,7 +47,7 @@
 .worklogDate {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--color-text-primary, #e5e7eb);
+  color: var(--color-text, #e5e7eb);
 }
 
 .worklogDuration {

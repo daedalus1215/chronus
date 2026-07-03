@@ -20,8 +20,8 @@
 }
 
 .tagListItem.selected {
-  background-color: var(--primary-color-light);
-  border: 1px solid var(--primary-color);
+  background-color: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
 }
 
 .tagInfo {
@@ -32,19 +32,19 @@
 
 .tagName {
   font-size: 1rem;
-  color: var(--text-color-primary);
+  color: var(--color-text);
 }
 
 .tagCount {
   font-size: 0.875rem;
-  color: var(--text-color-secondary);
+  color: var(--color-text-secondary);
 }
 
 .moreButton {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--text-color-secondary);
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
@@ -52,10 +52,10 @@
 }
 
 .moreButton:hover {
-  background-color: var(--hover-color);
+  background-color: var(--accent-soft);
 }
 
 .moreButton:focus {
-  outline: 2px solid var(--primary-color);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
