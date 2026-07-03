@@ -16,6 +16,7 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSidebar } from '../../hooks/useSidebar';
 import { MobileNoteListView } from './components/NoteListView/MobileNoteListVIew/MobileNoteListView';
 import { ROUTES } from '../../constants/routes';
+import { ParticleField } from '../../components/ParticleField/ParticleField';
 import styles from './HomePage.module.css';
 
 export const HomePage: React.FC = () => {
@@ -136,11 +137,13 @@ export const HomePage: React.FC = () => {
       className={styles.homePage}
       style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
     >
+      <ParticleField />
       {isMobile ? (
         <Box
           sx={{
             height: '100%',
             position: 'relative',
+            zIndex: 1,
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -171,7 +174,14 @@ export const HomePage: React.FC = () => {
         </Box>
       ) : (
         <Box
-          sx={{ display: 'flex', width: '100%', height: '100%', minWidth: 0 }}
+          sx={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            minWidth: 0,
+            position: 'relative',
+            zIndex: 1,
+          }}
         >
           {/* Note list and content */}
           <Box
