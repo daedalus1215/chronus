@@ -13,12 +13,13 @@
   height: 100%;
   cursor: col-resize;
   z-index: 10;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s, box-shadow 0.15s;
 }
 
 .resizeHandle:hover,
 .resizeHandle:focus {
-  background: var(--color-overlay-stronger);
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
   outline: none;
 }
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Checkbox, IconButton, TextField } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
@@ -100,17 +99,13 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(({
         </span>
       )}
       <span
-        className={styles.chevron}
+        className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}
         onClick={ev => {
           ev.stopPropagation();
           onChevronClick(node.id);
         }}
       >
-        {isOpen ? (
-          <ExpandMoreIcon sx={{ fontSize: 14 }} />
-        ) : (
-          <ChevronRightIcon sx={{ fontSize: 14 }} />
-        )}
+        <ChevronRightIcon sx={{ fontSize: 14 }} />
       </span>
       <span className={styles.rowIcon}>
         {isOpen ? (
