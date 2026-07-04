@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FolderTreeNode } from '../../../../api/dtos/folder.dtos';
 import { ExplorerNoteItem } from '../../../../api/dtos/note.dtos';
 import { useDebounce } from '../../../../hooks/useDebounce';
@@ -63,21 +63,21 @@ export const useExplorerFilter = (
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 200);
 
-  // Matching
+  // Matching — skip entirely while the filter is inactive.
   const folderMatches = useMemo(() => {
-    if (!debouncedQuery) return new Set<number>();
+    if (!active || !debouncedQuery) return new Set<number>();
     const result = new Set<number>();
     for (const root of tree) {
       const matches = collectAncestorMatches(root, debouncedQuery, notes);
       matches.forEach(id => result.add(id));
     }
     return result;
-  }, [tree, notes, debouncedQuery]);
+  }, [active, tree, notes, debouncedQuery]);
 
   const noteMatches = useMemo(() => {
-    if (!debouncedQuery) return new Set<number>();
+    if (!active || !debouncedQuery) return new Set<number>();
     return new Set(notes.filter(n => nameMatches(n.name, debouncedQuery)).map(n => n.id));
-  }, [notes, debouncedQuery]);
+  }, [active, notes, debouncedQuery]);
 
   const clear = useCallback(() => {
     setQuery('');
@@ -88,20 +88,8 @@ export const useExplorerFilter = (
     setActive(prev => !prev);
   }, []);
 
-  // Keyboard shortcut: Ctrl+.
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === '.') {
-        e.preventDefault();
-        toggle();
-      }
-      if (e.key === 'Escape' && active) {
-        clear();
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [active, toggle, clear]);
+  // Note: the Ctrl+. and Escape shortcuts are handled by ExplorerTree, which
+  // scopes them to the tree panel and coordinates Escape with selection state.
 
   return {
     active,

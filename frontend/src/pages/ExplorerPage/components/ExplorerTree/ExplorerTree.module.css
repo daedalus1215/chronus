@@ -11,6 +11,12 @@
   -webkit-backdrop-filter: var(--glass-blur);
 }
 
+/* Panel is focusable (tabIndex=-1) so keyboard shortcuts can be scoped to it;
+   don't show a focus ring when it receives focus via a click. */
+.tree:focus {
+  outline: none;
+}
+
 .loading {
   display: flex;
   justify-content: center;
