@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { TimeTrackService } from '../../../domain/services/time-track-service/time-track.service';
 import {
   GetAuthUser,
@@ -15,8 +15,12 @@ export class GetWeeklyMostActiveNoteAction {
   @Get('/weekly-most-active')
   @ProtectedAction(GetWeeklyMostActiveNoteSwagger)
   async apply(
-    @GetAuthUser() user: AuthUser
+    @GetAuthUser() user: AuthUser,
+    @Query('date') date?: string
   ): Promise<WeeklyMostActiveNoteResponseDto> {
-    return await this.timeTrackService.getWeeklyMostActiveNote(user.userId);
+    return await this.timeTrackService.getWeeklyMostActiveNote(
+      user.userId,
+      date
+    );
   }
 }

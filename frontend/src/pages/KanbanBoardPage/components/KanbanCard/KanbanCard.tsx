@@ -39,6 +39,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    ['--card-accent' as string]: statusColor,
   };
 
   const handleCardRef = (node: HTMLDivElement | null) => {

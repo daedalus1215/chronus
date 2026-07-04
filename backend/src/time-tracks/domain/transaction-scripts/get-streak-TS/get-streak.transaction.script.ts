@@ -9,9 +9,11 @@ export type StreakResult = {
 export class GetStreakTransactionScript {
   constructor(private readonly timeTrackRepository: TimeTrackRepository) {}
 
-  async apply(userId: number): Promise<StreakResult> {
-    const currentStreak =
-      await this.timeTrackRepository.getCurrentStreak(userId);
+  async apply(userId: number, endDate?: string): Promise<StreakResult> {
+    const currentStreak = await this.timeTrackRepository.getCurrentStreak(
+      userId,
+      endDate
+    );
     return { currentStreak };
   }
 }

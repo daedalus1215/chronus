@@ -10,7 +10,11 @@ export type WeeklyTrendResult = {
 export class GetWeeklyTrendTransactionScript {
   constructor(private readonly timeTrackRepository: TimeTrackRepository) {}
 
-  async apply(userId: number, days: number = 7): Promise<WeeklyTrendResult[]> {
-    return this.timeTrackRepository.getWeeklyTrend(userId, days);
+  async apply(
+    userId: number,
+    days: number = 7,
+    endDate?: string
+  ): Promise<WeeklyTrendResult[]> {
+    return this.timeTrackRepository.getWeeklyTrend(userId, days, endDate);
   }
 }

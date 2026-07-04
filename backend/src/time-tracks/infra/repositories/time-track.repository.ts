@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TimeTrack } from '../../domain/entities/time-track-entity/time-track.entity';
-import { getWeekDateRange } from '../../../shared-kernel/utils/date.utils';
+import {
+  getWeekDateRange,
+  getDateString,
+  parseDateString,
+} from '../../../shared-kernel/utils/date.utils';
 
 @Injectable()
 export class TimeTrackRepository {
@@ -124,9 +128,12 @@ export class TimeTrackRepository {
     return `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
   }
 
-  async getCurrentStreak(userId: number): Promise<number> {
-    const today = new Date();
-    const formatDate = (d: Date) => d.toISOString().split('T')[0];
+  async getCurrentStreak(userId: number, endDate?: string): Promise<number> {
+    // Streak of consecutive days ending on endDate (defaults to today).
+    const today = endDate ? parseDateString(endDate) : new Date();
+    // Use local-timezone dates to match how time-track dates are stored
+    // (getCurrentDateString / toLocaleDateString), not UTC (toISOString).
+    const formatDate = (d: Date) => getDateString(d);
 
     const datesWithActivity = await this.repository
       .createQueryBuilder('timeTrack')
@@ -160,13 +167,16 @@ export class TimeTrackRepository {
 
   async getWeeklyTrend(
     userId: number,
-    days: number = 7
+    days: number = 7,
+    endDate?: string
   ): Promise<Array<{ date: string; totalMinutes: number }>> {
-    const today = new Date();
+    // Window of `days` ending on endDate (defaults to today).
+    const today = endDate ? parseDateString(endDate) : new Date();
     const startDate = new Date(today);
     startDate.setDate(startDate.getDate() - (days - 1));
 
-    const formatDate = (d: Date) => d.toISOString().split('T')[0];
+    // Local-timezone dates to match stored time-track dates (not UTC).
+    const formatDate = (d: Date) => getDateString(d);
 
     const result = await this.repository
       .createQueryBuilder('timeTrack')
@@ -201,14 +211,19 @@ export class TimeTrackRepository {
     return trend;
   }
 
-  async getWeeklyMostActiveNote(userId: number): Promise<{
+  async getWeeklyMostActiveNote(
+    userId: number,
+    referenceDate?: string
+  ): Promise<{
     noteId: number;
     totalTimeMinutes: number;
     weekStartDate: string;
     weekEndDate: string;
   } | null> {
-    // Get the start and end of the current week using local timezone
-    const { weekStartDate, weekEndDate } = getWeekDateRange();
+    // Start and end of the week containing referenceDate (defaults to today).
+    const { weekStartDate, weekEndDate } = getWeekDateRange(
+      referenceDate ? parseDateString(referenceDate) : new Date()
+    );
 
     const result = await this.repository
       .createQueryBuilder('time_track')

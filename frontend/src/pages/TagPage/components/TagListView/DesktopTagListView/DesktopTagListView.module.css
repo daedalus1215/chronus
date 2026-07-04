@@ -50,7 +50,7 @@
   align-items: center;
   height: 100%;
   padding: 2rem;
-  color: var(--text-color-secondary);
+  color: var(--color-text-secondary);
 }
 
 .loadingSpinner {
@@ -58,18 +58,18 @@
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  color: var(--text-color-secondary);
+  color: var(--color-text-secondary);
 }
 
 .noMoreTags {
   text-align: center;
   padding: 1rem;
-  color: var(--text-color-secondary);
+  color: var(--color-text-secondary);
 }
 
 .offlineNotice {
-  background-color: var(--warning-color-light);
-  color: var(--warning-color-dark);
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
   padding: 0.5rem 1rem;
   text-align: center;
   font-size: 0.875rem;

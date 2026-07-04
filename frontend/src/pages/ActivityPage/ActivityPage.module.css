@@ -27,12 +27,19 @@
   min-height: 200px;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-card-bg, #1e1e1e) !important;
-  color: var(--color-card-text, #ffffff) !important;
-  border-radius: 8px !important;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  background-color: var(--color-bg-elevated) !important;
+  color: var(--color-text) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--elevation-3) !important;
+  transition: transform 0.2s var(--ease-out, ease),
+    box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  box-shadow: var(--elevation-4) !important;
 }
 
 .metricsContainer {
@@ -48,12 +55,42 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: var(--color-card-bg, #1e1e1e) !important;
-  color: var(--color-card-text, #ffffff) !important;
-  border-radius: 8px !important;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  background-color: var(--color-bg-elevated) !important;
+  color: var(--color-text) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--elevation-2) !important;
+  transition: transform 0.2s var(--ease-out, ease),
+    box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  box-shadow: var(--elevation-3) !important;
+}
+
+/* Stat-tile typography: uppercase muted labels, big ink values. */
+.card :global(.MuiTypography-h6),
+.metricCard :global(.MuiTypography-h6) {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.card :global(.MuiTypography-h3),
+.metricCard :global(.MuiTypography-h3) {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0.35rem 0;
+}
+
+.card :global(.MuiTypography-subtitle2),
+.metricCard :global(.MuiTypography-subtitle2) {
+  color: var(--color-text-muted);
+  font-weight: 400;
 }
 
 .chartSection {
@@ -61,10 +98,12 @@
 }
 
 .graphSection {
-  background-color: var(--color-card-bg, #1e1e1e) !important;
-  color: var(--color-card-text, #ffffff) !important;
+  background-color: var(--color-bg-elevated) !important;
+  color: var(--color-text) !important;
   padding: 1.5rem;
-  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--elevation-3) !important;
   min-height: 400px;
 }
 
@@ -93,10 +132,3 @@
   }
 }
 
-/* @TODO: move to global styles */
-:root {
-  --color-bg: #121212;
-  --color-card-bg: #1e1e1e;
-  --color-card-text: #ffffff;
-  --color-text: #ffffff;
-}

@@ -131,14 +131,29 @@ export const ExplorerTree: React.FC = () => {
     });
   }, []);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts — scoped to the explorer tree panel so they don't fire
+  // while the user is interacting with the note pane or another page.
+  const treeRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (!treeRef.current?.contains(document.activeElement)) return;
+
+      // Ctrl/Cmd + . toggles the filter bar
+      if ((e.ctrlKey || e.metaKey) && e.key === '.') {
+        e.preventDefault();
+        filter.toggle();
+        return;
+      }
+
+      // Escape is priority-ordered so a single press does exactly one thing:
+      // clear the filter first, then exit pick-items, then clear selection.
       if (e.key === 'Escape') {
-        if (pickItemsMode) exitPickItemsMode();
+        if (filter.active) filter.clear();
+        else if (pickItemsMode) exitPickItemsMode();
         else clearSelection();
         return;
       }
+
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
         const n = selectedFolderIds.size + selectedNoteIds.size;
         if (n >= 1) {
@@ -152,7 +167,17 @@ export const ExplorerTree: React.FC = () => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [clearSelection, exitPickItemsMode, pickItemsMode, selectedFolderIds, selectedNoteIds, setReparentTarget]);
+  }, [
+    clearSelection,
+    exitPickItemsMode,
+    pickItemsMode,
+    selectedFolderIds,
+    selectedNoteIds,
+    setReparentTarget,
+    filter.active,
+    filter.toggle,
+    filter.clear,
+  ]);
 
   // Click handlers
   const handleFolderRowClick = useCallback(
@@ -240,7 +265,7 @@ export const ExplorerTree: React.FC = () => {
   ];
 
   return (
-    <Box className={styles.tree}>
+    <Box className={styles.tree} ref={treeRef} tabIndex={-1}>
       <ExplorerTreeHeader
         selectionCount={selectionCount}
         pickItemsMode={pickItemsMode}

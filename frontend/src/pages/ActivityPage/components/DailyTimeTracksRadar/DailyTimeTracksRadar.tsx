@@ -77,6 +77,7 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
       {
         label: 'Daily Time (minutes)',
         data: dailyTimeData,
+        color: '#8b5cf6',
       },
     ];
 

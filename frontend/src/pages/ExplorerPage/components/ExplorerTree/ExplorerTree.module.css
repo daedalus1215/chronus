@@ -6,7 +6,15 @@
   font-size: 13px;
   user-select: none;
   overflow: hidden;
-  background-color: var(--color-bg-paper);
+  background-color: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Panel is focusable (tabIndex=-1) so keyboard shortcuts can be scoped to it;
+   don't show a focus ring when it receives focus via a click. */
+.tree:focus {
+  outline: none;
 }
 
 .loading {
@@ -94,16 +102,18 @@
   align-items: center;
   min-height: 26px;
   padding-right: 4px;
-  border-radius: 3px;
-  margin: 0 4px;
+  border-radius: 6px;
+  margin: 1px 4px;
   cursor: pointer;
   gap: 2px;
   box-sizing: border-box;
   border-left: 2px solid transparent;
+  transition: background-color 0.15s var(--ease-out, ease),
+    border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .row:hover {
-  background-color: var(--color-bg-elevated);
+  background-color: var(--accent-soft);
 }
 
 .row:hover .rowActions {
@@ -111,12 +121,21 @@
 }
 
 .rowActive {
-  background-color: var(--color-bg-elevated) !important;
-  border-left-color: var(--color-primary);
+  background: linear-gradient(
+    90deg,
+    var(--accent-soft-2) 0%,
+    var(--color-bg-elevated) 55%
+  ) !important;
+  border-left-color: var(--accent) !important;
+  box-shadow: var(--glow-accent-soft);
 }
 
 .rowActive:hover {
-  background-color: var(--color-bg-elevated-3) !important;
+  background: linear-gradient(
+    90deg,
+    var(--accent-soft-2) 0%,
+    var(--color-bg-elevated-3) 55%
+  ) !important;
 }
 
 /* ── Pick-mode checkbox column ─────────────────────────────────── */
@@ -137,6 +156,15 @@
   width: 14px;
   flex-shrink: 0;
   color: rgba(255, 255, 255, 0.3);
+  transition: transform 0.18s var(--ease-out, ease), color 0.15s ease;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.row:hover .chevron {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* ── Icon slot ─────────────────────────────────────────────────── */
@@ -204,8 +232,10 @@
 
 /* ── Drop target highlight (move mode) ─────────────────────────── */
 .rowDropTarget {
-  outline: 1px solid rgba(255, 255, 255, 0.35) !important;
-  background-color: var(--color-overlay-medium) !important;
+  outline: 1px dashed var(--accent) !important;
+  outline-offset: -1px;
+  background-color: var(--accent-soft) !important;
+  box-shadow: var(--glow-accent-soft);
 }
 
 /* ── Filter bar ────────────────────────────────────────────────── */
@@ -233,7 +263,7 @@
 }
 
 .filterInput .MuiInputBase-input:focus {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+  box-shadow: 0 0 0 1px var(--accent) inset;
 }
 
 .filterClear {

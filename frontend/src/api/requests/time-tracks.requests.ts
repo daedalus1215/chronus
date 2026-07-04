@@ -57,23 +57,30 @@ export const getDailyTimeTracksAggregation = async (
   return data;
 };
 
-export const getWeeklyMostActiveNote =
-  async (): Promise<WeeklyMostActiveNoteResponseDto> => {
-    const response = await api.get<WeeklyMostActiveNoteResponseDto>(
-      '/time-tracks/weekly-most-active'
-    );
-    return response.data;
-  };
-
-export const getWeeklyTrend = async (): Promise<WeeklyTrendResponseDto> => {
-  const response = await api.get<WeeklyTrendResponseDto>(
-    '/time-tracks/weekly-trend'
+export const getWeeklyMostActiveNote = async (
+  date?: string
+): Promise<WeeklyMostActiveNoteResponseDto> => {
+  const response = await api.get<WeeklyMostActiveNoteResponseDto>(
+    '/time-tracks/weekly-most-active',
+    { params: date ? { date } : {} }
   );
   return response.data;
 };
 
-export const getStreak = async (): Promise<StreakResponseDto> => {
-  const response = await api.get<StreakResponseDto>('/time-tracks/streak');
+export const getWeeklyTrend = async (
+  date?: string
+): Promise<WeeklyTrendResponseDto> => {
+  const response = await api.get<WeeklyTrendResponseDto>(
+    '/time-tracks/weekly-trend',
+    { params: date ? { date } : {} }
+  );
+  return response.data;
+};
+
+export const getStreak = async (date?: string): Promise<StreakResponseDto> => {
+  const response = await api.get<StreakResponseDto>('/time-tracks/streak', {
+    params: date ? { date } : {},
+  });
   return response.data;
 };
 

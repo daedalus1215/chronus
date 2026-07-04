@@ -16,16 +16,25 @@
 .noteListItem:hover {
   background-color: var(--color-bg-elevated);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--color-shadow-xl);
+  box-shadow: var(--elevation-3);
 }
 
 .noteListItem.selected {
-  background-color: var(--color-bg-elevated);
-  border-left-color: var(--color-primary);
+  background: linear-gradient(
+    90deg,
+    var(--accent-soft) 0%,
+    var(--color-bg-elevated) 40%
+  );
+  border-left-color: var(--accent);
+  box-shadow: var(--glow-accent-soft);
 }
 
 .noteListItem.selected:hover {
-  background-color: var(--color-bg-elevated-3);
+  background: linear-gradient(
+    90deg,
+    var(--accent-soft-2) 0%,
+    var(--color-bg-elevated-3) 40%
+  );
 }
 
 .noteListItem:active {
@@ -61,10 +70,13 @@
 
 .noteType {
   font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 9999px;
-  background-color: var(--color-overlay-stronger);
-  color: var(--color-text-secondary);
+  background-color: var(--accent-soft);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: #b4b7ff;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   align-self: flex-start;
 }
 
@@ -72,7 +84,7 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--text-color-secondary);
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
@@ -80,21 +92,25 @@
   height: 60px;
   /* Never let the title shrink the action button. */
   flex-shrink: 0;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .moreButton:hover {
-  background-color: var(--hover-color);
+  background-color: var(--accent-soft);
+  color: #fff;
+  box-shadow: var(--glow-accent-soft);
   width: 60px;
   height: 60px;
 }
 
-.moreButton:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
+.moreButton:focus-visible {
+  outline: none;
+  color: #fff;
   width: 60px;
-  height: 60px; 
-  background-color: var(--color-primary-light);
+  height: 60px;
+  background-color: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 /* Compact variant: smaller padding and font so more items fit (e.g. desktop list). */

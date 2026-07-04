@@ -30,12 +30,13 @@
   cursor: col-resize;
   background: var(--color-overlay-dark);
   z-index: 2;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .resizeHandle:hover,
 .resizeHandle:focus {
-  background: var(--color-overlay-medium);
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
   outline: none;
 }
 
