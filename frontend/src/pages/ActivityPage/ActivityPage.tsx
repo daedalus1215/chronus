@@ -56,9 +56,9 @@ export const ActivityPage: React.FC = () => {
     }
   };
 
-  const fetchMostActiveNote = async () => {
+  const fetchMostActiveNote = async (date?: string) => {
     try {
-      const data = await getWeeklyMostActiveNote();
+      const data = await getWeeklyMostActiveNote(date);
       setMostActiveNote(data);
     } catch (err) {
       console.error('Error fetching most active note:', err);
@@ -66,10 +66,10 @@ export const ActivityPage: React.FC = () => {
     }
   };
 
-  const fetchWeeklyTrend = async () => {
+  const fetchWeeklyTrend = async (date?: string) => {
     setWeeklyTrendLoading(true);
     try {
-      const data = await getWeeklyTrend();
+      const data = await getWeeklyTrend(date);
       setWeeklyTrend(data);
     } catch (err) {
       console.error('Error fetching weekly trend:', err);
@@ -79,10 +79,10 @@ export const ActivityPage: React.FC = () => {
     }
   };
 
-  const fetchStreak = async () => {
+  const fetchStreak = async (date?: string) => {
     setStreakLoading(true);
     try {
-      const data = await getStreak();
+      const data = await getStreak(date);
       setStreak(data);
     } catch (err) {
       console.error('Error fetching streak:', err);
@@ -94,9 +94,9 @@ export const ActivityPage: React.FC = () => {
 
   useEffect(() => {
     fetchTimeTracks(selectedDate);
-    fetchMostActiveNote();
-    fetchWeeklyTrend();
-    fetchStreak();
+    fetchMostActiveNote(selectedDate);
+    fetchWeeklyTrend(selectedDate);
+    fetchStreak(selectedDate);
   }, [selectedDate]);
 
   const handleDateChange = (date: string) => {
