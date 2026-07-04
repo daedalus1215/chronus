@@ -206,10 +206,13 @@ export const ActivityPage: React.FC = () => {
                     [`& .${gaugeClasses.valueArc}`]: {
                       fill:
                         focusScore.percentage >= 70
-                          ? '#4caf50'
+                          ? '#22c55e'
                           : focusScore.percentage >= 40
-                            ? '#ff9800'
-                            : '#f44336',
+                            ? '#f59e0b'
+                            : '#ef4444',
+                    },
+                    [`& .${gaugeClasses.referenceArc}`]: {
+                      fill: 'rgba(255, 255, 255, 0.08)',
                     },
                   }}
                 />
