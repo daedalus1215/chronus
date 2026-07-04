@@ -28,14 +28,31 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
     <Box
       ref={setNodeRef}
       sx={{
+        position: 'relative',
         flex: '1 1 0%',
         minWidth: 0,
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: 2,
-        backgroundColor: 'var(--color-bg-elevated)',
-        boxShadow: isOver ? '0 0 0 2px var(--color-border-accent)' : 'none',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        background: isOver ? 'var(--accent-soft)' : 'var(--glass-bg)',
+        backdropFilter: 'var(--glass-blur)',
+        WebkitBackdropFilter: 'var(--glass-blur)',
+        border: '1px solid var(--glass-border)',
+        boxShadow: isOver ? 'var(--glow-accent)' : 'var(--elevation-2)',
+        transition:
+          'background 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out)',
         height: '100%',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '2px',
+          background: `linear-gradient(90deg, ${statusColor} 0%, ${statusColor}66 100%)`,
+          opacity: 0.9,
+        },
       }}
       role="region"
       aria-label={`${title} column`}
@@ -45,29 +62,28 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           display: 'flex',
           alignItems: 'center',
           gap: 1,
-          borderTopLeftRadius: 2,
-          borderTopRightRadius: 2,
-          borderBottom: '1px solid var(--color-border)',
-          backgroundColor: 'var(--color-bg-elevated-2)',
-          padding: '8px 12px',
+          borderBottom: '1px solid var(--glass-border)',
+          padding: '10px 14px',
         }}
       >
         <Box
           component="span"
           sx={{
-            width: 10,
-            height: 10,
+            width: 9,
+            height: 9,
             borderRadius: '50%',
             flexShrink: 0,
             backgroundColor: statusColor,
+            boxShadow: `0 0 0 3px ${statusColor}22, 0 0 10px ${statusColor}88`,
           }}
           aria-hidden="true"
         />
         <Box
           component="h3"
           sx={{
-            fontSize: '0.75rem',
+            fontSize: '0.78rem',
             fontWeight: 600,
+            letterSpacing: '0.01em',
             color: 'var(--color-text)',
             m: 0,
           }}
@@ -78,8 +94,18 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           component="span"
           sx={{
             marginLeft: 'auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: 22,
+            height: 20,
+            px: 0.75,
+            borderRadius: '999px',
             fontSize: '11px',
-            color: 'var(--color-text-secondary)',
+            fontWeight: 600,
+            color: statusColor,
+            backgroundColor: `${statusColor}1f`,
+            border: `1px solid ${statusColor}33`,
           }}
         >
           {items.length}
