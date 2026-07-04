@@ -82,12 +82,18 @@ export class TimeTrackService {
 
   async getWeeklyMostActiveNote(userId: number) {
     const result = await this.getWeeklyMostActiveNoteTS.apply(userId);
+    // No time-tracks in the current week: nothing is "most active".
+    // The transaction script returns null here; propagate it so the client
+    // can render its "No activity this week" state instead of 500ing.
+    if (!result) {
+      return null;
+    }
     const note = await this.eventEmitter.emitAsync(GET_NOTE_DETAILS_COMMAND, {
       noteId: result.noteId,
       userId,
     });
 
-    return { ...result, noteName: note[0].name };
+    return { ...result, noteName: note?.[0]?.name ?? 'Unknown' };
   }
 
   async getWeeklyTrend(userId: number): Promise<WeeklyTrendResponseDto> {

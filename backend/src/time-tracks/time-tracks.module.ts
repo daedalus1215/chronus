@@ -23,6 +23,7 @@ import { GetWeeklyMostActiveNoteTransactionScript } from './domain/transaction-s
 import { GetWeeklyTrendAction } from './apps/actions/get-weekly-trend-action/get-weekly-trend.action';
 import { GetWeeklyTrendTransactionScript } from './domain/transaction-scripts/get-weekly-trend-TS/get-weekly-trend.transaction.script';
 import { GetStreakTransactionScript } from './domain/transaction-scripts/get-streak-TS/get-streak.transaction.script';
+import { GetStreakAction } from './apps/actions/get-streak-action/get-streak.action';
 import { GetNotesByYearAction } from './apps/actions/get-notes-by-year-action/get-notes-by-year.action';
 import { GetNotesByYearTransactionScript } from './domain/transaction-scripts/get-notes-by-year-TS/get-notes-by-year.transaction.script';
 import { TimeTracksAggregator } from './domain/aggregators/time-tracks.aggregator';
@@ -61,6 +62,7 @@ import { TIME_TRACK_WRITER_PORT } from '../note-transfer/domain/ports/time-track
     UpdateTimeTrackNoteAction,
     GetWeeklyMostActiveNoteAction,
     GetWeeklyTrendAction,
+    GetStreakAction,
     GetNotesByYearAction,
   ],
   exports: [TimeTracksAggregator, TIME_TRACK_WRITER_PORT],
