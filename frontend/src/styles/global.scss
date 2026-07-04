@@ -11,6 +11,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Render native controls (date pickers, selects, scrollbars) in dark mode
+     so their built-in glyphs — like the calendar picker icon — stay visible
+     against dark inputs. */
+  color-scheme: dark;
   --radius: 0.5rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
