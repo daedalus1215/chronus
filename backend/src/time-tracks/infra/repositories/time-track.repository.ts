@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TimeTrack } from '../../domain/entities/time-track-entity/time-track.entity';
-import { getWeekDateRange } from '../../../shared-kernel/utils/date.utils';
+import {
+  getWeekDateRange,
+  getDateString,
+} from '../../../shared-kernel/utils/date.utils';
 
 @Injectable()
 export class TimeTrackRepository {
@@ -126,7 +129,9 @@ export class TimeTrackRepository {
 
   async getCurrentStreak(userId: number): Promise<number> {
     const today = new Date();
-    const formatDate = (d: Date) => d.toISOString().split('T')[0];
+    // Use local-timezone dates to match how time-track dates are stored
+    // (getCurrentDateString / toLocaleDateString), not UTC (toISOString).
+    const formatDate = (d: Date) => getDateString(d);
 
     const datesWithActivity = await this.repository
       .createQueryBuilder('timeTrack')
@@ -166,7 +171,8 @@ export class TimeTrackRepository {
     const startDate = new Date(today);
     startDate.setDate(startDate.getDate() - (days - 1));
 
-    const formatDate = (d: Date) => d.toISOString().split('T')[0];
+    // Local-timezone dates to match stored time-track dates (not UTC).
+    const formatDate = (d: Date) => getDateString(d);
 
     const result = await this.repository
       .createQueryBuilder('timeTrack')
