@@ -11,6 +11,7 @@ type Props = {
 
 const formatDayLabel = (dateString: string): string => {
   const [year, month, day] = dateString.split('-').map(Number);
+  if (!year || !month || !day) return dateString;
   const date = new Date(year, month - 1, day);
   return date.toLocaleDateString('en-US', { weekday: 'short' });
 };
@@ -36,12 +37,17 @@ export const WeeklyTrendChart: React.FC<Props> = ({ data, loading }) => {
     );
   }
 
-  if (!data || data.trend.length === 0) {
+  const hasActivity =
+    !!data && data.trend.length > 0 && data.weeklyTotal > 0;
+
+  if (!hasActivity) {
     return (
       <Paper className={styles.container}>
         <Typography variant="h6">Weekly Trend</Typography>
         <Box className={styles.noData}>
-          <Typography color="textSecondary">No data available</Typography>
+          <Typography color="textSecondary">
+            No activity in the last 7 days
+          </Typography>
         </Box>
       </Paper>
     );
