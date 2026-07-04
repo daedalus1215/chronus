@@ -75,6 +75,11 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
         '& .MuiDrawer-paper': {
           width: 240,
           boxSizing: 'border-box',
+          backgroundColor: 'var(--glass-bg-strong)',
+          backdropFilter: 'var(--glass-blur)',
+          WebkitBackdropFilter: 'var(--glass-blur)',
+          borderRight: '1px solid var(--glass-border)',
+          backgroundImage: 'none',
         },
       }}
     >
@@ -127,14 +132,29 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                   onClick={onClose}
                   selected={isActive}
                   sx={{
-                    backgroundColor: isActive
-                      ? 'action.selected'
-                      : 'transparent',
+                    position: 'relative',
+                    background: isActive ? 'var(--accent-soft)' : 'transparent',
+                    boxShadow: isActive ? 'var(--glow-accent-soft)' : 'none',
                     '&:hover': {
-                      backgroundColor: isActive
-                        ? 'action.selected'
-                        : 'action.hover',
+                      background: isActive
+                        ? 'var(--accent-soft-2)'
+                        : 'var(--accent-soft)',
                     },
+                    // Gradient accent bar on the active item (matches desktop).
+                    '&::before': isActive
+                      ? {
+                          content: '""',
+                          position: 'absolute',
+                          left: 0,
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          width: '3px',
+                          height: '60%',
+                          borderRadius: '9999px',
+                          background: 'var(--accent-gradient)',
+                          boxShadow: '0 0 8px rgba(99, 102, 241, 0.7)',
+                        }
+                      : undefined,
                     borderRadius: '8px',
                     margin: '0 8px',
                     padding: '8px 16px',

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { TimeTrackService } from '../../../domain/services/time-track-service/time-track.service';
 import {
   GetAuthUser,
@@ -14,7 +14,10 @@ export class GetStreakAction {
 
   @Get('/streak')
   @ProtectedAction(GetStreakSwagger)
-  async apply(@GetAuthUser() user: AuthUser): Promise<StreakResponseDto> {
-    return await this.timeTrackService.getStreak(user.userId);
+  async apply(
+    @GetAuthUser() user: AuthUser,
+    @Query('date') date?: string
+  ): Promise<StreakResponseDto> {
+    return await this.timeTrackService.getStreak(user.userId, date);
   }
 }

@@ -312,14 +312,56 @@ export const KanbanBoardPage: React.FC = () => {
         component="header"
         sx={{
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          gap: 0.75,
           py: 1,
         }}
       >
-        <Box component="span" sx={{ fontSize: '1.125rem', fontWeight: 600 }}>
+        <Box
+          component="span"
+          sx={{
+            fontSize: '1.25rem',
+            fontWeight: 700,
+            letterSpacing: '-0.01em',
+            background: 'var(--accent-gradient)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
           {note?.name || 'Kanban Board'}
         </Box>
+        {items.length > 0 && (
+          <Box
+            component="span"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.75,
+              px: 1.25,
+              py: 0.25,
+              borderRadius: '999px',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              color: 'var(--color-text-secondary)',
+              background: 'var(--glass-bg)',
+              border: '1px solid var(--glass-border)',
+            }}
+          >
+            <Box
+              component="span"
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                backgroundColor: '#22c55e',
+                boxShadow: '0 0 8px #22c55e88',
+              }}
+            />
+            {itemsByStatus.done.length} / {items.length} done
+          </Box>
+        )}
       </Box>
 
       {(isNoteLoading || isCheckItemsLoading) && (
@@ -395,7 +437,14 @@ export const KanbanBoardPage: React.FC = () => {
           </Box>
           <DragOverlay>
             {activeItem ? (
-              <Card className={cardStyles.card}>
+              <Card
+                className={`${cardStyles.card} ${cardStyles.cardDragging}`}
+                style={
+                  {
+                    ['--card-accent']: getStatusDotColor(activeItem),
+                  } as React.CSSProperties
+                }
+              >
                 <CardContent className={cardStyles.cardContent}>
                   <span
                     className={cardStyles.statusDot}

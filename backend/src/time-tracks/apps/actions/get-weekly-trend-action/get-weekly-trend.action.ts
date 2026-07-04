@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { TimeTrackService } from '../../../domain/services/time-track-service/time-track.service';
 import {
   GetAuthUser,
@@ -14,7 +14,10 @@ export class GetWeeklyTrendAction {
 
   @Get('/weekly-trend')
   @ProtectedAction(GetWeeklyTrendSwagger)
-  async apply(@GetAuthUser() user: AuthUser): Promise<WeeklyTrendResponseDto> {
-    return await this.timeTrackService.getWeeklyTrend(user.userId);
+  async apply(
+    @GetAuthUser() user: AuthUser,
+    @Query('date') date?: string
+  ): Promise<WeeklyTrendResponseDto> {
+    return await this.timeTrackService.getWeeklyTrend(user.userId, date);
   }
 }
