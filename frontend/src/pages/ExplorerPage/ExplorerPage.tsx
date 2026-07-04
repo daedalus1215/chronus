@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import { Outlet, useMatch } from 'react-router-dom';
 import { ExplorerTree } from './components/ExplorerTree/ExplorerTree';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -88,9 +89,15 @@ export const ExplorerPage: React.FC = () => {
           <Outlet />
         ) : (
           <Box className={styles.emptyPane}>
-            <Typography className={styles.emptyText}>
-              Select a note to open it
-            </Typography>
+            <div className={styles.emptyInner}>
+              <AccountTreeOutlinedIcon className={styles.emptyIcon} />
+              <Typography className={styles.emptyText}>
+                Select a note to open it
+              </Typography>
+              <Typography className={styles.emptyHint}>
+                Browse folders on the left, or create a new note
+              </Typography>
+            </div>
           </Box>
         )}
       </Box>
