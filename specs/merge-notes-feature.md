@@ -252,3 +252,43 @@ Model on the existing single-note `mergeIntoNote` in
   after DB commit, best-effort, to avoid ever losing a note on rollback.
 - **Audio not in `.chronus` export:** audio is absent from the existing export/import/merge
   payload, so the purge is net-new plumbing (a new port + repo method + adapter).
+- **Audio-preserving future:** Hermes gaining a move endpoint would let merge *move* audio to
+  the target instead of deleting it. Specced in `specs/hermes-audio-move.md`; keep the audio
+  step behind a single port so swapping purge→move is localized.
+
+---
+
+## Edge cases & validation (v1 loose ends)
+
+Server-side rules for `POST /notes/merge` — reject with a clear 400/404 unless noted:
+
+1. **Count:** `sourceNoteIds` (excluding target) ≥ 1, i.e. ≥ 2 notes total. Reject empty /
+   single selections.
+2. **Target ∈ selection:** `targetNoteId` must be one of the selected ids. De-dupe the id
+   list defensively (same id twice = one note).
+3. **Ownership:** every note id must belong to the caller (`userId`); a foreign or unknown id
+   fails the whole merge (atomic — nothing partially applied).
+4. **Not already archived:** reject if any selected note (target or source) is already
+   archived. Merging into/from a dead note is almost certainly a stale-client bug.
+5. **Same type (#3):** all selected notes must be the same kind (all memo, or all checklist).
+   Compute server-side too — never trust the client's `isMemo`. Reject mixed with a specific
+   message.
+6. **Combined description guard (Q8):** if the assembled description would exceed the soft
+   limit (~1,000,000 chars), reject with a length error rather than write a monster row.
+7. **Optimistic concurrency:** carry a `version`/`updatedAt` for the **target** so a merge
+   built against a stale target is rejected (mirror the single-note merge's `version`).
+   Sources are archived, not concurrently edited, so no per-source version is needed.
+
+Post-merge state:
+- Target keeps its own `name`, `folder_id`, `sort_order`, `created_at`; `updated_at` bumps.
+- Sources: `archived_at` set; their existing tag/check-item rows stay attached to the (now
+  archived) source — we **copy** into the target, we don't move (except audio, which is
+  deleted). No cleanup of source content rows in v1.
+- **Realtime:** if the app pushes socket events elsewhere on note change, emit/scope
+  invalidation so other clients drop the archived sources; otherwise rely on the frontend
+  query invalidation listed above. Confirm during implementation whether a socket event is
+  expected here.
+
+Empty-section simplifications (thanks to #5 same-type):
+- All-checklist merge → no descriptions/memo in play; target stays a checklist.
+- All-memo merge → no check-items in play; target stays a memo.

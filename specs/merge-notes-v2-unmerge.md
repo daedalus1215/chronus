@@ -76,6 +76,31 @@ it restores the source note and strips the target. Any v2 un-merge UI must say t
 If audio-preserving merges are ever wanted, that's a separate change to v1 (e.g. Hermes gains
 a copy/upload capability) — not something v2 can retrofit.
 
+## Provenance schema sketch (if UQ2 → b/c)
+
+To list and reverse merges we need to persist what happened. Rough shape:
+
+```
+merge_events
+  id            PK
+  user_id
+  target_note_id
+  source_note_ids   (json array)
+  created_at
+  -- optional (UQ2=c, exact strip):
+  description_snapshot   (target's pre-merge memo.description, text)
+
+merge_batch_id   -- optional column added to copied rows
+  check_items.merge_batch_id      → FK-ish to merge_events.id
+  time_tracks.merge_batch_id
+```
+- **UQ2=b (list only):** just `merge_events` — enough to show history and offer "restore
+  sources"; target is left as-is.
+- **UQ2=c (exact strip):** add `merge_batch_id` to the copied `check_items` / `time_tracks`
+  rows + the `description_snapshot`, so un-merge can delete exactly the appended rows and
+  restore the prior description.
+
 ## Prerequisite feature this exposes
-An **archived-notes browsing UI** does not exist yet and is a hard dependency. It may be
-worth its own spec (`specs/archived-notes-browse.md`) rather than bundling here.
+An **archived-notes browsing UI** does not exist yet and is a hard dependency — now specced
+separately in **`specs/archived-notes-browse.md`**. Merge v2's "restore sources" is just that
+feature's restore action, invoked for a merge event's `source_note_ids`.
