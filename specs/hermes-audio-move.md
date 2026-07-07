@@ -1,5 +1,11 @@
 # Spec — Hermes "Move Audio" Capability (enables audio-preserving merge)
 
+> **Authoritative Hermes-side spec now lives in the Hermes repo:**
+> `~/Nextcloud/nebechaunezzer/programming/hermes/specs/move-note-audio.md` (move-all-of-a-
+> note's-audio, files kept separate, rename-on-collision, move-not-copy — decided 2026-07-06).
+> This Chronus file is the **future Chronus tie-in** (how the merge flow consumes that
+> endpoint and updates `note_audios` rows) — not yet scheduled.
+
 **Status:** Draft — assessment done, needs a short Q&A pass
 **Implementation repo:** `~/Nextcloud/nebechaunezzer/programming/hermes` (Python/FastAPI)
 **Consumer:** Chronus `note-transfer` merge (`specs/merge-notes-feature.md`)
