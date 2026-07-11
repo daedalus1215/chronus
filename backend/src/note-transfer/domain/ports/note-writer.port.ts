@@ -22,6 +22,13 @@ export interface NoteWriterPort {
    * @param description - The new description
    */
   replaceDescription(noteId: number, description: string): Promise<void>;
+
+  /**
+   * Archives (soft deletes) multiple notes by their IDs.
+   * @param noteIds - Array of note IDs to archive
+   * @param userId - The owner user ID for verification
+   */
+  archiveNotes(noteIds: number[], userId: number): Promise<void>;
 }
 
 /**

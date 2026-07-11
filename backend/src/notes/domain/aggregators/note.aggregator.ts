@@ -5,7 +5,9 @@ import {
 } from '@nestjs/common';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
 import { Note } from '../entities/notes/note.entity';
+import { Memo } from '../entities/notes/memo.entity';
 import { GetNoteNamesByIdsTransactionScript } from '../transaction-scripts/get-note-names-by-ids.transaction.script';
+import { NoteWriterPort } from '../../../note-transfer/domain/ports/note-writer.port';
 
 type NoteReference = {
   id: number;
@@ -15,7 +17,7 @@ type NoteReference = {
 
 //@TODO: all methods should be deferring to transaction scripts
 @Injectable()
-export class NoteAggregator {
+export class NoteAggregator implements NoteWriterPort {
   constructor(
     private readonly noteRepository: NoteMemoTagRepository,
     private readonly getNoteNamesByIdsTS: GetNoteNamesByIdsTransactionScript
@@ -81,5 +83,53 @@ export class NoteAggregator {
     userId: number
   ): Promise<{ id: number; name: string }[]> {
     return await this.getNoteNamesByIdsTS.apply(noteIds, userId);
+  }
+
+  // NoteWriterPort implementation
+  async createNoteWithMemo(
+    name: string,
+    description: string | undefined,
+    userId: number
+  ): Promise<number> {
+    const note = new Note();
+    note.name = name;
+    note.userId = userId;
+    note.archivedAt = null;
+
+    if (description) {
+      const memo = new Memo();
+      memo.description = description;
+      note.memo = memo;
+    }
+
+    const saved = await this.noteRepository.save(note);
+    return saved.id;
+  }
+
+  async replaceDescription(noteId: number, description: string): Promise<void> {
+    const note = await this.noteRepository.findById(noteId, undefined);
+    if (!note) {
+      throw new NotFoundException('Note not found');
+    }
+
+    if (note.memo) {
+      note.memo.description = description;
+    } else {
+      const memo = new Memo();
+      memo.description = description;
+      note.memo = memo;
+    }
+
+    await this.noteRepository.save(note);
+  }
+
+  async archiveNotes(noteIds: number[], userId: number): Promise<void> {
+    for (const noteId of noteIds) {
+      const note = await this.noteRepository.findById(noteId, userId);
+      if (note) {
+        note.archivedAt = new Date();
+        await this.noteRepository.save(note);
+      }
+    }
   }
 }

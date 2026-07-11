@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, IconButton, Typography } from '@mui/material';
+import { Box, Button, IconButton, Typography, Tooltip } from '@mui/material';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
@@ -7,6 +7,7 @@ import ChecklistIcon from '@mui/icons-material/Checklist';
 import AddNoteIcon from '@mui/icons-material/NoteAdd';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import SearchIcon from '@mui/icons-material/Search';
+import CallMergeIcon from '@mui/icons-material/CallMerge';
 import styles from './ExplorerTree.module.css';
 import { DragMode } from './ExplorerTree';
 
@@ -14,7 +15,9 @@ type ExplorerTreeHeaderProps = {
   selectionCount: number;
   pickItemsMode: boolean;
   dragMode: DragMode;
+  canMerge: boolean;
   onMoveSelected: () => void;
+  onMergeSelected: () => void;
   onClearSelection: () => void;
   onTogglePickItems: () => void;
   onCycleDragMode: () => void;
@@ -27,7 +30,9 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
   selectionCount,
   pickItemsMode,
   dragMode,
+  canMerge,
   onMoveSelected,
+  onMergeSelected,
   onClearSelection,
   onTogglePickItems,
   onCycleDragMode,
@@ -68,6 +73,19 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
             >
               <DriveFileMoveIcon sx={{ fontSize: 14 }} />
             </IconButton>
+            <Tooltip title="Merge selected notes (need 2+ memos or 2+ checklists)">
+              <span>
+                <IconButton
+                  size="small"
+                  className={styles.headerBtn}
+                  title="Merge notes"
+                  onClick={onMergeSelected}
+                  disabled={!canMerge}
+                >
+                  <CallMergeIcon sx={{ fontSize: 14 }} />
+                </IconButton>
+              </span>
+            </Tooltip>
             <IconButton size="small" className={styles.headerBtn} title="Clear selection" onClick={onClearSelection}>
               <CloseRoundedIcon sx={{ fontSize: 14 }} />
             </IconButton>

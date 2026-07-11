@@ -1,3 +1,4 @@
+import { NotesModule } from '../notes/notes.module';
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
@@ -23,16 +24,12 @@ import { HermesRemoteCaller } from './infrastructure/remote-callers/hermes.remot
 import { AudioFileCache } from './infrastructure/cache/audio-file.cache';
 import { NoteAudioRepository } from './infrastructure/repositories/note-audio.repository';
 import { NoteAudio } from './domain/entities/note-audio.entity';
-import { NotesModule } from 'src/notes/notes.module';
 import { DownloadAudioResponder } from './apps/actions/download-audio/download-audio.responder';
+import { AudioPurgeAggregator } from './domain/aggregators/audio-purge.aggregator';
+import { AUDIO_PURGE_PORT } from '../note-transfer/domain/ports/audio-purge.port';
 
 @Module({
-  imports: [
-    HttpModule,
-    ConfigModule,
-    NotesModule,
-    TypeOrmModule.forFeature([NoteAudio]),
-  ],
+  imports: [NotesModule, HttpModule, ConfigModule, TypeOrmModule.forFeature([NoteAudio])],
   controllers: [
     TextToSpeechAction,
     DownloadAudioAction,
@@ -57,7 +54,12 @@ import { DownloadAudioResponder } from './apps/actions/download-audio/download-a
     HermesRemoteCaller,
     NoteAudioRepository,
     DownloadAudioResponder,
+    AudioPurgeAggregator,
+    {
+      provide: AUDIO_PURGE_PORT,
+      useExisting: AudioPurgeAggregator,
+    },
   ],
-  exports: [AudioService],
+  exports: [AudioService, AUDIO_PURGE_PORT],
 })
 export class AudioModule {}

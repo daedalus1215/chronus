@@ -41,7 +41,6 @@ import { ReorderNotesAction } from './apps/actions/notes/reorder-notes-action/re
 import { GetNoteNamesForExplorerAction } from './apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action';
 import { NoteFolderAdapter } from './apps/adapters/note-folder.adapter';
 import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
-import { NoteWriterAdapter } from './apps/adapters/note-writer.adapter';
 import { NOTE_WRITER_PORT } from '../note-transfer/domain/ports/note-writer.port';
 
 @Module({
@@ -81,10 +80,9 @@ import { NOTE_WRITER_PORT } from '../note-transfer/domain/ports/note-writer.port
       provide: NOTE_FOLDER_PORT,
       useExisting: NoteFolderAdapter,
     },
-    NoteWriterAdapter,
     {
       provide: NOTE_WRITER_PORT,
-      useExisting: NoteWriterAdapter,
+      useExisting: NoteAggregator,
     },
   ],
   controllers: [
