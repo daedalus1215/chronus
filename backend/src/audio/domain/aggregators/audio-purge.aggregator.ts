@@ -48,36 +48,5 @@ export class AudioPurgeAggregator {
       }
       return deletedFilePaths;
     }, Promise.resolve<string[]>([]));
-
-
-
-
-
-    const deletedFilePaths: string[] = [];
-
-    for (const noteId of noteIds) {
-      const audios = await this.noteAudioRepository.findByNoteId(noteId);
-
-      for (const audio of audios) {
-        try {
-          if (audio.filePath) {
-            await this.hermesRemoteCaller.deleteAudioByPath(audio.filePath);
-            deletedFilePaths.push(audio.filePath);
-            this.logger.log(
-              `Deleted audio file from Hermes: ${audio.filePath}`
-            );
-          }
-          await this.noteAudioRepository.deleteById(audio.id);
-          this.logger.log(`Deleted audio metadata for audioId: ${audio.id}`);
-        } catch (error) {
-          this.logger.error(
-            `Failed to delete audio ${audio.id} for note ${noteId}:`,
-            error
-          );
-        }
-      }
-    }
-
-    return deletedFilePaths;
   }
 }
