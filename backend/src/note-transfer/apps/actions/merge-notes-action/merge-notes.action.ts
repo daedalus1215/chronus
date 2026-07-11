@@ -3,24 +3,24 @@ import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/prote
 import { GetAuthUser } from '../../../../shared-kernel/apps/decorators/get-auth-user.decorator';
 import { AuthUser } from '../../../../shared-kernel/apps/decorators/get-auth-user.decorator';
 import { NoteTransferService } from '../../../domain/services/note-transfer-service/note-transfer.service';
-import { ImportNoteSwagger } from './import-note.swagger';
-import { ImportNoteDto } from '../../dtos/requests/import-note.dto';
+import { MergeNotesDto } from './merge-notes.request.dto';
+import { MergeNotesSwagger } from './merge-notes.swagger';
 
 @Controller('notes')
-export class ImportNoteAction {
+export class MergeNotesAction {
   constructor(private readonly noteTransferService: NoteTransferService) {}
 
-  @Post('import')
-  @ProtectedAction(ImportNoteSwagger)
+  @Post('merge')
+  @ProtectedAction(MergeNotesSwagger)
   async apply(
-    @Body() dto: ImportNoteDto,
+    @Body() dto: MergeNotesDto,
     @GetAuthUser() authUser: AuthUser
-  ): Promise<{ noteId: number }> {
-    const newNoteId = await this.noteTransferService.importNote(
-      dto,
-      authUser.userId
-    );
+  ): Promise<{ success: boolean; archivedNoteIds: number[] }> {
+    await this.noteTransferService.mergeNotes(dto, authUser.userId);
 
-    return { noteId: newNoteId };
+    return {
+      success: true,
+      archivedNoteIds: dto.sources.map(s => s.noteId),
+    };
   }
 }

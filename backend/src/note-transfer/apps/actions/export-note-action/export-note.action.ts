@@ -3,7 +3,7 @@ import { Response } from 'express';
 import { ProtectedAction } from '../../../../shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from '../../../../shared-kernel/apps/decorators/get-auth-user.decorator';
 import { AuthUser } from '../../../../shared-kernel/apps/decorators/get-auth-user.decorator';
-import { NoteTransferService } from '../../../domain/services/note-transfer.service';
+import { NoteTransferService } from '../../../domain/services/note-transfer-service/note-transfer.service';
 import { ExportNoteSwagger } from './export-note.swagger';
 
 @Controller('notes')

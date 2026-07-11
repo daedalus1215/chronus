@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
@@ -13,6 +13,11 @@ import { useFolderOperations } from './useFolderOperations';
 import { useDragOperations } from './useDragOperations';
 import { useExplorerFilter, useMergedExpanded } from './useExplorerFilter';
 import { ExplorerFilterBar } from './ExplorerFilterBar';
+import { MergeNotesDialog, NoteToMerge } from '../MergeNotesDialog/MergeNotesDialog';
+import { useMergeNotes, SourceNoteSelection } from '../../hooks/useMergeNotes';
+import { useGetAllNoteCheckItems } from '../../hooks/useCheckItemsForMerge';
+import { useGetAllNoteTimeTracks } from '../../hooks/useTimeTracksForMerge';
+import { useGetAllNoteTags } from '../../hooks/useNoteTagsForMerge';
 import styles from './ExplorerTree.module.css';
 
 export type DragMode = 'off' | 'on';
@@ -30,6 +35,18 @@ export const ExplorerTree: React.FC = () => {
   const [selectedNoteIds, setSelectedNoteIds] = useState<Set<number>>(new Set());
   const [folderRangeAnchorId, setFolderRangeAnchorId] = useState<number | null>(null);
   const [pickItemsMode, setPickItemsMode] = useState(false);
+
+  // Merge dialog state
+  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
+  const [notesToMerge, setNotesToMerge] = useState<NoteToMerge[]>([]);
+
+  // Merge hook
+  const { mergeNotes, isMerging } = useMergeNotes();
+
+  // Data fetching for merge
+  const { data: allCheckItems } = useGetAllNoteCheckItems();
+  const { data: allTimeTracks } = useGetAllNoteTimeTracks();
+  const { data: allNoteTags } = useGetAllNoteTags();
 
   // Drag mode state
   const [dragMode, setDragMode] = useState<DragMode>('off');
@@ -249,6 +266,61 @@ export const ExplorerTree: React.FC = () => {
 
   const selectionCount = selectedFolderIds.size + selectedNoteIds.size;
 
+  // Compute canMerge: only notes (no folders), all same type
+  const selectedNotesData = useMemo(() => {
+    if (selectedFolderIds.size > 0) return [];
+    return notes.filter(n => selectedNoteIds.has(n.id));
+  }, [notes, selectedNoteIds, selectedFolderIds]);
+
+  const canMerge = useMemo(() => {
+    if (selectedNotesData.length < 2) return false;
+    const firstIsMemo = selectedNotesData[0]?.isMemo;
+    return selectedNotesData.every(n => n.isMemo === firstIsMemo);
+  }, [selectedNotesData]);
+
+  // Build notes to merge data for dialog
+  const buildNotesToMerge = useCallback((): NoteToMerge[] => {
+    return selectedNotesData.map(note => ({
+      id: note.id,
+      name: note.name,
+      isMemo: note.isMemo,
+      description: note.description,
+      tags: allNoteTags?.filter(t => t.noteId === note.id).map(t => t.tag.name) ?? [],
+      checkItems: allCheckItems?.filter(c => c.noteId === note.id) ?? [],
+      timeTracks: allTimeTracks?.filter(t => t.noteId === note.id).map(t => ({
+        date: t.date,
+        startTime: t.startTime,
+        durationMinutes: t.durationMinutes,
+        note: t.note ?? undefined,
+      })) ?? [],
+    }));
+  }, [selectedNotesData, allNoteTags, allCheckItems, allTimeTracks]);
+
+  // Handle merge button click
+  const handleMergeClick = useCallback(() => {
+    if (!canMerge) return;
+    const notesData = buildNotesToMerge();
+    setNotesToMerge(notesData);
+    setMergeDialogOpen(true);
+  }, [canMerge, buildNotesToMerge]);
+
+  // Handle merge confirm
+  const handleMergeConfirm = useCallback(async (targetNoteId: number, sources: SourceNoteSelection[]) => {
+    await mergeNotes({
+      targetNoteId,
+      sources,
+      version: 1,
+    });
+    setMergeDialogOpen(false);
+    setNotesToMerge([]);
+    clearSelection();
+    // If active note was archived, navigate away
+    const archivedIds = sources.map(s => s.noteId);
+    if (activeNoteId && archivedIds.includes(Number(activeNoteId))) {
+      navigate('/notes');
+    }
+  }, [mergeNotes, activeNoteId, navigate, clearSelection]);
+
   // Loading state
   if (loading) {
     return (
@@ -270,12 +342,14 @@ export const ExplorerTree: React.FC = () => {
         selectionCount={selectionCount}
         pickItemsMode={pickItemsMode}
         dragMode={dragMode}
+        canMerge={canMerge}
         onMoveSelected={() =>
           setReparentTarget({
             folderIds: [...selectedFolderIds],
             noteIds: [...selectedNoteIds],
           })
         }
+        onMergeSelected={handleMergeClick}
         onClearSelection={clearSelection}
         onTogglePickItems={() => {
           if (pickItemsMode) exitPickItemsMode();
@@ -399,6 +473,17 @@ export const ExplorerTree: React.FC = () => {
         onCreateMemoInFolder={handleCreateMemoInFolder}
         noteMenu={noteMenu}
         setNoteMenu={setNoteMenu}
+      />
+      {/* Merge dialog */}
+      <MergeNotesDialog
+        open={mergeDialogOpen}
+        notes={notesToMerge}
+        isMerging={isMerging}
+        onCancel={() => {
+          setMergeDialogOpen(false);
+          setNotesToMerge([]);
+        }}
+        onConfirm={handleMergeConfirm}
       />
     </Box>
   );

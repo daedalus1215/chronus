@@ -129,11 +129,43 @@ export const mergeIntoNote = async (
       date: string;
       startTime: string;
       durationMinutes: number;
+      note?: string;
     }>;
   }
 ): Promise<{ success: boolean }> => {
   const response = await api.post<{ success: boolean }>(
     `/notes/${noteId}/merge`,
+    data
+  );
+  return response.data;
+};
+
+export const mergeNotes = async (data: {
+  targetNoteId: number;
+  sources: Array<{
+    noteId: number;
+    name: string;
+    description?: string;
+    tags?: string[];
+    checkItems?: Array<{
+      name: string;
+      description?: string | null;
+      status: 'ready' | 'in_progress' | 'review' | 'done';
+      order: number;
+      doneDate?: string | null;
+      archiveDate?: string | null;
+    }>;
+    timeTracks?: Array<{
+      date: string;
+      startTime: string;
+      durationMinutes: number;
+      note?: string;
+    }>;
+  }>;
+  version: number;
+}): Promise<{ success: boolean; archivedNoteIds: number[] }> => {
+  const response = await api.post<{ success: boolean; archivedNoteIds: number[] }>(
+    '/notes/merge',
     data
   );
   return response.data;

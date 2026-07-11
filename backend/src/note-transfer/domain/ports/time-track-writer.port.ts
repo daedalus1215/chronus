@@ -16,6 +16,7 @@ export interface TimeTrackWriterPort {
       date: string; // YYYY-MM-DD
       startTime: string; // HH:mm
       durationMinutes: number;
+      note?: string; // Optional per-entry annotation
     }>
   ): Promise<void>;
 }
