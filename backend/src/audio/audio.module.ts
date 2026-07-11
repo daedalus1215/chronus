@@ -1,3 +1,4 @@
+import { NotesModule } from '../notes/notes.module';
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
@@ -28,7 +29,7 @@ import { AudioPurgeAggregator } from './domain/aggregators/audio-purge.aggregato
 import { AUDIO_PURGE_PORT } from '../note-transfer/domain/ports/audio-purge.port';
 
 @Module({
-  imports: [HttpModule, ConfigModule, TypeOrmModule.forFeature([NoteAudio])],
+  imports: [NotesModule, HttpModule, ConfigModule, TypeOrmModule.forFeature([NoteAudio])],
   controllers: [
     TextToSpeechAction,
     DownloadAudioAction,
