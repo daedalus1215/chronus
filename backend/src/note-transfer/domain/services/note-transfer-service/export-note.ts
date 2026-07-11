@@ -4,6 +4,7 @@ import { CheckItemsAggregator } from '../../../../check-items/domain/aggregators
 import { TimeTracksAggregator } from '../../../../time-tracks/domain/aggregators/time-tracks.aggregator';
 import { TagAggregator } from '../../../../tags/domain/aggregators/tag.aggregator';
 import { NoteExportResponse } from '../../../apps/dtos/responses/note-export.response';
+import { NoteExportConverter } from './note-export-converter';
 
 /**
  * Functional class for exporting a single note with all its associated data.
@@ -15,7 +16,8 @@ export class ExportNote {
     private readonly noteAggregator: NoteAggregator,
     private readonly checkItemsAggregator: CheckItemsAggregator,
     private readonly timeTracksAggregator: TimeTracksAggregator,
-    private readonly tagAggregator: TagAggregator
+    private readonly tagAggregator: TagAggregator,
+    private readonly converter: NoteExportConverter
   ) {}
 
   async apply(noteId: number, userId: number): Promise<NoteExportResponse> {
@@ -52,27 +54,12 @@ export class ExportNote {
     // 4. Get tag names via the tag aggregator
     const tags = await this.tagAggregator.getTagNamesByNoteId(noteId);
 
-    return {
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      memo: {
-        name: note.name,
-        description,
-        tags,
-        checkItems: activeCheckItems.map((item, index) => ({
-          name: item.name,
-          description: item.description,
-          status: item.status,
-          order: index,
-          doneDate: item.doneDate
-            ? new Date(item.doneDate).toISOString()
-            : null,
-          archiveDate: item.archiveDate
-            ? new Date(item.archiveDate).toISOString()
-            : null,
-        })),
-        timeTracks,
-      },
-    };
+    return this.converter.convert(
+      note.name,
+      description,
+      tags,
+      activeCheckItems,
+      timeTracks
+    );
   }
 }
