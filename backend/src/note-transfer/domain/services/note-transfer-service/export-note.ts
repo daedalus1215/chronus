@@ -27,10 +27,7 @@ export class ExportNote {
       throw new NotFoundException('Note not found');
     }
 
-    const noteWithMemo = await this.noteAggregator.getMemoById(
-      noteId,
-      userId
-    );
+    const noteWithMemo = await this.noteAggregator.getMemoById(noteId, userId);
     const description = noteWithMemo?.memo?.description ?? '';
 
     // 2. Get non-archived check items

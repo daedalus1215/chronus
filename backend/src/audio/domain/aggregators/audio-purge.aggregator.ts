@@ -13,7 +13,7 @@ export class AudioPurgeAggregator {
   constructor(
     private readonly noteAudioRepository: NoteAudioRepository,
     private readonly hermesRemoteCaller: HermesRemoteCaller
-  ) { }
+  ) {}
 
   /**
    * Deletes all audio files associated with the given note IDs.
@@ -22,7 +22,6 @@ export class AudioPurgeAggregator {
    * @returns Array of file paths that were deleted (for logging)
    */
   async purgeByNoteIds(noteIds: number[]): Promise<string[]> {
-
     return noteIds.reduce(async (acc, noteId) => {
       const deletedFilePaths = await acc;
 

@@ -17,7 +17,10 @@ import {
   TIME_TRACK_WRITER_PORT,
   TimeTrackWriterPort,
 } from '../../ports/time-track-writer.port';
-import { TAG_ATTACH_PORT, TagAttacherPort } from '../../ports/tag-attacher.port';
+import {
+  TAG_ATTACH_PORT,
+  TagAttacherPort,
+} from '../../ports/tag-attacher.port';
 import { AUDIO_PURGE_PORT, AudioPurgePort } from '../../ports/audio-purge.port';
 import { ImportNoteDto } from '../../../apps/dtos/requests/import-note.dto';
 import { MergeIntoNoteDto } from '../../../apps/dtos/requests/merge-into-note.dto';
@@ -46,8 +49,7 @@ export class NoteTransferService {
     private readonly audioPurgePort: AudioPurgePort,
     private readonly exportNoteFn: ExportNote,
     private readonly importNoteFn: ImportNote
-  ) {
-  }
+  ) {}
 
   /**
    * Exports a single note with all its associated data.
