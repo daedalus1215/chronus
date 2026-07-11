@@ -16,8 +16,10 @@ import {
   TimeTrackWriterPort,
 } from '../ports/time-track-writer.port';
 import { TAG_ATTACH_PORT, TagAttacherPort } from '../ports/tag-attacher.port';
+import { AUDIO_PURGE_PORT, AudioPurgePort } from '../ports/audio-purge.port';
 import { ImportNoteDto } from '../../apps/dtos/requests/import-note.dto';
 import { MergeIntoNoteDto } from '../../apps/dtos/requests/merge-into-note.dto';
+import { MergeNotesDto } from '../../apps/actions/merge-notes-action/merge-notes.request.dto';
 import { NoteExportResponse } from '../../apps/dtos/responses/note-export.response';
 import { TimeTracksAggregator } from '../../../time-tracks/domain/aggregators/time-tracks.aggregator';
 import { TagAggregator } from '../../../tags/domain/aggregators/tag.aggregator';
@@ -40,7 +42,9 @@ export class NoteTransferService {
     @Inject(TIME_TRACK_WRITER_PORT)
     private readonly timeTrackWriterPort: TimeTrackWriterPort,
     @Inject(TAG_ATTACH_PORT)
-    private readonly tagAttacherPort: TagAttacherPort
+    private readonly tagAttacherPort: TagAttacherPort,
+    @Inject(AUDIO_PURGE_PORT)
+    private readonly audioPurgePort: AudioPurgePort
   ) {}
 
   /**
@@ -219,6 +223,179 @@ export class NoteTransferService {
     // 5. Attach tags if provided
     if (payload.tags && payload.tags.length > 0) {
       await this.tagAttacherPort.attachByName(noteId, userId, payload.tags);
+    }
+  }
+
+  /**
+   * Merges multiple source notes into a target note.
+   * Sources are archived after their content is appended to the target.
+   * Audio files from sources are deleted (not moved to target).
+   */
+  async mergeNotes(payload: MergeNotesDto, userId: number): Promise<void> {
+    // Validate version
+    if (payload.version !== 1) {
+      throw new BadRequestException(
+        `Unsupported export version: ${payload.version}`
+      );
+    }
+
+    const { targetNoteId, sources } = payload;
+
+    // Validate: at least 2 notes (target + 1 source)
+    if (sources.length < 1) {
+      throw new BadRequestException('At least one source note is required');
+    }
+
+    // Validate: target note exists and user owns it
+    const targetNote = await this.noteAggregator.getReference(
+      targetNoteId,
+      userId
+    );
+    if (!targetNote) {
+      throw new NotFoundException('Target note not found');
+    }
+
+    // Validate: all source notes exist and user owns them
+    const sourceNoteIds = sources.map(s => s.noteId);
+    for (const sourceId of sourceNoteIds) {
+      const sourceNote = await this.noteAggregator.getReference(
+        sourceId,
+        userId
+      );
+      if (!sourceNote) {
+        throw new NotFoundException(`Source note ${sourceId} not found`);
+      }
+    }
+
+    // Defensive: check combined description size (soft limit: 1,000,000 chars)
+    const MAX_DESCRIPTION_LENGTH = 1_000_000;
+    let combinedDescriptionLength = 0;
+
+    // Get target's current description
+    try {
+      const targetWithMemo = await this.noteAggregator.getMemoById(
+        targetNoteId,
+        userId
+      );
+      if (targetWithMemo?.memo?.description) {
+        combinedDescriptionLength += targetWithMemo.memo.description.length;
+      }
+    } catch {
+      // Target is not a memo (checklist) - no description
+    }
+
+    for (const source of sources) {
+      if (source.description) {
+        combinedDescriptionLength += source.description.length;
+        // Add overhead for heading separator
+        combinedDescriptionLength += 50; // Approximate heading size
+      }
+    }
+
+    if (combinedDescriptionLength > MAX_DESCRIPTION_LENGTH) {
+      throw new BadRequestException(
+        `Combined description would exceed ${MAX_DESCRIPTION_LENGTH} characters. Please merge fewer notes or remove some content.`
+      );
+    }
+
+    // Perform the merge operations (best-effort sequential execution)
+    // Note: Full transactional consistency would require a saga pattern;
+    // for merge notes we prioritize availability over strict consistency
+
+    // 1. Build and update description
+    const descriptionParts: string[] = [];
+
+    for (const source of sources) {
+      if (source.description?.trim()) {
+        descriptionParts.push(`## ${source.name}\n\n${source.description}`);
+      }
+    }
+
+    if (descriptionParts.length > 0) {
+      // Get target's current description
+      let targetDescription = '';
+      try {
+        const targetWithMemo = await this.noteAggregator.getMemoById(
+          targetNoteId,
+          userId
+        );
+        targetDescription = targetWithMemo?.memo?.description ?? '';
+      } catch {
+        // Target is a checklist - converting to memo with description
+      }
+
+      const newDescription = targetDescription
+        ? `${targetDescription}\n\n${descriptionParts.join('\n\n')}`
+        : descriptionParts.join('\n\n');
+
+      await this.noteWriterPort.replaceDescription(
+        targetNoteId,
+        newDescription
+      );
+    }
+
+    // 2. Merge check items (blind append, skip archived, rebase order)
+    for (const source of sources) {
+      if (source.checkItems && source.checkItems.length > 0) {
+        const activeItems = source.checkItems.filter(item => !item.archiveDate);
+        if (activeItems.length > 0) {
+          await this.checkItemWriterPort.bulkCreate(
+            targetNoteId,
+            activeItems.map(item => ({
+              name: item.name,
+              description: item.description ?? null,
+              status: item.status,
+              order: item.order,
+              doneDate: item.doneDate ? new Date(item.doneDate) : null,
+              archiveDate: null,
+            }))
+          );
+        }
+      }
+    }
+
+    // 3. Merge time tracks (blind append, preserve annotation)
+    for (const source of sources) {
+      if (source.timeTracks && source.timeTracks.length > 0) {
+        await this.timeTrackWriterPort.bulkCreate(
+          targetNoteId,
+          userId,
+          source.timeTracks.map(track => ({
+            date: track.date,
+            startTime: track.startTime,
+            durationMinutes: track.durationMinutes,
+            note: track.note,
+          }))
+        );
+      }
+    }
+
+    // 4. Merge tags (union, deduped)
+    const allTagNames = new Set<string>();
+    for (const source of sources) {
+      if (source.tags) {
+        for (const tag of source.tags) {
+          allTagNames.add(tag);
+        }
+      }
+    }
+    if (allTagNames.size > 0) {
+      await this.tagAttacherPort.attachByName(targetNoteId, userId, [
+        ...allTagNames,
+      ]);
+    }
+
+    // 5. Archive source notes (soft delete)
+    await this.noteWriterPort.archiveNotes(sourceNoteIds, userId);
+
+    // 6. Purge audio from source notes (best-effort, after transaction)
+    // We do this outside the transaction because Hermes deletes cannot be rolled back
+    // Note: note ownership already validated above
+    try {
+      await this.audioPurgePort.purgeByNoteIds(sourceNoteIds);
+    } catch (error) {
+      // Log but don't fail - audio is non-critical compared to note data
+      console.warn('Failed to purge some audio files during merge:', error);
     }
   }
 }

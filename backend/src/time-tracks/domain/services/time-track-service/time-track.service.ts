@@ -105,10 +105,7 @@ export class TimeTrackService {
     return { trend, weeklyTotal };
   }
 
-  async getStreak(
-    userId: number,
-    date?: string
-  ): Promise<StreakResponseDto> {
+  async getStreak(userId: number, date?: string): Promise<StreakResponseDto> {
     return this.getStreakTS.apply(userId, date);
   }
   i;
