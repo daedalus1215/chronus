@@ -37,9 +37,13 @@ export class NoteExportConverter {
           status: item.status,
           order: index,
           doneDate:
-            item.doneDate !== null ? new Date(item.doneDate).toISOString() : null,
+            item.doneDate !== null
+              ? new Date(item.doneDate).toISOString()
+              : null,
           archiveDate:
-            item.archiveDate !== null ? new Date(item.archiveDate).toISOString() : null,
+            item.archiveDate !== null
+              ? new Date(item.archiveDate).toISOString()
+              : null,
         })),
         timeTracks,
       },

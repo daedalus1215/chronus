@@ -15,9 +15,9 @@ import { useExplorerFilter, useMergedExpanded } from './useExplorerFilter';
 import { ExplorerFilterBar } from './ExplorerFilterBar';
 import { MergeNotesDialog, NoteToMerge } from '../MergeNotesDialog/MergeNotesDialog';
 import { useMergeNotes, SourceNoteSelection } from '../../hooks/useMergeNotes';
-import { useGetAllNoteCheckItems } from '../../hooks/useCheckItemsForMerge';
-import { useGetAllNoteTimeTracks } from '../../hooks/useTimeTracksForMerge';
-import { useGetAllNoteTags } from '../../hooks/useNoteTagsForMerge';
+import { fetchNoteTimeTracks } from '../../hooks/useTimeTracksForMerge';
+import { fetchNoteTags } from '../../hooks/useNoteTagsForMerge';
+import { fetchNoteCheckItems } from '../../hooks/useCheckItemsForMerge';
 import styles from './ExplorerTree.module.css';
 
 export type DragMode = 'off' | 'on';
@@ -43,10 +43,8 @@ export const ExplorerTree: React.FC = () => {
   // Merge hook
   const { mergeNotes, isMerging } = useMergeNotes();
 
-  // Data fetching for merge
-  const { data: allCheckItems } = useGetAllNoteCheckItems();
-  const { data: allTimeTracks } = useGetAllNoteTimeTracks();
-  const { data: allNoteTags } = useGetAllNoteTags();
+  // Loading state while merge data is fetched per selected note
+  const [buildingMerge, setBuildingMerge] = useState(false);
 
   // Drag mode state
   const [dragMode, setDragMode] = useState<DragMode>('off');
@@ -279,30 +277,39 @@ export const ExplorerTree: React.FC = () => {
   }, [selectedNotesData]);
 
   // Build notes to merge data for dialog
-  const buildNotesToMerge = useCallback((): NoteToMerge[] => {
-    return selectedNotesData.map(note => ({
-      id: note.id,
-      name: note.name,
-      isMemo: note.isMemo,
-      description: note.description,
-      tags: allNoteTags?.filter(t => t.noteId === note.id).map(t => t.tag.name) ?? [],
-      checkItems: allCheckItems?.filter(c => c.noteId === note.id) ?? [],
-      timeTracks: allTimeTracks?.filter(t => t.noteId === note.id).map(t => ({
-        date: t.date,
-        startTime: t.startTime,
-        durationMinutes: t.durationMinutes,
-        note: t.note ?? undefined,
-      })) ?? [],
-    }));
-  }, [selectedNotesData, allNoteTags, allCheckItems, allTimeTracks]);
+  const buildNotesToMerge = useCallback(async (): Promise<NoteToMerge[]> => {
+    return Promise.all(
+      selectedNotesData.map(async note => {
+        const [tags, checkItems, timeTracks] = await Promise.all([
+          fetchNoteTags(note.id),
+          fetchNoteCheckItems(note.id),
+          fetchNoteTimeTracks(note.id),
+        ]);
+        return {
+          id: note.id,
+          name: note.name,
+          isMemo: note.isMemo,
+          description: note.description,
+          tags,
+          checkItems,
+          timeTracks,
+        };
+      })
+    );
+  }, [selectedNotesData]);
 
   // Handle merge button click
-  const handleMergeClick = useCallback(() => {
-    if (!canMerge) return;
-    const notesData = buildNotesToMerge();
-    setNotesToMerge(notesData);
-    setMergeDialogOpen(true);
-  }, [canMerge, buildNotesToMerge]);
+  const handleMergeClick = useCallback(async () => {
+    if (!canMerge || buildingMerge) return;
+    setBuildingMerge(true);
+    try {
+      const notesData = await buildNotesToMerge();
+      setNotesToMerge(notesData);
+      setMergeDialogOpen(true);
+    } finally {
+      setBuildingMerge(false);
+    }
+  }, [canMerge, buildingMerge, buildNotesToMerge]);
 
   // Handle merge confirm
   const handleMergeConfirm = useCallback(async (targetNoteId: number, sources: SourceNoteSelection[]) => {
@@ -476,6 +483,7 @@ export const ExplorerTree: React.FC = () => {
       />
       {/* Merge dialog */}
       <MergeNotesDialog
+        key={notesToMerge.map(n => n.id).join(',')}
         open={mergeDialogOpen}
         notes={notesToMerge}
         isMerging={isMerging}

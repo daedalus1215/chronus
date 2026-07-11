@@ -29,7 +29,12 @@ import { AudioPurgeAggregator } from './domain/aggregators/audio-purge.aggregato
 import { AUDIO_PURGE_PORT } from '../note-transfer/domain/ports/audio-purge.port';
 
 @Module({
-  imports: [NotesModule, HttpModule, ConfigModule, TypeOrmModule.forFeature([NoteAudio])],
+  imports: [
+    NotesModule,
+    HttpModule,
+    ConfigModule,
+    TypeOrmModule.forFeature([NoteAudio]),
+  ],
   controllers: [
     TextToSpeechAction,
     DownloadAudioAction,

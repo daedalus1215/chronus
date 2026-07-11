@@ -1,23 +1,27 @@
-import { useQuery } from '@tanstack/react-query';
 import api from '../../../api/axios.interceptor';
 
-export type TimeTrackForMerge = {
+type NoteTimeTrackResponse = {
   id: number;
-  noteId: number;
+  date: string;
+  startTime: string;
+  durationMinutes: number;
+  note?: string | null;
+};
+
+export type TimeTrackForMerge = {
   date: string;
   startTime: string;
   durationMinutes: number;
   note?: string;
 };
 
-const fetchAllNoteTimeTracks = async (): Promise<TimeTrackForMerge[]> => {
-  const { data } = await api.get<TimeTrackForMerge[]>('/time-tracks');
-  return data ?? [];
-};
-
-export const useGetAllNoteTimeTracks = () => {
-  return useQuery({
-    queryKey: ['timeTracks'],
-    queryFn: fetchAllNoteTimeTracks,
-  });
+// Fetch time tracks for a single note (used when building merge data).
+export const fetchNoteTimeTracks = async (noteId: number): Promise<TimeTrackForMerge[]> => {
+  const { data } = await api.get<NoteTimeTrackResponse[]>(`/time-tracks/note/${noteId}`);
+  return (data ?? []).map(track => ({
+    date: track.date,
+    startTime: track.startTime,
+    durationMinutes: track.durationMinutes,
+    note: track.note ?? undefined,
+  }));
 };

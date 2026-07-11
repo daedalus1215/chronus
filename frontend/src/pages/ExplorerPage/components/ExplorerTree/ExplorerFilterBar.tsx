@@ -7,13 +7,11 @@ import styles from './ExplorerTree.module.css';
 type ExplorerFilterBarProps = {
   query: string;
   setQuery: (q: string) => void;
-  onClear: () => void;
 };
 
 export const ExplorerFilterBar: React.FC<ExplorerFilterBarProps> = ({
   query,
   setQuery,
-  onClear,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
