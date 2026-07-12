@@ -1,14 +1,17 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   Box,
   Typography,
   Alert,
   Snackbar,
   SnackbarContent,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { TimeEntryDataGrid } from './components/TimeEntryDataGrid/TimeEntryDataGrid';
 import { QuickAddRow, QuickAddFormData } from './components/QuickAddRow/QuickAddRow';
 import { DateRangePicker } from './components/DateRangePicker/DateRangePicker';
+import { SummaryStats } from './components/SummaryStats/SummaryStats';
 import {
   useTimeTrackDateRange,
   DateRange,
@@ -21,6 +24,9 @@ import { TimeTrackWithNoteResponse } from '../../api/dtos/time-tracks.dtos';
 import styles from './TimeEntryPage.module.css';
 
 export const TimeEntryPage: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
   const { from, to, setPreset, setFrom, setTo } = useTimeTrackDateRange(5);
   const [tracks, setTracks] = useState<TimeTrackWithNoteResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -64,12 +70,10 @@ export const TimeEntryPage: React.FC = () => {
           startTime: data.startTime,
           durationMinutes: data.durationMinutes,
         });
-        // The backend returns TimeTrackResponseDto which lacks noteName.
-        // Do a fresh fetch to get the full response.
         await fetchTracks({ from, to });
         setSnackbar({
           open: true,
-          message: 'Time track added',
+          message: 'Time track added successfully',
           severity: 'success',
         });
       } catch (err) {
@@ -86,7 +90,6 @@ export const TimeEntryPage: React.FC = () => {
 
   const handleDelete = useCallback(
     (id: number) => {
-      // Optimistic delete
       setTracks((prev) => prev.filter((t) => t.id !== id));
       setSnackbar({
         open: true,
@@ -112,13 +115,32 @@ export const TimeEntryPage: React.FC = () => {
   const handleCloseSnackbar = () =>
     setSnackbar((prev) => ({ ...prev, open: false }));
 
+  const stats = useMemo(() => {
+    const totalMinutes = tracks.reduce(
+      (sum, track) => sum + track.durationMinutes,
+      0
+    );
+    return {
+      totalMinutes,
+      entryCount: tracks.length,
+    };
+  }, [tracks]);
+
   return (
     <Box className={styles.container}>
       <Box className={styles.header}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
+        <Typography variant="h4" component="h1" className={styles.title}>
           Quick Log
         </Typography>
+        <Typography variant="body2" className={styles.subtitle}>
+          Track your time across notes and activities
+        </Typography>
       </Box>
+
+      <SummaryStats
+        totalMinutes={stats.totalMinutes}
+        entryCount={stats.entryCount}
+      />
 
       <DateRangePicker
         from={from}
@@ -131,7 +153,9 @@ export const TimeEntryPage: React.FC = () => {
       <QuickAddRow onSubmit={handleAdd} />
 
       {error && (
-        <Alert severity="error">{error}</Alert>
+        <Alert severity="error" className={styles.errorAlert}>
+          {error}
+        </Alert>
       )}
 
       <Box className={styles.gridWrapper}>
@@ -147,14 +171,18 @@ export const TimeEntryPage: React.FC = () => {
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        anchorOrigin={{
+          vertical: isMobile ? 'top' : 'bottom',
+          horizontal: 'center',
+        }}
       >
         <SnackbarContent
           message={snackbar.message}
-          sx={{
-            backgroundColor:
-              snackbar.severity === 'error' ? 'error.main' : 'success.main',
-          }}
+          className={
+            snackbar.severity === 'error'
+              ? styles.snackbarError
+              : styles.snackbarSuccess
+          }
         />
       </Snackbar>
     </Box>

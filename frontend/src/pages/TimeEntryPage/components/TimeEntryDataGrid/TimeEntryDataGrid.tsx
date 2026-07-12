@@ -11,11 +11,23 @@ import {
   TextField,
   Typography,
   Link,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import TimerIcon from '@mui/icons-material/Timer';
+import NotesIcon from '@mui/icons-material/Notes';
 import { useNavigate } from 'react-router-dom';
 import { TimeTrackWithNoteResponse } from '../../../../api/dtos/time-tracks.dtos';
 import { ROUTES } from '../../../../constants/routes';
@@ -37,7 +49,14 @@ type Props = {
   onRowUpdated: (id: number, updated: TimeTrackWithNoteResponse) => void;
 };
 
-type EditingRow = { id: number; field: string; value: string };
+type EditField = 'date' | 'startTime' | 'durationMinutes' | 'note';
+
+interface EditDialogState {
+  open: boolean;
+  row: TimeTrackWithNoteResponse | null;
+  field: EditField | null;
+  value: string;
+}
 
 export const TimeEntryDataGrid: React.FC<Props> = ({
   rows,
@@ -46,68 +65,182 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
   onRowUpdated,
 }) => {
   const navigate = useNavigate();
-  const [editing, setEditing] = useState<EditingRow | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<{
+    el: HTMLElement | null;
+    rowId: number | null;
+  }>({ el: null, rowId: null });
+  const [editDialog, setEditDialog] = useState<EditDialogState>({
+    open: false,
+    row: null,
+    field: null,
+    value: '',
+  });
 
   const handleDelete = useCallback(
     async (id: number) => {
-      // Optimistic delete
       onRowDeleted(id);
       try {
         await deleteTimeTrack(id);
       } catch {
-        // On failure, the parent can revert if needed
         console.error('Failed to delete time track');
       }
     },
     [onRowDeleted]
   );
 
-  const handleSaveEdit = useCallback(
-    async (row: TimeTrackWithNoteResponse, field: string, value: string) => {
-      setEditing(null);
-      const updates: Record<string, unknown> = {};
-      switch (field) {
-        case 'date':
-          updates.date = value;
-          break;
-        case 'startTime':
-          updates.startTime = value;
-          break;
-        case 'durationMinutes':
-          updates.durationMinutes = parseInt(value) || 0;
-          break;
-        case 'note':
-          updates.note = value;
-          break;
-      }
-      try {
-        await updateTimeTrack(row.id, updates);
-        // Reconstruct full response for the parent
-        onRowUpdated(row.id, {
-          ...row,
-          ...updates,
-          noteName: row.noteName,
-          createdAt: row.createdAt,
-          updatedAt: row.updatedAt,
-        } as TimeTrackWithNoteResponse);
-      } catch {
-        console.error('Failed to update time track');
-      }
-    },
-    [onRowUpdated]
-  );
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    rowId: number
+  ) => {
+    setMenuAnchor({ el: event.currentTarget, rowId });
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor({ el: null, rowId: null });
+  };
+
+  const handleEditClick = (field: EditField) => {
+    const row = rows.find((r) => r.id === menuAnchor.rowId);
+    if (!row) return;
+
+    let value = '';
+    switch (field) {
+      case 'date':
+        value = row.date;
+        break;
+      case 'startTime':
+        value = row.startTime;
+        break;
+      case 'durationMinutes':
+        value = String(row.durationMinutes);
+        break;
+      case 'note':
+        value = row.note || '';
+        break;
+    }
+
+    setEditDialog({
+      open: true,
+      row,
+      field,
+      value,
+    });
+    handleMenuClose();
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editDialog.row || !editDialog.field) return;
+
+    const updates: Record<string, unknown> = {};
+    switch (editDialog.field) {
+      case 'date':
+        updates.date = editDialog.value;
+        break;
+      case 'startTime':
+        updates.startTime = editDialog.value;
+        break;
+      case 'durationMinutes':
+        updates.durationMinutes = parseInt(editDialog.value) || 0;
+        break;
+      case 'note':
+        updates.note = editDialog.value;
+        break;
+    }
+
+    try {
+      await updateTimeTrack(editDialog.row.id, updates);
+      onRowUpdated(editDialog.row.id, {
+        ...editDialog.row,
+        ...updates,
+      } as TimeTrackWithNoteResponse);
+    } catch {
+      console.error('Failed to update time track');
+    } finally {
+      setEditDialog({ open: false, row: null, field: null, value: '' });
+    }
+  };
+
+  const getEditDialogTitle = () => {
+    switch (editDialog.field) {
+      case 'date':
+        return 'Edit Date';
+      case 'startTime':
+        return 'Edit Start Time';
+      case 'durationMinutes':
+        return 'Edit Duration';
+      case 'note':
+        return 'Edit Note';
+      default:
+        return 'Edit';
+    }
+  };
+
+  const getEditDialogInput = () => {
+    switch (editDialog.field) {
+      case 'date':
+        return (
+          <TextField
+            type="date"
+            fullWidth
+            value={editDialog.value}
+            onChange={(e) =>
+              setEditDialog((prev) => ({ ...prev, value: e.target.value }))
+            }
+          />
+        );
+      case 'startTime':
+        return (
+          <TextField
+            type="time"
+            fullWidth
+            value={editDialog.value}
+            onChange={(e) =>
+              setEditDialog((prev) => ({ ...prev, value: e.target.value }))
+            }
+          />
+        );
+      case 'durationMinutes':
+        return (
+          <TextField
+            type="number"
+            fullWidth
+            label="Duration (minutes)"
+            value={editDialog.value}
+            onChange={(e) =>
+              setEditDialog((prev) => ({ ...prev, value: e.target.value }))
+            }
+            inputProps={{ min: 1, max: 1440 }}
+          />
+        );
+      case 'note':
+        return (
+          <TextField
+            fullWidth
+            multiline
+            rows={2}
+            label="Note"
+            value={editDialog.value}
+            onChange={(e) =>
+              setEditDialog((prev) => ({ ...prev, value: e.target.value }))
+            }
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   const columns: GridColDef[] = [
     {
       field: 'noteName',
       headerName: 'Note',
       flex: 1,
-      minWidth: 180,
+      minWidth: 160,
       renderCell: (params: GridRenderCellParams) => (
         <Link
           component="button"
           onClick={() => navigate(ROUTES.NOTE(params.row.noteId))}
-          sx={{ color: 'primary.main', textDecoration: 'none' }}
+          className={styles.noteLink}
           underline="hover"
         >
           {params.value as string}
@@ -117,204 +250,61 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
     {
       field: 'date',
       headerName: 'Date',
-      width: 130,
-      editable: true,
-      renderCell: (params: GridRenderCellParams) => {
-        if (editing?.id === params.id && editing?.field === 'date') {
-          return (
-            <Box className={styles.editCell}>
-              <TextField
-                type="date"
-                size="small"
-                value={editing.value}
-                onChange={e =>
-                  setEditing({ ...editing, value: e.target.value })
-                }
-                sx={{ width: 120 }}
-              />
-              <IconButton
-                size="small"
-                onClick={() =>
-                  handleSaveEdit(params.row, 'date', editing.value)
-                }
-              >
-                <CheckIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                size="small"
-                onClick={() => setEditing(null)}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          );
-        }
-        return <span>{params.value as string}</span>;
-      },
+      width: 110,
+      renderCell: (params: GridRenderCellParams) => (
+        <span className={styles.cellText}>{params.value as string}</span>
+      ),
     },
     {
       field: 'startTime',
       headerName: 'Start',
-      width: 100,
-      editable: true,
-      renderCell: (params: GridRenderCellParams) => {
-        if (editing?.id === params.id && editing?.field === 'startTime') {
-          return (
-            <Box className={styles.editCell}>
-              <TextField
-                type="time"
-                size="small"
-                value={editing.value}
-                onChange={e =>
-                  setEditing({ ...editing, value: e.target.value })
-                }
-                sx={{ width: 90 }}
-              />
-              <IconButton
-                size="small"
-                onClick={() =>
-                  handleSaveEdit(params.row, 'startTime', editing.value)
-                }
-              >
-                <CheckIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                size="small"
-                onClick={() => setEditing(null)}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          );
-        }
-        return <span>{params.value as string}</span>;
-      },
+      width: 80,
+      renderCell: (params: GridRenderCellParams) => (
+        <span className={styles.cellText}>{params.value as string}</span>
+      ),
     },
     {
       field: 'durationMinutes',
       headerName: 'Duration',
-      width: 110,
-      editable: true,
+      width: 90,
       valueFormatter: (value: number) => formatDuration(value),
-      renderCell: (params: GridRenderCellParams) => {
-        if (editing?.id === params.id && editing?.field === 'durationMinutes') {
-          return (
-            <Box className={styles.editCell}>
-              <TextField
-                type="number"
-                size="small"
-                value={editing.value}
-                onChange={e =>
-                  setEditing({ ...editing, value: e.target.value })
-                }
-                inputProps={{ min: 1, max: 1440 }}
-                sx={{ width: 70 }}
-              />
-              <IconButton
-                size="small"
-                onClick={() =>
-                  handleSaveEdit(
-                    params.row,
-                    'durationMinutes',
-                    editing.value
-                  )
-                }
-              >
-                <CheckIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                size="small"
-                onClick={() => setEditing(null)}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          );
-        }
-        return <span>{formatDuration(params.value as number)}</span>;
-      },
+      renderCell: (params: GridRenderCellParams) => (
+        <span className={styles.durationCell}>
+          {formatDuration(params.value as number)}
+        </span>
+      ),
     },
     {
       field: 'note',
-      headerName: 'Note',
+      headerName: 'Memo',
       flex: 0.5,
-      minWidth: 120,
-      editable: true,
-      renderCell: (params: GridRenderCellParams) => {
-        if (editing?.id === params.id && editing?.field === 'note') {
-          return (
-            <Box className={styles.editCell}>
-              <TextField
-                size="small"
-                value={editing.value}
-                onChange={e =>
-                  setEditing({ ...editing, value: e.target.value })
-                }
-                sx={{ flex: 1 }}
-              />
-              <IconButton
-                size="small"
-                onClick={() =>
-                  handleSaveEdit(params.row, 'note', editing.value)
-                }
-              >
-                <CheckIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                size="small"
-                onClick={() => setEditing(null)}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          );
-        }
-        return <span>{(params.value as string) || ''}</span>;
-      },
+      minWidth: 100,
+      renderCell: (params: GridRenderCellParams) => (
+        <span className={`${styles.cellText} ${styles.noteText}`}>
+          {(params.value as string) || '—'}
+        </span>
+      ),
     },
     {
       field: 'actions',
-      headerName: 'Actions',
-      width: 120,
+      headerName: '',
+      width: 90,
       sortable: false,
+      filterable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box className={styles.actionButtons}>
-          {(['date', 'startTime', 'durationMinutes', 'note'] as const).map(
-            field => (
-              <IconButton
-                key={field}
-                size="small"
-                onClick={() => {
-                  let value: string;
-                  switch (field) {
-                    case 'date':
-                      value = params.row.date;
-                      break;
-                    case 'startTime':
-                      value = params.row.startTime;
-                      break;
-                    case 'durationMinutes':
-                      value = String(params.row.durationMinutes);
-                      break;
-                    case 'note':
-                      value = params.row.note || '';
-                      break;
-                  }
-                  setEditing({
-                    id: params.id as number,
-                    field,
-                    value,
-                  });
-                }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            )
-          )}
+          <IconButton
+            size="small"
+            onClick={(e) => handleMenuOpen(e, params.id as number)}
+            className={styles.actionButton}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
           <IconButton
             size="small"
             color="error"
             onClick={() => handleDelete(params.id as number)}
+            className={styles.actionButton}
           >
             <DeleteIcon fontSize="small" />
           </IconButton>
@@ -323,53 +313,96 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
     },
   ];
 
-  const gridRows: GridRowsProp = rows.map(row => ({
+  const gridRows: GridRowsProp = rows.map((row) => ({
     ...row,
   }));
 
   return (
-    <Box sx={{ height: '100%', width: '100%' }}>
-      <DataGrid
-        rows={gridRows}
-        columns={columns}
-        loading={loading}
-        pageSizeOptions={[10, 25, 50]}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 25 },
-          },
-        }}
-        sx={{
-          border: 'none',
-          '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          },
-          '& .MuiDataGrid-columnHeaderTitle': {
-            fontWeight: 600,
-            letterSpacing: '0.02em',
-          },
-        }}
-        slots={{
-          noRowsOverlay: () => (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-              }}
-            >
-              <Typography color="text.secondary">
-                No time tracks for this period. Use the row above to add one.
-              </Typography>
-            </Box>
-          ),
-        }}
-      />
-    </Box>
+    <>
+      <Box className={styles.gridContainer}>
+        <DataGrid
+          rows={gridRows}
+          columns={columns}
+          loading={loading}
+          pageSizeOptions={[10, 25, 50]}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 25 },
+            },
+          }}
+          className={styles.dataGrid}
+          slots={{
+            noRowsOverlay: () => (
+              <Box className={styles.emptyState}>
+                <Typography className={styles.emptyStateText}>
+                  No time tracks for this period.
+                  <br />
+                  Use the Quick Add section above to add one.
+                </Typography>
+              </Box>
+            ),
+          }}
+        />
+      </Box>
+
+      {/* Edit Menu */}
+      <Menu
+        anchorEl={menuAnchor.el}
+        open={Boolean(menuAnchor.el)}
+        onClose={handleMenuClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <MenuItem onClick={() => handleEditClick('date')}>
+          <ListItemIcon>
+            <CalendarTodayIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Edit Date</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => handleEditClick('startTime')}>
+          <ListItemIcon>
+            <AccessTimeIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Edit Start Time</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => handleEditClick('durationMinutes')}>
+          <ListItemIcon>
+            <TimerIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Edit Duration</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => handleEditClick('note')}>
+          <ListItemIcon>
+            <NotesIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Edit Memo</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Edit Dialog */}
+      <Dialog
+        open={editDialog.open}
+        onClose={() =>
+          setEditDialog({ open: false, row: null, field: null, value: '' })
+        }
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>{getEditDialogTitle()}</DialogTitle>
+        <DialogContent>{getEditDialogInput()}</DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() =>
+              setEditDialog({ open: false, row: null, field: null, value: '' })
+            }
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSaveEdit} variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
