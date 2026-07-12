@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 import {
   FormControl,
   Dialog,
@@ -12,8 +13,8 @@ import {
   Chip,
 } from '@mui/material';
 import {
-  getCurrentDateString,
-  getCurrentTimeString,
+  getDateString,
+  getTimeString,
 } from '../../../../../../utils/dateUtils';
 
 type TimeTrackingFormProps = {
@@ -32,6 +33,18 @@ export type TimeTrackingData = {
   note?: string;
 };
 
+const DEFAULT_DURATION = 30;
+const DEBOUNCE_MS = 500;
+
+const buildBackdatedDefaults = (anchor: Date, durationMinutes: number): Omit<TimeTrackingData, 'note'> => {
+  const calc = new Date(anchor.getTime() - durationMinutes * 60 * 1000);
+  return {
+    date: getDateString(calc),
+    startTime: getTimeString(calc),
+    durationMinutes,
+  };
+};
+
 export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   isOpen,
   onClose,
@@ -42,17 +55,16 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<TimeTrackingData>(
     initialData || {
-      date: getCurrentDateString(),
-      startTime: getCurrentTimeString(),
-      durationMinutes: 30,
+      date: '',
+      startTime: '',
+      durationMinutes: DEFAULT_DURATION,
       note: '',
     }
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  const [anchorNow, setAnchorNow] = useState<Date | null>(null);
+  const [autoMode, setAutoMode] = useState<boolean>(true);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const quickDurations = [
     { label: '15m', value: 15 },
@@ -67,10 +79,95 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
 
   const [customMode, setCustomMode] = useState(false);
 
+  /* ── Modal open: capture anchor, backdate start time ── */
+  useEffect(() => {
+    if (isOpen) {
+      if (initialData) {
+        // Caller-provided data → Manual mode, no auto-recalc
+        setFormData({
+          date: initialData.date,
+          startTime: initialData.startTime,
+          durationMinutes: initialData.durationMinutes ?? DEFAULT_DURATION,
+          note: initialData.note ?? '',
+        });
+        setAnchorNow(null);
+        setAutoMode(false);
+      } else {
+        const now = new Date();
+        setAnchorNow(now);
+        setAutoMode(true);
+        const backdated = buildBackdatedDefaults(now, DEFAULT_DURATION);
+        setFormData({
+          ...backdated,
+          note: '',
+        });
+        setCustomMode(false);
+      }
+    }
+  }, [isOpen]);
+
+  /* ── Modal close: reset anchor so next open gets a fresh one ── */
+  useEffect(() => {
+    if (!isOpen) {
+      setAnchorNow(null);
+    }
+  }, [isOpen]);
+
+  /* ── Cleanup debounce timer on unmount / modal close ── */
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  /* ── Duration change handler ── */
+  const handleDurationChange = (minutes: number) => {
+    setFormData(prev => ({ ...prev, durationMinutes: minutes }));
+
+    if (autoMode && anchorNow) {
+      const calc = new Date(anchorNow.getTime() - minutes * 60 * 1000);
+      setFormData(prev => ({
+        ...prev,
+        date: getDateString(calc),
+        startTime: getTimeString(calc),
+      }));
+    }
+  };
+
+  /* ── Reset to now ── */
+  const handleResetToNow = () => {
+    const now = new Date();
+    setAnchorNow(now);
+    setAutoMode(true);
+    const dur = formData.durationMinutes ?? DEFAULT_DURATION;
+    const calc = new Date(now.getTime() - dur * 60 * 1000);
+    setFormData(prev => ({
+      ...prev,
+      date: getDateString(calc),
+      startTime: getTimeString(calc),
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  const handleClose = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+    onClose();
+  };
+
   return (
     <Dialog
       open={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="sm"
       fullWidth
       aria-labelledby="time-tracking-dialog-title"
@@ -85,11 +182,24 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
                 you're back online.
               </Alert>
             )}
+            {!autoMode && (
+              <Typography
+                component="span"
+                color="primary"
+                sx={{ cursor: 'pointer', fontSize: '0.75rem', mb: 1, display: 'block' }}
+                onClick={handleResetToNow}
+              >
+                Reset to now
+              </Typography>
+            )}
             <TextField
               label="Date"
               type="date"
               value={formData.date}
-              onChange={e => setFormData({ ...formData, date: e.target.value })}
+              onChange={e => {
+                setAutoMode(false);
+                setFormData({ ...formData, date: e.target.value });
+              }}
               fullWidth
               InputLabelProps={{ shrink: true }}
             />
@@ -97,9 +207,10 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
               label="Start Time"
               type="time"
               value={formData.startTime}
-              onChange={e =>
-                setFormData({ ...formData, startTime: e.target.value })
-              }
+              onChange={e => {
+                setAutoMode(false);
+                setFormData({ ...formData, startTime: e.target.value });
+              }}
               fullWidth
               InputLabelProps={{ shrink: true }}
             />
@@ -121,7 +232,7 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
                   }
                   onClick={() => {
                     setCustomMode(false);
-                    setFormData({ ...formData, durationMinutes: opt.value });
+                    handleDurationChange(opt.value);
                   }}
                   clickable
                 />
@@ -138,16 +249,32 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
               <TextField
                 label="Custom duration (minutes)"
                 type="number"
-                value={formData.durationMinutes || ''}
-                onChange={e =>
-                  setFormData({
-                    ...formData,
-                    durationMinutes:
-                      e.target.value === ''
-                        ? undefined
-                        : Number(e.target.value),
-                  })
-                }
+                value={formData.durationMinutes ?? ''}
+                onChange={e => {
+                  const raw = e.target.value;
+                  const minutes = raw === '' ? undefined : Number(raw);
+
+                  // Clear previous debounce
+                  if (debounceTimerRef.current) {
+                    clearTimeout(debounceTimerRef.current);
+                    debounceTimerRef.current = null;
+                  }
+
+                  if (raw === '' || (minutes !== undefined && isNaN(minutes))) {
+                    setFormData({ ...formData, durationMinutes: undefined });
+                    return;
+                  }
+
+                  // Update form immediately so the field reflects keystrokes
+                  setFormData({ ...formData, durationMinutes: minutes });
+
+                  if (minutes !== undefined && !isNaN(minutes)) {
+                    // Start debounce timer for auto-recalculation
+                    debounceTimerRef.current = setTimeout(() => {
+                      handleDurationChange(minutes);
+                    }, DEBOUNCE_MS);
+                  }
+                }}
                 inputProps={{ min: 1, max: 1440, step: 1 }}
                 size="small"
                 fullWidth
@@ -165,7 +292,7 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 variant="outlined"
                 color="secondary"
               >
