@@ -1,0 +1,11 @@
+.editCell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
