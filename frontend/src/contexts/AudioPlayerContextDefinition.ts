@@ -25,6 +25,6 @@ export interface AudioPlayerContextType {
   close: () => void;
 }
 
-export const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(
-  undefined
-);
+export const AudioPlayerContext = createContext<
+  AudioPlayerContextType | undefined
+>(undefined);

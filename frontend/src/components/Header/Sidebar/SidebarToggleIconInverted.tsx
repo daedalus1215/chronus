@@ -4,9 +4,9 @@ type SidebarToggleIconInvertedProps = {
   size?: number;
 };
 
-export const SidebarToggleIconInverted: React.FC<SidebarToggleIconInvertedProps> = ({
-  size = 18,
-}) => {
+export const SidebarToggleIconInverted: React.FC<
+  SidebarToggleIconInvertedProps
+> = ({ size = 18 }) => {
   return (
     <svg
       width={size}

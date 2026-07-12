@@ -24,10 +24,12 @@ type ExplorerTreeDialogsProps = {
 
   // Reparent dialog
   reparentTarget: { folderIds: number[]; noteIds: number[] } | null;
-  setReparentTarget: (v: { folderIds: number[]; noteIds: number[] } | null) => void;
+  setReparentTarget: (
+    v: { folderIds: number[]; noteIds: number[] } | null
+  ) => void;
   handleReparentConfirm: (folder: FolderDto | null) => void;
   disabledMoveDestFolderIds: Set<number>;
-}
+};
 
 export const ExplorerTreeDialogs: React.FC<ExplorerTreeDialogsProps> = ({
   newFolderParentId,
@@ -70,8 +72,14 @@ export const ExplorerTreeDialogs: React.FC<ExplorerTreeDialogsProps> = ({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setNewFolderParentId(undefined)}>Cancel</Button>
-          <Button variant="contained" disabled={!folderName.trim()} onClick={() => handleCreateFolder(folderName)}>
+          <Button onClick={() => setNewFolderParentId(undefined)}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            disabled={!folderName.trim()}
+            onClick={() => handleCreateFolder(folderName)}
+          >
             Create
           </Button>
         </DialogActions>
@@ -92,7 +100,11 @@ export const ExplorerTreeDialogs: React.FC<ExplorerTreeDialogsProps> = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={handleDeleteFolder}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDeleteFolder}
+          >
             Delete
           </Button>
         </DialogActions>

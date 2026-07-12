@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -26,7 +25,10 @@ import {
   TimeTrackingData,
 } from '../../../HomePage/components/NoteListView/NoteItem/TimeTrackingForm/TimeTrackingForm';
 import { formatDateForDisplay } from '../../../../utils/dateUtils';
-import { useNoteTimeTracks, TimeTrack } from '../../hooks/useNoteTimeTracks/useNoteTimeTracks';
+import {
+  useNoteTimeTracks,
+  TimeTrack,
+} from '../../hooks/useNoteTimeTracks/useNoteTimeTracks';
 import { useCreateTimeTrack } from '../../hooks/useCreateTimeTrack/useCreateTimeTrack';
 import { useDeleteTimeTrack } from '../../hooks/useDeleteTimeTrack/useDeleteTimeTrack';
 import { useUpdateTimeTrackNote } from '../../hooks/useUpdateTimeTrackNote/useUpdateTimeTrackNote';
@@ -62,9 +64,16 @@ const formatDurationMinutes = (minutes: number): string => {
   return `${remainingMinutes}m`;
 };
 
-const compareTimeTracks = (leftTrack: TimeTrack, rightTrack: TimeTrack): number => {
-  const leftDate = new Date(`${leftTrack.date}T${leftTrack.startTime}`).getTime();
-  const rightDate = new Date(`${rightTrack.date}T${rightTrack.startTime}`).getTime();
+const compareTimeTracks = (
+  leftTrack: TimeTrack,
+  rightTrack: TimeTrack
+): number => {
+  const leftDate = new Date(
+    `${leftTrack.date}T${leftTrack.startTime}`
+  ).getTime();
+  const rightDate = new Date(
+    `${rightTrack.date}T${rightTrack.startTime}`
+  ).getTime();
   return rightDate - leftDate;
 };
 
@@ -231,70 +240,80 @@ export const TimeTrackHistoryView: React.FC<TimeTrackHistoryViewProps> = ({
             No time entries for this note.
           </Typography>
         )}
-      {viewMode === 'history' && !isLoading && !timeTrackError && sortedTimeTracks.length > 0 && (
-        <List
-          dense
-          disablePadding
-          sx={{
-            overflowY: 'auto',
-            flex: 1,
-            minHeight: 0,
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
-          }}
-        >
-          {sortedTimeTracks.map(timeTrack => (
-            <ListItem
-              key={timeTrack.id}
-              disablePadding
-              sx={{
-                py: 0.5,
-                px: 1.5,
-                alignItems: 'center',
-                borderBottom: '1px solid var(--color-overlay-stronger)',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
-                <ListItemText
-                  primary={formatDateForDisplay(timeTrack.date)}
-                  secondary={
-                    <>
-                      <Box component="span" sx={{ display: 'block' }}>
-                        {`${timeTrack.startTime} • ${formatDurationMinutes(timeTrack.durationMinutes)}`}
-                      </Box>
-                      {timeTrack.note && (
-                        <Tooltip title={timeTrack.note}>
-                          <Box
-                            component="span"
-                            className={styles.entryNote}
-                            sx={{ display: 'block', fontSize: '0.75rem' }}
-                          >
-                            {timeTrack.note}
-                          </Box>
-                        </Tooltip>
-                      )}
-                    </>
-                  }
+      {viewMode === 'history' &&
+        !isLoading &&
+        !timeTrackError &&
+        sortedTimeTracks.length > 0 && (
+          <List
+            dense
+            disablePadding
+            sx={{
+              overflowY: 'auto',
+              flex: 1,
+              minHeight: 0,
+              scrollbarWidth: 'none',
+              '&::-webkit-scrollbar': { display: 'none' },
+            }}
+          >
+            {sortedTimeTracks.map(timeTrack => (
+              <ListItem
+                key={timeTrack.id}
+                disablePadding
+                sx={{
+                  py: 0.5,
+                  px: 1.5,
+                  alignItems: 'center',
+                  borderBottom: '1px solid var(--color-overlay-stronger)',
+                }}
+              >
+                <Box
                   sx={{
-                    my: 0,
-                    '& .MuiListItemText-primary': { fontSize: '0.875rem' },
-                    '& .MuiListItemText-secondary': { fontSize: '0.75rem' },
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    gap: 1,
                   }}
-                />
-                <IconButton
-                  size="small"
-                  aria-label="Delete time entry"
-                  onClick={() => handleDeleteClick(timeTrack)}
-                  disabled={deleteTimeTrackMutation.isPending}
-                  sx={{ color: 'text.secondary' }}
                 >
-                  <DeleteOutlineRounded fontSize="small" />
-                </IconButton>
-              </Box>
-            </ListItem>
-          ))}
-        </List>
-      )}
+                  <ListItemText
+                    primary={formatDateForDisplay(timeTrack.date)}
+                    secondary={
+                      <>
+                        <Box component="span" sx={{ display: 'block' }}>
+                          {`${timeTrack.startTime} • ${formatDurationMinutes(timeTrack.durationMinutes)}`}
+                        </Box>
+                        {timeTrack.note && (
+                          <Tooltip title={timeTrack.note}>
+                            <Box
+                              component="span"
+                              className={styles.entryNote}
+                              sx={{ display: 'block', fontSize: '0.75rem' }}
+                            >
+                              {timeTrack.note}
+                            </Box>
+                          </Tooltip>
+                        )}
+                      </>
+                    }
+                    sx={{
+                      my: 0,
+                      '& .MuiListItemText-primary': { fontSize: '0.875rem' },
+                      '& .MuiListItemText-secondary': { fontSize: '0.75rem' },
+                    }}
+                  />
+                  <IconButton
+                    size="small"
+                    aria-label="Delete time entry"
+                    onClick={() => handleDeleteClick(timeTrack)}
+                    disabled={deleteTimeTrackMutation.isPending}
+                    sx={{ color: 'text.secondary' }}
+                  >
+                    <DeleteOutlineRounded fontSize="small" />
+                  </IconButton>
+                </Box>
+              </ListItem>
+            ))}
+          </List>
+        )}
       {viewMode === 'worklog' &&
         !isLoading &&
         !timeTrackError &&
@@ -322,10 +341,7 @@ export const TimeTrackHistoryView: React.FC<TimeTrackHistoryViewProps> = ({
             }}
           >
             {worklogEntries.map(timeTrack => (
-              <Box
-                key={timeTrack.id}
-                className={styles.worklogEntry}
-              >
+              <Box key={timeTrack.id} className={styles.worklogEntry}>
                 <Box className={styles.worklogMeta}>
                   <Typography component="span" className={styles.worklogDate}>
                     {formatDateForDisplay(timeTrack.date)}
@@ -405,8 +421,7 @@ export const TimeTrackHistoryView: React.FC<TimeTrackHistoryViewProps> = ({
           borderTop: '1px solid var(--color-overlay-stronger)',
           flexShrink: 0,
         }}
-      >
-      </Box>
+      ></Box>
       <TimeTrackingForm
         isOpen={isAddFormOpen}
         onClose={handleAddFormClose}

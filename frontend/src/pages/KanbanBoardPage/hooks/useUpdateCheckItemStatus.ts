@@ -27,9 +27,9 @@ export const useUpdateCheckItemStatus = (noteId: number) => {
       const previousItems = queryClient.getQueryData<CheckItem[]>(
         checkItemKeys.list(noteId)
       );
-      const previousNote = queryClient.getQueryData<{ checkItems?: CheckItem[] }>(
-        ['note', noteId]
-      );
+      const previousNote = queryClient.getQueryData<{
+        checkItems?: CheckItem[];
+      }>(['note', noteId]);
       const optimisticUpdate = (item: CheckItem): CheckItem =>
         item.id === id
           ? {

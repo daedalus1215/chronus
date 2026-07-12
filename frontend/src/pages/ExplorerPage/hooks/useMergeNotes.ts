@@ -28,11 +28,26 @@ export type MergeNotesData = {
   version: number;
 };
 
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String(error.message);
+  }
+  return 'An unexpected error occurred while merging notes';
+}
+
 export const useMergeNotes = () => {
   const queryClient = useQueryClient();
 
   const mergeMutation = useMutation({
-    mutationFn: async (data: MergeNotesData): Promise<{ success: boolean; archivedNoteIds: number[] }> => {
+    mutationFn: async (
+      data: MergeNotesData
+    ): Promise<{ success: boolean; archivedNoteIds: number[] }> => {
       return await mergeNotesRequest(data);
     },
     onSuccess: () => {
@@ -51,9 +66,16 @@ export const useMergeNotes = () => {
     return await mergeMutation.mutateAsync(data);
   };
 
+  const resetError = () => {
+    mergeMutation.reset();
+  };
+
   return {
     mergeNotes,
     isMerging: mergeMutation.isPending,
-    error: mergeMutation.error?.message || null,
+    error: mergeMutation.error
+      ? extractErrorMessage(mergeMutation.error)
+      : null,
+    resetError,
   };
 };

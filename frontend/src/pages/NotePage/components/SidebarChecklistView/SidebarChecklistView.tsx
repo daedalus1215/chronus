@@ -9,7 +9,10 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import AddIcon from '@mui/icons-material/Add';
 import { Note } from '../../api/responses';
 import { CheckItem } from '../../api/responses';
-import { useCheckItems, useCheckItemsQuery } from '../CheckListView/hooks/useCheckItems';
+import {
+  useCheckItems,
+  useCheckItemsQuery,
+} from '../CheckListView/hooks/useCheckItems';
 import { useCheckItemEditDialog } from '../CheckListView/hooks/useCheckItemEditDialog';
 import { EditCheckItemDialog } from '../CheckListView/components/EditCheckItemDialog/EditCheckItemDialog';
 import { useAddCheckItemDialog } from '../CheckListView/hooks/useAddCheckItemDialog';

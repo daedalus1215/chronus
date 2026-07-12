@@ -48,6 +48,7 @@ type MergeNotesDialogProps = {
   open: boolean;
   notes: NoteToMerge[];
   isMerging?: boolean;
+  error?: string | null;
   onCancel: () => void;
   onConfirm: (targetNoteId: number, sources: SourceNoteSelection[]) => void;
 };
@@ -63,29 +64,40 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
   open,
   notes,
   isMerging,
+  error,
   onCancel,
   onConfirm,
 }) => {
   // Target selection (primary note)
-  const [targetNoteId, setTargetNoteId] = useState<number>(() => notes[0]?.id ?? 0);
+  const [targetNoteId, setTargetNoteId] = useState<number>(
+    () => notes[0]?.id ?? 0
+  );
 
   // Selection states for each source note's content
-  const [selectedDescriptions, setSelectedDescriptions] = useState<Set<number>>(() => {
-    const hasDescription = notes.filter(n => n.description?.trim()).map(n => n.id);
-    return new Set(hasDescription);
-  });
+  const [selectedDescriptions, setSelectedDescriptions] = useState<Set<number>>(
+    () => {
+      const hasDescription = notes
+        .filter(n => n.description?.trim())
+        .map(n => n.id);
+      return new Set(hasDescription);
+    }
+  );
 
-  const [selectedTags, setSelectedTags] = useState<Map<number, Set<string>>>(() => {
-    const map = new Map<number, Set<string>>();
-    notes.forEach(note => {
-      if (note.tags.length > 0) {
-        map.set(note.id, new Set(note.tags));
-      }
-    });
-    return map;
-  });
+  const [selectedTags, setSelectedTags] = useState<Map<number, Set<string>>>(
+    () => {
+      const map = new Map<number, Set<string>>();
+      notes.forEach(note => {
+        if (note.tags.length > 0) {
+          map.set(note.id, new Set(note.tags));
+        }
+      });
+      return map;
+    }
+  );
 
-  const [selectedCheckItems, setSelectedCheckItems] = useState<Map<number, Set<number>>>(() => {
+  const [selectedCheckItems, setSelectedCheckItems] = useState<
+    Map<number, Set<number>>
+  >(() => {
     const map = new Map<number, Set<number>>();
     notes.forEach(note => {
       if (note.checkItems.length > 0) {
@@ -95,7 +107,9 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
     return map;
   });
 
-  const [selectedTimeTracks, setSelectedTimeTracks] = useState<Map<number, Set<number>>>(() => {
+  const [selectedTimeTracks, setSelectedTimeTracks] = useState<
+    Map<number, Set<number>>
+  >(() => {
     const map = new Map<number, Set<number>>();
     notes.forEach(note => {
       if (note.timeTracks.length > 0) {
@@ -106,7 +120,10 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
   });
 
   // Filter out target from sources
-  const sourceNotes = useMemo(() => notes.filter(n => n.id !== targetNoteId), [notes, targetNoteId]);
+  const sourceNotes = useMemo(
+    () => notes.filter(n => n.id !== targetNoteId),
+    [notes, targetNoteId]
+  );
 
   const handleToggleDescription = (noteId: number) => {
     setSelectedDescriptions(prev => {
@@ -168,12 +185,16 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
 
       const selectedNoteCheckItems = selectedCheckItems.get(note.id);
       if (selectedNoteCheckItems && selectedNoteCheckItems.size > 0) {
-        selection.checkItems = note.checkItems.filter((_, i) => selectedNoteCheckItems.has(i));
+        selection.checkItems = note.checkItems.filter((_, i) =>
+          selectedNoteCheckItems.has(i)
+        );
       }
 
       const selectedNoteTimeTracks = selectedTimeTracks.get(note.id);
       if (selectedNoteTimeTracks && selectedNoteTimeTracks.size > 0) {
-        selection.timeTracks = note.timeTracks.filter((_, i) => selectedNoteTimeTracks.has(i));
+        selection.timeTracks = note.timeTracks.filter((_, i) =>
+          selectedNoteTimeTracks.has(i)
+        );
       }
 
       return selection;
@@ -207,7 +228,9 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
           {/* Target selection */}
           <Box>
             <FormControl component="fieldset" fullWidth>
-              <FormLabel component="legend">Select Primary Note (target)</FormLabel>
+              <FormLabel component="legend">
+                Select Primary Note (target)
+              </FormLabel>
               <RadioGroup
                 value={targetNoteId}
                 onChange={e => setTargetNoteId(Number(e.target.value))}
@@ -231,15 +254,28 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
                 ))}
               </RadioGroup>
             </FormControl>
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-              The primary note keeps its title, folder, and creation date. Other notes will be archived.
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 1, display: 'block' }}
+            >
+              The primary note keeps its title, folder, and creation date. Other
+              notes will be archived.
             </Typography>
           </Box>
 
           {/* Warning about audio deletion */}
           <Alert severity="info" sx={{ fontSize: 13 }}>
-            Audio files from source notes will be deleted (not moved to the target).
+            Audio files from source notes will be deleted (not moved to the
+            target).
           </Alert>
+
+          {/* Error display */}
+          {error && (
+            <Alert severity="error" sx={{ fontSize: 13 }}>
+              {error}
+            </Alert>
+          )}
 
           {/* Source content selection */}
           {sourceNotes.length > 0 && (
@@ -249,7 +285,15 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
               </Typography>
               <Stack spacing={2}>
                 {sourceNotes.map(note => (
-                  <Box key={note.id} sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
+                  <Box
+                    key={note.id}
+                    sx={{
+                      border: 1,
+                      borderColor: 'divider',
+                      borderRadius: 1,
+                      p: 2,
+                    }}
+                  >
                     <Typography variant="subtitle2" gutterBottom>
                       {note.name}
                     </Typography>
@@ -269,7 +313,13 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
                         <Typography
                           variant="caption"
                           color="text.secondary"
-                          sx={{ display: 'block', ml: 4, maxHeight: 60, overflow: 'hidden', textOverflow: 'ellipsis' }}
+                          sx={{
+                            display: 'block',
+                            ml: 4,
+                            maxHeight: 60,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
                         >
                           {note.description.substring(0, 150)}
                           {note.description.length > 150 ? '...' : ''}
@@ -280,17 +330,34 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
                     {/* Tags */}
                     {note.tags.length > 0 && (
                       <Box sx={{ mb: 2 }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
                           Tags ({note.tags.length})
                         </Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          flexWrap="wrap"
+                          useFlexGap
+                        >
                           {note.tags.map(tag => (
                             <Chip
                               key={tag}
                               label={tag}
                               size="small"
-                              color={selectedTags.get(note.id)?.has(tag) ? 'primary' : 'default'}
-                              variant={selectedTags.get(note.id)?.has(tag) ? 'filled' : 'outlined'}
+                              color={
+                                selectedTags.get(note.id)?.has(tag)
+                                  ? 'primary'
+                                  : 'default'
+                              }
+                              variant={
+                                selectedTags.get(note.id)?.has(tag)
+                                  ? 'filled'
+                                  : 'outlined'
+                              }
                               onClick={() => handleToggleTag(note.id, tag)}
                               clickable
                             />
@@ -302,7 +369,11 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
                     {/* Check items */}
                     {note.checkItems.length > 0 && (
                       <Box sx={{ mb: 2 }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
                           Check items ({note.checkItems.length})
                         </Typography>
                         <List dense disablePadding>
@@ -313,14 +384,28 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
                                 control={
                                   <Checkbox
                                     size="small"
-                                    checked={selectedCheckItems.get(note.id)?.has(i) ?? false}
-                                    onChange={() => handleToggleCheckItem(note.id, i)}
+                                    checked={
+                                      selectedCheckItems.get(note.id)?.has(i) ??
+                                      false
+                                    }
+                                    onChange={() =>
+                                      handleToggleCheckItem(note.id, i)
+                                    }
                                   />
                                 }
                                 label={
-                                  <Stack direction="row" alignItems="center" spacing={1}>
-                                    <Typography variant="body2">{item.name}</Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                  <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    spacing={1}
+                                  >
+                                    <Typography variant="body2">
+                                      {item.name}
+                                    </Typography>
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                    >
                                       {statusLabels[item.status]}
                                     </Typography>
                                   </Stack>
@@ -335,7 +420,11 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
                     {/* Time tracks */}
                     {note.timeTracks.length > 0 && (
                       <Box>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: 'block', mb: 0.5 }}
+                        >
                           Time tracks ({note.timeTracks.length})
                         </Typography>
                         <List dense disablePadding>
@@ -345,16 +434,26 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
                                 control={
                                   <Checkbox
                                     size="small"
-                                    checked={selectedTimeTracks.get(note.id)?.has(i) ?? false}
-                                    onChange={() => handleToggleTimeTrack(note.id, i)}
+                                    checked={
+                                      selectedTimeTracks.get(note.id)?.has(i) ??
+                                      false
+                                    }
+                                    onChange={() =>
+                                      handleToggleTimeTrack(note.id, i)
+                                    }
                                   />
                                 }
                                 label={
                                   <Typography variant="body2">
-                                    {track.date} {track.startTime} {track.durationMinutes}m
+                                    {track.date} {track.startTime}{' '}
+                                    {track.durationMinutes}m
                                     {track.note && (
                                       <Tooltip title={track.note}>
-                                        <Chip label="note" size="small" sx={{ ml: 1 }} />
+                                        <Chip
+                                          label="note"
+                                          size="small"
+                                          sx={{ ml: 1 }}
+                                        />
                                       </Tooltip>
                                     )}
                                   </Typography>

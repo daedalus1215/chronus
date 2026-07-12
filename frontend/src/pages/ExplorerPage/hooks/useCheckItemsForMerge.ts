@@ -24,8 +24,12 @@ export type CheckItemForMerge = {
 };
 
 // Fetch check items for a single note (used when building merge data).
-export const fetchNoteCheckItems = async (noteId: number): Promise<CheckItemForMerge[]> => {
-  const { data } = await api.get<CheckItemResponse[]>(`/check-items/notes/${noteId}`);
+export const fetchNoteCheckItems = async (
+  noteId: number
+): Promise<CheckItemForMerge[]> => {
+  const { data } = await api.get<CheckItemResponse[]>(
+    `/check-items/notes/${noteId}`
+  );
   return (data ?? []).map(item => ({
     name: item.name,
     description: item.description,

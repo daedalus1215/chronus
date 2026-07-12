@@ -10,7 +10,10 @@ import { useDebounce } from '../../../../hooks/useDebounce';
 function nameMatches(name: string, query: string): boolean {
   if (!query) return true;
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp('(?:^|[^a-zA-Z0-9])' + escaped + '(?:[^a-zA-Z0-9]|$)', 'i');
+  const regex = new RegExp(
+    '(?:^|[^a-zA-Z0-9])' + escaped + '(?:[^a-zA-Z0-9]|$)',
+    'i'
+  );
   return regex.test(name);
 }
 
@@ -20,7 +23,7 @@ function nameMatches(name: string, query: string): boolean {
 function collectAncestorMatches(
   node: FolderTreeNode,
   query: string,
-  notes: ExplorerNoteItem[],
+  notes: ExplorerNoteItem[]
 ): Set<number> {
   const result = new Set<number>();
   const folderMatches = nameMatches(node.name, query);
@@ -51,13 +54,13 @@ export type ExplorerFilterState = {
   setQuery: (q: string) => void;
   clear: () => void;
   toggle: () => void;
-  folderMatches: Set<number>;     // folder IDs that match or contain matches
-  noteMatches: Set<number>;       // note IDs that match directly
+  folderMatches: Set<number>; // folder IDs that match or contain matches
+  noteMatches: Set<number>; // note IDs that match directly
 };
 
 export const useExplorerFilter = (
   tree: FolderTreeNode[],
-  notes: ExplorerNoteItem[],
+  notes: ExplorerNoteItem[]
 ): ExplorerFilterState => {
   const [active, setActive] = useState(false);
   const [query, setQuery] = useState('');
@@ -76,7 +79,9 @@ export const useExplorerFilter = (
 
   const noteMatches = useMemo(() => {
     if (!active || !debouncedQuery) return new Set<number>();
-    return new Set(notes.filter(n => nameMatches(n.name, debouncedQuery)).map(n => n.id));
+    return new Set(
+      notes.filter(n => nameMatches(n.name, debouncedQuery)).map(n => n.id)
+    );
   }, [active, notes, debouncedQuery]);
 
   const clear = useCallback(() => {
@@ -111,7 +116,7 @@ export const useExplorerFilter = (
 export function useMergedExpanded(
   userExpanded: Set<number>,
   folderMatches: Set<number>,
-  active: boolean,
+  active: boolean
 ): Set<number> {
   return useMemo(() => {
     if (!active) return userExpanded;

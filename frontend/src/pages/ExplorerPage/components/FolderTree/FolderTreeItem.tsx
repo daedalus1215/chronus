@@ -89,11 +89,7 @@ export const FolderTreeItem: React.FC<Props> = ({
         sx={{ pl: `${indentPx}px` }}
       >
         {/* chevron */}
-        <Box
-          component="span"
-          className={styles.chevron}
-          onClick={handleToggle}
-        >
+        <Box component="span" className={styles.chevron} onClick={handleToggle}>
           {hasChildren ? (
             expanded ? (
               <ExpandMoreIcon sx={{ fontSize: 14 }} />
@@ -109,9 +105,7 @@ export const FolderTreeItem: React.FC<Props> = ({
             <FolderOpenIcon
               sx={{
                 fontSize: 14,
-                color: isSelected
-                  ? 'primary.light'
-                  : 'rgba(255,255,255,0.5)',
+                color: isSelected ? 'primary.light' : 'rgba(255,255,255,0.5)',
               }}
             />
           ) : (

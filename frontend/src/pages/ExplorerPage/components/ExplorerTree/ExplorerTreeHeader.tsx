@@ -61,7 +61,14 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
           <>
             <Typography
               component="span"
-              sx={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              sx={{
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.35)',
+                maxWidth: 90,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
             >
               {selectionCount}
             </Typography>
@@ -86,7 +93,12 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
                 </IconButton>
               </span>
             </Tooltip>
-            <IconButton size="small" className={styles.headerBtn} title="Clear selection" onClick={onClearSelection}>
+            <IconButton
+              size="small"
+              className={styles.headerBtn}
+              title="Clear selection"
+              onClick={onClearSelection}
+            >
               <CloseRoundedIcon sx={{ fontSize: 14 }} />
             </IconButton>
           </>
@@ -113,8 +125,12 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
             textTransform: 'none',
             letterSpacing: 0.01,
             whiteSpace: 'nowrap',
-            color: pickItemsMode ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)',
-            backgroundColor: pickItemsMode ? 'rgba(255,255,255,0.1)' : 'transparent',
+            color: pickItemsMode
+              ? 'rgba(255,255,255,0.95)'
+              : 'rgba(255,255,255,0.45)',
+            backgroundColor: pickItemsMode
+              ? 'rgba(255,255,255,0.1)'
+              : 'transparent',
           }}
         >
           {/* {pickItemsMode ? 'Done' : 'Select'} */}
@@ -125,7 +141,9 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
           title={dragTitle}
           aria-pressed={dragMode !== 'off'}
           onClick={onCycleDragMode}
-          sx={{ color: dragMode !== 'off' ? 'rgba(255,255,255,0.95)' : undefined }}
+          sx={{
+            color: dragMode !== 'off' ? 'rgba(255,255,255,0.95)' : undefined,
+          }}
         >
           <SwapVertIcon sx={{ fontSize: 14 }} />
         </IconButton>
@@ -149,4 +167,3 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
     </Box>
   );
 };
-

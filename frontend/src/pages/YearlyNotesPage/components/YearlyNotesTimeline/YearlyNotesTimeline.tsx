@@ -36,9 +36,7 @@ export const YearlyNotesTimeline: React.FC<YearlyNotesTimelineProps> = ({
   if (!data || data.years.length === 0) {
     return (
       <Box className={styles.emptyContainer}>
-        <Typography className={styles.emptyTitle}>
-          No notes found
-        </Typography>
+        <Typography className={styles.emptyTitle}>No notes found</Typography>
         <Typography className={styles.emptyMessage}>
           Start tracking time on your notes to see them here.
         </Typography>
@@ -48,7 +46,7 @@ export const YearlyNotesTimeline: React.FC<YearlyNotesTimelineProps> = ({
 
   return (
     <Box className={styles.timelineContainer}>
-      {data.years.map((yearData) => (
+      {data.years.map(yearData => (
         <Box key={yearData.year} className={styles.yearSection}>
           <Box className={styles.yearHeader}>
             <Box className={styles.yearIndicator} />
@@ -61,7 +59,7 @@ export const YearlyNotesTimeline: React.FC<YearlyNotesTimelineProps> = ({
             </Typography>
           </Box>
           <Box className={styles.notesContainer}>
-            {yearData.notes.map((note) => (
+            {yearData.notes.map(note => (
               <YearlyNoteItem key={note.noteId} note={note} />
             ))}
           </Box>

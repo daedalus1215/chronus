@@ -10,9 +10,7 @@ export const YearlyNotesPage: React.FC = () => {
   return (
     <div className={styles.yearlyNotesPage}>
       <Box className={styles.header}>
-        <Typography className={styles.title}>
-          Yearly Notes
-        </Typography>
+        <Typography className={styles.title}>Yearly Notes</Typography>
         <Typography className={styles.subtitle}>
           View notes you've worked on organized by year
         </Typography>

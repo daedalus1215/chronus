@@ -58,7 +58,6 @@
   padding: 0 4px;
 }
 
-
 .pullToRefresh :global(.ptr__children) {
   min-height: 100%;
 }

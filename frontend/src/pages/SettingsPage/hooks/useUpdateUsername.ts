@@ -1,5 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { updateUsername, UpdateUsernameRequest } from '../../../api/requests/users.requests';
+import {
+  updateUsername,
+  UpdateUsernameRequest,
+} from '../../../api/requests/users.requests';
 import { useAuth } from '../../../auth/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';

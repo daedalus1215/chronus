@@ -70,19 +70,13 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
       aria-label={`Kanban card: ${item.name}`}
     >
       <CardContent className={styles.cardContent}>
-        <div
-          className={styles.dragHandle}
-          {...attributes}
-          {...listeners}
-        >
+        <div className={styles.dragHandle} {...attributes} {...listeners}>
           <span
             className={styles.statusDot}
             style={{ backgroundColor: statusColor }}
             aria-hidden="true"
           />
-          <span className={styles.cardText}>
-            {item.name}
-          </span>
+          <span className={styles.cardText}>{item.name}</span>
         </div>
         <div className={styles.cardActions}>
           {item.status === 'done' && (

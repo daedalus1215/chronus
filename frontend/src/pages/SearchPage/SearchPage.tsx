@@ -114,7 +114,9 @@ export const SearchPage: React.FC = () => {
 
       {searched && results.length === 0 && !loading && (
         <Box className={styles.emptyState}>
-          <Typography color="text.secondary">No results for "{query}"</Typography>
+          <Typography color="text.secondary">
+            No results for "{query}"
+          </Typography>
         </Box>
       )}
 
@@ -133,9 +135,15 @@ export const SearchPage: React.FC = () => {
                 <Box className={styles.resultContent}>
                   <Box className={styles.resultHeader}>
                     {result.isMemo ? (
-                      <NoteIcon fontSize="small" sx={{ color: 'primary.main' }} />
+                      <NoteIcon
+                        fontSize="small"
+                        sx={{ color: 'primary.main' }}
+                      />
                     ) : (
-                      <CheckBoxIcon fontSize="small" sx={{ color: 'secondary.main' }} />
+                      <CheckBoxIcon
+                        fontSize="small"
+                        sx={{ color: 'secondary.main' }}
+                      />
                     )}
                     <Typography variant="subtitle2" className={styles.noteName}>
                       {result.noteName}
@@ -148,9 +156,13 @@ export const SearchPage: React.FC = () => {
                     />
                   </Box>
                   <Typography variant="body2" className={styles.context}>
-                    <span className={styles.contextText}>{result.contextBefore}</span>
+                    <span className={styles.contextText}>
+                      {result.contextBefore}
+                    </span>
                     <mark className={styles.highlight}>{result.matchText}</mark>
-                    <span className={styles.contextText}>{result.contextAfter}</span>
+                    <span className={styles.contextText}>
+                      {result.contextAfter}
+                    </span>
                   </Typography>
                 </Box>
               </ListItemButton>

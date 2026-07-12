@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  buildFolderTree,
-  FolderDto,
-} from '../../../../api/dtos/folder.dtos';
+import { buildFolderTree, FolderDto } from '../../../../api/dtos/folder.dtos';
 import { ExplorerNoteItem } from '../../../../api/dtos/note.dtos';
 import {
   bulkReparentFolders,
@@ -11,12 +8,13 @@ import {
   fetchFolders,
   updateFolder,
 } from '../../../../api/requests/folders.requests';
-import { getNotesForExplorer, moveNoteToFolder, createNote } from '../../../../api/requests/notes.requests';
-import { NOTE_TYPES } from '../../../../constant';
 import {
-  collectSubtreeIds,
-  visibleFolderIdsInOrder,
-} from './utils';
+  getNotesForExplorer,
+  moveNoteToFolder,
+  createNote,
+} from '../../../../api/requests/notes.requests';
+import { NOTE_TYPES } from '../../../../constant';
+import { collectSubtreeIds, visibleFolderIdsInOrder } from './utils';
 
 export const useFolderOperations = (
   selectedFolderIds: Set<number> = new Set()
@@ -28,7 +26,9 @@ export const useFolderOperations = (
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
   // Dialog state
-  const [newFolderParentId, setNewFolderParentId] = useState<number | null | undefined>(undefined);
+  const [newFolderParentId, setNewFolderParentId] = useState<
+    number | null | undefined
+  >(undefined);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
   // Rename state
@@ -65,24 +65,24 @@ export const useFolderOperations = (
   );
 
   // Expand / collapse
-  const toggle = useCallback((id: number) =>
-    setExpanded(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id);
-      }
-      return next;
-    }),
+  const toggle = useCallback(
+    (id: number) =>
+      setExpanded(prev => {
+        const next = new Set(prev);
+        if (next.has(id)) {
+          next.delete(id);
+        } else {
+          next.add(id);
+        }
+        return next;
+      }),
     []
   );
 
   // Create memo in selected folder (or root if none selected)
   const handleCreateMemo = useCallback(async () => {
-    const folderId = selectedFolderIds.size > 0
-      ? Math.min(...selectedFolderIds)
-      : null;
+    const folderId =
+      selectedFolderIds.size > 0 ? Math.min(...selectedFolderIds) : null;
     await createNote(NOTE_TYPES.MEMO, folderId);
     await load();
     if (folderId !== null) {
@@ -94,36 +94,49 @@ export const useFolderOperations = (
     }
   }, [selectedFolderIds, load]);
 
-  const handleCreateMemoInFolder = useCallback(async (folderId: number) => {
-    await createNote(NOTE_TYPES.MEMO, folderId);
-    await load();
-    setExpanded(prev => {
-      const next = new Set(prev);
-      next.add(folderId);
-      return next;
-    });
-  }, [load]);
+  const handleCreateMemoInFolder = useCallback(
+    async (folderId: number) => {
+      await createNote(NOTE_TYPES.MEMO, folderId);
+      await load();
+      setExpanded(prev => {
+        const next = new Set(prev);
+        next.add(folderId);
+        return next;
+      });
+    },
+    [load]
+  );
 
   // Create folder
-  const handleCreateFolder = useCallback(async (name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    const folder = await createFolder({ name: trimmed, parentId: newFolderParentId ?? null });
-    setFolders(prev => [...prev, folder]);
-    setExpanded(prev => {
-      const next = new Set(prev);
-      if (newFolderParentId) next.add(newFolderParentId);
-      return next;
-    });
-    setNewFolderParentId(undefined);
-  }, [newFolderParentId]);
+  const handleCreateFolder = useCallback(
+    async (name: string) => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      const folder = await createFolder({
+        name: trimmed,
+        parentId: newFolderParentId ?? null,
+      });
+      setFolders(prev => [...prev, folder]);
+      setExpanded(prev => {
+        const next = new Set(prev);
+        if (newFolderParentId) next.add(newFolderParentId);
+        return next;
+      });
+      setNewFolderParentId(undefined);
+    },
+    [newFolderParentId]
+  );
 
   // Delete folder
   const handleDeleteFolder = useCallback(async () => {
     if (deleteConfirmId === null) return;
     await deleteFolder(deleteConfirmId);
     setFolders(prev => prev.filter(f => f.id !== deleteConfirmId));
-    setNotes(prev => prev.map(n => (n.folderId === deleteConfirmId ? { ...n, folderId: null } : n)));
+    setNotes(prev =>
+      prev.map(n =>
+        n.folderId === deleteConfirmId ? { ...n, folderId: null } : n
+      )
+    );
     setDeleteConfirmId(null);
   }, [deleteConfirmId]);
 
@@ -148,7 +161,8 @@ export const useFolderOperations = (
 
   // Reparent helpers
   const disabledMoveDestFolderIds = useMemo(() => {
-    if (!reparentTarget || reparentTarget.folderIds.length === 0) return new Set<number>();
+    if (!reparentTarget || reparentTarget.folderIds.length === 0)
+      return new Set<number>();
     const out = new Set<number>();
     reparentTarget.folderIds.forEach(id => {
       collectSubtreeIds(id, folders).forEach(x => out.add(x));
@@ -156,24 +170,27 @@ export const useFolderOperations = (
     return out;
   }, [reparentTarget, folders]);
 
-  const handleReparentConfirm = useCallback(async (folder: FolderDto | null) => {
-    if (!reparentTarget) return;
-    const dest = folder?.id ?? null;
-    const { folderIds, noteIds } = reparentTarget;
-    try {
-      if (folderIds.length >= 2) {
-        await bulkReparentFolders({ folderIds, parentId: dest });
-      } else if (folderIds.length === 1) {
-        await updateFolder(folderIds[0], { parentId: dest });
+  const handleReparentConfirm = useCallback(
+    async (folder: FolderDto | null) => {
+      if (!reparentTarget) return;
+      const dest = folder?.id ?? null;
+      const { folderIds, noteIds } = reparentTarget;
+      try {
+        if (folderIds.length >= 2) {
+          await bulkReparentFolders({ folderIds, parentId: dest });
+        } else if (folderIds.length === 1) {
+          await updateFolder(folderIds[0], { parentId: dest });
+        }
+        if (noteIds.length > 0) {
+          await Promise.all(noteIds.map(id => moveNoteToFolder(id, dest)));
+        }
+        await load();
+      } finally {
+        setReparentTarget(null);
       }
-      if (noteIds.length > 0) {
-        await Promise.all(noteIds.map(id => moveNoteToFolder(id, dest)));
-      }
-      await load();
-    } finally {
-      setReparentTarget(null);
-    }
-  }, [reparentTarget, load]);
+    },
+    [reparentTarget, load]
+  );
 
   return {
     // Data

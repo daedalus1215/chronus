@@ -86,96 +86,103 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
               </Alert>
             )}
             <TextField
-            label="Date"
-            type="date"
-            value={formData.date}
-            onChange={e => setFormData({ ...formData, date: e.target.value })}
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            label="Start Time"
-            type="time"
-            value={formData.startTime}
-            onChange={e =>
-              setFormData({ ...formData, startTime: e.target.value })
-            }
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-          />
-          <FormControl fullWidth size="small"></FormControl>
-          <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="space-evenly">
-            {quickDurations.map(opt => (
-              <Chip
-                key={opt.value}
-                label={opt.label}
-                color={
-                  formData.durationMinutes === opt.value && !customMode
-                    ? 'primary'
-                    : 'default'
-                }
-                onClick={() => {
-                  setCustomMode(false);
-                  setFormData({ ...formData, durationMinutes: opt.value });
-                }}
-                clickable
-              />
-            ))}
-            <Chip
-              label="Custom"
-              color={customMode ? 'primary' : 'default'}
-              onClick={() => setCustomMode(true)}
-              clickable
-              aria-label="Enter custom duration"
-            />
-          </Stack>
-          {customMode && (
-            <TextField
-              label="Custom duration (minutes)"
-              type="number"
-              value={formData.durationMinutes || ''}
-              onChange={e =>
-                setFormData({
-                  ...formData,
-                  durationMinutes:
-                    e.target.value === '' ? undefined : Number(e.target.value),
-                })
-              }
-              inputProps={{ min: 1, max: 1440, step: 1 }}
-              size="small"
+              label="Date"
+              type="date"
+              value={formData.date}
+              onChange={e => setFormData({ ...formData, date: e.target.value })}
               fullWidth
-              sx={{ mt: 1 }}
+              InputLabelProps={{ shrink: true }}
             />
-          )}
-          <TextField
-            label="Note (optional)"
-            value={formData.note}
-            onChange={e => setFormData({ ...formData, note: e.target.value })}
-            fullWidth
-            multiline
-            rows={3}
-          />
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="outlined"
-              color="secondary"
+            <TextField
+              label="Start Time"
+              type="time"
+              value={formData.startTime}
+              onChange={e =>
+                setFormData({ ...formData, startTime: e.target.value })
+              }
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+            <FormControl fullWidth size="small"></FormControl>
+            <Stack
+              direction="row"
+              spacing={1}
+              flexWrap="wrap"
+              justifyContent="space-evenly"
             >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : 'Save'}
-            </Button>
+              {quickDurations.map(opt => (
+                <Chip
+                  key={opt.value}
+                  label={opt.label}
+                  color={
+                    formData.durationMinutes === opt.value && !customMode
+                      ? 'primary'
+                      : 'default'
+                  }
+                  onClick={() => {
+                    setCustomMode(false);
+                    setFormData({ ...formData, durationMinutes: opt.value });
+                  }}
+                  clickable
+                />
+              ))}
+              <Chip
+                label="Custom"
+                color={customMode ? 'primary' : 'default'}
+                onClick={() => setCustomMode(true)}
+                clickable
+                aria-label="Enter custom duration"
+              />
+            </Stack>
+            {customMode && (
+              <TextField
+                label="Custom duration (minutes)"
+                type="number"
+                value={formData.durationMinutes || ''}
+                onChange={e =>
+                  setFormData({
+                    ...formData,
+                    durationMinutes:
+                      e.target.value === ''
+                        ? undefined
+                        : Number(e.target.value),
+                  })
+                }
+                inputProps={{ min: 1, max: 1440, step: 1 }}
+                size="small"
+                fullWidth
+                sx={{ mt: 1 }}
+              />
+            )}
+            <TextField
+              label="Note (optional)"
+              value={formData.note}
+              onChange={e => setFormData({ ...formData, note: e.target.value })}
+              fullWidth
+              multiline
+              rows={3}
+            />
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button
+                type="button"
+                onClick={onClose}
+                variant="outlined"
+                color="secondary"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Saving...' : 'Save'}
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
-      </Box>
-    </DialogContent>
+        </Box>
+      </DialogContent>
     </Dialog>
   );
 };

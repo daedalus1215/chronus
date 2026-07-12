@@ -48,7 +48,11 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
         aria-label={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
         sx={{ color: 'primary.main' }}
       >
-        {isEditMode ? <Create sx={{ fontSize: 16 }} /> : <MenuBook sx={{ fontSize: 16 }} />}
+        {isEditMode ? (
+          <Create sx={{ fontSize: 16 }} />
+        ) : (
+          <MenuBook sx={{ fontSize: 16 }} />
+        )}
       </IconButton>
       <IconButton
         size="small"
@@ -71,14 +75,24 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
       {note.isMemo && isEditMode && (
         <IconButton
           size="small"
-          title={transcriptionController?.isRecording ? 'Stop recording' : 'Start recording'}
-          aria-label={transcriptionController?.isRecording ? 'Stop recording' : 'Start recording'}
+          title={
+            transcriptionController?.isRecording
+              ? 'Stop recording'
+              : 'Start recording'
+          }
+          aria-label={
+            transcriptionController?.isRecording
+              ? 'Stop recording'
+              : 'Start recording'
+          }
           onClick={() => transcriptionController?.toggleRecording()}
           disabled={!transcriptionController}
         >
-          {transcriptionController?.isRecording
-            ? <Stop sx={{ fontSize: 16 }} />
-            : <Mic sx={{ fontSize: 16 }} />}
+          {transcriptionController?.isRecording ? (
+            <Stop sx={{ fontSize: 16 }} />
+          ) : (
+            <Mic sx={{ fontSize: 16 }} />
+          )}
         </IconButton>
       )}
       {!isMobile && (

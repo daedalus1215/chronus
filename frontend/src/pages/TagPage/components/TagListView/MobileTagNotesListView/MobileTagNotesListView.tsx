@@ -23,14 +23,8 @@ const NoMoreNotes: React.FC = () => (
 export const MobileTagNotesListView: React.FC = () => {
   const navigate = useNavigate();
   const { tagId } = useParams<{ tagId: string }>();
-  const {
-    notes,
-    isLoading,
-    error,
-    hasMore,
-    loadMore,
-    moveNoteToTop,
-  } = useNotesForTag(tagId);
+  const { notes, isLoading, error, hasMore, loadMore, moveNoteToTop } =
+    useNotesForTag(tagId);
 
   const { data: tag, isLoading: tagLoading } = useQuery({
     queryKey: ['tag', tagId],
@@ -61,7 +55,9 @@ export const MobileTagNotesListView: React.FC = () => {
   const handleNoteClick = useCallback(
     async (noteId: number) => {
       if (tagId != null) {
-        navigate(`${ROUTES.TAG_NOTES(tagId)}/notes/${noteId}`, { replace: false });
+        navigate(`${ROUTES.TAG_NOTES(tagId)}/notes/${noteId}`, {
+          replace: false,
+        });
       }
       try {
         await updateNoteTimestamp(noteId);
@@ -95,7 +91,7 @@ export const MobileTagNotesListView: React.FC = () => {
         <IconButton
           className={styles.backButton}
           onClick={handleBack}
-          onKeyDown={(e) => e.key === 'Enter' && handleBack()}
+          onKeyDown={e => e.key === 'Enter' && handleBack()}
           aria-label="Back to tags"
           size="small"
         >
@@ -107,7 +103,7 @@ export const MobileTagNotesListView: React.FC = () => {
           variant="body1"
           aria-live="polite"
         >
-          {tagLoading ? '…' : tag?.name ?? `Tag ${tagId}`}
+          {tagLoading ? '…' : (tag?.name ?? `Tag ${tagId}`)}
         </Typography>
       </header>
       <div className={styles.notesListContent}>

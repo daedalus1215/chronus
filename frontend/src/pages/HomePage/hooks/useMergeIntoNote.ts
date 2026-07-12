@@ -24,7 +24,9 @@ export const useMergeIntoNote = (noteId: number) => {
   const queryClient = useQueryClient();
 
   const mergeMutation = useMutation({
-    mutationFn: async (data: MergeIntoNoteData): Promise<{ success: boolean }> => {
+    mutationFn: async (
+      data: MergeIntoNoteData
+    ): Promise<{ success: boolean }> => {
       return await mergeIntoNoteRequest(noteId, data);
     },
     onSuccess: () => {

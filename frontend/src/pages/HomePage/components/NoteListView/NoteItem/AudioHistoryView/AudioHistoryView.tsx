@@ -165,7 +165,8 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
                       )}
                     </IconButton>
                     <span className={styles.audioTime}>
-                      {formatTime(audio.lastPositionSeconds)} / {formatTime(audio.durationSeconds)}
+                      {formatTime(audio.lastPositionSeconds)} /{' '}
+                      {formatTime(audio.durationSeconds)}
                     </span>
                   </div>
                   <IconButton
@@ -218,4 +219,3 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
     </BottomSheet>
   );
 };
-

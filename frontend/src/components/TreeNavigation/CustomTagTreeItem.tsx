@@ -184,15 +184,15 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
         setIsDeleting(false);
         const message =
           err &&
-            typeof err === 'object' &&
-            err !== null &&
-            'response' in err &&
-            (err as { response?: { data?: { message?: string } } }).response?.data
-              ?.message
+          typeof err === 'object' &&
+          err !== null &&
+          'response' in err &&
+          (err as { response?: { data?: { message?: string } } }).response?.data
+            ?.message
             ? String(
-              (err as { response: { data: { message: string } } }).response
-                .data.message
-            )
+                (err as { response: { data: { message: string } } }).response
+                  .data.message
+              )
             : 'Failed to delete note';
         setDeleteError(message);
       }
@@ -210,15 +210,15 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       } catch (err: unknown) {
         const message =
           err &&
-            typeof err === 'object' &&
-            err !== null &&
-            'response' in err &&
-            (err as { response?: { data?: { message?: string } } }).response?.data
-              ?.message
+          typeof err === 'object' &&
+          err !== null &&
+          'response' in err &&
+          (err as { response?: { data?: { message?: string } } }).response?.data
+            ?.message
             ? String(
-              (err as { response: { data: { message: string } } }).response
-                .data.message
-            )
+                (err as { response: { data: { message: string } } }).response
+                  .data.message
+              )
             : 'Failed to archive note';
         setArchiveError(message);
       }
@@ -237,8 +237,8 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
 
     const CustomNoteLabel = useCallback(
       (labelProps: Record<string, unknown>) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { ownerState: _ownerState, editable: _editable, ...labelPropsForDom } = labelProps;
+        const { ...labelPropsForDom } = labelProps;
+
         return (
           <Box
             sx={{
@@ -259,7 +259,7 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
             <IconButton
               size="small"
               onClick={handleMoreClick}
-              onPointerDown={(e) => e.stopPropagation()}
+              onPointerDown={e => e.stopPropagation()}
               aria-label="More options"
               sx={{ flexShrink: 0, color: 'var(--color-text-secondary)' }}
             >
@@ -326,10 +326,12 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               onDownloadAudio={noop}
               onEdit={noop}
               onLabel={noop}
-              onExport={noop} onViewAudioHistory={function (): void {
+              onExport={noop}
+              onViewAudioHistory={function (): void {
                 throw new Error('Function not implemented.');
-              } }
-               onViewBoard={handleViewBoard}            />
+              }}
+              onViewBoard={handleViewBoard}
+            />
             <TimeTrackingForm
               isOpen={isTimeTrackingOpen}
               onClose={() => setIsTimeTrackingOpen(false)}
@@ -371,8 +373,8 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
                 Delete Note?
               </DialogTitle>
               <DialogContent>
-                Are you sure you want to delete this note? This action cannot
-                be undone.
+                Are you sure you want to delete this note? This action cannot be
+                undone.
                 {deleteError && (
                   <Alert severity="error" sx={{ mt: 2 }}>
                     {deleteError}

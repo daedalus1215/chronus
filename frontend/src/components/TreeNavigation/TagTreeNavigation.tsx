@@ -38,8 +38,8 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
   const handleItemClick = (_event: React.MouseEvent, itemId: string) => {
     if (itemId.startsWith(TAG_PREFIX)) {
       const isExpanding = !expandedItems.includes(itemId);
-      setExpandedItems((prev) =>
-        isExpanding ? [...prev, itemId] : prev.filter((id) => id !== itemId)
+      setExpandedItems(prev =>
+        isExpanding ? [...prev, itemId] : prev.filter(id => id !== itemId)
       );
       if (isExpanding) {
         loadNotesForTag(Number(itemId.slice(TAG_PREFIX.length)));
@@ -61,8 +61,8 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
     itemIds: string[]
   ) => {
     itemIds
-      .filter((id) => id.startsWith(TAG_PREFIX) && !expandedItems.includes(id))
-      .forEach((id) => loadNotesForTag(Number(id.slice(TAG_PREFIX.length))));
+      .filter(id => id.startsWith(TAG_PREFIX) && !expandedItems.includes(id))
+      .forEach(id => loadNotesForTag(Number(id.slice(TAG_PREFIX.length))));
     setExpandedItems(itemIds);
   };
 
@@ -89,19 +89,11 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
   }
 
   if (error) {
-    return (
-      <Box sx={{ p: 2, color: 'error.main' }}>
-        {error}
-      </Box>
-    );
+    return <Box sx={{ p: 2, color: 'error.main' }}>{error}</Box>;
   }
 
   if (treeItems.length === 0) {
-    return (
-      <Box sx={{ p: 2, color: 'text.secondary' }}>
-        No tags yet
-      </Box>
-    );
+    return <Box sx={{ p: 2, color: 'text.secondary' }}>No tags yet</Box>;
   }
 
   if (filteredItems.length === 0) {
@@ -114,14 +106,12 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
 
   return (
     <Box className={styles.root}>
-      <Box
-        className={styles.treeWrapper}
-      >
+      <Box className={styles.treeWrapper}>
         <RichTreeView<TagTreeItem>
           items={filteredItems}
-          getItemId={(item) => item.id}
+          getItemId={item => item.id}
           getItemLabel={getTagTreeItemLabel}
-          getItemChildren={(item) => item.children ?? []}
+          getItemChildren={item => item.children ?? []}
           onItemClick={handleItemClick}
           expandedItems={expandedItems}
           onExpandedItemsChange={handleExpandedItemsChange}

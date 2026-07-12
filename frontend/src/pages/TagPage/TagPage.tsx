@@ -87,9 +87,7 @@ export const TagPage: React.FC = () => {
             )}
           </Box>
         ) : (
-
           <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-
             <Box
               sx={{
                 overflow: 'hidden',

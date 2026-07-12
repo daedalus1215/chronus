@@ -16,8 +16,12 @@ export type TimeTrackForMerge = {
 };
 
 // Fetch time tracks for a single note (used when building merge data).
-export const fetchNoteTimeTracks = async (noteId: number): Promise<TimeTrackForMerge[]> => {
-  const { data } = await api.get<NoteTimeTrackResponse[]>(`/time-tracks/note/${noteId}`);
+export const fetchNoteTimeTracks = async (
+  noteId: number
+): Promise<TimeTrackForMerge[]> => {
+  const { data } = await api.get<NoteTimeTrackResponse[]>(
+    `/time-tracks/note/${noteId}`
+  );
   return (data ?? []).map(track => ({
     date: track.date,
     startTime: track.startTime,

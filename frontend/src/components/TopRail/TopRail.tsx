@@ -25,8 +25,8 @@ export const TopRail: React.FC = () => {
   const leftButtonTooltip = kanbanMatch
     ? 'Back to note'
     : isNoteListOpen
-    ? 'Collapse note list'
-    : 'Expand note list';
+      ? 'Collapse note list'
+      : 'Expand note list';
 
   const leftButtonLabel = kanbanMatch ? 'Back to note' : leftButtonTooltip;
 

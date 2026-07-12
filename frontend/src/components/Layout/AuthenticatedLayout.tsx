@@ -48,9 +48,7 @@ export const AuthenticatedLayout: React.FC = () => {
             <Outlet />
           </Box>
         ) : (
-          <Box
-            sx={{ display: 'flex', width: '100%', flex: 1, minHeight: 0 }}
-          >
+          <Box sx={{ display: 'flex', width: '100%', flex: 1, minHeight: 0 }}>
             <Paper
               elevation={0}
               sx={{

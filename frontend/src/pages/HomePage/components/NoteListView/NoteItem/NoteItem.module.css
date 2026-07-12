@@ -92,7 +92,9 @@
   height: 60px;
   /* Never let the title shrink the action button. */
   flex-shrink: 0;
-  transition: background-color 0.2s ease, color 0.2s ease,
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
     box-shadow 0.2s ease;
 }
 

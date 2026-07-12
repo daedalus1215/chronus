@@ -26,21 +26,29 @@ export const buildTagTreeItems = (
   notesByTagId: Record<number, NoteSummary[]>,
   loadedTagIds: Set<number>
 ): TagTreeItem[] => {
-  return tags.map((tag) => {
+  return tags.map(tag => {
     if (!loadedTagIds.has(tag.id)) {
       return {
         id: `${TAG_PREFIX}${tag.id}`,
         label: tag.name,
         type: 'tag' as const,
         noteCount: tag.noteCount,
-        children: tag.noteCount > 0
-          ? [{ id: `loading-${tag.id}`, label: '...', type: 'note' as const, isLoadingPlaceholder: true }]
-          : undefined,
+        children:
+          tag.noteCount > 0
+            ? [
+                {
+                  id: `loading-${tag.id}`,
+                  label: '...',
+                  type: 'note' as const,
+                  isLoadingPlaceholder: true,
+                },
+              ]
+            : undefined,
       };
     }
     const notes = notesByTagId[tag.id] ?? [];
     const seenNoteIds = new Set<number>();
-    const uniqueNotes = notes.filter((note) => {
+    const uniqueNotes = notes.filter(note => {
       if (seenNoteIds.has(note.id)) return false;
       seenNoteIds.add(note.id);
       return true;
@@ -50,7 +58,7 @@ export const buildTagTreeItems = (
       label: tag.name,
       type: 'tag' as const,
       noteCount: tag.noteCount,
-      children: uniqueNotes.map((note) => ({
+      children: uniqueNotes.map(note => ({
         id: `${NOTE_PREFIX}${note.id}-${tag.id}`,
         label: note.name,
         type: 'note' as const,
@@ -94,15 +102,14 @@ export const filterTagTreeItems = (
   for (const tag of items) {
     const tagMatches = matchesQuery(tag.label, q);
     const children = tag.children ?? [];
-    const realChildren = children.filter((c) => !c.isLoadingPlaceholder);
+    const realChildren = children.filter(c => !c.isLoadingPlaceholder);
     const filteredChildren = tagMatches
       ? realChildren
-      : realChildren.filter((note) => matchesQuery(note.label, q));
+      : realChildren.filter(note => matchesQuery(note.label, q));
     if (filteredChildren.length === 0 && !tagMatches) continue;
     filtered.push({
       ...tag,
-      children:
-        filteredChildren.length === 0 ? undefined : filteredChildren,
+      children: filteredChildren.length === 0 ? undefined : filteredChildren,
     });
   }
   return filtered;

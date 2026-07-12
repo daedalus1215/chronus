@@ -80,7 +80,11 @@ export const MobileTagListView: React.FC<TagListViewProps> = () => {
   return (
     <div className={styles.tagList}>
       <div className={styles.tagListHeader}>
-        <Typography variant="h6" component="div" className={styles.tagListTitle}>
+        <Typography
+          variant="h6"
+          component="div"
+          className={styles.tagListTitle}
+        >
           Chronus
         </Typography>
       </div>

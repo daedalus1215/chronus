@@ -5,9 +5,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { NoteAggregator } from '../../../../notes/domain/aggregators/note.aggregator';
-import { CheckItemsAggregator } from '../../../../check-items/domain/aggregators/check-items.aggregator';
-import { TimeTracksAggregator } from '../../../../time-tracks/domain/aggregators/time-tracks.aggregator';
-import { TagAggregator } from '../../../../tags/domain/aggregators/tag.aggregator';
 import { NOTE_WRITER_PORT, NoteWriterPort } from '../../ports/note-writer.port';
 import {
   CHECK_ITEM_WRITER_PORT,

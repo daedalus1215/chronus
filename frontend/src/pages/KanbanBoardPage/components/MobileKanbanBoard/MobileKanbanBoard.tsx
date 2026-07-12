@@ -6,8 +6,21 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import Chip from '@mui/material/Chip';
-import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, KeyboardSensor, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  pointerWithin,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { CheckItem } from '../../../NotePage/api/responses';
 import { CheckItemStatus } from '../../hooks/useUpdateCheckItemStatus';
 import { KanbanCard } from '../KanbanCard/KanbanCard';
@@ -56,8 +69,10 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
   );
 
   const activeColumn = KANBAN_COLUMNS[activeTab];
-  
-  const itemsByStatus = KANBAN_COLUMNS.reduce<Record<CheckItemStatus, CheckItem[]>>(
+
+  const itemsByStatus = KANBAN_COLUMNS.reduce<
+    Record<CheckItemStatus, CheckItem[]>
+  >(
     (acc, column) => {
       acc[column.id] = items.filter(item => {
         if (item.doneDate) return column.id === 'done';
@@ -88,7 +103,10 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
 
   const currentItems = itemsByStatus[activeColumn.id];
   const prevColumn = activeTab > 0 ? KANBAN_COLUMNS[activeTab - 1] : null;
-  const nextColumn = activeTab < KANBAN_COLUMNS.length - 1 ? KANBAN_COLUMNS[activeTab + 1] : null;
+  const nextColumn =
+    activeTab < KANBAN_COLUMNS.length - 1
+      ? KANBAN_COLUMNS[activeTab + 1]
+      : null;
 
   return (
     <Box className={styles.mobileContainer} {...swipeHandlers}>
@@ -102,7 +120,7 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
           style: { backgroundColor: activeColumn.statusColor },
         }}
       >
-        {KANBAN_COLUMNS.map((column) => (
+        {KANBAN_COLUMNS.map(column => (
           <Tab
             key={column.id}
             label={
@@ -137,11 +155,11 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
         >
           <Box className={styles.columnContainer}>
             <SortableContext
-              items={currentItems.map((item) => item.id)}
+              items={currentItems.map(item => item.id)}
               strategy={verticalListSortingStrategy}
             >
               <Box className={styles.cardsContainer}>
-                {currentItems.map((item) => (
+                {currentItems.map(item => (
                   <Box key={item.id} className={styles.cardWrapper}>
                     <KanbanCard
                       item={item}
@@ -155,17 +173,33 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
                           <Chip
                             label={`← ${prevColumn.title}`}
                             size="small"
-                            onClick={() => onMoveToStatus(item.id, prevColumn.id)}
-                            sx={{ borderColor: prevColumn.statusColor, color: prevColumn.statusColor, fontSize: '0.65rem', height: 22 }}
+                            onClick={() =>
+                              onMoveToStatus(item.id, prevColumn.id)
+                            }
+                            sx={{
+                              borderColor: prevColumn.statusColor,
+                              color: prevColumn.statusColor,
+                              fontSize: '0.65rem',
+                              height: 22,
+                            }}
                             variant="outlined"
                           />
-                        ) : <span />}
+                        ) : (
+                          <span />
+                        )}
                         {nextColumn && (
                           <Chip
                             label={`${nextColumn.title} →`}
                             size="small"
-                            onClick={() => onMoveToStatus(item.id, nextColumn.id)}
-                            sx={{ borderColor: nextColumn.statusColor, color: nextColumn.statusColor, fontSize: '0.65rem', height: 22 }}
+                            onClick={() =>
+                              onMoveToStatus(item.id, nextColumn.id)
+                            }
+                            sx={{
+                              borderColor: nextColumn.statusColor,
+                              color: nextColumn.statusColor,
+                              fontSize: '0.65rem',
+                              height: 22,
+                            }}
                             variant="outlined"
                           />
                         )}

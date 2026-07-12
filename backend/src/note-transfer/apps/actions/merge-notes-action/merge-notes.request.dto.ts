@@ -50,7 +50,7 @@ class TimeTrackMergeDto {
   startTime: string;
 
   @IsNumber()
-  @Min(1)
+  @Min(0)
   durationMinutes: number;
 
   @IsString()

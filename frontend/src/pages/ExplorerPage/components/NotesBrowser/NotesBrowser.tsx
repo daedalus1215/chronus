@@ -18,7 +18,10 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigate } from 'react-router-dom';
-import { getNotesForExplorer, moveNoteToFolder } from '../../../../api/requests/notes.requests';
+import {
+  getNotesForExplorer,
+  moveNoteToFolder,
+} from '../../../../api/requests/notes.requests';
 import { FolderDto } from '../../../../api/dtos/folder.dtos';
 import { MoveNoteDialog } from '../MoveNoteDialog/MoveNoteDialog';
 import styles from './NotesBrowser.module.css';
@@ -31,7 +34,9 @@ type Props = {
 export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
   const navigate = useNavigate();
 
-  const [allNotes, setAllNotes] = useState<{ name: string; id: number; isMemo: number; folderId: number | null }[]>([]);
+  const [allNotes, setAllNotes] = useState<
+    { name: string; id: number; isMemo: number; folderId: number | null }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -42,10 +47,13 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
     setIsLoading(false);
   }, [folderId]);
 
-  useEffect(() => { fetchNotes(); }, [fetchNotes]);
+  useEffect(() => {
+    fetchNotes();
+  }, [fetchNotes]);
 
-  const notes = allNotes.filter(n =>
-    !searchQuery || n.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const notes = allNotes.filter(
+    n =>
+      !searchQuery || n.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const [menuState, setMenuState] = useState<{
@@ -76,7 +84,10 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
       {/* top bar */}
       <Box className={styles.topBar}>
         <Typography className={styles.breadcrumb} component="div">
-          <ChevronRightIcon sx={{ fontSize: 11 }} className={styles.breadcrumbSep} />
+          <ChevronRightIcon
+            sx={{ fontSize: 11 }}
+            className={styles.breadcrumbSep}
+          />
           <span className={styles.breadcrumbCurrent}>{folderLabel}</span>
         </Typography>
         <TextField
@@ -89,12 +100,18 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }} />
+                <SearchIcon
+                  sx={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }}
+                />
               </InputAdornment>
             ),
             endAdornment: searchQuery ? (
               <InputAdornment position="end">
-                <IconButton size="small" onClick={() => setSearchQuery('')} sx={{ p: '2px' }}>
+                <IconButton
+                  size="small"
+                  onClick={() => setSearchQuery('')}
+                  sx={{ p: '2px' }}
+                >
                   <ClearIcon sx={{ fontSize: 13 }} />
                 </IconButton>
               </InputAdornment>
@@ -124,9 +141,13 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
             >
               <Box className={styles.noteIcon}>
                 {note.isMemo ? (
-                  <NoteIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
+                  <NoteIcon
+                    sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}
+                  />
                 ) : (
-                  <CheckBoxIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
+                  <CheckBoxIcon
+                    sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}
+                  />
                 )}
               </Box>
               <span className={styles.noteLabel}>{note.name}</span>
