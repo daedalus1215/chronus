@@ -1,7 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import {
-  insertTextAtCursor,
-} from '../../utils/textInsertion';
+import { insertTextAtCursor } from '../../utils/textInsertion';
 
 type UseTranscriptionCallbackReturn = {
   appendToDescriptionFn: ((text: string) => void) | null;
@@ -41,11 +39,7 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
   // This is a fallback to ensure transcriptions don't get lost
   const onTranscription = useCallback(
     (text: string) => {
-      if (
-        text == null ||
-        typeof text !== 'string' ||
-        text.trim() === ''
-      ) {
+      if (text == null || typeof text !== 'string' || text.trim() === '') {
         return;
       }
 
@@ -71,19 +65,21 @@ export const useTranscriptionCallback = (): UseTranscriptionCallbackReturn => {
         '⚠️ appendToDescriptionFn not set, trying direct textarea update'
       );
       const TEXTAREA_ID = 'note-description';
-      const textarea = document.getElementById(TEXTAREA_ID) as HTMLTextAreaElement;
-      
+      const textarea = document.getElementById(
+        TEXTAREA_ID
+      ) as HTMLTextAreaElement;
+
       if (textarea) {
         const currentValue = textarea.value || '';
         const cursorPosition = textarea.selectionStart;
-        
+
         // Insert text at cursor position (for speech-to-text at cursor location)
         const { newText, newCursorPosition } = insertTextAtCursor(
           currentValue,
           text,
           cursorPosition
         );
-        
+
         console.log('📝 Directly updating textarea at cursor position:', {
           cursorPosition,
           currentLength: currentValue.length,

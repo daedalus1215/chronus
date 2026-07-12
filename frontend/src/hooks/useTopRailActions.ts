@@ -12,7 +12,7 @@ export const useTopRailActions = (actions: React.ReactNode): void => {
 
   if (!ctx) {
     throw new Error(
-      'useTopRailActions must be used within a TopRailActionsProvider',
+      'useTopRailActions must be used within a TopRailActionsProvider'
     );
   }
 

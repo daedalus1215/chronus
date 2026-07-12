@@ -27,11 +27,13 @@ export const SidebarTagsView: React.FC<SidebarTagsViewProps> = ({ noteId }) => {
   // Tags the note does NOT have — these go into the add-tag popup
   const availableTags: Tag[] = useMemo(
     () =>
-      (allTags || []).filter(tag => !noteTagIds.has(tag.id)).map(tag => ({
-        id: String(tag.id),
-        name: tag.name,
-      })),
-    [allTags, noteTagIds],
+      (allTags || [])
+        .filter(tag => !noteTagIds.has(tag.id))
+        .map(tag => ({
+          id: String(tag.id),
+          name: tag.name,
+        })),
+    [allTags, noteTagIds]
   );
 
   const handleRemoveTag = async (tagId: number): Promise<void> => {

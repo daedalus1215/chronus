@@ -87,7 +87,8 @@ export const muiTheme = createTheme({
           borderRadius: 14,
           border: '1px solid rgba(255, 255, 255, 0.07)',
           boxShadow: 'var(--elevation-3)',
-          transition: 'transform 0.2s var(--ease-out, ease), box-shadow 0.2s ease',
+          transition:
+            'transform 0.2s var(--ease-out, ease), box-shadow 0.2s ease',
         },
       },
     },

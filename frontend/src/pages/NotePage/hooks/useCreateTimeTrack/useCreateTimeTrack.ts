@@ -4,7 +4,9 @@ import type { CreateTimeTrackRequest } from '../../../../api/dtos/note.dtos';
 
 type CreateTimeTrackInput = Omit<CreateTimeTrackRequest, 'noteId'>;
 
-const createTimeTracksQueryKey = (noteId: number): readonly [string, number] => {
+const createTimeTracksQueryKey = (
+  noteId: number
+): readonly [string, number] => {
   return ['timeTracks', noteId] as const;
 };
 
@@ -23,7 +25,9 @@ export const useCreateTimeTrack = (noteId: number) => {
       createTimeTrack({ ...input, noteId }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: timeTracksQueryKey });
-      await queryClient.invalidateQueries({ queryKey: timeTracksTotalQueryKey });
+      await queryClient.invalidateQueries({
+        queryKey: timeTracksTotalQueryKey,
+      });
     },
   });
 };

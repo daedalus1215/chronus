@@ -56,7 +56,10 @@ export const useAudioRecorder = ({
           probeStream.getTracks().forEach(track => track.stop());
           return { available: true };
         } catch (probeError) {
-          if (probeError instanceof Error && probeError.name === 'NotFoundError') {
+          if (
+            probeError instanceof Error &&
+            probeError.name === 'NotFoundError'
+          ) {
             return {
               available: false,
               error: 'No audio input devices found',

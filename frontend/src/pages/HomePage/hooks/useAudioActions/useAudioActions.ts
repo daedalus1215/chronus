@@ -72,7 +72,7 @@ export const useAudioActions = (noteId: number) => {
       setIsDeleting(true);
       setError(null);
       await deleteAudio(audioId);
-      setAudioHistory((prev) => prev.filter((a) => a.id !== audioId));
+      setAudioHistory(prev => prev.filter(a => a.id !== audioId));
     } catch (err) {
       setError('Failed to delete audio');
       console.error('Error deleting audio:', err);

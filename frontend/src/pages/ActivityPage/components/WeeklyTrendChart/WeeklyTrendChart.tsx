@@ -37,8 +37,7 @@ export const WeeklyTrendChart: React.FC<Props> = ({ data, loading }) => {
     );
   }
 
-  const hasActivity =
-    !!data && data.trend.length > 0 && data.weeklyTotal > 0;
+  const hasActivity = !!data && data.trend.length > 0 && data.weeklyTotal > 0;
 
   if (!hasActivity) {
     return (
@@ -53,8 +52,8 @@ export const WeeklyTrendChart: React.FC<Props> = ({ data, loading }) => {
     );
   }
 
-  const xAxisData = data.trend.map((day) => formatDayLabel(day.date));
-  const seriesData = data.trend.map((day) => day.totalMinutes);
+  const xAxisData = data.trend.map(day => formatDayLabel(day.date));
+  const seriesData = data.trend.map(day => day.totalMinutes);
 
   return (
     <Paper className={styles.container}>
@@ -77,7 +76,7 @@ export const WeeklyTrendChart: React.FC<Props> = ({ data, loading }) => {
               data: seriesData,
               label: 'Minutes',
               color: '#6366f1',
-              valueFormatter: (value) => formatTime(value || 0),
+              valueFormatter: value => formatTime(value || 0),
             },
           ]}
           height={250}

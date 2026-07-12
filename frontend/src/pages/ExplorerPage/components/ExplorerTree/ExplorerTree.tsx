@@ -1,8 +1,23 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { ExplorerTreeDialogs } from './ExplorerTreeDialogs';
 import { ExplorerTreeHeader } from './ExplorerTreeHeader';
 import { ExplorerTreeMenus } from './ExplorerTreeMenus';
@@ -13,7 +28,10 @@ import { useFolderOperations } from './useFolderOperations';
 import { useDragOperations } from './useDragOperations';
 import { useExplorerFilter, useMergedExpanded } from './useExplorerFilter';
 import { ExplorerFilterBar } from './ExplorerFilterBar';
-import { MergeNotesDialog, NoteToMerge } from '../MergeNotesDialog/MergeNotesDialog';
+import {
+  MergeNotesDialog,
+  NoteToMerge,
+} from '../MergeNotesDialog/MergeNotesDialog';
 import { useMergeNotes, SourceNoteSelection } from '../../hooks/useMergeNotes';
 import { fetchNoteTimeTracks } from '../../hooks/useTimeTracksForMerge';
 import { fetchNoteTags } from '../../hooks/useNoteTagsForMerge';
@@ -27,13 +45,25 @@ export const ExplorerTree: React.FC = () => {
   const { id: activeNoteId } = useParams<{ id: string }>();
 
   // Menu state
-  const [folderMenu, setFolderMenu] = useState<{ anchor: HTMLElement; id: number } | null>(null);
-  const [noteMenu, setNoteMenu] = useState<{ anchor: HTMLElement; id: number } | null>(null);
+  const [folderMenu, setFolderMenu] = useState<{
+    anchor: HTMLElement;
+    id: number;
+  } | null>(null);
+  const [noteMenu, setNoteMenu] = useState<{
+    anchor: HTMLElement;
+    id: number;
+  } | null>(null);
 
   // Selection state
-  const [selectedFolderIds, setSelectedFolderIds] = useState<Set<number>>(new Set());
-  const [selectedNoteIds, setSelectedNoteIds] = useState<Set<number>>(new Set());
-  const [folderRangeAnchorId, setFolderRangeAnchorId] = useState<number | null>(null);
+  const [selectedFolderIds, setSelectedFolderIds] = useState<Set<number>>(
+    new Set()
+  );
+  const [selectedNoteIds, setSelectedNoteIds] = useState<Set<number>>(
+    new Set()
+  );
+  const [folderRangeAnchorId, setFolderRangeAnchorId] = useState<number | null>(
+    null
+  );
   const [pickItemsMode, setPickItemsMode] = useState(false);
 
   // Merge dialog state
@@ -41,7 +71,12 @@ export const ExplorerTree: React.FC = () => {
   const [notesToMerge, setNotesToMerge] = useState<NoteToMerge[]>([]);
 
   // Merge hook
-  const { mergeNotes, isMerging } = useMergeNotes();
+  const {
+    mergeNotes,
+    isMerging,
+    error: mergeError,
+    resetError,
+  } = useMergeNotes();
 
   // Loading state while merge data is fetched per selected note
   const [buildingMerge, setBuildingMerge] = useState(false);
@@ -50,7 +85,7 @@ export const ExplorerTree: React.FC = () => {
   const [dragMode, setDragMode] = useState<DragMode>('off');
 
   const cycleDragMode = useCallback(() => {
-    setDragMode(prev => prev === 'off' ? 'on' : 'off');
+    setDragMode(prev => (prev === 'off' ? 'on' : 'off'));
     setPickItemsMode(false);
     setSelectedFolderIds(new Set());
     setSelectedNoteIds(new Set());
@@ -91,7 +126,11 @@ export const ExplorerTree: React.FC = () => {
 
   // Filter hook
   const filter = useExplorerFilter(tree, notes);
-  const mergedExpanded = useMergedExpanded(expanded, filter.folderMatches, filter.active);
+  const mergedExpanded = useMergedExpanded(
+    expanded,
+    filter.folderMatches,
+    filter.active
+  );
 
   // Pause/resume rename when filter activates/deactivates
   const pausedRenameRef = useRef<{ id: number; value: string } | null>(null);
@@ -107,8 +146,17 @@ export const ExplorerTree: React.FC = () => {
   }, [filter.active, renaming, renameValue, cancelRename, startRename]);
 
   // Drag operations
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
-  const { activeId, dropIntent, onDragStart, onDragCancel, onDragMove, onDragEnd } = useDragOperations({
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
+  const {
+    activeId,
+    dropIntent,
+    onDragStart,
+    onDragCancel,
+    onDragMove,
+    onDragEnd,
+  } = useDragOperations({
     folders,
     notes,
     setFolders,
@@ -189,6 +237,7 @@ export const ExplorerTree: React.FC = () => {
     selectedFolderIds,
     selectedNoteIds,
     setReparentTarget,
+    filter,
     filter.active,
     filter.toggle,
     filter.clear,
@@ -230,7 +279,13 @@ export const ExplorerTree: React.FC = () => {
         toggle(folderId);
       }
     },
-    [folderRangeAnchorId, pickItemsMode, toggle, toggleFolderInSelection, visibleFolderIds]
+    [
+      folderRangeAnchorId,
+      pickItemsMode,
+      toggle,
+      toggleFolderInSelection,
+      visibleFolderIds,
+    ]
   );
 
   const handleNoteRowClick = useCallback(
@@ -312,21 +367,29 @@ export const ExplorerTree: React.FC = () => {
   }, [canMerge, buildingMerge, buildNotesToMerge]);
 
   // Handle merge confirm
-  const handleMergeConfirm = useCallback(async (targetNoteId: number, sources: SourceNoteSelection[]) => {
-    await mergeNotes({
-      targetNoteId,
-      sources,
-      version: 1,
-    });
-    setMergeDialogOpen(false);
-    setNotesToMerge([]);
-    clearSelection();
-    // If active note was archived, navigate away
-    const archivedIds = sources.map(s => s.noteId);
-    if (activeNoteId && archivedIds.includes(Number(activeNoteId))) {
-      navigate('/notes');
-    }
-  }, [mergeNotes, activeNoteId, navigate, clearSelection]);
+  const handleMergeConfirm = useCallback(
+    async (targetNoteId: number, sources: SourceNoteSelection[]) => {
+      try {
+        await mergeNotes({
+          targetNoteId,
+          sources,
+          version: 1,
+        });
+        setMergeDialogOpen(false);
+        setNotesToMerge([]);
+        clearSelection();
+        // If active note was archived, navigate away
+        const archivedIds = sources.map(s => s.noteId);
+        if (activeNoteId && archivedIds.includes(Number(activeNoteId))) {
+          navigate('/notes');
+        }
+      } catch {
+        // Error is handled by the hook and displayed via mergeError prop
+        // Dialog stays open so user can see the error
+      }
+    },
+    [mergeNotes, activeNoteId, navigate, clearSelection]
+  );
 
   // Loading state
   if (loading) {
@@ -337,7 +400,9 @@ export const ExplorerTree: React.FC = () => {
     );
   }
 
-  const rootNotes = notes.filter(n => n.folderId === null).sort((a, b) => a.sortOrder - b.sortOrder);
+  const rootNotes = notes
+    .filter(n => n.folderId === null)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
   const rootSortableItems = [
     ...tree.map(n => `folder-${n.id}`),
     ...rootNotes.map(n => `note-${n.id}`),
@@ -388,7 +453,10 @@ export const ExplorerTree: React.FC = () => {
         onDragCancel={onDragCancel}
       >
         <Box className={styles.body}>
-          <SortableContext items={rootSortableItems} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={rootSortableItems}
+            strategy={verticalListSortingStrategy}
+          >
             {tree.map(node => (
               <FolderSubtree
                 key={node.id}
@@ -444,13 +512,17 @@ export const ExplorerTree: React.FC = () => {
 
           {rootNotes.length === 0 && tree.length === 0 && (
             <Box sx={{ px: 2, py: 1 }}>
-              <Typography sx={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>No notes or folders yet</Typography>
+              <Typography sx={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+                No notes or folders yet
+              </Typography>
             </Box>
           )}
         </Box>
 
         <DragOverlay>
-          {activeId ? <DragGhostRow id={activeId} folders={folders} notes={notes} /> : null}
+          {activeId ? (
+            <DragGhostRow id={activeId} folders={folders} notes={notes} />
+          ) : null}
         </DragOverlay>
       </DndContext>
 
@@ -487,9 +559,11 @@ export const ExplorerTree: React.FC = () => {
         open={mergeDialogOpen}
         notes={notesToMerge}
         isMerging={isMerging}
+        error={mergeError}
         onCancel={() => {
           setMergeDialogOpen(false);
           setNotesToMerge([]);
+          resetError();
         }}
         onConfirm={handleMergeConfirm}
       />

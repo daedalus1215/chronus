@@ -108,7 +108,7 @@ export const ActivityPage: React.FC = () => {
   }, [timeTracks]);
 
   const activeNotesCount = useMemo(() => {
-    return timeTracks.filter((track) => track.dailyTimeMinutes > 0).length;
+    return timeTracks.filter(track => track.dailyTimeMinutes > 0).length;
   }, [timeTracks]);
 
   const focusScore = useMemo(() => {
@@ -119,7 +119,9 @@ export const ActivityPage: React.FC = () => {
       (a, b) => b.dailyTimeMinutes - a.dailyTimeMinutes
     );
     const topNote = sortedTracks[0];
-    const percentage = Math.round((topNote.dailyTimeMinutes / dailyTotal) * 100);
+    const percentage = Math.round(
+      (topNote.dailyTimeMinutes / dailyTotal) * 100
+    );
     const topNoteName =
       topNote.noteName.length > 15
         ? topNote.noteName.substring(0, 15) + '...'
@@ -218,7 +220,9 @@ export const ActivityPage: React.FC = () => {
                 />
               </Box>
             )}
-            <Typography variant="subtitle2">{focusScore.topNoteName}</Typography>
+            <Typography variant="subtitle2">
+              {focusScore.topNoteName}
+            </Typography>
           </Paper>
 
           {/* Streak Card */}

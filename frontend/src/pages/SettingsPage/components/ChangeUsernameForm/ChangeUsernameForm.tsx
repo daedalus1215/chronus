@@ -37,7 +37,9 @@ export const ChangeUsernameForm: React.FC = () => {
         newUsername: newUsername.trim(),
         currentPassword,
       });
-      setSuccessMessage('Username updated successfully. You will be redirected to login.');
+      setSuccessMessage(
+        'Username updated successfully. You will be redirected to login.'
+      );
     } catch (err) {
       // Error is handled by the hook
       console.log('error should be handled by the hook! Error:', err);
@@ -50,7 +52,8 @@ export const ChangeUsernameForm: React.FC = () => {
         Change Username
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Changing your username will require you to log in again with your new username.
+        Changing your username will require you to log in again with your new
+        username.
       </Typography>
       <Box component="form" onSubmit={handleSubmit}>
         <TextField

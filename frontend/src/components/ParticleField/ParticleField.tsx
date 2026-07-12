@@ -64,7 +64,7 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
     const seed = () => {
       const target = Math.min(
         maxParticles,
-        Math.round((width * height) / 100000 * density)
+        Math.round(((width * height) / 100000) * density)
       );
       particles = Array.from({ length: Math.max(target, 8) }, () => ({
         x: Math.random() * width,

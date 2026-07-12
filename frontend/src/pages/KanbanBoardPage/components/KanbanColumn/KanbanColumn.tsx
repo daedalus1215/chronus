@@ -1,6 +1,9 @@
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import Box from '@mui/material/Box';
 import { CheckItem } from '../../../NotePage/api/responses';
 import { KanbanCard } from '../KanbanCard/KanbanCard';

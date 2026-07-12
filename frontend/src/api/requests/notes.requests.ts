@@ -1,6 +1,11 @@
 import { NOTE_TYPES, NoteTypes } from '../../constant';
 import api from '../axios.interceptor';
-import { ExplorerNoteItem, NamesOfNotesResponse, NoteResponse, SearchResult } from '../dtos/note.dtos';
+import {
+  ExplorerNoteItem,
+  NamesOfNotesResponse,
+  NoteResponse,
+  SearchResult,
+} from '../dtos/note.dtos';
 
 export const updateNoteTimestamp = async (noteId: number): Promise<void> => {
   const response = await api.patch(`/notes/${noteId}/timestamp`);
@@ -164,9 +169,9 @@ export const mergeNotes = async (data: {
   }>;
   version: number;
 }): Promise<{ success: boolean; archivedNoteIds: number[] }> => {
-  const response = await api.post<{ success: boolean; archivedNoteIds: number[] }>(
-    '/notes/merge',
-    data
-  );
+  const response = await api.post<{
+    success: boolean;
+    archivedNoteIds: number[];
+  }>('/notes/merge', data);
   return response.data;
 };

@@ -264,10 +264,7 @@ export const MergeSelectionDialog: React.FC<MergeSelectionDialogProps> = ({
                           sx={{ width: '100%' }}
                         >
                           <Typography variant="body2">{item.name}</Typography>
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                          >
+                          <Typography variant="caption" color="text.secondary">
                             {statusLabels[item.status] ?? item.status}
                           </Typography>
                         </Stack>

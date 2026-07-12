@@ -6,7 +6,9 @@ type DeleteTimeTrackMutationContext = {
   previousTimeTracks?: TimeTrack[];
 };
 
-const createTimeTracksQueryKey = (noteId: number): readonly [string, number] => {
+const createTimeTracksQueryKey = (
+  noteId: number
+): readonly [string, number] => {
   return ['timeTracks', noteId] as const;
 };
 
@@ -24,9 +26,8 @@ export const useDeleteTimeTrack = (noteId: number) => {
     mutationFn: (timeTrackId: number) => deleteTimeTrack(timeTrackId),
     onMutate: async (timeTrackId: number) => {
       await queryClient.cancelQueries({ queryKey: timeTracksQueryKey });
-      const previousTimeTracks = queryClient.getQueryData<TimeTrack[]>(
-        timeTracksQueryKey
-      );
+      const previousTimeTracks =
+        queryClient.getQueryData<TimeTrack[]>(timeTracksQueryKey);
       queryClient.setQueryData<TimeTrack[] | undefined>(
         timeTracksQueryKey,
         oldTimeTracks => {
@@ -44,12 +45,17 @@ export const useDeleteTimeTrack = (noteId: number) => {
       context?: DeleteTimeTrackMutationContext
     ) => {
       if (context?.previousTimeTracks) {
-        queryClient.setQueryData(timeTracksQueryKey, context.previousTimeTracks);
+        queryClient.setQueryData(
+          timeTracksQueryKey,
+          context.previousTimeTracks
+        );
       }
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: timeTracksQueryKey });
-      await queryClient.invalidateQueries({ queryKey: timeTracksTotalQueryKey });
+      await queryClient.invalidateQueries({
+        queryKey: timeTracksTotalQueryKey,
+      });
     },
   });
 };

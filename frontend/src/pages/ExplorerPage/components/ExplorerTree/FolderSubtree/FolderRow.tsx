@@ -35,117 +35,147 @@ type FolderRowProps = {
   onTogglePick: (id: number) => void;
 };
 
-export const FolderRow: React.FC<FolderRowProps> = React.memo(({
-  node,
-  depth,
-  expanded,
-  renaming,
-  renameValue,
-  renameRef,
-  selected,
-  pickItemsMode,
-  dragMode,
-  dropIntent,
-  dimmed = false,
-  onRenameChange,
-  onRenameCommit,
-  onRenameCancel,
-  onFolderMenu,
-  onFolderRowClick,
-  onChevronClick,
-  onNewSubfolder,
-  onTogglePick,
-}) => {
-  const isOpen = expanded.has(node.id);
-  const indent = 10 + depth * 16;
-  const isDropTarget = dropIntent?.type === 'into' && dropIntent.overId === `folder-${node.id}`;
+export const FolderRow: React.FC<FolderRowProps> = React.memo(
+  ({
+    node,
+    depth,
+    expanded,
+    renaming,
+    renameValue,
+    renameRef,
+    selected,
+    pickItemsMode,
+    dragMode,
+    dropIntent,
+    dimmed = false,
+    onRenameChange,
+    onRenameCommit,
+    onRenameCancel,
+    onFolderMenu,
+    onFolderRowClick,
+    onChevronClick,
+    onNewSubfolder,
+    onTogglePick,
+  }) => {
+    const isOpen = expanded.has(node.id);
+    const indent = 10 + depth * 16;
+    const isDropTarget =
+      dropIntent?.type === 'into' && dropIntent.overId === `folder-${node.id}`;
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: `folder-${node.id}`,
-    disabled: dragMode === 'off',
-  });
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({
+      id: `folder-${node.id}`,
+      disabled: dragMode === 'off',
+    });
 
-  const style = dragMode !== 'off'
-    ? { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }
-    : undefined;
+    const style =
+      dragMode !== 'off'
+        ? {
+            transform: CSS.Transform.toString(transform),
+            transition,
+            opacity: isDragging ? 0.4 : 1,
+          }
+        : undefined;
 
-  return (
-    <Box
-      ref={setNodeRef}
-      style={style}
-      className={`${styles.row} ${selected ? styles.rowActive : ''} ${isDropTarget ? styles.rowDropTarget : ''} ${dimmed ? styles.rowDimmed : ''}`}
-      sx={{ pl: `${indent}px` }}
-      onClick={e => onFolderRowClick(e, node.id)}
-    >
-      {dragMode !== 'off' && (
-        <span
-          className={styles.dragHandle}
-          {...attributes}
-          {...listeners}
-          onClick={e => e.stopPropagation()}
-        >
-          <DragIndicatorIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }} />
-        </span>
-      )}
-      {pickItemsMode && (
-        <span className={styles.rowCheck} onClick={e => e.stopPropagation()}>
-          <Checkbox
-            size="small"
-            checked={selected}
-            onChange={() => onTogglePick(node.id)}
-            inputProps={{ 'aria-label': `Select folder ${node.name}` }}
-            sx={{ p: 0.25, color: 'rgba(255,255,255,0.45)' }}
-          />
-        </span>
-      )}
-      <span
-        className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}
-        onClick={ev => {
-          ev.stopPropagation();
-          onChevronClick(node.id);
-        }}
+    return (
+      <Box
+        ref={setNodeRef}
+        style={style}
+        className={`${styles.row} ${selected ? styles.rowActive : ''} ${isDropTarget ? styles.rowDropTarget : ''} ${dimmed ? styles.rowDimmed : ''}`}
+        sx={{ pl: `${indent}px` }}
+        onClick={e => onFolderRowClick(e, node.id)}
       >
-        <ChevronRightIcon sx={{ fontSize: 14 }} />
-      </span>
-      <span className={styles.rowIcon}>
-        {isOpen ? (
-          <FolderOpenIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }} />
-        ) : (
-          <FolderIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }} />
+        {dragMode !== 'off' && (
+          <span
+            className={styles.dragHandle}
+            {...attributes}
+            {...listeners}
+            onClick={e => e.stopPropagation()}
+          >
+            <DragIndicatorIcon
+              sx={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}
+            />
+          </span>
         )}
-      </span>
-
-      {renaming === node.id ? (
-        <TextField
-          inputRef={renameRef}
-          value={renameValue}
-          onChange={e => onRenameChange(e.target.value)}
-          onBlur={onRenameCommit}
-          onKeyDown={e => {
-            if (e.key === 'Enter') onRenameCommit();
-            if (e.key === 'Escape') onRenameCancel();
+        {pickItemsMode && (
+          <span className={styles.rowCheck} onClick={e => e.stopPropagation()}>
+            <Checkbox
+              size="small"
+              checked={selected}
+              onChange={() => onTogglePick(node.id)}
+              inputProps={{ 'aria-label': `Select folder ${node.name}` }}
+              sx={{ p: 0.25, color: 'rgba(255,255,255,0.45)' }}
+            />
+          </span>
+        )}
+        <span
+          className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}
+          onClick={ev => {
+            ev.stopPropagation();
+            onChevronClick(node.id);
           }}
-          onClick={e => e.stopPropagation()}
-          autoFocus
-          variant="standard"
-          size="small"
-          className={styles.renameInput}
-          sx={{ flex: 1 }}
-        />
-      ) : (
-        <span className={styles.label}>{node.name}</span>
-      )}
+        >
+          <ChevronRightIcon sx={{ fontSize: 14 }} />
+        </span>
+        <span className={styles.rowIcon}>
+          {isOpen ? (
+            <FolderOpenIcon
+              sx={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}
+            />
+          ) : (
+            <FolderIcon
+              sx={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}
+            />
+          )}
+        </span>
 
-      {renaming !== node.id && (
-        <Box className={styles.rowActions} onClick={e => e.stopPropagation()}>
-          <IconButton size="small" className={styles.actionBtn} title="New subfolder" onClick={() => onNewSubfolder(node.id)}>
-            <CreateNewFolderIcon sx={{ fontSize: 13 }} />
-          </IconButton>
-          <IconButton size="small" className={styles.actionBtn} onClick={e => onFolderMenu(e.currentTarget, node.id)}>
-            <MoreHorizIcon sx={{ fontSize: 13 }} />
-          </IconButton>
-        </Box>
-      )}
-    </Box>
-  );
-});
+        {renaming === node.id ? (
+          <TextField
+            inputRef={renameRef}
+            value={renameValue}
+            onChange={e => onRenameChange(e.target.value)}
+            onBlur={onRenameCommit}
+            onKeyDown={e => {
+              if (e.key === 'Enter') onRenameCommit();
+              if (e.key === 'Escape') onRenameCancel();
+            }}
+            onClick={e => e.stopPropagation()}
+            autoFocus
+            variant="standard"
+            size="small"
+            className={styles.renameInput}
+            sx={{ flex: 1 }}
+          />
+        ) : (
+          <span className={styles.label}>{node.name}</span>
+        )}
+
+        {renaming !== node.id && (
+          <Box className={styles.rowActions} onClick={e => e.stopPropagation()}>
+            <IconButton
+              size="small"
+              className={styles.actionBtn}
+              title="New subfolder"
+              onClick={() => onNewSubfolder(node.id)}
+            >
+              <CreateNewFolderIcon sx={{ fontSize: 13 }} />
+            </IconButton>
+            <IconButton
+              size="small"
+              className={styles.actionBtn}
+              onClick={e => onFolderMenu(e.currentTarget, node.id)}
+            >
+              <MoreHorizIcon sx={{ fontSize: 13 }} />
+            </IconButton>
+          </Box>
+        )}
+      </Box>
+    );
+  }
+);

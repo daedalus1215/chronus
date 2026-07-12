@@ -45,9 +45,7 @@ export const YearlyNoteItem: React.FC<YearlyNoteItemProps> = ({ note }) => {
   return (
     <div className={styles.noteItem} onClick={handleNoteClick}>
       <Box className={styles.noteContent}>
-        <Typography className={styles.noteName}>
-          {note.noteName}
-        </Typography>
+        <Typography className={styles.noteName}>{note.noteName}</Typography>
         <Box className={styles.noteDetails}>
           <Box className={styles.topRow}>
             <Typography className={styles.dateRange}>
@@ -64,21 +62,22 @@ export const YearlyNoteItem: React.FC<YearlyNoteItemProps> = ({ note }) => {
           </Box>
           {note.tags && note.tags.length > 0 && (
             <Box className={styles.tagsContainer}>
-              {note.tags.map((tag) => (
+              {note.tags.map(tag => (
                 <Chip
                   key={tag.id}
                   label={tag.name}
                   size="small"
                   variant="outlined"
                   className={styles.tagChip}
-                  onClick={(e) => handleTagClick(e, tag.id)}
+                  onClick={e => handleTagClick(e, tag.id)}
                   sx={{
                     height: '20px',
                     fontSize: '0.6875rem',
                     borderColor: 'var(--color-primary, #6366f1)',
                     color: 'var(--color-text-secondary, #9ca3af)',
                     '&:hover': {
-                      backgroundColor: 'var(--color-primary-light, rgba(99, 102, 241, 0.1))',
+                      backgroundColor:
+                        'var(--color-primary-light, rgba(99, 102, 241, 0.1))',
                       borderColor: 'var(--color-primary, #6366f1)',
                     },
                   }}

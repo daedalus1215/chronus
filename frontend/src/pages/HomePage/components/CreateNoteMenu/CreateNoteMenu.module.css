@@ -27,7 +27,9 @@
   color: var(--color-text-quaternary);
   font-size: 0.9375rem;
   cursor: pointer;
-  transition: background-color 0.18s ease, transform 0.18s var(--ease-out),
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s var(--ease-out),
     color 0.18s ease;
   width: auto;
   text-align: left;
@@ -88,7 +90,9 @@
   margin-right: 16px;
   font-size: 1.25rem;
   opacity: 0.9;
-  transition: color 0.18s ease, opacity 0.18s ease;
+  transition:
+    color 0.18s ease,
+    opacity 0.18s ease;
 }
 
 .menuDivider {

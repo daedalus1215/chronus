@@ -113,7 +113,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </Button>
 
           <Box sx={{ textAlign: 'center', mt: 1 }}>
-            <Typography variant="body2"> 
+            <Typography variant="body2">
               Don't have an account?{' '}
               <Link
                 to="/register"

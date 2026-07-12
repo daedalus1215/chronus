@@ -37,7 +37,7 @@ const getStatusColor = (status?: string): string => {
     case 'done':
       return '#22c55e';
     default:
-        return '#1a1a1a';
+      return '#1a1a1a';
   }
 };
 

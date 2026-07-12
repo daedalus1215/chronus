@@ -1,6 +1,9 @@
 import { FolderDto, FolderTreeNode } from '../../../../../api/dtos/folder.dtos';
 
-export const collectSubtreeIds = (rootId: number, folders: FolderDto[]): Set<number> => {
+export const collectSubtreeIds = (
+  rootId: number,
+  folders: FolderDto[]
+): Set<number> => {
   const byParent = new Map<number | null, number[]>();
   folders.forEach(f => {
     const p = f.parentId ?? null;
@@ -31,4 +34,3 @@ export const visibleFolderIdsInOrder = (
   walk(nodes);
   return out;
 };
-

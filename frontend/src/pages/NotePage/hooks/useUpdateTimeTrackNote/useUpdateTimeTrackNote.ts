@@ -11,7 +11,9 @@ type UpdateTimeTrackNoteContext = {
   previousTimeTracks?: TimeTrack[];
 };
 
-const createTimeTracksQueryKey = (noteId: number): readonly [string, number] => {
+const createTimeTracksQueryKey = (
+  noteId: number
+): readonly [string, number] => {
   return ['timeTracks', noteId] as const;
 };
 

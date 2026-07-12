@@ -90,7 +90,7 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex(prev => 
+        setSelectedIndex(prev =>
           prev < filteredTags.length - 1 ? prev + 1 : prev
         );
         break;
@@ -254,7 +254,11 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
                 : 'No tags available'}
             </Typography>
             {newTagName.trim() && (
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 1 }}
+              >
                 Press "Add" to create a new tag
               </Typography>
             )}

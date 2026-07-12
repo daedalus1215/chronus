@@ -64,7 +64,9 @@ export const NotePage: React.FC = () => {
   // Active tab with localStorage persistence
   const [activeTab, setActiveTab] = useState<string>(() => {
     const stored = localStorage.getItem(SIDEBAR_TAB_STORAGE_KEY);
-    return stored && sidebarTabs.some(t => t.id === stored) ? stored : 'checklist';
+    return stored && sidebarTabs.some(t => t.id === stored)
+      ? stored
+      : 'checklist';
   });
 
   useEffect(() => {
@@ -88,10 +90,7 @@ export const NotePage: React.FC = () => {
     []
   );
 
-  const handleToggleTags = useCallback(
-    () => setIsTagsOpen(prev => !prev),
-    []
-  );
+  const handleToggleTags = useCallback(() => setIsTagsOpen(prev => !prev), []);
 
   const handleNavigateKanban = useCallback(
     () => navigate(`/notes/${note?.id}/kanban`),
@@ -251,7 +250,6 @@ export const NotePage: React.FC = () => {
               )}
             </Box>
           </Box>
-
         </Box>
         {!isMobile && note?.isMemo && (
           <RightSidebar
@@ -264,9 +262,7 @@ export const NotePage: React.FC = () => {
             {activeTab === 'checklist' && note && (
               <SidebarChecklistView note={note} />
             )}
-            {activeTab === 'tags' && (
-              <SidebarTagsView noteId={noteId} />
-            )}
+            {activeTab === 'tags' && <SidebarTagsView noteId={noteId} />}
             {activeTab === 'audio' && noteId && (
               <SidebarAudioHistoryView noteId={noteId} />
             )}

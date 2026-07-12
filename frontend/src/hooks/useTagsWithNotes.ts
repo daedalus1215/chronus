@@ -19,10 +19,19 @@ export const useTagsWithNotes = () => {
     queryFn: fetchTags,
   });
 
-  const fetchNotesForTag = useCallback(async (tagId: number): Promise<NoteSummary[]> => {
-    const response = await getNamesOfNotes(0, 100, '', undefined, String(tagId));
-    return response.notes.map((note) => ({ id: note.id, name: note.name }));
-  }, []);
+  const fetchNotesForTag = useCallback(
+    async (tagId: number): Promise<NoteSummary[]> => {
+      const response = await getNamesOfNotes(
+        0,
+        100,
+        '',
+        undefined,
+        String(tagId)
+      );
+      return response.notes.map(note => ({ id: note.id, name: note.name }));
+    },
+    []
+  );
 
   return {
     tags,

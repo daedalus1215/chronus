@@ -26,10 +26,11 @@ import {
 import styles from './NoteItem.module.css';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
 import { useExportNote } from '../../../hooks/useExportNote';
-import { useMergeIntoNote, MergeIntoNoteData } from '../../../hooks/useMergeIntoNote';
 import {
-  MergeSelectionDialog,
-} from '../../MergeSelectionDialog/MergeSelectionDialog';
+  useMergeIntoNote,
+  MergeIntoNoteData,
+} from '../../../hooks/useMergeIntoNote';
+import { MergeSelectionDialog } from '../../MergeSelectionDialog/MergeSelectionDialog';
 import { ParsedMemo } from '../../ImportSelectionDialog/ImportSelectionDialog';
 
 type Note = { name: string; id: number; isMemo: number };
@@ -543,9 +544,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onClose={() => setConvertDialogOpen(false)}
         aria-labelledby="convert-dialog-title"
       >
-        <DialogTitle id="convert-dialog-title">
-          Convert to Memo?
-        </DialogTitle>
+        <DialogTitle id="convert-dialog-title">Convert to Memo?</DialogTitle>
         <DialogContent>
           Convert this checklist to a memo note? Your check items will be
           available in the sidebar checklist, and time tracks will be preserved.

@@ -52,7 +52,7 @@ export const ChangePasswordForm: React.FC = () => {
       setConfirmPassword('');
     } catch (err) {
       // Error is handled by the hook
-      console.log('error should be handled by the hook! Error: ', err)
+      console.log('error should be handled by the hook! Error: ', err);
     }
   };
 

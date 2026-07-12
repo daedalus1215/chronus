@@ -189,8 +189,8 @@
   border-radius: 5px;
   border: 1px solid var(--glass-border);
   font-size: 0.85em;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro',
-    monospace;
+  font-family:
+    'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
 
 .markdownContent pre {

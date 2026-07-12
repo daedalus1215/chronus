@@ -13,7 +13,9 @@ export type TimeTrack = {
   note?: string;
 };
 
-const createTimeTracksQueryKey = (noteId: number): readonly [string, number] => {
+const createTimeTracksQueryKey = (
+  noteId: number
+): readonly [string, number] => {
   return ['timeTracks', noteId] as const;
 };
 

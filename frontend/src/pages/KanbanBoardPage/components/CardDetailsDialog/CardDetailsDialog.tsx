@@ -19,7 +19,12 @@ export interface CardDetailsDialogProps {
   isOpen: boolean;
   item: CheckItem | null;
   onClose: () => void;
-  onSave: (id: number, name: string, description: string | undefined, status: CheckItemStatus) => void;
+  onSave: (
+    id: number,
+    name: string,
+    description: string | undefined,
+    status: CheckItemStatus
+  ) => void;
 }
 
 export const CardDetailsDialog: React.FC<CardDetailsDialogProps> = ({
@@ -48,7 +53,9 @@ export const CardDetailsDialog: React.FC<CardDetailsDialogProps> = ({
     setName(event.target.value);
   };
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setDescription(event.target.value);
   };
 
@@ -58,12 +65,7 @@ export const CardDetailsDialog: React.FC<CardDetailsDialogProps> = ({
 
   const handleSave = () => {
     if (item && name.trim()) {
-      onSave(
-        item.id,
-        name.trim(),
-        description.trim() || undefined,
-        status
-      );
+      onSave(item.id, name.trim(), description.trim() || undefined, status);
     }
   };
 
@@ -119,7 +121,12 @@ export const CardDetailsDialog: React.FC<CardDetailsDialogProps> = ({
         <Button onClick={handleCancel} color="inherit">
           Cancel
         </Button>
-        <Button onClick={handleSave} variant="contained" color="primary" disabled={!name.trim()}>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          color="primary"
+          disabled={!name.trim()}
+        >
           Save
         </Button>
       </DialogActions>

@@ -47,7 +47,7 @@ export const useNoteEditor = ({
       timeoutRef.current = undefined;
     }
     setContent({ description: note.description || '' });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note.id]);
 
   // Update contentRef when content changes
@@ -113,7 +113,7 @@ export const useNoteEditor = ({
   const appendToDescription = React.useCallback(
     (text: string) => {
       console.log('appendToDescription called with:', text);
-      
+
       // Validate text before processing
       if (!isValidTextForInsertion(text)) {
         console.debug('Skipping invalid text in appendToDescription:', text);
@@ -128,7 +128,7 @@ export const useNoteEditor = ({
         TEXTAREA_ID,
         currentDescription,
         text,
-        (newText) => {
+        newText => {
           handleContentChange({ description: newText });
         }
       );

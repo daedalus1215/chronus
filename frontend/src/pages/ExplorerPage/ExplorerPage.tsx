@@ -16,18 +16,22 @@ export const ExplorerPage: React.FC = () => {
   const noteMatch = useMatch(EXPLORER_NOTE_PATTERN);
   const hasNoteOpen = Boolean(noteMatch);
 
-  const { size: treeWidth, startResizing, handleKeyDown, handleDoubleClick } =
-    useResizablePane({
-      localStorageKey: 'explorerTreeWidthPx',
-      min: 10,
-      max: 400,
-      initial: 260,
-      axis: 'x',
-      step: 10,
-      largeStep: 20,
-      snapPoints: [10, 48, 120, 180, 260, 320, 400],
-      snapThreshold: 10,
-    });
+  const {
+    size: treeWidth,
+    startResizing,
+    handleKeyDown,
+    handleDoubleClick,
+  } = useResizablePane({
+    localStorageKey: 'explorerTreeWidthPx',
+    min: 10,
+    max: 400,
+    initial: 260,
+    axis: 'x',
+    step: 10,
+    largeStep: 20,
+    snapPoints: [10, 48, 120, 180, 260, 320, 400],
+    snapThreshold: 10,
+  });
 
   if (isMobile) {
     return (

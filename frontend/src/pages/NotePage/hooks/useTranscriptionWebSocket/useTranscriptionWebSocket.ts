@@ -137,7 +137,9 @@ export const useTranscriptionWebSocket = ({
             const callback = onTranscriptionRef.current;
 
             if (!callback) {
-              console.error('❌ onTranscription callback is null or undefined!');
+              console.error(
+                '❌ onTranscription callback is null or undefined!'
+              );
               return;
             }
 
@@ -167,7 +169,10 @@ export const useTranscriptionWebSocket = ({
                 '✅ onTranscription callback executed - check if appendToDescription was called'
               );
             } catch (err) {
-              console.error('❌ Error executing onTranscription callback:', err);
+              console.error(
+                '❌ Error executing onTranscription callback:',
+                err
+              );
             }
           } else {
             console.debug('Skipping invalid transcription:', data);

@@ -20,14 +20,20 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import { useNote } from '../NotePage/hooks/useNote/useNote';
 import { CheckItem } from '../NotePage/api/responses';
-import { useCheckItems, useCheckItemsQuery } from '../NotePage/components/CheckListView/hooks/useCheckItems';
+import {
+  useCheckItems,
+  useCheckItemsQuery,
+} from '../NotePage/components/CheckListView/hooks/useCheckItems';
 import { useAddCheckItemDialog } from '../NotePage/components/CheckListView/hooks/useAddCheckItemDialog';
 import { AddCheckItemDialog } from '../NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog';
 import { KanbanColumn } from './components/KanbanColumn/KanbanColumn';
 import { CardDetailsDialog } from './components/CardDetailsDialog/CardDetailsDialog';
 import { MobileKanbanBoard } from './components/MobileKanbanBoard/MobileKanbanBoard';
 import cardStyles from './components/KanbanCard/KanbanCard.module.css';
-import { useUpdateCheckItemStatus, CheckItemStatus } from './hooks/useUpdateCheckItemStatus';
+import {
+  useUpdateCheckItemStatus,
+  CheckItemStatus,
+} from './hooks/useUpdateCheckItemStatus';
 import { checkItemKeys } from '../NotePage/components/CheckListView/hooks/useCheckItems';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import Card from '@mui/material/Card';
@@ -72,8 +78,11 @@ export const KanbanBoardPage: React.FC = () => {
   const noteId = Number(id);
   const queryClient = useQueryClient();
   const { note, isLoading: isNoteLoading, error: noteError } = useNote(noteId);
-  const { data: checkItems = [], isLoading: isCheckItemsLoading, error: checkItemsError } =
-    useCheckItemsQuery(noteId);
+  const {
+    data: checkItems = [],
+    isLoading: isCheckItemsLoading,
+    error: checkItemsError,
+  } = useCheckItemsQuery(noteId);
   const { addItem, reorderItems, updateItem } = useCheckItems(note);
   const { mutateAsync: updateStatus } = useUpdateCheckItemStatus(noteId);
   const [items, setItems] = useState<CheckItem[]>([]);
@@ -92,7 +101,8 @@ export const KanbanBoardPage: React.FC = () => {
     saveNew,
   } = useAddCheckItemDialog();
   const [editItemId, setEditItemId] = useState<number | null>(null);
-  const [selectedItemForDetails, setSelectedItemForDetails] = useState<CheckItem | null>(null);
+  const [selectedItemForDetails, setSelectedItemForDetails] =
+    useState<CheckItem | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -221,7 +231,10 @@ export const KanbanBoardPage: React.FC = () => {
       if (!currentItem) return;
 
       // Update name and description if changed
-      if (currentItem.name !== name || currentItem.description !== description) {
+      if (
+        currentItem.name !== name ||
+        currentItem.description !== description
+      ) {
         await updateItem(id, name, description);
       }
 
@@ -253,13 +266,20 @@ export const KanbanBoardPage: React.FC = () => {
 
   const isMobile = useIsMobile();
 
-  const handleMoveToStatus = async (itemId: number, status: CheckItemStatus) => {
+  const handleMoveToStatus = async (
+    itemId: number,
+    status: CheckItemStatus
+  ) => {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
     const previousItems = items;
     const nextItems = items.map(i =>
       i.id === itemId
-        ? { ...i, status, doneDate: status === 'done' ? new Date().toISOString() : null }
+        ? {
+            ...i,
+            status,
+            doneDate: status === 'done' ? new Date().toISOString() : null,
+          }
         : i
     );
     setItems(nextItems);
@@ -273,7 +293,9 @@ export const KanbanBoardPage: React.FC = () => {
   };
 
   const handleRefresh = async () => {
-    await queryClient.invalidateQueries({ queryKey: checkItemKeys.list(noteId) });
+    await queryClient.invalidateQueries({
+      queryKey: checkItemKeys.list(noteId),
+    });
     await queryClient.invalidateQueries({ queryKey: ['note', noteId] });
   };
 

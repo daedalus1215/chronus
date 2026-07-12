@@ -5,11 +5,9 @@ type SidebarToggleIconProps = {
   size?: number;
 };
 
-export const SidebarToggleIcon: React.FC<SidebarToggleIconProps & { inverted?: boolean }> = ({
-  isOpen,
-  size = 18,
-  inverted = false,
-}) => {
+export const SidebarToggleIcon: React.FC<
+  SidebarToggleIconProps & { inverted?: boolean }
+> = ({ isOpen, size = 18, inverted = false }) => {
   const dividerX = inverted ? 13.75 : 6.25;
   const panelX = inverted ? 14.5 : 1.5;
 

@@ -13,7 +13,11 @@ type DragGhostRowProps = {
   notes: ExplorerNoteItem[];
 };
 
-export const DragGhostRow: React.FC<DragGhostRowProps> = ({ id, folders, notes }) => {
+export const DragGhostRow: React.FC<DragGhostRowProps> = ({
+  id,
+  folders,
+  notes,
+}) => {
   let name = '';
   let icon: React.ReactNode;
 
@@ -21,14 +25,18 @@ export const DragGhostRow: React.FC<DragGhostRowProps> = ({ id, folders, notes }
     const folderId = parseInt(id.slice(7), 10);
     const folder = folders.find(f => f.id === folderId);
     name = folder?.name ?? '';
-    icon = <FolderIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }} />;
+    icon = (
+      <FolderIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }} />
+    );
   } else {
     const noteId = parseInt(id.slice(5), 10);
     const note = notes.find(n => n.id === noteId);
     name = note?.name ?? '';
-    icon = note?.isMemo
-      ? <StickyNote2Icon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
-      : <CheckBoxIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />;
+    icon = note?.isMemo ? (
+      <StickyNote2Icon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
+    ) : (
+      <CheckBoxIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
+    );
   }
 
   return (
