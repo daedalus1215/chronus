@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Paper, Typography } from '@mui/material';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import styles from './DateRangePicker.module.css';
 
 const PRESETS = [
@@ -44,39 +45,53 @@ export const DateRangePicker: React.FC<Props> = ({
   }, [from, to]);
 
   return (
-    <Box className={styles.container}>
-      <Box className={styles.presets}>
-        {PRESETS.map(p => (
-          <Button
-            key={p.days}
+    <Paper className={styles.container} elevation={0}>
+      <Box className={styles.header}>
+        <CalendarTodayIcon className={styles.icon} />
+        <Typography className={styles.title}>Date Range</Typography>
+      </Box>
+
+      <Box className={styles.content}>
+        <Box className={styles.presets}>
+          {PRESETS.map((p) => (
+            <Button
+              key={p.days}
+              size="small"
+              variant={activePreset === p.days ? 'contained' : 'outlined'}
+              onClick={() => onPreset(p.days)}
+              className={`${styles.presetButton} ${
+                activePreset === p.days ? styles.presetButtonActive : ''
+              }`}
+            >
+              {p.label}
+            </Button>
+          ))}
+        </Box>
+
+        <Box className={styles.divider} />
+
+        <Box className={styles.customRange}>
+          <TextField
+            type="date"
+            label="From"
+            value={from}
+            onChange={(e) => onFromChange(e.target.value)}
             size="small"
-            variant={activePreset === p.days ? 'contained' : 'outlined'}
-            onClick={() => onPreset(p.days)}
-          >
-            {p.label}
-          </Button>
-        ))}
+            InputLabelProps={{ shrink: true }}
+            className={styles.dateField}
+          />
+          <span className={styles.rangeSeparator}>to</span>
+          <TextField
+            type="date"
+            label="To"
+            value={to}
+            onChange={(e) => onToChange(e.target.value)}
+            size="small"
+            InputLabelProps={{ shrink: true }}
+            className={styles.dateField}
+          />
+        </Box>
       </Box>
-      <Box className={styles.customRange}>
-        <TextField
-          type="date"
-          label="From"
-          value={from}
-          onChange={e => onFromChange(e.target.value)}
-          size="small"
-          InputLabelProps={{ shrink: true }}
-          sx={{ minWidth: 140 }}
-        />
-        <TextField
-          type="date"
-          label="To"
-          value={to}
-          onChange={e => onToChange(e.target.value)}
-          size="small"
-          InputLabelProps={{ shrink: true }}
-          sx={{ minWidth: 140 }}
-        />
-      </Box>
-    </Box>
+    </Paper>
   );
 };

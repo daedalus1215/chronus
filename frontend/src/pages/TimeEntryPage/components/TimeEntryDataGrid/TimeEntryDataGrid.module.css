@@ -1,11 +1,231 @@
-.editCell {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.gridContainer {
+  height: 100%;
+  width: 100%;
+  background-color: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--elevation-2);
+}
+
+.dataGrid {
+  border: none !important;
+  background-color: transparent !important;
+}
+
+.dataGrid :global(.MuiDataGrid-root) {
+  border: none;
+}
+
+.dataGrid :global(.MuiDataGrid-cell) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+}
+
+.dataGrid :global(.MuiDataGrid-cell:focus) {
+  outline: none;
+}
+
+.dataGrid :global(.MuiDataGrid-columnHeaders) {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dataGrid :global(.MuiDataGrid-columnHeader) {
+  padding: 8px 12px;
+}
+
+.dataGrid :global(.MuiDataGrid-columnHeaderTitle) {
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.dataGrid :global(.MuiDataGrid-row:hover) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.dataGrid :global(.MuiDataGrid-row.Mui-selected) {
+  background-color: rgba(99, 102, 241, 0.08);
+}
+
+.dataGrid :global(.MuiDataGrid-row.Mui-selected:hover) {
+  background-color: rgba(99, 102, 241, 0.12);
+}
+
+.cellText {
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.noteLink {
+  color: #818cf8 !important;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: color 0.15s ease;
+  text-align: left;
+}
+
+.noteLink:hover {
+  color: #a5b4fc !important;
+}
+
+.durationCell {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #22d3ee;
+  font-variant-numeric: tabular-nums;
+}
+
+.noteText {
+  color: var(--color-text-secondary);
+  font-style: italic;
 }
 
 .actionButtons {
   display: flex;
   gap: 4px;
+  justify-content: flex-end;
+}
+
+.actionButton {
+  color: var(--color-text-secondary) !important;
+  transition: all 0.15s ease !important;
+}
+
+.actionButton:hover {
+  color: var(--color-text) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
   justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.emptyStateText {
+  color: var(--color-text-secondary) !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .gridContainer {
+    border-radius: 12px;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell) {
+    padding: 6px 10px;
+  }
+
+  .cellText,
+  .noteLink,
+  .durationCell {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .gridContainer {
+    border-radius: 10px;
+    border: none;
+    box-shadow: var(--elevation-1);
+  }
+
+  .dataGrid :global(.MuiDataGrid-columnHeaders) {
+    display: none;
+  }
+
+  .dataGrid :global(.MuiDataGrid-virtualScrollerContent) {
+    font-size: 0.875rem;
+  }
+
+  .dataGrid :global(.MuiDataGrid-row) {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    gap: 8px;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell) {
+    border: none;
+    padding: 0;
+    min-height: auto !important;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell[data-field="noteName"]) {
+    order: 1;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell[data-field="actions"]) {
+    order: 2;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell[data-field="date"]),
+  .dataGrid :global(.MuiDataGrid-cell[data-field="startTime"]),
+  .dataGrid :global(.MuiDataGrid-cell[data-field="durationMinutes"]),
+  .dataGrid :global(.MuiDataGrid-cell[data-field="note"]) {
+    order: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell[data-field="date"])::before {
+    content: "Date:";
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell[data-field="startTime"])::before {
+    content: "Start:";
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell[data-field="durationMinutes"])::before {
+    content: "Duration:";
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell[data-field="note"])::before {
+    content: "Memo:";
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .noteLink {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .actionButtons {
+    gap: 8px;
+  }
+
+  .actionButton {
+    padding: 6px !important;
+  }
 }
