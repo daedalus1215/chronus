@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.header {
+  flex-shrink: 0;
+}
+
+.gridWrapper {
+  flex: 1;
+  min-height: 0;
+}
