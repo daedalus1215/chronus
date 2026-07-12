@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { TimeTrack } from '../../domain/entities/time-track-entity/time-track.entity';
 import {
   getWeekDateRange,
@@ -78,6 +78,35 @@ export class TimeTrackRepository {
       return null;
     }
     return this.findById(id);
+  }
+
+  async updateByIdAndUserId(
+    id: number,
+    userId: number,
+    updates: {
+      date?: string;
+      startTime?: string;
+      durationMinutes?: number;
+      noteId?: number;
+      note?: string;
+    }
+  ): Promise<TimeTrack | null> {
+    const result = await this.repository.update({ id, userId }, updates);
+    if (!result.affected) {
+      return null;
+    }
+    return this.findById(id);
+  }
+
+  async findByUserIdAndDateRange(
+    userId: number,
+    from: string,
+    to: string
+  ): Promise<TimeTrack[]> {
+    return this.repository.find({
+      where: { userId, date: Between(from, to) },
+      order: { date: 'DESC', startTime: 'DESC' },
+    });
   }
 
   async getDailyTimeTracksAggregation(
