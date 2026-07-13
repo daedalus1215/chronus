@@ -1,5 +1,4 @@
 .gridContainer {
-  height: 100%;
   width: 100%;
   background-color: var(--color-bg-elevated);
   border: 1px solid rgba(255, 255, 255, 0.07);
@@ -11,6 +10,7 @@
 .dataGrid {
   border: none !important;
   background-color: transparent !important;
+  --DataGrid-overlayHeight: 180px;
 }
 
 .dataGrid :global(.MuiDataGrid-root) {
@@ -33,6 +33,15 @@
 
 .dataGrid :global(.MuiDataGrid-columnHeader) {
   padding: 8px 12px;
+}
+
+.dataGrid :global(.MuiDataGrid-columnHeader:focus),
+.dataGrid :global(.MuiDataGrid-columnHeader:focus-within) {
+  outline: none;
+}
+
+.dataGrid :global(.MuiDataGrid-columnSeparator) {
+  display: none !important;
 }
 
 .dataGrid :global(.MuiDataGrid-columnHeaderTitle) {
@@ -105,6 +114,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 180px;
   height: 100%;
   padding: 2rem;
   text-align: center;
@@ -145,33 +155,55 @@
     display: none;
   }
 
+  /* Collapse the horizontal (column-width) layout so each row fits the
+     viewport and stacks as a card instead of scrolling sideways. */
+  .dataGrid :global(.MuiDataGrid-virtualScroller) {
+    overflow-x: hidden !important;
+  }
+
   .dataGrid :global(.MuiDataGrid-virtualScrollerContent) {
+    width: 100% !important;
     font-size: 0.875rem;
   }
 
+  .dataGrid :global(.MuiDataGrid-virtualScrollerRenderZone) {
+    width: 100% !important;
+  }
+
   .dataGrid :global(.MuiDataGrid-row) {
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 12px 16px;
+    width: 100% !important;
+    padding: 14px 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    gap: 8px;
+    gap: 7px;
   }
 
   .dataGrid :global(.MuiDataGrid-cell) {
-    border: none;
-    padding: 0;
+    border: none !important;
+    padding: 0 !important;
     min-height: auto !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
   }
 
   .dataGrid :global(.MuiDataGrid-cell[data-field="noteName"]) {
     order: 1;
+    margin-bottom: 2px;
+    padding-right: 72px !important;
   }
 
   .dataGrid :global(.MuiDataGrid-cell[data-field="actions"]) {
     order: 2;
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 10px;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
   }
 
   .dataGrid :global(.MuiDataGrid-cell[data-field="date"]),
@@ -179,41 +211,37 @@
   .dataGrid :global(.MuiDataGrid-cell[data-field="durationMinutes"]),
   .dataGrid :global(.MuiDataGrid-cell[data-field="note"]) {
     order: 3;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .dataGrid :global(.MuiDataGrid-cell[data-field="date"])::before,
+  .dataGrid :global(.MuiDataGrid-cell[data-field="startTime"])::before,
+  .dataGrid :global(.MuiDataGrid-cell[data-field="durationMinutes"])::before,
+  .dataGrid :global(.MuiDataGrid-cell[data-field="note"])::before {
+    flex: 0 0 72px;
+    color: var(--color-text-secondary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .dataGrid :global(.MuiDataGrid-cell[data-field="date"])::before {
-    content: "Date:";
-    color: var(--color-text-secondary);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    content: "Date";
   }
 
   .dataGrid :global(.MuiDataGrid-cell[data-field="startTime"])::before {
-    content: "Start:";
-    color: var(--color-text-secondary);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    content: "Start";
   }
 
   .dataGrid :global(.MuiDataGrid-cell[data-field="durationMinutes"])::before {
-    content: "Duration:";
-    color: var(--color-text-secondary);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    content: "Duration";
   }
 
   .dataGrid :global(.MuiDataGrid-cell[data-field="note"])::before {
-    content: "Memo:";
-    color: var(--color-text-secondary);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    content: "Memo";
   }
 
   .noteLink {
@@ -221,8 +249,14 @@
     font-weight: 600;
   }
 
+  .cellText,
+  .durationCell,
+  .noteText {
+    font-size: 0.9375rem;
+  }
+
   .actionButtons {
-    gap: 8px;
+    gap: 4px;
   }
 
   .actionButton {
