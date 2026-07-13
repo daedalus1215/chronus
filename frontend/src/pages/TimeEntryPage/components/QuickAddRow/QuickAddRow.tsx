@@ -176,12 +176,17 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
         <Box className={styles.durationSection}>
           <TextField
             type="number"
-            label="Minutes"
+            placeholder="30"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             size="small"
             className={styles.durationInput}
             inputProps={{ min: 1, max: 1440 }}
+            InputProps={{
+              endAdornment: (
+                <Typography className={styles.durationSuffix}>min</Typography>
+              ),
+            }}
           />
         </Box>
 
