@@ -258,7 +258,7 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
     {
       field: 'startTime',
       headerName: 'Start',
-      width: 80,
+      width: 90,
       renderCell: (params: GridRenderCellParams) => (
         <span className={styles.cellText}>{params.value as string}</span>
       ),
@@ -266,7 +266,7 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
     {
       field: 'durationMinutes',
       headerName: 'Duration',
-      width: 90,
+      width: 110,
       valueFormatter: (value: number) => formatDuration(value),
       renderCell: (params: GridRenderCellParams) => (
         <span className={styles.durationCell}>
@@ -330,6 +330,11 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
               paginationModel: { page: 0, pageSize: 25 },
             },
           }}
+          autoHeight
+          disableColumnMenu
+          disableRowSelectionOnClick
+          columnHeaderHeight={44}
+          getRowHeight={() => 'auto'}
           className={styles.dataGrid}
           slots={{
             noRowsOverlay: () => (
