@@ -32,3 +32,15 @@ export type NotesByYearResponseDto = {
     }>;
   }>;
 };
+
+export type TimeTrackWithNoteResponse = {
+  id: number;
+  noteId: number;
+  noteName: string;
+  date: string;
+  startTime: string;
+  durationMinutes: number;
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+};

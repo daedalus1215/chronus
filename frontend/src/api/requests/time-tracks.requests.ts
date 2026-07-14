@@ -8,6 +8,7 @@ import {
   NoteTimeTracksResponse,
   TimeTrackAggregationResponse,
   NotesByYearResponseDto,
+  TimeTrackWithNoteResponse,
 } from '../dtos/time-tracks.dtos';
 import { WeeklyMostActiveNoteResponseDto } from '../dtos/weekly-most-active-note.dtos';
 import { WeeklyTrendResponseDto } from '../dtos/weekly-trend.dtos';
@@ -31,12 +32,25 @@ export const deleteTimeTrack = async (id: number): Promise<void> => {
   await api.delete(`/time-tracks/${id}`);
 };
 
+export const updateTimeTrack = async (
+  id: number,
+  payload: {
+    date?: string;
+    startTime?: string;
+    durationMinutes?: number;
+    noteId?: number;
+    note?: string;
+  }
+): Promise<NoteTimeTracksResponse> => {
+  const { data } = await api.patch(`/time-tracks/${id}`, payload);
+  return data;
+};
+
 export const updateTimeTrackNote = async (
   id: number,
   note: string
 ): Promise<NoteTimeTracksResponse> => {
-  const { data } = await api.patch(`/time-tracks/${id}`, { note });
-  return data;
+  return updateTimeTrack(id, { note });
 };
 
 export const createTimeTrack = async (
@@ -89,4 +103,14 @@ export const getNotesByYear = async (): Promise<NotesByYearResponseDto> => {
     '/time-tracks/notes-by-year'
   );
   return response.data;
+};
+
+export const getTimeTracksByDateRange = async (
+  from: string,
+  to: string
+): Promise<TimeTrackWithNoteResponse[]> => {
+  const { data } = await api.get('/time-tracks/date-range', {
+    params: { from, to },
+  });
+  return data;
 };

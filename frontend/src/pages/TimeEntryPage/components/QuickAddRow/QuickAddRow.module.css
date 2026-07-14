@@ -1,0 +1,268 @@
+.container {
+  padding: 1.25rem;
+  background-color: var(--color-bg-elevated) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--elevation-2) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.container:hover {
+  border-color: rgba(99, 102, 241, 0.2) !important;
+  box-shadow: var(--elevation-3) !important;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.headerIcon {
+  color: #6366f1;
+  font-size: 20px !important;
+}
+
+.headerTitle {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: var(--color-text) !important;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.noteField {
+  flex: 1;
+  min-width: 220px;
+}
+
+.searchIcon {
+  color: var(--color-text-muted);
+  font-size: 18px !important;
+  margin-right: 4px;
+}
+
+.loadingSpinner {
+  color: var(--color-primary) !important;
+}
+
+.dateTimeFields {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dateField {
+  width: 160px;
+}
+
+.timeField {
+  width: 118px;
+}
+
+.durationSection {
+  display: flex;
+  align-items: center;
+}
+
+.durationInput {
+  width: 110px;
+}
+
+.durationInput :global(.MuiInputBase-input) {
+  font-variant-numeric: tabular-nums;
+}
+
+.durationSuffix {
+  font-size: 0.8125rem !important;
+  color: var(--color-text-muted) !important;
+  padding-left: 2px;
+  user-select: none;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.addButton {
+  min-width: 80px !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+}
+
+.clearButton {
+  min-width: 36px !important;
+  padding: 0 !important;
+  color: var(--color-text-secondary) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.clearButton:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.chipsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.875rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chipsLabel {
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  color: var(--color-text-secondary) !important;
+  white-space: nowrap;
+}
+
+.chipsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  flex: 1;
+}
+
+.durationChip {
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  height: 28px !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--color-text-secondary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.15s ease !important;
+  cursor: pointer !important;
+}
+
+.durationChip:hover {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  color: #818cf8 !important;
+}
+
+.durationChipSelected {
+  background-color: #6366f1 !important;
+  border-color: #6366f1 !important;
+  color: white !important;
+}
+
+.durationChipSelected:hover {
+  background-color: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  color: white !important;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .formRow {
+    gap: 0.625rem;
+  }
+
+  .noteField {
+    min-width: 200px;
+    flex: 1 1 100%;
+  }
+
+  .dateField {
+    width: 150px;
+  }
+
+  .timeField {
+    width: 110px;
+  }
+
+  .durationInput {
+    width: 105px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .container {
+    padding: 0.875rem;
+  }
+
+  .header {
+    margin-bottom: 0.875rem;
+    padding-bottom: 0.625rem;
+  }
+
+  .headerIcon {
+    font-size: 18px !important;
+  }
+
+  .headerTitle {
+    font-size: 0.8125rem !important;
+  }
+
+  .formRow {
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .noteField {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  .dateTimeFields {
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .dateField,
+  .timeField {
+    flex: 1;
+    width: auto;
+  }
+
+  .durationSection {
+    width: 100%;
+  }
+
+  .durationInput {
+    width: 100%;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 0.25rem;
+  }
+
+  .addButton {
+    flex: 1;
+  }
+
+  .chipsRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
+  .chipsContainer {
+    width: 100%;
+  }
+
+  .durationChip {
+    height: 32px !important;
+    font-size: 0.8125rem !important;
+  }
+}

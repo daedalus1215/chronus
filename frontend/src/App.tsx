@@ -22,6 +22,7 @@ import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 import { KanbanBoardPage } from './pages/KanbanBoardPage/KanbanBoardPage';
 import { SearchPage } from './pages/SearchPage/SearchPage';
 import { ExplorerPage } from './pages/ExplorerPage/ExplorerPage';
+import { TimeEntryPage } from './pages/TimeEntryPage/TimeEntryPage';
 import { ROUTES, ROUTE_PATTERNS } from './constants/routes';
 import { AuthenticatedLayout } from './components/Layout/AuthenticatedLayout';
 import { PersistentAudioPlayer } from './components/PersistentAudioPlayer/PersistentAudioPlayer';
@@ -64,6 +65,7 @@ function AppRoutes() {
           <Route path={ROUTES.EXPLORER} element={<ExplorerPage />}>
             <Route path={ROUTE_PATTERNS.NOTE} element={<NotePage />} />
           </Route>
+          <Route path={ROUTES.TIME_ENTRY} element={<TimeEntryPage />} />
 
           {/* Redirect authenticated users trying to access auth pages */}
           <Route
