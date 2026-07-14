@@ -13,17 +13,17 @@ import {
 } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
-import { GetTimeTracksTotalByNoteIdSwagger } from './get-time-tracks-total-by-note-id.swagger';
+import { FetchTimeTracksTotalByNoteIdSwagger } from './fetch-time-tracks-total-by-note-id.swagger';
 
 @Controller('time-tracks')
 @UseGuards(JwtAuthGuard)
 @ApiTags('Time Tracks')
 @ApiBearerAuth()
-export class GetTimeTracksTotalByNoteIdAction {
+export class FetchTimeTracksTotalByNoteIdAction {
   constructor(private readonly timeTrackService: TimeTrackService) {}
 
   @Get('note/:noteId/total')
-  @ProtectedAction(GetTimeTracksTotalByNoteIdSwagger)
+  @ProtectedAction(FetchTimeTracksTotalByNoteIdSwagger)
   async apply(
     @Param('noteId', ParseIntPipe) noteId: number,
     @GetAuthUser() user: AuthUser
