@@ -109,7 +109,9 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
     <Paper className={styles.container} elevation={0}>
       <Box className={styles.header}>
         <ScheduleIcon className={styles.headerIcon} />
-        <Typography className={styles.headerTitle}>Quick Add Time Entry</Typography>
+        <Typography className={styles.headerTitle}>
+          Quick Add Time Entry
+        </Typography>
       </Box>
 
       <Box className={styles.formRow}>
@@ -117,16 +119,18 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
           <Autocomplete
             options={displayOptions}
             loading={searchLoading}
-            getOptionLabel={(opt) => (opt as { name: string }).name}
+            getOptionLabel={opt => (opt as { name: string }).name}
             isOptionEqualToValue={isOptionEqualToValue}
             value={selectedNote ?? null}
-            onChange={(_e, val) => handleSelect(val as NoteAutocompleteOption | null)}
+            onChange={(_e, val) =>
+              handleSelect(val as NoteAutocompleteOption | null)
+            }
             onInputChange={(_e, val, reason) => {
               if (reason === 'input') {
                 setQuery(val);
               }
             }}
-            renderInput={(params) => (
+            renderInput={params => (
               <TextField
                 {...params}
                 placeholder="Search note..."
@@ -143,7 +147,10 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
                   endAdornment: (
                     <>
                       {searchLoading ? (
-                        <CircularProgress size={18} className={styles.loadingSpinner} />
+                        <CircularProgress
+                          size={18}
+                          className={styles.loadingSpinner}
+                        />
                       ) : null}
                       {params.InputProps.endAdornment}
                     </>
@@ -159,14 +166,14 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
           <TextField
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={e => setDate(e.target.value)}
             size="small"
             className={styles.dateField}
           />
           <TextField
             type="time"
             value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
+            onChange={e => setStartTime(e.target.value)}
             size="small"
             InputLabelProps={{ shrink: true }}
             className={styles.timeField}
@@ -178,7 +185,7 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
             type="number"
             placeholder="30"
             value={duration}
-            onChange={(e) => setDuration(e.target.value)}
+            onChange={e => setDuration(e.target.value)}
             size="small"
             className={styles.durationInput}
             inputProps={{ min: 1, max: 1440 }}
@@ -215,14 +222,16 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
       <Box className={styles.chipsRow}>
         <Typography className={styles.chipsLabel}>Quick select:</Typography>
         <Box className={styles.chipsContainer}>
-          {DURATION_CHIPS.map((min) => (
+          {DURATION_CHIPS.map(min => (
             <Chip
               key={min}
               label={`${min}m`}
               size="small"
               onClick={() => handleDurationChipClick(min)}
               className={`${styles.durationChip} ${
-                parseInt(duration, 10) === min ? styles.durationChipSelected : ''
+                parseInt(duration, 10) === min
+                  ? styles.durationChipSelected
+                  : ''
               }`}
             />
           ))}

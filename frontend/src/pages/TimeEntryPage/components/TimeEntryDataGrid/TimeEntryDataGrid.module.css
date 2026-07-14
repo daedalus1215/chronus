@@ -190,13 +190,13 @@
     white-space: normal !important;
   }
 
-  .dataGrid :global(.MuiDataGrid-cell[data-field="noteName"]) {
+  .dataGrid :global(.MuiDataGrid-cell[data-field='noteName']) {
     order: 1;
     margin-bottom: 2px;
     padding-right: 72px !important;
   }
 
-  .dataGrid :global(.MuiDataGrid-cell[data-field="actions"]) {
+  .dataGrid :global(.MuiDataGrid-cell[data-field='actions']) {
     order: 2;
     position: absolute;
     top: 8px;
@@ -206,20 +206,20 @@
     max-width: none !important;
   }
 
-  .dataGrid :global(.MuiDataGrid-cell[data-field="date"]),
-  .dataGrid :global(.MuiDataGrid-cell[data-field="startTime"]),
-  .dataGrid :global(.MuiDataGrid-cell[data-field="durationMinutes"]),
-  .dataGrid :global(.MuiDataGrid-cell[data-field="note"]) {
+  .dataGrid :global(.MuiDataGrid-cell[data-field='date']),
+  .dataGrid :global(.MuiDataGrid-cell[data-field='startTime']),
+  .dataGrid :global(.MuiDataGrid-cell[data-field='durationMinutes']),
+  .dataGrid :global(.MuiDataGrid-cell[data-field='note']) {
     order: 3;
     display: flex;
     align-items: baseline;
     gap: 8px;
   }
 
-  .dataGrid :global(.MuiDataGrid-cell[data-field="date"])::before,
-  .dataGrid :global(.MuiDataGrid-cell[data-field="startTime"])::before,
-  .dataGrid :global(.MuiDataGrid-cell[data-field="durationMinutes"])::before,
-  .dataGrid :global(.MuiDataGrid-cell[data-field="note"])::before {
+  .dataGrid :global(.MuiDataGrid-cell[data-field='date'])::before,
+  .dataGrid :global(.MuiDataGrid-cell[data-field='startTime'])::before,
+  .dataGrid :global(.MuiDataGrid-cell[data-field='durationMinutes'])::before,
+  .dataGrid :global(.MuiDataGrid-cell[data-field='note'])::before {
     flex: 0 0 72px;
     color: var(--color-text-secondary);
     font-size: 0.7rem;
@@ -228,20 +228,20 @@
     letter-spacing: 0.05em;
   }
 
-  .dataGrid :global(.MuiDataGrid-cell[data-field="date"])::before {
-    content: "Date";
+  .dataGrid :global(.MuiDataGrid-cell[data-field='date'])::before {
+    content: 'Date';
   }
 
-  .dataGrid :global(.MuiDataGrid-cell[data-field="startTime"])::before {
-    content: "Start";
+  .dataGrid :global(.MuiDataGrid-cell[data-field='startTime'])::before {
+    content: 'Start';
   }
 
-  .dataGrid :global(.MuiDataGrid-cell[data-field="durationMinutes"])::before {
-    content: "Duration";
+  .dataGrid :global(.MuiDataGrid-cell[data-field='durationMinutes'])::before {
+    content: 'Duration';
   }
 
-  .dataGrid :global(.MuiDataGrid-cell[data-field="note"])::before {
-    content: "Memo";
+  .dataGrid :global(.MuiDataGrid-cell[data-field='note'])::before {
+    content: 'Memo';
   }
 
   .noteLink {

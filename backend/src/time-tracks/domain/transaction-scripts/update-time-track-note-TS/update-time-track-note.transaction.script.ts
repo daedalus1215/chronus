@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TimeTrackRepository } from '../../infra/repositories/time-track.repository';
-import { TimeTrackResponseDto } from '../../apps/dtos/responses/time-track.response.dto';
+import { TimeTrackRepository } from '../../../infra/repositories/time-track.repository';
 import {
   UpdateTimeTrackPayload,
   UpdateTimeTrackPayloadConverter,
@@ -17,7 +16,17 @@ export class UpdateTimeTrackNoteTransactionScript {
     id: number,
     userId: number,
     payload: UpdateTimeTrackPayload
-  ): Promise<TimeTrackResponseDto> {
+  ): Promise<{
+    id: number;
+    userId: number;
+    noteId: number;
+    date: string;
+    startTime: string;
+    durationMinutes: number;
+    note?: string;
+    createdAt: string;
+    updatedAt: string;
+  }> {
     const updates = this.payloadConverter.apply(payload);
 
     const updated = await this.timeTrackRepository.updateByIdAndUserId(
@@ -28,6 +37,6 @@ export class UpdateTimeTrackNoteTransactionScript {
     if (!updated) {
       throw new NotFoundException('Time track not found or not owned by user');
     }
-    return new TimeTrackResponseDto(updated);
+    return updated;
   }
 }

@@ -36,7 +36,10 @@ export type TimeTrackingData = {
 const DEFAULT_DURATION = 30;
 const DEBOUNCE_MS = 500;
 
-const buildBackdatedDefaults = (anchor: Date, durationMinutes: number): Omit<TimeTrackingData, 'note'> => {
+const buildBackdatedDefaults = (
+  anchor: Date,
+  durationMinutes: number
+): Omit<TimeTrackingData, 'note'> => {
   const calc = new Date(anchor.getTime() - durationMinutes * 60 * 1000);
   return {
     date: getDateString(calc),
@@ -186,7 +189,12 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
               <Typography
                 component="span"
                 color="primary"
-                sx={{ cursor: 'pointer', fontSize: '0.75rem', mb: 1, display: 'block' }}
+                sx={{
+                  cursor: 'pointer',
+                  fontSize: '0.75rem',
+                  mb: 1,
+                  display: 'block',
+                }}
                 onClick={handleResetToNow}
               >
                 Reset to now

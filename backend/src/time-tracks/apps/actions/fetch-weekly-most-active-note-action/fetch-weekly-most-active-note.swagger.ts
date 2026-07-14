@@ -1,7 +1,7 @@
 import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { TimeTrack } from '../../../domain/entities/time-track-entity/time-track.entity';
 
-export const GetWeeklyMostActiveNoteSwagger: ProtectedActionOptions = {
+export const FetchWeeklyMostActiveNoteSwagger: ProtectedActionOptions = {
   tag: 'Time Tracks',
   summary: 'Get the most active note for the current week',
   additionalResponses: [

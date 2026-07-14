@@ -42,9 +42,7 @@ export const createNote = async (
   return response.data;
 };
 
-export const createMemoByName = async (
-  name: string
-): Promise<NoteResponse> => {
+export const createMemoByName = async (name: string): Promise<NoteResponse> => {
   const response = await api.post<NoteResponse>('/notes', {
     name,
     isMemo: true,

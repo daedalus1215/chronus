@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDebounce } from '../../../hooks/useDebounce';
-import { searchNotes, createMemoByName } from '../../../api/requests/notes.requests';
+import {
+  searchNotes,
+  createMemoByName,
+} from '../../../api/requests/notes.requests';
 
 export type NoteOption = {
   id: number;
@@ -33,7 +36,11 @@ export function useNoteSearch() {
     try {
       const results = await searchNotes(searchQuery);
       // Check if this controller was aborted
-      if (abortControllerRef.current && abortControllerRef.current.signal.aborted) return;
+      if (
+        abortControllerRef.current &&
+        abortControllerRef.current.signal.aborted
+      )
+        return;
 
       const unique = new Map<number, string>();
       for (const r of results) {

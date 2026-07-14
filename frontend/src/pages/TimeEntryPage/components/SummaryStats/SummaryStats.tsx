@@ -22,7 +22,8 @@ export const SummaryStats: React.FC<SummaryStatsProps> = ({
   totalMinutes,
   entryCount,
 }) => {
-  const averageMinutes = entryCount > 0 ? Math.round(totalMinutes / entryCount) : 0;
+  const averageMinutes =
+    entryCount > 0 ? Math.round(totalMinutes / entryCount) : 0;
 
   const stats = [
     {
@@ -44,7 +45,7 @@ export const SummaryStats: React.FC<SummaryStatsProps> = ({
 
   return (
     <Box className={styles.container}>
-      {stats.map((stat) => (
+      {stats.map(stat => (
         <Paper key={stat.label} className={styles.card}>
           <Box className={styles.iconWrapper}>{stat.icon}</Box>
           <Box className={styles.content}>
