@@ -6,7 +6,7 @@ import {
 } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { UpdateTimeTrackNoteTransactionScript } from 'src/time-tracks/domain/transaction-scripts/update-time-track-note.transaction.script';
 import { TimeTrackResponseDto } from '../../dtos/responses/time-track.response.dto';
-import { UpdateTimeTrackNoteDto } from './dtos/update-time-track-note.dto';
+import { UpdateTimeTrackDto } from './dtos/update-time-track.dto';
 import { UpdateTimeTrackNoteSwagger } from './update-time-track-note.swagger';
 
 @Controller('time-tracks')
@@ -19,9 +19,9 @@ export class UpdateTimeTrackNoteAction {
   @ProtectedAction(UpdateTimeTrackNoteSwagger)
   async execute(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateTimeTrackNoteDto,
+    @Body() dto: UpdateTimeTrackDto,
     @GetAuthUser() authUser: AuthUser
   ): Promise<TimeTrackResponseDto> {
-    return this.updateNoteTS.apply(id, authUser.userId, dto.note ?? null);
+    return this.updateNoteTS.apply(id, authUser.userId, dto);
   }
 }

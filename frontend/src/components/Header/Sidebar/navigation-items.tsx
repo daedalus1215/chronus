@@ -3,6 +3,7 @@ import NoteIcon from '@mui/icons-material/Note';
 import ChecklistIcon from '@mui/icons-material/CheckBox';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import HistoryIcon from '@mui/icons-material/History';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SearchIcon from '@mui/icons-material/Search';
@@ -33,6 +34,11 @@ export const navigationItems = [
     label: 'Activity',
     path: '/activity',
     icon: TimelineIcon,
+  },
+  {
+    label: 'Quick Log',
+    path: '/time-entry',
+    icon: MoreTimeIcon,
   },
   {
     label: 'Yearly Notes',

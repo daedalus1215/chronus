@@ -13,11 +13,14 @@ import { GetWeeklyTrendTransactionScript } from '../../transaction-scripts/get-w
 import { GetStreakTransactionScript } from '../../transaction-scripts/get-streak-TS/get-streak.transaction.script';
 import { GetNotesByYearTransactionScript } from '../../transaction-scripts/get-notes-by-year-TS/get-notes-by-year.transaction.script';
 import { GetNotesByYearCommand } from '../../transaction-scripts/get-notes-by-year-TS/get-notes-by-year.command';
+import { GetTimeTracksByDateRangeTransactionScript } from '../../transaction-scripts/get-time-tracks-by-date-range-TS/get-time-tracks-by-date-range.transaction.script';
+import { GetTimeTracksByDateRangeCommand } from '../../transaction-scripts/get-time-tracks-by-date-range-TS/get-time-tracks-by-date-range.command';
 import { GET_NOTE_DETAILS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/notes/get-note-details.command';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WeeklyTrendResponseDto } from '../../../apps/dtos/responses/weekly-trend.response.dto';
 import { StreakResponseDto } from '../../../apps/dtos/responses/streak.response.dto';
 import { NotesByYearResponseDto } from '../../../apps/dtos/responses/notes-by-year.response.dto';
+import { TimeTrackWithNoteResponse } from '../../../apps/dtos/responses/time-track-with-note.response.dto';
 import { TagAggregator } from '../../../../tags/domain/aggregators/tag.aggregator';
 
 //@TODO: Move this to a command object
@@ -38,6 +41,7 @@ export class TimeTrackService {
     private readonly getWeeklyTrendTS: GetWeeklyTrendTransactionScript,
     private readonly getStreakTS: GetStreakTransactionScript,
     private readonly getNotesByYearTS: GetNotesByYearTransactionScript,
+    private readonly getTimeTracksByDateRangeTS: GetTimeTracksByDateRangeTransactionScript,
     private readonly tagAggregator: TagAggregator,
     private readonly eventEmitter: EventEmitter2
   ) {}
@@ -149,5 +153,25 @@ export class TimeTrackService {
       }))
       .sort((a, b) => b.year - a.year);
     return { years };
+  }
+
+  async getTimeTracksByDateRange(
+    command: GetTimeTracksByDateRangeCommand
+  ): Promise<TimeTrackWithNoteResponse[]> {
+    const tracks = await this.getTimeTracksByDateRangeTS.apply(command);
+    const noteIds = [...new Set(tracks.map(t => t.noteId))];
+    const noteNames = await this.noteAggregator.getNoteNamesByIds(
+      noteIds,
+      command.userId
+    );
+    const noteNameMap = new Map(noteNames.map(n => [n.id, n.name]));
+
+    return tracks.map(track => {
+      const noteName = noteNameMap.get(track.noteId) ?? 'Deleted note';
+      return new TimeTrackWithNoteResponse({
+        ...track,
+        noteName,
+      });
+    });
   }
 }
