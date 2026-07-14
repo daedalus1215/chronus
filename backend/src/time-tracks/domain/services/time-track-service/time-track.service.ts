@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NoteAggregator } from '../../../../notes/domain/aggregators/note.aggregator';
-import { CreateTimeTrackTransactionScript } from '../../transaction-scripts/create-time-track.transaction.script';
+import { CreateTimeTrackTransactionScript } from '../../transaction-scripts/create-time-track-TS/create-time-track.transaction.script';
 import { CreateTimeTrackCommand } from '../../transaction-scripts/create-time-track-TS/create-time-track.command';
 import { GetNoteTimeTracksTransactionScript } from '../../transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.transaction.script';
 import { GetNoteTimeTracksCommand } from '../../transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.command';
@@ -17,11 +17,23 @@ import { GetTimeTracksByDateRangeTransactionScript } from '../../transaction-scr
 import { GetTimeTracksByDateRangeCommand } from '../../transaction-scripts/get-time-tracks-by-date-range-TS/get-time-tracks-by-date-range.command';
 import { GET_NOTE_DETAILS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/notes/get-note-details.command';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { WeeklyTrendResponseDto } from '../../../apps/dtos/responses/weekly-trend.response.dto';
-import { StreakResponseDto } from '../../../apps/dtos/responses/streak.response.dto';
-import { NotesByYearResponseDto } from '../../../apps/dtos/responses/notes-by-year.response.dto';
-import { TimeTrackWithNoteResponse } from '../../../apps/dtos/responses/time-track-with-note.response.dto';
 import { TagAggregator } from '../../../../tags/domain/aggregators/tag.aggregator';
+import { UpdateTimeTrackNoteTransactionScript } from '../../transaction-scripts/update-time-track-note-TS/update-time-track-note.transaction.script';
+import {
+  WeeklyTrendProjection,
+  StreakProjection,
+  NotesByYearProjection,
+  TimeTrackWithNoteProjection,
+  TimeTrackProjection,
+  WeeklyMostActiveNoteProjection,
+} from '../../projections/time-track.projections';
+
+// Aliases kept for backward compat with TS script signatures
+export type UpdateTimeTrackPayload = {
+  startTime?: string;
+  durationMinutes?: number;
+  note?: string;
+};
 
 //@TODO: Move this to a command object
 type ValidateTimeTrackCreationCommand = {
@@ -43,12 +55,16 @@ export class TimeTrackService {
     private readonly getNotesByYearTS: GetNotesByYearTransactionScript,
     private readonly getTimeTracksByDateRangeTS: GetTimeTracksByDateRangeTransactionScript,
     private readonly tagAggregator: TagAggregator,
-    private readonly eventEmitter: EventEmitter2
+    private readonly eventEmitter: EventEmitter2,
+    private readonly updateTimeTrackNoteTS: UpdateTimeTrackNoteTransactionScript
   ) {}
 
-  async createTimeTrack(command: CreateTimeTrackCommand) {
+  async createTimeTrack(
+    command: CreateTimeTrackCommand
+  ): Promise<TimeTrackProjection> {
     await this.validateTimeTrackCreation(command);
-    return this.createTimeTrackTS.apply(command);
+    const entity = await this.createTimeTrackTS.apply(command);
+    return this.toTimeTrackProjection(entity);
   }
 
   private async validateTimeTrackCreation(
@@ -84,11 +100,11 @@ export class TimeTrackService {
     return { trackTimeTracks, noteNames };
   }
 
-  async getWeeklyMostActiveNote(userId: number, date?: string) {
+  async getWeeklyMostActiveNote(
+    userId: number,
+    date?: string
+  ): Promise<WeeklyMostActiveNoteProjection> {
     const result = await this.getWeeklyMostActiveNoteTS.apply(userId, date);
-    // No time-tracks in the current week: nothing is "most active".
-    // The transaction script returns null here; propagate it so the client
-    // can render its "No activity this week" state instead of 500ing.
     if (!result) {
       return null;
     }
@@ -97,26 +113,31 @@ export class TimeTrackService {
       userId,
     });
 
-    return { ...result, noteName: note?.[0]?.name ?? 'Unknown' };
+    return {
+      noteId: result.noteId,
+      totalTimeMinutes: result.totalTimeMinutes,
+      weekStartDate: result.weekStartDate,
+      weekEndDate: result.weekEndDate,
+      noteName: note?.[0]?.name ?? 'Unknown',
+    };
   }
 
   async getWeeklyTrend(
     userId: number,
     date?: string
-  ): Promise<WeeklyTrendResponseDto> {
+  ): Promise<WeeklyTrendProjection> {
     const trend = await this.getWeeklyTrendTS.apply(userId, 7, date);
     const weeklyTotal = trend.reduce((sum, day) => sum + day.totalMinutes, 0);
     return { trend, weeklyTotal };
   }
 
-  async getStreak(userId: number, date?: string): Promise<StreakResponseDto> {
+  async getStreak(userId: number, date?: string): Promise<StreakProjection> {
     return this.getStreakTS.apply(userId, date);
   }
-  i;
 
   async getNotesByYear(
     command: GetNotesByYearCommand
-  ): Promise<NotesByYearResponseDto> {
+  ): Promise<NotesByYearProjection> {
     const notesByYear = await this.getNotesByYearTS.apply(command);
     const noteIds = notesByYear.map(n => n.noteId);
     const uniqueNoteIds = [...new Set(noteIds)];
@@ -157,7 +178,7 @@ export class TimeTrackService {
 
   async getTimeTracksByDateRange(
     command: GetTimeTracksByDateRangeCommand
-  ): Promise<TimeTrackWithNoteResponse[]> {
+  ): Promise<TimeTrackWithNoteProjection[]> {
     const tracks = await this.getTimeTracksByDateRangeTS.apply(command);
     const noteIds = [...new Set(tracks.map(t => t.noteId))];
     const noteNames = await this.noteAggregator.getNoteNamesByIds(
@@ -168,10 +189,50 @@ export class TimeTrackService {
 
     return tracks.map(track => {
       const noteName = noteNameMap.get(track.noteId) ?? 'Deleted note';
-      return new TimeTrackWithNoteResponse({
-        ...track,
+      return {
+        id: track.id,
+        noteId: track.noteId,
         noteName,
-      });
+        date: track.date,
+        startTime: track.startTime,
+        durationMinutes: track.durationMinutes,
+        note: track.note,
+        createdAt: track.createdAt,
+        updatedAt: track.updatedAt,
+      };
     });
+  }
+
+  async updateTimeTrackNote(
+    id: number,
+    userId: number,
+    payload: UpdateTimeTrackPayload
+  ): Promise<TimeTrackProjection> {
+    const entity = await this.updateTimeTrackNoteTS.apply(id, userId, payload);
+    return this.toTimeTrackProjection(entity);
+  }
+
+  private toTimeTrackProjection(entity: {
+    id: number;
+    userId: number;
+    noteId: number;
+    date: string;
+    startTime: string;
+    durationMinutes: number;
+    note?: string;
+    createdAt: string;
+    updatedAt: string;
+  }): TimeTrackProjection {
+    return {
+      id: entity.id,
+      userId: entity.userId,
+      noteId: entity.noteId,
+      date: entity.date,
+      startTime: entity.startTime,
+      durationMinutes: entity.durationMinutes,
+      note: entity.note,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    };
   }
 }
