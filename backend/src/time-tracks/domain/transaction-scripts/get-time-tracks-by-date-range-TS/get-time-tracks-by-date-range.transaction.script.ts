@@ -5,13 +5,9 @@ import { TimeTrack } from '../../../domain/entities/time-track-entity/time-track
 
 @Injectable()
 export class GetTimeTracksByDateRangeTransactionScript {
-  constructor(
-    private readonly timeTrackRepository: TimeTrackRepository
-  ) {}
+  constructor(private readonly timeTrackRepository: TimeTrackRepository) {}
 
-  async apply(
-    command: GetTimeTracksByDateRangeCommand
-  ): Promise<TimeTrack[]> {
+  async apply(command: GetTimeTracksByDateRangeCommand): Promise<TimeTrack[]> {
     return this.timeTrackRepository.findByUserIdAndDateRange(
       command.userId,
       command.from,

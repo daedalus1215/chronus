@@ -9,7 +9,10 @@ import {
   useTheme,
 } from '@mui/material';
 import { TimeEntryDataGrid } from './components/TimeEntryDataGrid/TimeEntryDataGrid';
-import { QuickAddRow, QuickAddFormData } from './components/QuickAddRow/QuickAddRow';
+import {
+  QuickAddRow,
+  QuickAddFormData,
+} from './components/QuickAddRow/QuickAddRow';
 import { DateRangePicker } from './components/DateRangePicker/DateRangePicker';
 import { SummaryStats } from './components/SummaryStats/SummaryStats';
 import {
@@ -26,7 +29,7 @@ import styles from './TimeEntryPage.module.css';
 export const TimeEntryPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
+
   const { from, to, setPreset, setFrom, setTo } = useTimeTrackDateRange(5);
   const [tracks, setTracks] = useState<TimeTrackWithNoteResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,25 +40,19 @@ export const TimeEntryPage: React.FC = () => {
     severity: 'success' | 'error';
   }>({ open: false, message: '', severity: 'success' });
 
-  const fetchTracks = useCallback(
-    async (dateRange: DateRange) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await getTimeTracksByDateRange(
-          dateRange.from,
-          dateRange.to
-        );
-        setTracks(data);
-      } catch (err) {
-        setError('Failed to load time tracks');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
+  const fetchTracks = useCallback(async (dateRange: DateRange) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getTimeTracksByDateRange(dateRange.from, dateRange.to);
+      setTracks(data);
+    } catch (err) {
+      setError('Failed to load time tracks');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchTracks({ from, to });
@@ -88,21 +85,18 @@ export const TimeEntryPage: React.FC = () => {
     [from, to, fetchTracks]
   );
 
-  const handleDelete = useCallback(
-    (id: number) => {
-      setTracks((prev) => prev.filter((t) => t.id !== id));
-      setSnackbar({
-        open: true,
-        message: 'Time track deleted',
-        severity: 'success',
-      });
-    },
-    []
-  );
+  const handleDelete = useCallback((id: number) => {
+    setTracks(prev => prev.filter(t => t.id !== id));
+    setSnackbar({
+      open: true,
+      message: 'Time track deleted',
+      severity: 'success',
+    });
+  }, []);
 
   const handleUpdate = useCallback(
     (id: number, updated: TimeTrackWithNoteResponse) => {
-      setTracks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+      setTracks(prev => prev.map(t => (t.id === id ? updated : t)));
       setSnackbar({
         open: true,
         message: 'Time track updated',
@@ -113,7 +107,7 @@ export const TimeEntryPage: React.FC = () => {
   );
 
   const handleCloseSnackbar = () =>
-    setSnackbar((prev) => ({ ...prev, open: false }));
+    setSnackbar(prev => ({ ...prev, open: false }));
 
   const stats = useMemo(() => {
     const totalMinutes = tracks.reduce(
