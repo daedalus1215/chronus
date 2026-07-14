@@ -21,7 +21,6 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -31,7 +30,10 @@ import NotesIcon from '@mui/icons-material/Notes';
 import { useNavigate } from 'react-router-dom';
 import { TimeTrackWithNoteResponse } from '../../../../api/dtos/time-tracks.dtos';
 import { ROUTES } from '../../../../constants/routes';
-import { deleteTimeTrack, updateTimeTrack } from '../../../../api/requests/time-tracks.requests';
+import {
+  deleteTimeTrack,
+  updateTimeTrack,
+} from '../../../../api/requests/time-tracks.requests';
 import styles from './TimeEntryDataGrid.module.css';
 
 const formatDuration = (minutes: number): string => {
@@ -100,7 +102,7 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
   };
 
   const handleEditClick = (field: EditField) => {
-    const row = rows.find((r) => r.id === menuAnchor.rowId);
+    const row = rows.find(r => r.id === menuAnchor.rowId);
     if (!row) return;
 
     let value = '';
@@ -183,8 +185,8 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
             type="date"
             fullWidth
             value={editDialog.value}
-            onChange={(e) =>
-              setEditDialog((prev) => ({ ...prev, value: e.target.value }))
+            onChange={e =>
+              setEditDialog(prev => ({ ...prev, value: e.target.value }))
             }
           />
         );
@@ -194,8 +196,8 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
             type="time"
             fullWidth
             value={editDialog.value}
-            onChange={(e) =>
-              setEditDialog((prev) => ({ ...prev, value: e.target.value }))
+            onChange={e =>
+              setEditDialog(prev => ({ ...prev, value: e.target.value }))
             }
           />
         );
@@ -206,8 +208,8 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
             fullWidth
             label="Duration (minutes)"
             value={editDialog.value}
-            onChange={(e) =>
-              setEditDialog((prev) => ({ ...prev, value: e.target.value }))
+            onChange={e =>
+              setEditDialog(prev => ({ ...prev, value: e.target.value }))
             }
             inputProps={{ min: 1, max: 1440 }}
           />
@@ -220,8 +222,8 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
             rows={2}
             label="Note"
             value={editDialog.value}
-            onChange={(e) =>
-              setEditDialog((prev) => ({ ...prev, value: e.target.value }))
+            onChange={e =>
+              setEditDialog(prev => ({ ...prev, value: e.target.value }))
             }
           />
         );
@@ -295,7 +297,7 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
         <Box className={styles.actionButtons}>
           <IconButton
             size="small"
-            onClick={(e) => handleMenuOpen(e, params.id as number)}
+            onClick={e => handleMenuOpen(e, params.id as number)}
             className={styles.actionButton}
           >
             <MoreVertIcon fontSize="small" />
@@ -313,7 +315,7 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
     },
   ];
 
-  const gridRows: GridRowsProp = rows.map((row) => ({
+  const gridRows: GridRowsProp = rows.map(row => ({
     ...row,
   }));
 
