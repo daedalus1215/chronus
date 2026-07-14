@@ -3,7 +3,7 @@ import {
   NoteNameReference,
   TimeTrackWithNoteNamesInput,
   TimeTrackWithNoteNamesResponder,
-} from '../../../../../apps/actions/get-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
+} from '../../../../../apps/actions/fetch-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
 
 describe('TimeTrackWithNoteNamesConverter', () => {
   let target: TimeTrackWithNoteNamesResponder;
