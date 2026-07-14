@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateTimeTrackTransactionScript } from '../create-time-track.transaction.script';
+import { CreateTimeTrackTransactionScript } from '../create-time-track-TS/create-time-track.transaction.script';
 import { TimeTrackRepository } from '../../../infra/repositories/time-track.repository';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 

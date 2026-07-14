@@ -53,7 +53,7 @@ export const DateRangePicker: React.FC<Props> = ({
 
       <Box className={styles.content}>
         <Box className={styles.presets}>
-          {PRESETS.map((p) => (
+          {PRESETS.map(p => (
             <Button
               key={p.days}
               size="small"
@@ -75,7 +75,7 @@ export const DateRangePicker: React.FC<Props> = ({
             type="date"
             label="From"
             value={from}
-            onChange={(e) => onFromChange(e.target.value)}
+            onChange={e => onFromChange(e.target.value)}
             size="small"
             InputLabelProps={{ shrink: true }}
             className={styles.dateField}
@@ -85,7 +85,7 @@ export const DateRangePicker: React.FC<Props> = ({
             type="date"
             label="To"
             value={to}
-            onChange={(e) => onToChange(e.target.value)}
+            onChange={e => onToChange(e.target.value)}
             size="small"
             InputLabelProps={{ shrink: true }}
             className={styles.dateField}

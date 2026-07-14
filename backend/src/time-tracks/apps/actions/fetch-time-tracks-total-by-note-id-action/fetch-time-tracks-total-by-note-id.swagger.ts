@@ -1,6 +1,6 @@
 import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 
-export const GetTimeTracksTotalByNoteIdSwagger: ProtectedActionOptions = {
+export const FetchTimeTracksTotalByNoteIdSwagger: ProtectedActionOptions = {
   tag: 'Time Tracks',
   summary: 'Get total time tracked for a specific note',
   additionalResponses: [

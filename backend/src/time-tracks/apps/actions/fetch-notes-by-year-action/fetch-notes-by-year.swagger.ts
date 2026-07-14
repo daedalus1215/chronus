@@ -1,12 +1,12 @@
 import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 
-export const GetWeeklyTrendSwagger: ProtectedActionOptions = {
+export const FetchNotesByYearSwagger: ProtectedActionOptions = {
   tag: 'Time Tracks',
-  summary: 'Get daily time totals for the past 7 days',
+  summary: 'Get notes worked on grouped by year',
   additionalResponses: [
     {
       status: 200,
-      description: 'Daily time totals for the past 7 days.',
+      description: 'Notes grouped by year with time track metadata.',
     },
   ],
 };
