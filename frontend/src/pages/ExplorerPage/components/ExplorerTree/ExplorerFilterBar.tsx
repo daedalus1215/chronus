@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Box, IconButton, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -7,13 +7,20 @@ import styles from './ExplorerTree.module.css';
 type ExplorerFilterBarProps = {
   query: string;
   setQuery: (q: string) => void;
+  onClear?: () => void;
 };
 
 export const ExplorerFilterBar: React.FC<ExplorerFilterBarProps> = ({
   query,
   setQuery,
+  onClear,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus the input when the filter bar appears
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   return (
     <Box className={styles.filterBar}>
@@ -40,7 +47,7 @@ export const ExplorerFilterBar: React.FC<ExplorerFilterBarProps> = ({
               size="small"
               className={styles.filterClear}
               onClick={() => {
-                setQuery('');
+                onClear?.();
                 setTimeout(() => inputRef.current?.focus(), 0);
               }}
             >
