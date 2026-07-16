@@ -171,6 +171,18 @@ If A uses B, and B uses C, then A depends only on B. B is a **blackbox** for A.
 
 ---
 
-## 4. Agent-tool integration
+## 4. Pattern reference docs
 
-Auto-discovered by **Hermes**, **Claude Code**, and similar frameworks. Hermes skills live in `.hermes/skills/`; subdirectory hints in `backend/AGENTS.md` and `frontend/AGENTS.md`. Update sections 1-3 when architecture changes.
+Full DDD pattern documentation (24 pages covering all patterns with dependency rules, anti-patterns, naming conventions, and worked examples) is in `backend/docs/patterns/`.
+
+- Start with `backend/docs/patterns/design-philosophy.md` -- the three paradigms and four design goals
+- Then `backend/docs/patterns/dependency-hierarchy.md` -- master dependency graph and injection matrix
+- Index: `backend/docs/patterns/README.md`
+
+The `backend/AGENTS.md` file has a pattern inventory table showing which patterns are in use in this codebase and a full naming conventions summary.
+
+---
+
+## 5. Agent-tool integration
+
+Auto-discovered by **Hermes**, **Claude Code**, and similar frameworks. Hermes skills live in `.hermes/skills/`; subdirectory hints in `backend/AGENTS.md` and `frontend/AGENTS.md`. Update sections 1-4 when architecture changes.
