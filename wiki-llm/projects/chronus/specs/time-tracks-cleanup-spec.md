@@ -12,9 +12,9 @@ status: draft
 Code review of the `time-track-page` branch identified several DDD/Hexagonal architecture pattern violations that need cleanup before merge. This spec provides step-by-step instructions for another AI to implement the fixes.
 
 **Reference Patterns:**
-- `~/Nextcloud/nebechaunezzer/programming/planet-depos/larry-adams/patterns/dependency-hierarchy.md`
-- `~/Nextcloud/nebechaunezzer/programming/planet-depos/larry-adams/patterns/application/action-pattern.md`
-- `~/Nextcloud/nebechaunezzer/programming/planet-depos/larry-adams/patterns/domain/transaction-script-pattern.md`
+- `backend/docs/patterns/dependency-hierarchy.md`
+- `backend/docs/patterns/application/action-pattern.md`
+- `backend/docs/patterns/domain/transaction-script-pattern.md`
 
 ---
 

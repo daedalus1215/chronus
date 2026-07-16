@@ -11,7 +11,7 @@ tags: [architecture, quality-gates, automation, typeorm]
 
 ## Context
 
-The project currently has a `test:fitness` npm script in `backend/package.json` that references `rules/run-all-fitness-checks.ts`, but this file does not exist. This spec defines the implementation of fitness functions for the Chronus backend, following the pattern established in Callisto.
+The project currently has a `test:fitness` npm script in `backend/package.json` that references `rules/run-all-fitness-checks.ts`, but this file does not exist. This spec defines the implementation of fitness functions for the Chronus backend, following the DDD pattern architecture.
 
 ## Goal
 

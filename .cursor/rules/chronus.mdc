@@ -1,0 +1,47 @@
+---
+description: Chronus project rules — always read AGENTS.md files
+globs:
+alwaysApply: true
+---
+
+# Chronus — Cursor Rules
+
+This project uses **AGENTS.md** as the canonical instruction set for all AI
+assistants (Hermes, Claude Code, Copilot, Cursor). The cursor rule files that
+previously lived here have been removed because they duplicated, and in some
+cases conflicted with, the AGENTS.md hierarchy.
+
+## Read these files
+
+Before writing or reviewing code, read the relevant AGENTS.md:
+
+| Scope | File | What it covers |
+|-------|------|----------------|
+| Project-wide | `AGENTS.md` | Architecture, dependency rules, skills, pattern reference index |
+| Backend | `backend/AGENTS.md` | Commands, pattern inventory, naming conventions, testing conventions, worked endpoint example |
+| Frontend | `frontend/AGENTS.md` | Commands, MUI + CSS Modules styling, theme, routing, data fetching, worked page example |
+| Migrations | `CLAUDE.md` | Migration naming conventions, backend module structure |
+| Frontend (Claude) | `frontend/CLAUDE.md` | Frontend quick reference |
+| Copilot | `.github/copilot-instructions.md` | Pointer to AGENTS.md |
+
+## Per-module context
+
+Each backend domain module has its own `AGENTS.md` under
+`backend/src/{module}/AGENTS.md` listing its actions, services, transaction
+scripts, aggregators, ports, entities, repositories, and folder structure.
+
+## Pattern reference
+
+Full DDD pattern documentation (24 pages) is in `backend/docs/patterns/`.
+Start with `backend/docs/patterns/design-philosophy.md` and
+`backend/docs/patterns/dependency-hierarchy.md`.
+
+## Rules summary
+
+- Actions call Services only; Services orchestrate Transaction Scripts
+- No same-level injection (TS can't inject TS, Converter can't inject Converter)
+- Blackbox principle: if A uses B and B uses C, A uses only B
+- Cross-domain via Aggregators + ports, never direct entity references
+- Domain output = Projections, not DTOs (no "Dto" in domain layer)
+- Tests in `__specs__/` next to subject, SUT named `target`, Arrange-Act-Assert
+- Frontend: MUI `sx` + CSS Modules, no Tailwind, React Query for data fetching
