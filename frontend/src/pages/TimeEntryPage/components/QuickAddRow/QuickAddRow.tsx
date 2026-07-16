@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Box,
   TextField,
@@ -19,16 +19,21 @@ import {
   NoteAutocompleteOption,
   CreateOption,
 } from '../../hooks/useNoteSearch';
+import { getDateString, getTimeString } from '../../../../utils/dateUtils';
 
 const DURATION_CHIPS = [15, 30, 45, 60, 90, 120, 150, 180];
 
-function getCurrentTime(): string {
-  const now = new Date();
-  return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-}
+const DEFAULT_DURATION = 30;
 
-function getToday(): string {
-  return new Date().toLocaleDateString('en-CA');
+function buildBackdatedDefaults(
+  anchor: Date,
+  durationMinutes: number
+): { date: string; startTime: string } {
+  const calc = new Date(anchor.getTime() - durationMinutes * 60 * 1000);
+  return {
+    date: getDateString(calc),
+    startTime: getTimeString(calc),
+  };
 }
 
 export type QuickAddFormData = {
@@ -54,9 +59,52 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
     hasNoResults,
   } = useNoteSearch();
 
-  const [date, setDate] = useState(getToday);
-  const [startTime, setStartTime] = useState(getCurrentTime);
+  // Anchor time — captured at mount, re-anchored on note selection
+  const [anchorNow, setAnchorNow] = useState(() => new Date());
+  const [autoMode, setAutoMode] = useState(true);
+  const [date, setDate] = useState('');
+  const [startTime, setStartTime] = useState('');
   const [duration, setDuration] = useState('');
+
+  // Stable refs for cross-effect reads (avoids exhaustive-deps loops)
+  const anchorRef = useRef(anchorNow);
+  const autoRef = useRef(autoMode);
+  const durRef = useRef(duration);
+  anchorRef.current = anchorNow;
+  autoRef.current = autoMode;
+  durRef.current = duration;
+
+  const applyBackdate = (anchor: Date) => {
+    const dur = durRef.current ? parseInt(durRef.current, 10) : DEFAULT_DURATION;
+    if (!isNaN(dur) && dur >= 1) {
+      const backdated = buildBackdatedDefaults(anchor, dur);
+      setDate(backdated.date);
+      setStartTime(backdated.startTime);
+    }
+  };
+
+  /* ── Initial backdate at mount (auto mode) ── */
+  useEffect(() => {
+    if (autoRef.current && anchorRef.current) {
+      applyBackdate(anchorRef.current);
+    }
+  }, []);
+
+  /* ── Re-backdate when duration changes in auto mode ── */
+  useEffect(() => {
+    if (autoRef.current && anchorRef.current && durRef.current) {
+      applyBackdate(anchorRef.current);
+    }
+  }, [duration]);
+
+  /* ── Re-anchor when a note is selected ── */
+  useEffect(() => {
+    if (selectedNote && autoRef.current) {
+      const now = new Date();
+      setAnchorNow(now);
+      applyBackdate(now);
+    }
+  }, [selectedNote]);
 
   const createOption: CreateOption = useMemo(
     () => ({ id: '__create__', name: `+ Create '${query}' as new memo` }),
@@ -70,6 +118,19 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
     return options as NoteAutocompleteOption[];
   }, [hasNoResults, query.length, createOption, options]);
 
+  /* ── Reset to now ── */
+  const handleResetToNow = () => {
+    const now = new Date();
+    setAnchorNow(now);
+    setAutoMode(true);
+    const dur = duration ? parseInt(duration, 10) : DEFAULT_DURATION;
+    if (!isNaN(dur) && dur >= 1) {
+      const backdated = buildBackdatedDefaults(now, dur);
+      setDate(backdated.date);
+      setStartTime(backdated.startTime);
+    }
+  };
+
   const handleSubmit = () => {
     if (!selectedNote || !duration || parseInt(duration, 10) < 1) return;
     onSubmit({
@@ -80,15 +141,21 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
     });
     // Clear the row completely after submit
     reset();
-    setDate(getToday());
-    setStartTime(getCurrentTime());
+    setAnchorNow(new Date());
+    setAutoMode(true);
+    const backdated = buildBackdatedDefaults(new Date(), DEFAULT_DURATION);
+    setDate(backdated.date);
+    setStartTime(backdated.startTime);
     setDuration('');
   };
 
   const handleClear = () => {
     reset();
-    setDate(getToday());
-    setStartTime(getCurrentTime());
+    setAnchorNow(new Date());
+    setAutoMode(true);
+    const backdated = buildBackdatedDefaults(new Date(), DEFAULT_DURATION);
+    setDate(backdated.date);
+    setStartTime(backdated.startTime);
     setDuration('');
   };
 
@@ -163,17 +230,38 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
         </Box>
 
         <Box className={styles.dateTimeFields}>
+          {!autoMode && (
+            <Typography
+              component="span"
+              color="primary"
+              sx={{
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+                mb: 0.5,
+                display: 'block',
+              }}
+              onClick={handleResetToNow}
+            >
+              Reset to now
+            </Typography>
+          )}
           <TextField
             type="date"
             value={date}
-            onChange={e => setDate(e.target.value)}
+            onChange={e => {
+              setAutoMode(false);
+              setDate(e.target.value);
+            }}
             size="small"
             className={styles.dateField}
           />
           <TextField
             type="time"
             value={startTime}
-            onChange={e => setStartTime(e.target.value)}
+            onChange={e => {
+              setAutoMode(false);
+              setStartTime(e.target.value);
+            }}
             size="small"
             InputLabelProps={{ shrink: true }}
             className={styles.timeField}
