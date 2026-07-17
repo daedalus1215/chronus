@@ -110,22 +110,53 @@ export class CheckItemsRepository {
 
   async searchByQuery(
     userId: number,
-    query: string
-  ): Promise<{ noteId: number; noteName: string; checkItemName: string }[]> {
-    return this.checkItemRepository
+    query: string,
+    options?: {
+      includeArchived?: boolean;
+      status?: 'ready' | 'in_progress' | 'review' | 'done';
+      limit?: number;
+    }
+  ): Promise<{
+    noteId: number;
+    noteName: string;
+    checkItemId: number;
+    checkItemName: string;
+    checkItemDescription: string | null;
+    checkItemStatus: 'ready' | 'in_progress' | 'review' | 'done';
+    checkItemArchived: boolean;
+  }[]> {
+    const qb = this.checkItemRepository
       .createQueryBuilder('checkItem')
       .select('note.id', 'noteId')
       .addSelect('note.name', 'noteName')
+      .addSelect('checkItem.id', 'checkItemId')
       .addSelect('checkItem.name', 'checkItemName')
+      .addSelect('checkItem.description', 'checkItemDescription')
+      .addSelect('checkItem.status', 'checkItemStatus')
+      .addSelect(
+        'CASE WHEN checkItem.archived_date IS NOT NULL THEN true ELSE false END',
+        'checkItemArchived'
+      )
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('note.user_id = :userId', { userId })
-      .andWhere('LOWER(checkItem.name) LIKE LOWER(:query)', {
-        query: `%${query}%`,
-      })
-      .andWhere('checkItem.archived_date IS NULL')
-      .orderBy('note.updated_at', 'DESC')
-      .limit(20)
-      .getRawMany();
+      .andWhere(
+        '(LOWER(checkItem.name) LIKE LOWER(:query) OR (checkItem.description IS NOT NULL AND LOWER(checkItem.description) LIKE LOWER(:query)))',
+        { query: `%${query}%` }
+      )
+      .orderBy('note.updated_at', 'DESC');
+
+    if (!options?.includeArchived) {
+      qb.andWhere('checkItem.archived_date IS NULL');
+    }
+
+    if (options?.status) {
+      qb.andWhere('checkItem.status = :status', { status: options.status });
+    }
+
+    const limit = options?.limit ?? 20;
+    qb.limit(limit);
+
+    return qb.getRawMany();
   }
 
   async getMinOrderByNoteId(noteId: number): Promise<number> {

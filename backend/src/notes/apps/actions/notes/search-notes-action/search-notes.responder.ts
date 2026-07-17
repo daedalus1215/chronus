@@ -9,6 +9,10 @@ export type SearchResult = {
   contextBefore: string;
   matchText: string;
   contextAfter: string;
+  // Optional fields present when matchType === 'check_item'
+  checkItemStatus?: 'ready' | 'in_progress' | 'review' | 'done';
+  checkItemArchived?: boolean;
+  checkItemDescription?: string;
 };
 
 function extractContext(
@@ -68,12 +72,24 @@ export class SearchNotesResponder {
     }
 
     for (const row of checkItemMatches) {
+      // Determine context: if description contains the query, show description context; otherwise name context
+      const descMatch =
+        row.checkItemDescription &&
+        row.checkItemDescription
+          .toLowerCase()
+          .includes(query.toLowerCase());
+
       results.push({
         noteId: row.noteId,
         noteName: row.noteName,
         isMemo: false,
         matchType: 'check_item',
-        ...extractContext(row.checkItemName, query),
+        ...(descMatch
+          ? extractContext(row.checkItemDescription, query)
+          : extractContext(row.checkItemName, query)),
+        checkItemStatus: row.checkItemStatus,
+        checkItemArchived: row.checkItemArchived,
+        checkItemDescription: row.checkItemDescription,
       });
     }
 

@@ -10,11 +10,18 @@ import {
   InputAdornment,
   IconButton,
   Paper,
+  FormControlLabel,
+  Checkbox,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import NoteIcon from '@mui/icons-material/Note';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import ArchiveIcon from '@mui/icons-material/Archive';
 import { useNavigate } from 'react-router-dom';
 import { searchNotes } from '../../api/requests/notes.requests';
 import { SearchResult } from '../../api/dtos/note.dtos';
@@ -26,6 +33,26 @@ const MATCH_TYPE_LABELS: Record<SearchResult['matchType'], string> = {
   check_item: 'Checklist item',
 };
 
+const STATUS_COLORS: Record<
+  NonNullable<SearchResult['checkItemStatus']>,
+  'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
+> = {
+  ready: 'info',
+  in_progress: 'warning',
+  review: 'secondary',
+  done: 'success',
+};
+
+const STATUS_LABELS: Record<
+  NonNullable<SearchResult['checkItemStatus']>,
+  string
+> = {
+  ready: 'Ready',
+  in_progress: 'In Progress',
+  review: 'Review',
+  done: 'Done',
+};
+
 const DEBOUNCE_MS = 400;
 
 export const SearchPage: React.FC = () => {
@@ -33,27 +60,37 @@ export const SearchPage: React.FC = () => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [includeArchived, setIncludeArchived] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<
+    'ready' | 'in_progress' | 'review' | 'done' | ''
+  >('');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
 
-  const runSearch = useCallback(async (q: string) => {
-    if (q.trim().length < 2) {
-      setResults([]);
-      setSearched(false);
-      return;
-    }
-    setLoading(true);
-    try {
-      const data = await searchNotes(q.trim());
-      setResults(data);
-      setSearched(true);
-    } catch {
-      setResults([]);
-      setSearched(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const runSearch = useCallback(
+    async (q: string) => {
+      if (q.trim().length < 2) {
+        setResults([]);
+        setSearched(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        const data = await searchNotes(q.trim(), {
+          includeArchived,
+          status: statusFilter || undefined,
+        });
+        setResults(data);
+        setSearched(true);
+      } catch {
+        setResults([]);
+        setSearched(true);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [includeArchived, statusFilter]
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -72,6 +109,13 @@ export const SearchPage: React.FC = () => {
   const handleClick = (noteId: number) => {
     navigate(`/notes/${noteId}`);
   };
+
+  // Re-run search when filters change (if there's an active query)
+  const handleFilterChange = useCallback(() => {
+    if (query.trim().length >= 2) {
+      runSearch(query);
+    }
+  }, [query, runSearch]);
 
   return (
     <Box className={styles.page}>
@@ -101,6 +145,40 @@ export const SearchPage: React.FC = () => {
             ) : null,
           }}
         />
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              size="small"
+              checked={includeArchived}
+              onChange={(_, checked) => {
+                setIncludeArchived(checked);
+                if (checked || query.trim().length >= 2) handleFilterChange();
+              }}
+            />
+          }
+          label={<Typography variant="body2">Include archived</Typography>}
+        />
+
+        <FormControl size="small" sx={{ minWidth: 140 }}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={statusFilter}
+            label="Status"
+            onChange={(e) => {
+              setStatusFilter(e.target.value as typeof statusFilter);
+              handleFilterChange();
+            }}
+          >
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="ready">Ready</MenuItem>
+            <MenuItem value="in_progress">In Progress</MenuItem>
+            <MenuItem value="review">Review</MenuItem>
+            <MenuItem value="done">Done</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
 
       {!searched && !loading && (
@@ -154,6 +232,31 @@ export const SearchPage: React.FC = () => {
                       variant="outlined"
                       className={styles.matchChip}
                     />
+                    {result.matchType === 'check_item' &&
+                      result.checkItemStatus && (
+                        <Chip
+                          label={STATUS_LABELS[result.checkItemStatus]}
+                          size="small"
+                          color={STATUS_COLORS[result.checkItemStatus]}
+                          variant="outlined"
+                          className={styles.matchChip}
+                        />
+                      )}
+                    {result.matchType === 'check_item' &&
+                      result.checkItemArchived && (
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            color: 'text.disabled',
+                            fontSize: '0.75rem',
+                          }}
+                        >
+                          <ArchiveIcon fontSize="small" />
+                          <span>Archived</span>
+                        </Box>
+                      )}
                   </Box>
                   <Typography variant="body2" className={styles.context}>
                     <span className={styles.contextText}>

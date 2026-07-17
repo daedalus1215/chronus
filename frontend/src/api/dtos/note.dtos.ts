@@ -57,6 +57,9 @@ export type SearchResult = {
   contextBefore: string;
   matchText: string;
   contextAfter: string;
+  checkItemStatus?: 'ready' | 'in_progress' | 'review' | 'done';
+  checkItemArchived?: boolean;
+  checkItemDescription?: string;
 };
 
 export type TimeTrackTotalResponseDto = {
