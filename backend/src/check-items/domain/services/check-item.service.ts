@@ -102,11 +102,13 @@ export class CheckItemService {
 
   async getCheckItemsByNoteId(
     noteId: number,
-    authUser: AuthUser
+    authUser: AuthUser,
+    filters?: { query?: string; status?: string[]; includeDone?: boolean }
   ): Promise<CheckItem[]> {
     return await this.getCheckItemsByNoteTransactionScript.apply(
       noteId,
-      authUser.userId
+      authUser.userId,
+      filters
     );
   }
 

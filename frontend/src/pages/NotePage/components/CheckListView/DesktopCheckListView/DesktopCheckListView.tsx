@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useCheckItems } from '../hooks/useCheckItems';
 import { Note } from '../../../api/responses';
 import List from '@mui/material/List';
@@ -9,6 +9,8 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
 import { useCheckItemsQuery } from '../hooks/useCheckItems';
 import { Fab } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
@@ -21,6 +23,11 @@ import { useDeleteCheckItemDialog } from '../hooks/useDeleteCheckItemDialog';
 import { DeleteCheckItemDialog } from '../components/DeleteCheckItemDialog/DeleteCheckItemDialog';
 import { DraggableCheckItemList } from '../components/DraggableCheckItemList/DraggableCheckItemList';
 import { DraggableCheckItem } from '../components/DraggableCheckItem/DraggableCheckItem';
+import { CheckItemFilterBar } from '../components/CheckItemFilterBar/CheckItemFilterBar';
+import {
+  CheckItemFilters,
+  DEFAULT_FILTERS,
+} from '../types';
 
 type CheckListViewProps = {
   note: Note;
@@ -44,9 +51,27 @@ const getStatusColor = (status?: string): string => {
 export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
   note,
 }) => {
-  const { data: checkItems = [], error } = useCheckItemsQuery(note.id);
+  // Filter state
+  const [filters, setFilters] = useState<CheckItemFilters>(DEFAULT_FILTERS);
+
+  const handleFiltersChange = useCallback(
+    (newFilters: CheckItemFilters) => {
+      setFilters(newFilters);
+    },
+    []
+  );
+
+  const hasActiveFilters =
+    filters.query !== '' ||
+    filters.status.length > 0 ||
+    filters.includeDone === false;
+
+  const { data: checkItems = [], error } = useCheckItemsQuery(
+    note.id,
+    filters
+  );
   const { addItem, toggleItem, deleteItem, updateItem, reorderItems } =
-    useCheckItems(note);
+    useCheckItems(note, filters);
   const {
     isOpen: isAddDialogOpen,
     value: newItemValue,
@@ -155,6 +180,25 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
           <Alert severity="error" sx={{ mb: 2 }}>
             {error.message}
           </Alert>
+        )}
+
+        {/* Filter Bar */}
+        <CheckItemFilterBar
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          totalItemCount={checkItems.length}
+        />
+
+        <Divider sx={{ mb: 1 }} />
+
+        {/* Filtered results count */}
+        {hasActiveFilters && (
+          <Typography
+            variant="caption"
+            sx={{ color: 'text.secondary', mb: 1, px: 1 }}
+          >
+            {checkItems.length} item{checkItems.length === 1 ? '' : 's'}
+          </Typography>
         )}
 
         {isAddDialogOpen && (

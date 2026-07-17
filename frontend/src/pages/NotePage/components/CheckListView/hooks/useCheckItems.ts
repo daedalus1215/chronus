@@ -1,23 +1,38 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../../../api/axios.interceptor';
 import { CheckItem, Note } from '../../../api/responses';
+import { CheckItemFilters, DEFAULT_FILTERS } from '../types';
 
 export const checkItemKeys = {
   all: ['checkItems'] as const,
   lists: () => [...checkItemKeys.all, 'list'] as const,
-  list: (noteId: number) => [...checkItemKeys.lists(), noteId] as const,
+  list: (
+    noteId: number,
+    filters?: CheckItemFilters
+  ) => [...checkItemKeys.lists(), noteId, filters] as const,
   details: () => [...checkItemKeys.all, 'detail'] as const,
   detail: (id: number) => [...checkItemKeys.details(), id] as const,
 };
 
 // Add a query hook for fetching check items
-export const useCheckItemsQuery = (noteId: number) => {
+export const useCheckItemsQuery = (
+  noteId: number,
+  filters: CheckItemFilters = DEFAULT_FILTERS
+) => {
   return useQuery({
-    queryKey: checkItemKeys.list(noteId),
+    queryKey: checkItemKeys.list(noteId, filters),
     queryFn: async () => {
-      const response = await api.get<CheckItem[]>(
-        `/check-items/notes/${noteId}`
-      );
+      const params = new URLSearchParams();
+      if (filters.query) params.set('query', filters.query);
+      if (filters.status.length) params.set('status', filters.status.join(','));
+      if (!filters.includeDone) params.set('includeDone', 'false');
+
+      const queryString = params.toString();
+      const url = queryString
+        ? `/check-items/notes/${noteId}?${queryString}`
+        : `/check-items/notes/${noteId}`;
+
+      const response = await api.get<CheckItem[]>(url);
       return response.data;
     },
     enabled: !!noteId,
@@ -49,10 +64,16 @@ type UseCheckListReturn = {
   reorderError: string | null;
 };
 
-export const useCheckItems = (note: Note): UseCheckListReturn => {
+export const useCheckItems = (
+  note: Note,
+  filters?: CheckItemFilters
+): UseCheckListReturn => {
   const queryClient = useQueryClient();
 
-  const { data: checkItems = [] } = useCheckItemsQuery(note.id);
+  const { data: checkItems = [] } = useCheckItemsQuery(
+    note.id,
+    filters ?? DEFAULT_FILTERS
+  );
   const noteState = { ...note, checkItems };
 
   const addItemMutation = useMutation({

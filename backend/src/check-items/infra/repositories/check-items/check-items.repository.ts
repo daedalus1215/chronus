@@ -4,6 +4,12 @@ import { Repository } from 'typeorm';
 import { CheckItem } from '../../../domain/entities/check-item.entity';
 import { CheckItemsHydrator } from './check-items.hydrator';
 
+export interface FindByNoteIdFilters {
+  query?: string;
+  status?: string[];
+  includeDone?: boolean;
+}
+
 @Injectable()
 export class CheckItemsRepository {
   constructor(
@@ -82,18 +88,44 @@ export class CheckItemsRepository {
     return this.hydrator.fromRawResult(result);
   }
 
-  async findByNoteIdWithUserValidation(
+ async findByNoteIdWithUserValidation(
     noteId: number,
-    userId: number
+    userId: number,
+    filters?: FindByNoteIdFilters
   ): Promise<CheckItem[]> {
-    const results = await this.checkItemRepository
+    const qb = this.checkItemRepository
       .createQueryBuilder('checkItem')
       .select('checkItem.*')
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('checkItem.note_id = :noteId', { noteId })
-      .andWhere('note.user_id = :userId', { userId })
-      .orderBy('checkItem.order', 'ASC')
-      .getRawMany();
+      .andWhere('note.user_id = :userId', { userId });
+
+    // Apply text search filter
+    if (filters?.query) {
+      qb.andWhere(
+        '(LOWER(checkItem.name) LIKE LOWER(:query) OR LOWER(checkItem.description) LIKE LOWER(:query))',
+        { query: `%${filters.query}%` }
+      );
+    }
+
+    // Apply status filter
+    if (filters?.status && filters.status.length > 0) {
+      const statusParams = filters.status.map((_, i) => `status${i}`);
+      const statusValues: Record<string, string> = {};
+      filters.status.forEach((s, i) => {
+        statusValues[`status${i}`] = s;
+      });
+      qb.andWhere(`checkItem.status IN (${statusParams.join(', ')})`, statusValues);
+    }
+
+    // Apply done state filter
+    if (filters?.includeDone === false) {
+      qb.andWhere('checkItem.done_date IS NULL');
+    }
+
+    qb.orderBy('checkItem.order', 'ASC');
+
+    const results = await qb.getRawMany();
 
     return this.hydrator.fromRawResults(results);
   }

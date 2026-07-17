@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CheckItem } from '../../entities/check-item.entity';
-import { CheckItemsRepository } from '../../../infra/repositories/check-items/check-items.repository';
+import { CheckItemsRepository, FindByNoteIdFilters } from '../../../infra/repositories/check-items/check-items.repository';
+
+export type GetCheckItemsByNoteFilters = FindByNoteIdFilters;
 
 @Injectable()
 export class GetCheckItemsByNoteTransactionScript {
   constructor(private readonly checkItemsRepository: CheckItemsRepository) {}
 
-  async apply(noteId: number, userId: number): Promise<CheckItem[]> {
+  async apply(
+    noteId: number,
+    userId: number,
+    filters?: GetCheckItemsByNoteFilters
+  ): Promise<CheckItem[]> {
     const checkItems =
       await this.checkItemsRepository.findByNoteIdWithUserValidation(
         noteId,
-        userId
+        userId,
+        filters
       );
 
     if (checkItems.length === 0) {
