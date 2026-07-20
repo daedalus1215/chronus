@@ -9,6 +9,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 import { useCheckItemsQuery } from '../hooks/useCheckItems';
 import { Fab } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
@@ -21,6 +22,8 @@ import { useDeleteCheckItemDialog } from '../hooks/useDeleteCheckItemDialog';
 import { DeleteCheckItemDialog } from '../components/DeleteCheckItemDialog/DeleteCheckItemDialog';
 import { DraggableCheckItemList } from '../components/DraggableCheckItemList/DraggableCheckItemList';
 import { DraggableCheckItem } from '../components/DraggableCheckItem/DraggableCheckItem';
+import { useCheckItemFilters } from '../hooks/useCheckItemFilters';
+import { CheckItemFilterBar } from '../components/CheckItemFilterBar/CheckItemFilterBar';
 
 type CheckListViewProps = {
   note: Note;
@@ -47,6 +50,17 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
   const { data: checkItems = [], error } = useCheckItemsQuery(note.id);
   const { addItem, toggleItem, deleteItem, updateItem, reorderItems } =
     useCheckItems(note);
+  const {
+    filters,
+    setSearchText,
+    setStatusFilter,
+    clearSearch,
+    clearFilters,
+    filteredItems,
+    matchCount,
+    totalCount,
+    hasActiveFilters,
+  } = useCheckItemFilters(checkItems);
   const {
     isOpen: isAddDialogOpen,
     value: newItemValue,
@@ -157,6 +171,17 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
           </Alert>
         )}
 
+        <CheckItemFilterBar
+          filters={filters}
+          setSearchText={setSearchText}
+          setStatusFilter={setStatusFilter}
+          clearSearch={clearSearch}
+          clearFilters={clearFilters}
+          matchCount={matchCount}
+          totalCount={totalCount}
+          hasActiveFilters={hasActiveFilters}
+        />
+
         {isAddDialogOpen && (
           <AddCheckItemDialog
             isOpen={isAddDialogOpen}
@@ -175,145 +200,156 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
             onClose={closeEditDialog}
           />
         )}
-        <List
-          className={styles.list}
-          sx={{
-            overflowY: 'auto',
-            flex: 1,
-            minHeight: 0,
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': {
-              display: 'none',
-            },
-            touchAction: 'pan-y',
-          }}
-        >
-          <DraggableCheckItemList
-            checkItems={checkItems}
-            onReorder={handleReorder}
-            renderItem={item => (
-              <DraggableCheckItem
-                key={item.id}
-                item={item}
-                className={styles.listItem}
-                sx={{
-                  background: item.doneDate
-                    ? 'rgba(99,102,241,0.08)'
-                    : 'transparent',
-                  borderBottom: '1px solid var(--border)',
-                  py: 0.5,
-                  px: 0,
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                }}
-                disablePadding
-                dragHandle={
-                  <IconButton
-                    size="small"
-                    aria-label="drag to reorder"
-                    sx={{
-                      color: 'text.secondary',
-                      padding: '8px',
-                      marginLeft: '-4px',
-                      cursor: 'grab',
-                      '&:active': {
-                        cursor: 'grabbing',
-                      },
-                    }}
-                  >
-                    <DragIndicatorIcon fontSize="small" />
-                  </IconButton>
-                }
-              >
-                <Box
+
+        {hasActiveFilters && filteredItems.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography color="text.secondary">
+              No items match the current filters.
+            </Typography>
+          </Box>
+        )}
+
+        {!hasActiveFilters || filteredItems.length > 0 ? (
+          <List
+            className={styles.list}
+            sx={{
+              overflowY: 'auto',
+              flex: 1,
+              minHeight: 0,
+              scrollbarWidth: 'none',
+              '&::-webkit-scrollbar': {
+                display: 'none',
+              },
+              touchAction: 'pan-y',
+            }}
+          >
+            <DraggableCheckItemList
+              checkItems={filteredItems}
+              onReorder={handleReorder}
+              renderItem={item => (
+                <DraggableCheckItem
+                  key={item.id}
+                  item={item}
+                  className={styles.listItem}
                   sx={{
+                    background: item.doneDate
+                      ? 'rgba(99,102,241,0.08)'
+                      : 'transparent',
+                    borderBottom: '1px solid var(--border)',
+                    py: 0.5,
+                    px: 0,
+                    position: 'relative',
                     display: 'flex',
                     alignItems: 'center',
-                    flex: 1,
-                    pr: 6,
-                    ml: 1,
+                    gap: 1,
                   }}
-                >
-                  <Box
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      backgroundColor: getStatusColor(item.status),
-                      marginRight: '8px',
-                    }}
-                    aria-label={`Status: ${item.status || 'ready'}`}
-                  />
-                  <Checkbox
-                    checked={!!item.doneDate}
-                    onChange={() => handleToggle(item.id)}
-                    color="primary"
-                    onClick={e => e.stopPropagation()}
-                  />
-                  <Box
-                    sx={{
-                      flex: 1,
-                      background: 'transparent',
-                      padding: '4px 0',
-                      cursor: 'pointer',
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Edit check item"
-                    onClick={e => {
-                      e.stopPropagation();
-                      openEditDialog(item.id, item.name);
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openEditDialog(item.id, item.name);
-                      }
-                    }}
-                  >
-                    <span
-                      style={{
-                        textDecoration: item.doneDate
-                          ? 'line-through'
-                          : undefined,
-                        color: item.doneDate
-                          ? 'var(--color-text-secondary)'
-                          : 'var(--color-text)',
-                        wordBreak: 'break-word',
-                        whiteSpace: 'pre-wrap',
-                        display: 'block',
-                        fontSize: '0.9rem',
+                  disablePadding
+                  dragHandle={
+                    <IconButton
+                      size="small"
+                      aria-label="drag to reorder"
+                      sx={{
+                        color: 'text.secondary',
+                        padding: '8px',
+                        marginLeft: '-4px',
+                        cursor: 'grab',
+                        '&:active': {
+                          cursor: 'grabbing',
+                        },
                       }}
                     >
-                      {item.name}
-                    </span>
-                  </Box>
-                </Box>
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleDeleteClick(item.id);
-                  }}
-                  sx={{
-                    position: 'absolute',
-                    right: 0,
-                    top: '50%',
-                    marginRight: '8px',
-                    marginLeft: '8px',
-                    transform: 'translateY(-50%)',
-                  }}
+                      <DragIndicatorIcon fontSize="small" />
+                    </IconButton>
+                  }
                 >
-                  <DeleteIcon color="error" />
-                </IconButton>
-              </DraggableCheckItem>
-            )}
-          />
-        </List>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      flex: 1,
+                      pr: 6,
+                      ml: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        backgroundColor: getStatusColor(item.status),
+                        marginRight: '8px',
+                      }}
+                      aria-label={`Status: ${item.status || 'ready'}`}
+                    />
+                    <Checkbox
+                      checked={!!item.doneDate}
+                      onChange={() => handleToggle(item.id)}
+                      color="primary"
+                      onClick={e => e.stopPropagation()}
+                    />
+                    <Box
+                      sx={{
+                        flex: 1,
+                        background: 'transparent',
+                        padding: '4px 0',
+                        cursor: 'pointer',
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Edit check item"
+                      onClick={e => {
+                        e.stopPropagation();
+                        openEditDialog(item.id, item.name);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openEditDialog(item.id, item.name);
+                        }
+                      }}
+                    >
+                      <span
+                        style={{
+                          textDecoration: item.doneDate
+                            ? 'line-through'
+                            : undefined,
+                          color: item.doneDate
+                            ? 'var(--color-text-secondary)'
+                            : 'var(--color-text)',
+                          wordBreak: 'break-word',
+                          whiteSpace: 'pre-wrap',
+                          display: 'block',
+                          fontSize: '0.9rem',
+                        }}
+                      >
+                        {item.name}
+                      </span>
+                    </Box>
+                  </Box>
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleDeleteClick(item.id);
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      right: 0,
+                      top: '50%',
+                      marginRight: '8px',
+                      marginLeft: '8px',
+                      transform: 'translateY(-50%)',
+                    }}
+                  >
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                </DraggableCheckItem>
+              )}
+            />
+          </List>
+        ) : null}
       </Paper>
       <DeleteCheckItemDialog
         isOpen={isDeleteDialogOpen}
