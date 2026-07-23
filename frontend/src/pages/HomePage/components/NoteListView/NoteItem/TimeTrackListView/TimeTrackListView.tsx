@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
 import { deleteTimeTrack } from '../../../../../../api/requests/time-tracks.requests';
+import { useUpdateTimeTrack } from '../../../../hooks/useUpdateTimeTrack/useUpdateTimeTrack';
+import {
+  TimeTrackingForm,
+  TimeTrackingData,
+} from '../TimeTrackingForm/TimeTrackingForm';
 import DialogTitle from '@mui/material/DialogTitle';
 import {
   Button,
@@ -10,6 +15,7 @@ import {
   IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './TimeTrackListView.module.css';
@@ -40,7 +46,10 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
 }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingTrack, setEditingTrack] = useState<TimeTrack | null>(null);
   const queryClient = useQueryClient();
+  const updateMutation = useUpdateTimeTrack(noteId);
 
   const { mutate: mutateDeleteTimeTrack, isPending: isDeleting } = useMutation({
     mutationFn: (id: number) => deleteTimeTrack(id),
@@ -52,31 +61,49 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
     onError: () => {},
   });
 
+  const handleEditStart = (track: TimeTrack): void => {
+    setEditingTrack(track);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditClose = (): void => {
+    setEditDialogOpen(false);
+    setEditingTrack(null);
+  };
+
+  const handleEditSubmit = (data: TimeTrackingData): void => {
+    if (!editingTrack) return;
+    updateMutation.mutate({
+      id: editingTrack.id,
+      payload: {
+        date: data.date,
+        startTime: data.startTime,
+        durationMinutes: data.durationMinutes,
+        note: data.note,
+      },
+    });
+    handleEditClose();
+  };
+
   const formatDuration = (minutes: number) => {
     const days = Math.floor(minutes / (24 * 60));
     const hours = Math.floor((minutes % (24 * 60)) / 60);
     const remainingMinutes = minutes % 60;
 
     if (days > 0) {
-      // For days, show days and hours, omit minutes if 0
       const parts = [`${days}d`];
       if (hours > 0) parts.push(`${hours}h`);
       if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`);
       return parts.join(' ');
     } else if (hours > 0) {
-      // For hours, show hours and minutes, omit minutes if 0
       const parts = [`${hours}h`];
       if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`);
       return parts.join(' ');
-    } else {
-      // For minutes only
-      return `${remainingMinutes}m`;
     }
+    return `${remainingMinutes}m`;
   };
 
-  const formatDate = (dateStr: string) => {
-    return formatDateForDisplay(dateStr);
-  };
+  const formatDate = (dateStr: string) => formatDateForDisplay(dateStr);
 
   if (isLoadingTimeTracks) {
     return (
@@ -134,17 +161,27 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
                   <div className={styles.timeTrackDuration}>
                     {formatDuration(track.durationMinutes)}
                   </div>
-                  <IconButton
-                    aria-label="Delete time entry"
-                    size="small"
-                    onClick={() => {
-                      setDeleteTargetId(track.id);
-                      setDeleteDialogOpen(true);
-                    }}
-                    className={styles.deleteButton}
-                  >
-                    <DeleteIcon fontSize="small" color="error" />
-                  </IconButton>
+                  <div className={styles.actionButtons}>
+                    <IconButton
+                      aria-label="Edit time entry"
+                      size="small"
+                      onClick={() => handleEditStart(track)}
+                      className={styles.editButton}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      aria-label="Delete time entry"
+                      size="small"
+                      onClick={() => {
+                        setDeleteTargetId(track.id);
+                        setDeleteDialogOpen(true);
+                      }}
+                      className={styles.deleteButton}
+                    >
+                      <DeleteIcon fontSize="small" color="error" />
+                    </IconButton>
+                  </div>
                 </div>
                 <div className={styles.timeTrackTime}>
                   Started at {track.startTime}
@@ -184,6 +221,23 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
             </Button>
           </DialogActions>
         </Dialog>
+        <TimeTrackingForm
+          isOpen={editDialogOpen}
+          onClose={handleEditClose}
+          onSubmit={handleEditSubmit}
+          initialData={
+            editingTrack
+              ? {
+                  date: editingTrack.date,
+                  startTime: editingTrack.startTime,
+                  durationMinutes: editingTrack.durationMinutes,
+                  note: editingTrack.note,
+                }
+              : undefined
+          }
+          isSubmitting={updateMutation.isPending}
+          hasPendingTracks={false}
+        />
       </div>
     </BottomSheet>
   );
