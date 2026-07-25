@@ -109,6 +109,20 @@
   color: var(--primary);
 }
 
-.deleteButton {
+.actionButtons {
+  display: flex;
+  gap: 4px;
   margin-left: 8px;
+}
+
+.editButton {
+  color: var(--color-text-secondary);
+}
+
+.editButton:hover {
+  color: var(--primary);
+}
+
+.deleteButton {
+  color: var(--destructive);
 }
