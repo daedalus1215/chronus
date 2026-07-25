@@ -34,8 +34,7 @@ export function useCheckItemFilters(
   const setStatusFilter = (status: StatusFilter) =>
     setFilters(prev => ({ ...prev, statusFilter: status }));
 
-  const clearSearch = () =>
-    setFilters(prev => ({ ...prev, searchText: '' }));
+  const clearSearch = () => setFilters(prev => ({ ...prev, searchText: '' }));
 
   const clearFilters = () =>
     setFilters({ searchText: '', statusFilter: 'all' });
@@ -54,7 +53,9 @@ export function useCheckItemFilters(
 
     return checkItems.filter(item => {
       if (hasTextFilter) {
-        const match = item.name.toLowerCase().includes(searchText.toLowerCase());
+        const match = item.name
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
         if (!match) return false;
       }
       if (hasStatusFilter) {
