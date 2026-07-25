@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateTimeTrack } from '../../../../../api/requests/time-tracks.requests';
+import { updateTimeTrack } from '../../../../api/requests/time-tracks.requests';
 import type { TimeTrack } from '../useNoteTimeTracks/useNoteTimeTracks';
 
 type UpdateTimeTrackPayload = {

@@ -24,13 +24,14 @@ type CheckItemFilterBarProps = {
   compact?: boolean;
 };
 
-const STATUS_OPTIONS: { value: StatusFilter; label: string; color: string }[] = [
-  { value: 'all', label: 'All', color: '#888' },
-  { value: 'ready', label: 'Ready', color: '#4f46e5' },
-  { value: 'in_progress', label: 'In Progress', color: '#facc15' },
-  { value: 'review', label: 'Review', color: '#fb923c' },
-  { value: 'done', label: 'Done', color: '#22c55e' },
-];
+const STATUS_OPTIONS: { value: StatusFilter; label: string; color: string }[] =
+  [
+    { value: 'all', label: 'All', color: '#888' },
+    { value: 'ready', label: 'Ready', color: '#4f46e5' },
+    { value: 'in_progress', label: 'In Progress', color: '#facc15' },
+    { value: 'review', label: 'Review', color: '#fb923c' },
+    { value: 'done', label: 'Done', color: '#22c55e' },
+  ];
 
 export const CheckItemFilterBar: React.FC<CheckItemFilterBarProps> = ({
   filters,
@@ -54,7 +55,9 @@ export const CheckItemFilterBar: React.FC<CheckItemFilterBarProps> = ({
             onClick={() => setExpanded(v => !v)}
             color={hasActiveFilters ? 'primary' : 'default'}
             sx={{
-              backgroundColor: hasActiveFilters ? 'primary.lighter' : 'transparent',
+              backgroundColor: hasActiveFilters
+                ? 'primary.lighter'
+                : 'transparent',
             }}
           >
             <FilterListIcon fontSize="small" />
@@ -101,17 +104,20 @@ export const CheckItemFilterBar: React.FC<CheckItemFilterBarProps> = ({
                   sx={{
                     borderColor: opt.color,
                     backgroundColor:
-                      filters.statusFilter === opt.value ? opt.color : 'transparent',
+                      filters.statusFilter === opt.value
+                        ? opt.color
+                        : 'transparent',
                     color:
                       filters.statusFilter === opt.value
                         ? opt.value === 'in_progress' || opt.value === 'review'
                           ? '#000'
                           : '#fff'
                         : opt.color,
-                    fontWeight:
-                      filters.statusFilter === opt.value ? 600 : 400,
+                    fontWeight: filters.statusFilter === opt.value ? 600 : 400,
                   }}
-                  variant={filters.statusFilter === opt.value ? 'filled' : 'outlined'}
+                  variant={
+                    filters.statusFilter === opt.value ? 'filled' : 'outlined'
+                  }
                 />
               ))}
             </Box>
@@ -146,7 +152,14 @@ export const CheckItemFilterBar: React.FC<CheckItemFilterBarProps> = ({
           }}
         />
       </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.5,
+          flexWrap: 'wrap',
+        }}
+      >
         <Typography variant="caption" sx={{ mr: 0.5, color: 'text.secondary' }}>
           Status:
         </Typography>
@@ -175,7 +188,8 @@ export const CheckItemFilterBar: React.FC<CheckItemFilterBarProps> = ({
           <>
             <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              {matchCount} of {totalCount} item{matchCount !== 1 ? 's' : ''} match
+              {matchCount} of {totalCount} item{matchCount !== 1 ? 's' : ''}{' '}
+              match
             </Typography>
             <Chip
               size="small"

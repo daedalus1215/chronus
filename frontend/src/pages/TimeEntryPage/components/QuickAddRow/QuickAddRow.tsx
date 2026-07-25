@@ -75,7 +75,9 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
   durRef.current = duration;
 
   const applyBackdate = (anchor: Date) => {
-    const dur = durRef.current ? parseInt(durRef.current, 10) : DEFAULT_DURATION;
+    const dur = durRef.current
+      ? parseInt(durRef.current, 10)
+      : DEFAULT_DURATION;
     if (!isNaN(dur) && dur >= 1) {
       const backdated = buildBackdatedDefaults(anchor, dur);
       setDate(backdated.date);
