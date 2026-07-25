@@ -58,7 +58,7 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
       setDeleteDialogOpen(false);
       setDeleteTargetId(null);
     },
-    onError: () => {},
+    onError: () => { },
   });
 
   const handleEditStart = (track: TimeTrack): void => {
@@ -71,9 +71,9 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
     setEditingTrack(null);
   };
 
-  const handleEditSubmit = (data: TimeTrackingData): void => {
+  const handleEditSubmit = async (data: TimeTrackingData): Promise<void> => {
     if (!editingTrack) return;
-    updateMutation.mutate({
+    await updateMutation.mutateAsync({
       id: editingTrack.id,
       payload: {
         date: data.date,
@@ -83,6 +83,8 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
       },
     });
     handleEditClose();
+    setEditDialogOpen(false);
+    setEditingTrack(null);
   };
 
   const formatDuration = (minutes: number) => {
@@ -228,11 +230,11 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
           initialData={
             editingTrack
               ? {
-                  date: editingTrack.date,
-                  startTime: editingTrack.startTime,
-                  durationMinutes: editingTrack.durationMinutes,
-                  note: editingTrack.note,
-                }
+                date: editingTrack.date,
+                startTime: editingTrack.startTime,
+                durationMinutes: editingTrack.durationMinutes,
+                note: editingTrack.note,
+              }
               : undefined
           }
           isSubmitting={updateMutation.isPending}
