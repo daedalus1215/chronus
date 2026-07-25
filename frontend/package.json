@@ -54,7 +54,8 @@
   "overrides": {
     "serialize-javascript": ">=7.0.3",
     "ws": ">=8.20.2",
-    "form-data": ">=4.0.6"
+    "form-data": ">=4.0.6",
+    "brace-expansion": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -73,7 +74,7 @@
     "postcss": "^8.5.3",
     "prettier": "^3.7.3",
     "sass": "^1.86.3",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.3",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.18.2",
     "vite": "^7.3.6",
