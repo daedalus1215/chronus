@@ -44,6 +44,12 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         SMTP_FROM: Joi.string().required(),
         ALLOW_REGISTRATION: Joi.string().valid('true', 'false').optional(),
         FRONTEND_ORIGIN: Joi.string().optional(),
+        // Optional on purpose: deployment copies a fixed .env onto the host, so a
+        // missing value must disable transcription rather than block startup.
+        THOTH_WS_URL: Joi.string().optional(),
+        THOTH_CA_CERT: Joi.string().optional(),
+        TRANSCRIPTION_MAX_SESSION_MS: Joi.number().optional(),
+        TRANSCRIPTION_MAX_SESSIONS_PER_USER: Joi.number().optional(),
       }),
     }),
     TypeOrmModule.forRootAsync({
