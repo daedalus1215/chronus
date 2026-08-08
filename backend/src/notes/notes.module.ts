@@ -42,6 +42,10 @@ import { GetNoteNamesForExplorerAction } from './apps/actions/notes/get-note-nam
 import { NoteFolderAdapter } from './apps/adapters/note-folder.adapter';
 import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
 import { NOTE_WRITER_PORT } from '../note-transfer/domain/ports/note-writer.port';
+import { TranscribeAudioGateway } from './apps/gateways/transcribe-audio.gateway';
+import { TranscriptionSessionRegistry } from './apps/gateways/transcription-session.registry';
+import { WsJwtAuthenticator } from './apps/guards/ws-jwt.authenticator';
+import { ThothStreamRemoteCaller } from './infra/remote-callers/thoth-stream.remote-caller';
 
 @Module({
   imports: [
@@ -84,6 +88,10 @@ import { NOTE_WRITER_PORT } from '../note-transfer/domain/ports/note-writer.port
       provide: NOTE_WRITER_PORT,
       useExisting: NoteAggregator,
     },
+    TranscribeAudioGateway,
+    TranscriptionSessionRegistry,
+    WsJwtAuthenticator,
+    ThothStreamRemoteCaller,
   ],
   controllers: [
     GetNoteNamesByUserIdAction,

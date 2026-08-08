@@ -23,6 +23,10 @@ const checks: Check[] = [
 		name: 'DTO Structure',
 		script: 'rules/naming-rules/check-dto-structure.ts',
 	},
+	{
+		name: 'No Hardcoded Addresses',
+		script: 'rules/check-no-hardcoded-addresses.ts',
+	},
 ];
 
 const buildCommand = (check: Check): string => {
