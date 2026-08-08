@@ -13,8 +13,15 @@ The browser opens an unauthenticated WebSocket straight to thoth:
 
 ```
 frontend/src/pages/NotePage/hooks/useTranscriptionWebSocket/useTranscriptionWebSocket.ts:103-110
-  new WebSocket(`${env.VITE_THOTH_WS_URL}/stream-audio`)   // wss://172.16.0.49:8443
+  new WebSocket(`${env.VITE_THOTH_WS_URL}/stream-audio`)   // wss://<thoth-host>:8443
 ```
+
+(The committed frontend config pointed at a host thoth had already moved off of, while
+`thoth-backend/app/config/settings.py` still carried the current one in its CORS defaults. The
+frontend value had drifted. This is a symptom of the problem, not a detail: a client-held service
+address is one edit away from being wrong, and nothing catches it. After this change the address
+lives in exactly one place, `THOTH_WS_URL` in the backend env — and this document names no
+addresses, so it cannot drift either.)
 
 No JWT, no note binding, no rate limit, no logging, no ownership check. Thoth's `CORS_ORIGINS`
 does not help: Starlette's `CORSMiddleware` does not run on WebSocket handshakes, and
@@ -182,19 +189,22 @@ src/notes/
 ├── apps/
 │   ├── gateways/
 │   │   ├── transcribe-audio.gateway.ts
-│   │   └── __specs__/transcribe-audio.gateway.spec.ts
+│   │   ├── transcription-session.registry.ts
+│   │   └── __specs__/
+│   │       ├── transcribe-audio.gateway.spec.ts
+│   │       └── transcription-session.registry.spec.ts
 │   └── guards/
 │       ├── ws-jwt.authenticator.ts
 │       └── __specs__/ws-jwt.authenticator.spec.ts
-├── domain/
-│   └── services/
-│       ├── transcription-session.registry.ts
-│       └── __specs__/transcription-session.registry.spec.ts
 └── infra/
     └── remote-callers/
         ├── thoth-stream.remote-caller.ts
         └── __specs__/thoth-stream.remote-caller.spec.ts
 ```
+
+The registry lives beside the gateway, not in `domain/services/`: it is connection
+admission control with no business rules, and `rules/services.rules.ts` constrains
+`domain/services/*.service.ts` as a distinct architectural concept.
 
 No transaction script, no repository change, no migration — the gateway does not touch the database.
 Naming follows `backend/AGENTS.md`: SUT is `target`, mocks are `{dep}Mock`, specs in co-located
@@ -318,17 +328,26 @@ close code, session duration and relayed-chunk count on close. Never log token o
 ### 6.7 Module wiring — `src/notes/notes.module.ts`
 
 Add to `providers`: `TranscribeAudioGateway`, `WsJwtAuthenticator`,
-`TranscriptionSessionRegistry`, `ThothStreamRemoteCaller`. `AuthModule` is already imported and
-exports `JwtModule`'s `JwtService` — confirm the re-export, and add `JwtModule` to `NotesModule`'s
-imports if `JwtService` does not resolve.
+`TranscriptionSessionRegistry`, `ThothStreamRemoteCaller`.
+
+`AuthModule` imported `JwtModule` but did **not** export it, so `JwtService` failed to resolve in
+`NotesModule` and the app would not boot:
+
+```
+Nest can't resolve dependencies of the WsJwtAuthenticator (?). ... [class JwtService]
+```
+
+Fixed by re-exporting from `src/auth/auth.module.ts` — `exports: [AuthService, JwtModule]` — rather
+than re-registering `JwtModule` in `NotesModule`, which would duplicate the secret configuration in
+a second place.
 
 ### 6.8 Environment — `backend/.env.sample`
 
 ```bash
 # Thoth transcription service (private network only — never exposed to clients)
-THOTH_WS_URL=wss://172.16.0.49:8443
+THOTH_WS_URL=wss://<thoth-host>:8443
 # PEM path for thoth's self-signed certificate. Required when THOTH_WS_URL is wss://.
-THOTH_CA_CERT=/etc/chronus/thoth-ca.pem
+THOTH_CA_CERT=/absolute/path/to/thoth-ca.crt
 # Hard cap on a single transcription session (ms). Default 30 minutes.
 TRANSCRIPTION_MAX_SESSION_MS=1800000
 # Live transcription sessions allowed per user. See specs/transcription-gateway.md §3.
@@ -359,6 +378,9 @@ the socket and deleting debug scaffolding.
 - `noteId` and `enabled` stop being dead props (`:20`, `:22`) — `noteId` goes in the URL, `enabled`
   gates the connection. Delete the `void noteId; void enabled;` suppressions and the "Kept for
   future use" / "Intentionally unused" comments.
+  Note that `TranscriptionRecorder` passed `enabled: false` ("we control connection manually"), so
+  giving the prop real meaning requires updating the call site too, or recording silently stops
+  working. It now passes `micAvailable !== false`.
 - Handle the §5 envelope: switch on `data.type` rather than sniffing for a bare `transcription`
   field. `ready` flips a gate that `sendAudioChunk` checks; `transcription` calls `onTranscription`;
   `error` surfaces to the caller.
@@ -476,7 +498,7 @@ wscat -c "wss://localhost:3000/api/notes/transcribe-audio?noteId=<not yours>" \
       -s "chronus.jwt" -s "<jwt>"
 
 # the whole point: this must FAIL from any client machine once thoth is firewalled
-wscat -c "wss://172.16.0.49:8443/stream-audio"
+wscat -c "wss://<thoth-host>:8443/stream-audio"
 ```
 
 Then a real mic test through the browser, confirming transcription still lands in the textarea and
