@@ -30,6 +30,10 @@ import { SecurityEventsModule } from 'src/security-events/security-events.module
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [LoginAction],
-  exports: [AuthService],
+  // JwtModule is re-exported so modules importing AuthModule can verify tokens
+  // against the same secret without re-registering it. TranscribeAudioGateway
+  // needs this: passport-jwt reads the Authorization header, which browsers
+  // cannot set on a WebSocket handshake.
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

@@ -40,33 +40,6 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
     'error'
   );
 
-  // Log when onTranscription changes to verify it's being passed correctly
-  useEffect(() => {
-    const callbackStr = onTranscription?.toString() || '';
-    const isEmpty =
-      callbackStr.includes(
-        'appendToDescription called but appendToDescriptionFn is not set yet'
-      ) ||
-      callbackStr.trim() === '() => {\n          }' ||
-      callbackStr.trim() === '() => {}';
-
-    console.log('🎤 TranscriptionRecorder: onTranscription callback updated', {
-      isFunction: typeof onTranscription === 'function',
-      isNull: onTranscription === null,
-      isUndefined: onTranscription === undefined,
-      isEmpty,
-      callbackPreview: callbackStr.substring(0, 150),
-    });
-
-    if (!isEmpty && typeof onTranscription === 'function') {
-      console.log('✅ TranscriptionRecorder: Got real callback!');
-    } else {
-      console.warn(
-        '⚠️ TranscriptionRecorder: Still using empty function fallback'
-      );
-    }
-  }, [onTranscription]);
-
   const {
     isConnected,
     isRecording: isWsRecording,
@@ -77,7 +50,8 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
   } = useTranscriptionWebSocket({
     noteId,
     onTranscription,
-    enabled: false, // We control connection manually
+    // Don't attempt a gateway connection when we already know there is no mic.
+    enabled: micAvailable !== false,
   });
 
   const {

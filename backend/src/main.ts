@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { getHttpsOptions } from './bootstrap/configure-https';
@@ -21,6 +22,11 @@ const bootstrap = async (): Promise<void> => {
 
   app.enableShutdownHooks();
   app.setGlobalPrefix('api');
+
+  // Raw `ws`, not socket.io: the browser uses the native WebSocket API and
+  // streams binary audio frames. Note that setGlobalPrefix does NOT apply to
+  // gateways, so gateway paths spell out `/api` themselves.
+  app.useWebSocketAdapter(new WsAdapter(app));
 
   configureBodyParser(app);
   configureCors(app);
