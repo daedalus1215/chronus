@@ -26,11 +26,23 @@ export const useNoteQuery = (noteId: number) => {
   });
 };
 
-export const useUpdateNoteMutation = (noteId: number) => {
+/**
+ * The target note travels with the mutation variables rather than in the hook's
+ * closure. A debounced save can be flushed after the route has already moved on
+ * to another note, and react-query re-points a pending mutation at the latest
+ * options — a closed-over id would then send this note's text to that one.
+ */
+export type UpdateNoteVariables = Partial<
+  Pick<Note, 'description' | 'tags'>
+> & {
+  noteId: number;
+};
+
+export const useUpdateNoteMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (updatedNote: Partial<Note>) => {
+    mutationFn: async ({ noteId, ...updatedNote }: UpdateNoteVariables) => {
       const body: Partial<Pick<Note, 'description' | 'tags'>> = {};
       if (updatedNote.description !== undefined)
         body.description = updatedNote.description;
@@ -38,7 +50,7 @@ export const useUpdateNoteMutation = (noteId: number) => {
       const response = await api.patch<Note>(`/notes/detail/${noteId}`, body);
       return response.data;
     },
-    onMutate: async updatedNote => {
+    onMutate: async ({ noteId, ...updatedNote }) => {
       await queryClient.cancelQueries({ queryKey: noteKeys.detail(noteId) });
       const previousNote = queryClient.getQueryData<Note>(
         noteKeys.detail(noteId)
@@ -52,12 +64,12 @@ export const useUpdateNoteMutation = (noteId: number) => {
       );
       return { previousNote };
     },
-    onError: (_err, _updatedNote, context) => {
+    onError: (_err, { noteId }, context) => {
       if (context?.previousNote) {
         queryClient.setQueryData(noteKeys.detail(noteId), context.previousNote);
       }
     },
-    onSuccess: responseData => {
+    onSuccess: (responseData, { noteId }) => {
       queryClient.setQueryData(
         noteKeys.detail(noteId),
         (prev: Note | undefined) => {

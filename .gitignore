@@ -44,6 +44,9 @@ backend/*.sln
 backend/.env
 backend/*.sw?
 backend/.env.development
+# Thoth's public CA cert, placed on the host by the deploy playbook. Not secret,
+# but it is per-environment infrastructure state, not source.
+backend/thoth-ca.crt
 
 
 e2e/logs

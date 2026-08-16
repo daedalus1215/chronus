@@ -1,4 +1,8 @@
-import { useNoteQuery, useUpdateNoteMutation } from './useNoteQueries';
+import {
+  useNoteQuery,
+  useUpdateNoteMutation,
+  UpdateNoteVariables,
+} from './useNoteQueries';
 import { Note } from '../../api/responses';
 
 export const useNote = (noteId: number) => {
@@ -17,11 +21,17 @@ export const useNote = (noteId: number) => {
     refetch,
   } = useNoteQuery(noteId);
 
-  const updateNoteMutation = useUpdateNoteMutation(noteId);
+  const updateNoteMutation = useUpdateNoteMutation();
 
   const updateNote = async (updatedNote: Partial<Note>) => {
     if (!note) return;
-    return updateNoteMutation.mutateAsync(updatedNote);
+    // noteId is bound here, at call time, so a save flushed while navigating
+    // away still lands on the note the edit was made in.
+    const variables: UpdateNoteVariables = { noteId };
+    if (updatedNote.description !== undefined)
+      variables.description = updatedNote.description;
+    if (updatedNote.tags !== undefined) variables.tags = updatedNote.tags;
+    return updateNoteMutation.mutateAsync(variables);
   };
 
   return {
