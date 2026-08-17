@@ -3,7 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { Note } from './domain/entities/notes/note.entity';
 import { Memo } from './domain/entities/notes/memo.entity';
+import { NoteVersion } from './domain/entities/notes/note-version.entity';
 import { NoteMemoTagRepository } from './infra/repositories/note-memo-tag.repository';
+import { NoteVersionRepository } from './infra/repositories/note-version.repository';
 import { GetNoteNamesByUserIdAction } from './apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.action';
 import { CreateNoteAction } from './apps/actions/notes/create-note-action/create-note.action';
 import { CreateNoteTransactionScript } from './domain/transaction-scripts/create-note.transaction.script';
@@ -46,16 +48,21 @@ import { TranscribeAudioGateway } from './apps/gateways/transcribe-audio.gateway
 import { TranscriptionSessionRegistry } from './apps/gateways/transcription-session.registry';
 import { WsJwtAuthenticator } from './apps/guards/ws-jwt.authenticator';
 import { ThothStreamRemoteCaller } from './infra/remote-callers/thoth-stream.remote-caller';
+import { GetNoteVersionsAction } from './apps/actions/notes/get-note-versions-action/get-note-versions.action';
+import { GetNoteVersionsResponder } from './apps/actions/notes/get-note-versions-action/get-note-versions.responder';
+import { LoadNoteVersionAction } from './apps/actions/notes/load-note-version-action/load-note-version.action';
+import { LoadNoteVersionResponder } from './apps/actions/notes/load-note-version-action/load-note-version.responder';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Note, Memo]),
+    TypeOrmModule.forFeature([Note, Memo, NoteVersion]),
     EventEmitterModule.forRoot(),
     AuthModule,
     CheckItemsModule,
   ],
   providers: [
     NoteMemoTagRepository,
+    NoteVersionRepository,
     NoteAggregator,
     CreateNoteTransactionScript,
     GetNoteByIdTransactionScript,
@@ -69,6 +76,8 @@ import { ThothStreamRemoteCaller } from './infra/remote-callers/thoth-stream.rem
     VerifyNoteAccessListener,
     GetNoteDetailsListener,
     GetNoteByIdResponder,
+    GetNoteVersionsResponder,
+    LoadNoteVersionResponder,
     UpdateNoteResponder,
     SearchNotesTransactionScript,
     SearchNotesResponder,
@@ -107,6 +116,8 @@ import { ThothStreamRemoteCaller } from './infra/remote-callers/thoth-stream.rem
     MoveNoteToFolderAction,
     ReorderNotesAction,
     GetNoteNamesForExplorerAction,
+    GetNoteVersionsAction,
+    LoadNoteVersionAction,
   ],
   exports: [
     NoteMemoTagRepository,

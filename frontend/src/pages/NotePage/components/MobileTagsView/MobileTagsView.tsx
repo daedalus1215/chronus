@@ -8,6 +8,7 @@ import { SidebarChecklistView } from '../SidebarChecklistView/SidebarChecklistVi
 import { SidebarTagsView } from '../SidebarTagsView/SidebarTagsView';
 import { SidebarAudioHistoryView } from '../SidebarAudioHistoryView/SidebarAudioHistoryView';
 import { TimeTrackHistoryView } from '../TimeTrackHistoryView/TimeTrackHistoryView';
+import { SidebarNoteHistoryView } from '../SidebarNoteHistoryView/SidebarNoteHistoryView';
 
 type Tab = {
   id: string;
@@ -22,6 +23,8 @@ type MobileTagsViewProps = {
   onTabChange: (tabId: string) => void;
   isOpen: boolean;
   onClose: () => void;
+  loadedFromVersion?: number | null;
+  onVersionLoaded?: (versionNum: number, description: string) => void;
 };
 
 export const MobileTagsView: React.FC<MobileTagsViewProps> = ({
@@ -32,6 +35,8 @@ export const MobileTagsView: React.FC<MobileTagsViewProps> = ({
   onTabChange,
   isOpen,
   onClose,
+  loadedFromVersion,
+  onVersionLoaded,
 }) => (
   <RightSheet isOpen={isOpen} onClose={onClose}>
     <Box
@@ -80,6 +85,13 @@ export const MobileTagsView: React.FC<MobileTagsViewProps> = ({
         {activeTab === 'tags' && <SidebarTagsView noteId={noteId} />}
         {activeTab === 'audio' && <SidebarAudioHistoryView noteId={noteId} />}
         {activeTab === 'time' && <TimeTrackHistoryView noteId={noteId} />}
+        {activeTab === 'history' && noteId && onVersionLoaded && (
+          <SidebarNoteHistoryView
+            noteId={noteId}
+            loadedFromVersion={loadedFromVersion ?? null}
+            onVersionLoaded={onVersionLoaded}
+          />
+        )}
       </Box>
     </Box>
   </RightSheet>

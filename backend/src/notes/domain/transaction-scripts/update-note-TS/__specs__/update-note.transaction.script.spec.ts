@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { UpdateNoteTransactionScript } from '../update-note.transaction.script';
 import { NoteMemoTagRepository } from '../../../../infra/repositories/note-memo-tag.repository';
+import { NoteVersionRepository } from '../../../../infra/repositories/note-version.repository';
 import { UpdateNoteParamsToEntityConverter } from '../update-note-params-to-entity.converter';
 import { NotFoundException } from '@nestjs/common';
 import {
@@ -15,6 +16,7 @@ describe('UpdateNoteTransactionScript', () => {
   let target: UpdateNoteTransactionScript;
   let mockRepository: jest.Mocked<NoteMemoTagRepository>;
   let mockConverter: jest.Mocked<UpdateNoteParamsToEntityConverter>;
+  let mockNoteVersionRepo: jest.Mocked<NoteVersionRepository>;
 
   beforeEach(async () => {
     // Arrange
@@ -27,6 +29,13 @@ describe('UpdateNoteTransactionScript', () => {
       apply: jest.fn(),
     });
 
+    mockNoteVersionRepo = createMock<NoteVersionRepository>({
+      getLatestDescription: jest.fn(),
+      getLatestVersionNum: jest.fn(),
+      create: jest.fn(),
+      deleteOldestBeyond: jest.fn(),
+    });
+
     const moduleRef = await Test.createTestingModule({
       providers: [
         UpdateNoteTransactionScript,
@@ -37,6 +46,10 @@ describe('UpdateNoteTransactionScript', () => {
         {
           provide: UpdateNoteParamsToEntityConverter,
           useValue: mockConverter,
+        },
+        {
+          provide: NoteVersionRepository,
+          useValue: mockNoteVersionRepo,
         },
       ],
     }).compile();
@@ -73,6 +86,106 @@ describe('UpdateNoteTransactionScript', () => {
           expectedParams,
           existingNote
         );
+        expect(mockRepository.save).toHaveBeenCalledWith(updatedNote);
+      });
+
+      it('should capture version when updating memo description', async () => {
+        // Arrange
+        const noteId = generateRandomNumbers();
+        const existingNote = createMockNote({ 
+          id: noteId,
+          memo: { description: 'old description' } as any,
+        });
+        const updateDto = createMockUpdateNoteDto({ description: 'new description' });
+        const updatedNote = { ...existingNote };
+        const userId = generateRandomNumbers();
+        mockRepository.findById.mockResolvedValue(existingNote);
+        mockConverter.apply.mockReturnValue(updatedNote);
+        mockRepository.save.mockResolvedValue(updatedNote);
+        mockNoteVersionRepo.getLatestDescription.mockResolvedValue('previous version');
+        mockNoteVersionRepo.getLatestVersionNum.mockResolvedValue(3);
+
+        // Act
+        await target.apply(noteId, updateDto, userId);
+
+        // Assert
+        expect(mockNoteVersionRepo.create).toHaveBeenCalledWith(
+          noteId,
+          4,
+          'old description'
+        );
+        expect(mockNoteVersionRepo.deleteOldestBeyond).toHaveBeenCalledWith(
+          noteId,
+          20
+        );
+      });
+
+      it('should not capture version when deduped (same as latest)', async () => {
+        // Arrange
+        const noteId = generateRandomNumbers();
+        const existingNote = createMockNote({ 
+          id: noteId,
+          memo: { description: 'old description' } as any,
+        });
+        const updateDto = createMockUpdateNoteDto({ description: 'new description' });
+        const updatedNote = { ...existingNote };
+        const userId = generateRandomNumbers();
+        mockRepository.findById.mockResolvedValue(existingNote);
+        mockConverter.apply.mockReturnValue(updatedNote);
+        mockRepository.save.mockResolvedValue(updatedNote);
+        mockNoteVersionRepo.getLatestDescription.mockResolvedValue('old description');
+
+        // Act
+        await target.apply(noteId, updateDto, userId);
+
+        // Assert
+        expect(mockNoteVersionRepo.create).not.toHaveBeenCalled();
+      });
+
+      it('should not capture version when note has no memo', async () => {
+        // Arrange
+        const noteId = generateRandomNumbers();
+        const existingNote = createMockNote({ 
+          id: noteId,
+          memo: null as any,
+        });
+        const updateDto = createMockUpdateNoteDto({ description: 'new description' });
+        const updatedNote = { ...existingNote };
+        const userId = generateRandomNumbers();
+        mockRepository.findById.mockResolvedValue(existingNote);
+        mockConverter.apply.mockReturnValue(updatedNote);
+        mockRepository.save.mockResolvedValue(updatedNote);
+
+        // Act
+        await target.apply(noteId, updateDto, userId);
+
+        // Assert
+        expect(mockNoteVersionRepo.getLatestDescription).not.toHaveBeenCalled();
+        expect(mockNoteVersionRepo.create).not.toHaveBeenCalled();
+      });
+
+      it('should not capture version when skipVersionCapture is true', async () => {
+        // Arrange
+        const noteId = generateRandomNumbers();
+        const existingNote = createMockNote({ 
+          id: noteId,
+          memo: { description: 'old description' } as any,
+        });
+        const updateDto = createMockUpdateNoteDto({ 
+          description: 'new description',
+          skipVersionCapture: true 
+        });
+        const updatedNote = { ...existingNote };
+        const userId = generateRandomNumbers();
+        mockRepository.findById.mockResolvedValue(existingNote);
+        mockConverter.apply.mockReturnValue(updatedNote);
+        mockRepository.save.mockResolvedValue(updatedNote);
+
+        // Act
+        await target.apply(noteId, updateDto, userId);
+
+        // Assert
+        expect(mockNoteVersionRepo.create).not.toHaveBeenCalled();
         expect(mockRepository.save).toHaveBeenCalledWith(updatedNote);
       });
     });
