@@ -8,6 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import HeadsetMicOutlined from '@mui/icons-material/HeadsetMicOutlined';
+import HistoryOutlined from '@mui/icons-material/HistoryOutlined';
 import AccessTimeOutlined from '@mui/icons-material/AccessTimeOutlined';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useTopRailActions } from '../../hooks/useTopRailActions';
@@ -28,6 +29,7 @@ import styles from './NotePage.module.css';
 import { ChecklistOutlined } from '@mui/icons-material';
 import { SidebarAudioHistoryView } from './components/SidebarAudioHistoryView/SidebarAudioHistoryView';
 import { TimeTrackHistoryView } from './components/TimeTrackHistoryView/TimeTrackHistoryView';
+import { SidebarNoteHistoryView } from './components/SidebarNoteHistoryView/SidebarNoteHistoryView';
 
 const SIDEBAR_TAB_STORAGE_KEY = 'chronus-sidebar-tab';
 
@@ -36,6 +38,7 @@ const sidebarTabs = [
   { id: 'tags', icon: <LocalOfferIcon /> },
   { id: 'audio', icon: <HeadsetMicOutlined /> },
   { id: 'time', icon: <AccessTimeOutlined /> },
+  { id: 'history', icon: <HistoryOutlined /> },
 ];
 
 export const NotePage: React.FC = () => {
@@ -53,6 +56,10 @@ export const NotePage: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isTagsOpen, setIsTagsOpen] = useState(false);
+  const [loadedFromVersion, setLoadedFromVersion] = useState<number | null>(null);
+  // Track content loaded from a version - this is "dirty" preview state
+  // not yet saved to the note. The original note content is safe in the DB.
+  const [pendingVersionContent, setPendingVersionContent] = useState<string | null>(null);
   const [transcriptionController, setTranscriptionController] = useState<{
     toggleRecording: () => Promise<void> | void;
     isRecording: boolean;
@@ -126,6 +133,23 @@ export const NotePage: React.FC = () => {
 
   useTopRailActions(topRailActions);
 
+  // Handle loading a version - just sets preview state, doesn't save
+  const handleVersionLoaded = useCallback((versionNum: number, description: string) => {
+    setLoadedFromVersion(versionNum);
+    setPendingVersionContent(description);
+  }, []);
+
+  // Create a preview note that shows loaded version content without saving
+  // The original note in the DB stays safe until user actually edits and saves
+  const displayNote = useMemo(() => {
+    if (!note) return note;
+    if (pendingVersionContent === null) return note;
+    return {
+      ...note,
+      description: pendingVersionContent,
+    };
+  }, [note, pendingVersionContent]);
+
   if (isLoading) {
     return (
       <Box className={styles.loadingContainer}>
@@ -138,6 +162,9 @@ export const NotePage: React.FC = () => {
   const handleSave = async (updatedNote: Partial<typeof note>) => {
     try {
       await updateNote(updatedNote);
+      // Clear the "loaded from version" indicator and pending content on save
+      setLoadedFromVersion(null);
+      setPendingVersionContent(null);
     } catch (err) {
       console.error('Failed to save note:', err);
     }
@@ -184,6 +211,23 @@ export const NotePage: React.FC = () => {
               minRows={1}
               maxRows={4}
             />
+            {loadedFromVersion !== null && (
+              <Box
+                sx={{
+                  fontSize: '0.75rem',
+                  color: 'text.secondary',
+                  alignSelf: 'flex-start',
+                  mt: 0.5,
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 1,
+                  backgroundColor: 'rgba(99,102,241,0.08)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Loaded from v{loadedFromVersion}
+              </Box>
+            )}
           </Box>
           {titleError && (
             <Alert severity="error" sx={{ mb: 2 }}>
@@ -213,11 +257,11 @@ export const NotePage: React.FC = () => {
                 flexDirection: 'column',
               }}
             >
-              {note?.isMemo ? (
+              {displayNote?.isMemo ? (
                 <>
                   {isEditMode && (
                     <TranscriptionRecorder
-                      noteId={note.id}
+                      noteId={displayNote.id}
                       onTranscription={onTranscriptionCallback}
                       useOwnFab={false}
                       onControllerReady={setTranscriptionController}
@@ -226,27 +270,27 @@ export const NotePage: React.FC = () => {
                   {isEditMode ? (
                     isMobile ? (
                       <MobileNoteEditor
-                        note={note}
+                        note={displayNote}
                         onSave={handleSave}
                         onAppendToDescription={setAppendToDescriptionFn}
                       />
                     ) : (
                       <DesktopNoteEditor
-                        note={note}
+                        note={displayNote}
                         onSave={handleSave}
                         onAppendToDescription={setAppendToDescriptionFn}
                       />
                     )
                   ) : isMobile ? (
-                    <MobileNoteReadView note={note} />
+                    <MobileNoteReadView note={displayNote} />
                   ) : (
-                    <DesktopNoteReadView note={note} />
+                    <DesktopNoteReadView note={displayNote} />
                   )}
                 </>
               ) : isMobile ? (
-                <MobileCheckListView note={note} />
+                <MobileCheckListView note={displayNote} />
               ) : (
-                <DesktopCheckListView note={note} />
+                <DesktopCheckListView note={displayNote} />
               )}
             </Box>
           </Box>
@@ -269,6 +313,13 @@ export const NotePage: React.FC = () => {
             {activeTab === 'time' && noteId && (
               <TimeTrackHistoryView noteId={noteId} />
             )}
+            {activeTab === 'history' && noteId && (
+              <SidebarNoteHistoryView
+                noteId={noteId}
+                loadedFromVersion={loadedFromVersion}
+                onVersionLoaded={handleVersionLoaded}
+              />
+            )}
           </RightSidebar>
         )}
         {isMobile && note?.isMemo && (
@@ -280,6 +331,8 @@ export const NotePage: React.FC = () => {
             onTabChange={handleTabChange}
             isOpen={isTagsOpen}
             onClose={() => setIsTagsOpen(false)}
+            loadedFromVersion={loadedFromVersion}
+            onVersionLoaded={handleVersionLoaded}
           />
         )}
       </Box>
