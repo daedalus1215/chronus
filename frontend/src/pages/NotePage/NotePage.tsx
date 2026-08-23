@@ -23,10 +23,12 @@ import { TranscriptionRecorder } from './components/TranscriptionRecorder/Transc
 import { useTranscriptionCallback } from './hooks/useTranscriptionCallback/useTranscriptionCallback';
 import { RightSidebar } from './components/RightSidebar/RightSidebar';
 import { SidebarChecklistView } from './components/SidebarChecklistView/SidebarChecklistView';
+import { SidebarFolderView } from './components/SidebarFolderView/SidebarFolderView';
 import { SidebarTagsView } from './components/SidebarTagsView/SidebarTagsView';
 import { MobileTagsView } from './components/MobileTagsView/MobileTagsView';
 import styles from './NotePage.module.css';
 import { ChecklistOutlined } from '@mui/icons-material';
+import FolderOutlined from '@mui/icons-material/FolderOutlined';
 import { SidebarAudioHistoryView } from './components/SidebarAudioHistoryView/SidebarAudioHistoryView';
 import { TimeTrackHistoryView } from './components/TimeTrackHistoryView/TimeTrackHistoryView';
 import { SidebarNoteHistoryView } from './components/SidebarNoteHistoryView/SidebarNoteHistoryView';
@@ -36,6 +38,7 @@ const SIDEBAR_TAB_STORAGE_KEY = 'chronus-sidebar-tab';
 const sidebarTabs = [
   { id: 'checklist', icon: <ChecklistOutlined /> },
   { id: 'tags', icon: <LocalOfferIcon /> },
+  { id: 'folder', icon: <FolderOutlined /> },
   { id: 'audio', icon: <HeadsetMicOutlined /> },
   { id: 'time', icon: <AccessTimeOutlined /> },
   { id: 'history', icon: <HistoryOutlined /> },
@@ -307,6 +310,9 @@ export const NotePage: React.FC = () => {
               <SidebarChecklistView note={note} />
             )}
             {activeTab === 'tags' && <SidebarTagsView noteId={noteId} />}
+            {activeTab === 'folder' && note && (
+              <SidebarFolderView noteId={noteId} folderId={note.folderId} />
+            )}
             {activeTab === 'audio' && noteId && (
               <SidebarAudioHistoryView noteId={noteId} />
             )}
