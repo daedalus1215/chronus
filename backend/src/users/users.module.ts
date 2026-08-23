@@ -7,6 +7,7 @@ import { UserRepository } from './infra/repositories/user.repository';
 import { UserAggregator } from './domain/aggregators/user.aggregator';
 import { UpdateUsernameTransactionScript } from './domain/transaction-scripts/update-username-TS/update-username.transaction.script';
 import { UpdatePasswordTransactionScript } from './domain/transaction-scripts/update-password-TS/update-password.transaction.script';
+import { RegisterUserTransactionScript } from './domain/transaction-scripts/register-user-TS/register-user.transaction.script';
 import { UpdateUsernameAction } from './app/actions/update-username-action/update-username.action';
 import { UpdatePasswordAction } from './app/actions/update-password-action/update-password.action';
 import { UsersService } from './domain/users.service';
@@ -22,6 +23,7 @@ import { SecurityEventsModule } from 'src/security-events/security-events.module
     UsersService,
     UserRepository,
     UserAggregator,
+    RegisterUserTransactionScript,
     UpdateUsernameTransactionScript,
     UpdatePasswordTransactionScript,
   ],
