@@ -25,7 +25,7 @@ Folder base: `apps/actions/`
 - SearchNotesAction (GET /notes/search)
 - GetNoteNamesByUserIdAction (GET /notes/names)
 - GetNoteNamesForExplorerAction (GET /notes/explorer-names)
-- MoveNoteToFolderAction (PATCH /notes/:id/move)
+- MoveNoteToFolderAction (PATCH /notes/:id/folder)
 - ReorderNotesAction (PATCH /notes/reorder)
 - UpdateNoteTimestampAction (PATCH /notes/:id/timestamp)
 
