@@ -27,6 +27,7 @@ Folder base: `app/actions/`
 
 Folder: `domain/transaction-scripts/`
 
+- `RegisterUserTransactionScript`
 - `UpdateUsernameTransactionScript`
 - `UpdatePasswordTransactionScript`
 
