@@ -1,6 +1,6 @@
 # Spec — users module: extract register into a Transaction Script, fix error mapping, add tests
 
-**Status:** Draft — scope agreed with user 2026-08-23; awaiting OQ3 (scope confirmation) before implementation
+**Status:** Approved — scope confirmed by user 2026-08-23: steps 1, 2, 4, 5, 6 in scope; only step 3 (pass-through deletions) excluded. OQ1 default applied (no email-constraint change); OQ2 default applied (createUser absorbed into TS); OQ3 resolved (tests in scope).
 **Implementation repo:** `~/app/chronus-react-nestjs` (backend only; frontend untouched)
 **Author:** daedalus1215 + Hermes
 
