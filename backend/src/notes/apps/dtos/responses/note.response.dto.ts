@@ -15,6 +15,9 @@ export class NoteResponseDto {
   @ApiProperty()
   isMemo: boolean;
 
+  @ApiProperty({ nullable: true })
+  folderId: number | null;
+
   @ApiProperty()
   description?: string;
 }
