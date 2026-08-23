@@ -51,7 +51,9 @@ export class NoteMemoTagRepository {
     query?: string,
     type?: 'memo' | 'checklist',
     tagId?: string
-  ): Promise<{ name: string; id: number; isMemo: number }[]> {
+  ): Promise<
+    { name: string; id: number; isMemo: number; folderId: number | null }[]
+  > {
     const qb = this.repository
       .createQueryBuilder('note')
       .select('note.name', 'name')
@@ -60,6 +62,7 @@ export class NoteMemoTagRepository {
         'CASE WHEN note.memo_id IS NOT NULL THEN 1 ELSE 0 END',
         'isMemo'
       )
+      .addSelect('note.folder_id', 'folderId')
       .where('note.user_id = :userId', { userId });
 
     if (query) {

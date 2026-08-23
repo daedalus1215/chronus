@@ -12,11 +12,15 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import SnackbarContent from '@mui/material/SnackbarContent';
 import MoreVert from '@mui/icons-material/MoreVert';
 import LocalOffer from '@mui/icons-material/LocalOffer';
 import { ROUTES } from '../../constants/routes';
 import { NOTE_PREFIX, TAG_PREFIX, parseNoteId } from './tagTreeItems';
 import { NoteActionsGrid } from '../../pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid';
+import { MoveNoteDialog } from '../../components/MoveNoteDialog/MoveNoteDialog';
+import { useMoveNoteToFolder } from '../../pages/NotePage/hooks/useMoveNoteToFolder/useMoveNoteToFolder';
+import type { FolderDto } from '../../api/dtos/folder.dtos';
 import {
   TimeTrackingForm,
   type TimeTrackingData,
@@ -87,6 +91,7 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
     const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+    const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState<string | null>(null);
     const [archiveError, setArchiveError] = useState<string | null>(null);
@@ -101,6 +106,13 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       isCreating,
       error: createTimeTrackError,
     } = useCreateTimeTrack();
+    const {
+      moveNote,
+      error: moveError,
+      clearError: clearMoveError,
+      snackbarMessage: moveSnackbarMessage,
+      closeSnackbar: closeMoveSnackbar,
+    } = useMoveNoteToFolder(noteId);
     const {
       timeTracks,
       isLoadingTimeTracks,
@@ -228,6 +240,29 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       setIsActionsOpen(false);
       navigate(ROUTES.KANBAN(noteId));
     }, [noteId, navigate]);
+    const handleMoveToFolder = useCallback(() => {
+      clearMoveError();
+      setIsActionsOpen(false);
+      setIsMoveDialogOpen(true);
+    }, [clearMoveError]);
+
+    const handleMoveConfirm = useCallback(
+      async (folder: FolderDto | null) => {
+        try {
+          await moveNote(folder);
+          setIsMoveDialogOpen(false);
+        } catch {
+          // Error is exposed via the hook; the dialog stays open with the
+          // message and the user can retry.
+        }
+      },
+      [moveNote]
+    );
+
+    const handleMoveDialogClose = useCallback(() => {
+      setIsMoveDialogOpen(false);
+      clearMoveError();
+    }, [clearMoveError]);
 
     const noop = useCallback(() => setIsActionsOpen(false), []);
 
@@ -320,8 +355,7 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               onArchive={handleArchive}
               onTimeTracking={handleTimeTracking}
               onViewTimeEntries={handleViewTimeEntries}
-              onPin={noop}
-              onStar={noop}
+              onMoveToFolder={handleMoveToFolder}
               onTextToSpeech={noop}
               onDownloadAudio={noop}
               onEdit={noop}
@@ -363,6 +397,19 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               >
                 {toastMessage}
               </Alert>
+            </Snackbar>
+            <MoveNoteDialog
+              open={isMoveDialogOpen}
+              onClose={handleMoveDialogClose}
+              onConfirm={handleMoveConfirm}
+              error={moveError}
+            />
+            <Snackbar
+              open={moveSnackbarMessage !== null}
+              autoHideDuration={4000}
+              onClose={closeMoveSnackbar}
+            >
+              <SnackbarContent message={moveSnackbarMessage ?? ''} />
             </Snackbar>
             <Dialog
               open={deleteDialogOpen}

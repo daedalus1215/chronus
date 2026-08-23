@@ -6,10 +6,9 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 import {
   TimerOutlined,
   RecordVoiceOverOutlined,
-  PushPinOutlined,
+  DriveFileMoveOutlined,
   ArchiveOutlined,
   DeleteOutlineOutlined,
-  StarBorderOutlined,
   FileUploadOutlined,
   HeadphonesOutlined,
   EditOutlined,
@@ -32,10 +31,9 @@ type NoteActionsProps = {
   onDelete: () => void;
   onShare: () => void;
   onDuplicate: () => void;
-  onPin: () => void;
+  onMoveToFolder: () => void;
   onArchive: () => void;
   onTextToSpeech: () => void;
-  onStar: () => void;
   onExport: () => void;
   onImportIntoNote?: () => void;
   onEdit: () => void;
@@ -59,9 +57,8 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onViewTimeEntries,
   onDelete,
   onDownloadAudio,
-  onPin,
+  onMoveToFolder,
   onArchive,
-  onStar,
   onExport,
   onImportIntoNote,
   onEdit,
@@ -129,12 +126,8 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
 
       {audioError && <div className={styles.errorMessage}>{audioError}</div>}
 
-      <ActionButton label="Pin" onClick={onPin}>
-        <PushPinOutlined className={styles.icon} />
-      </ActionButton>
-
-      <ActionButton label="Star" onClick={onStar}>
-        <StarBorderOutlined className={styles.icon} />
+      <ActionButton label="Move to Folder" onClick={onMoveToFolder}>
+        <DriveFileMoveOutlined className={styles.icon} />
       </ActionButton>
 
       <ActionButton label="Label" onClick={onLabel}>
