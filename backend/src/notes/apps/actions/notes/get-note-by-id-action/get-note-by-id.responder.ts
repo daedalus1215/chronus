@@ -12,6 +12,7 @@ export class GetNoteByIdResponder {
       checkItems,
       description: note.memo?.description || '',
       isMemo: note.memo !== null,
+      folderId: note.folderId ?? null,
     };
   }
 }

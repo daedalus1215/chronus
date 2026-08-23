@@ -12,6 +12,7 @@ export class UpdateNoteResponder {
       name: note.name,
       checkItems,
       isMemo: note.memo !== null,
+      folderId: note.folderId ?? null,
     };
   }
 }
