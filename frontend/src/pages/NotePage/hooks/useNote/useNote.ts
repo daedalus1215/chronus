@@ -12,6 +12,7 @@ export const useNote = (noteId: number) => {
       name: '',
       userId: '',
       isMemo: false,
+      folderId: null,
       createdAt: '',
       updatedAt: '',
       tags: [],

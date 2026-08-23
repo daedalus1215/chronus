@@ -4,6 +4,7 @@ export type Note = {
   description?: string;
   userId: string;
   isMemo: boolean;
+  folderId: number | null;
   createdAt: string;
   updatedAt: string;
   tags: Array<{
