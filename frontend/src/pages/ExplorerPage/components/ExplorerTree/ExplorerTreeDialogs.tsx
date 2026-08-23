@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { FolderDto } from '../../../../api/dtos/folder.dtos';
-import { MoveNoteDialog } from '../MoveNoteDialog/MoveNoteDialog';
+import { MoveNoteDialog } from '@components/MoveNoteDialog/MoveNoteDialog';
 
 type ExplorerTreeDialogsProps = {
   // New folder dialog

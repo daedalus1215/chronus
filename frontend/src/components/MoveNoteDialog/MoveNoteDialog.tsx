@@ -15,12 +15,12 @@ import {
 } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
 import AllInboxIcon from '@mui/icons-material/AllInbox';
-import { fetchFolders } from '../../../../api/requests/folders.requests';
+import { fetchFolders } from '../../api/requests/folders.requests';
 import {
   buildFolderTree,
   FolderDto,
   FolderTreeNode,
-} from '../../../../api/dtos/folder.dtos';
+} from '../../api/dtos/folder.dtos';
 
 type Props = {
   open: boolean;
