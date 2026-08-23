@@ -5,7 +5,12 @@ import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.dec
 import { GetNoteNamesByUserIdSwagger } from './get-note-names-by-userId.swagger';
 
 type GetNoteNamesResponse = {
-  notes: { name: string; id: number; isMemo: number }[];
+  notes: {
+    name: string;
+    id: number;
+    isMemo: number;
+    folderId: number | null;
+  }[];
   hasMore: boolean;
   nextCursor: number | null;
 };
