@@ -1,18 +1,15 @@
-import * as bcrypt from 'bcrypt';
-import { RegisterUserRequestDto } from '../app/controllers/dtos/requests/create-user.request.dto';
-import { User } from './entities/user.entity';
-import { UserRepository } from '../infra/repositories/user.repository';
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { omit } from 'lodash';
+import { User } from './entities/user.entity';
+import { UserRepository } from '../infra/repositories/user.repository';
+import { RegisterUserCommand } from './transaction-scripts/register-user-TS/register-user.command';
+import { RegisterUserTransactionScript } from './transaction-scripts/register-user-TS/register-user.transaction.script';
 import { UpdateUsernameTransactionScript } from './transaction-scripts/update-username-TS/update-username.transaction.script';
 import { UpdatePasswordTransactionScript } from './transaction-scripts/update-password-TS/update-password.transaction.script';
 import { UpdateUsernameCommand } from './transaction-scripts/update-username-TS/update-username.command';
 import { UpdatePasswordCommand } from './transaction-scripts/update-password-TS/update-password.command';
+import { UserResponseProjection } from './transaction-scripts/user-response.projection';
 import type { DisabledRegistrationContext } from '../../security-events/domain/aggregators/security-event.aggregator';
 import { SecurityEventAggregator } from '../../security-events/domain/aggregators/security-event.aggregator';
 
@@ -20,6 +17,7 @@ import { SecurityEventAggregator } from '../../security-events/domain/aggregator
 export class UsersService {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly registerUserTransactionScript: RegisterUserTransactionScript,
     private readonly updateUsernameTransactionScript: UpdateUsernameTransactionScript,
     private readonly updatePasswordTransactionScript: UpdatePasswordTransactionScript,
     private readonly configService: ConfigService,
@@ -31,9 +29,9 @@ export class UsersService {
    * Called by UsersController - service orchestrates aggregator for cross-domain logging.
    */
   async register(
-    registerUserRequestDto: RegisterUserRequestDto,
+    command: RegisterUserCommand,
     context: DisabledRegistrationContext
-  ): Promise<Omit<User, 'password'>> {
+  ): Promise<UserResponseProjection> {
     const defaultAllow =
       process.env.NODE_ENV === 'production' ? 'false' : 'true';
     const allowRegistration = this.configService.get<string>(
@@ -46,27 +44,7 @@ export class UsersService {
       );
       throw new ForbiddenException('Registration is disabled');
     }
-    return this.createUser(registerUserRequestDto);
-  }
-
-  async createUser(
-    registerUserRequestDto: RegisterUserRequestDto
-  ): Promise<Omit<User, 'password'>> {
-    const { username, password: rawPassword } = registerUserRequestDto;
-
-    const existingUser = await this.userRepository.findByUsername(username);
-    if (existingUser) {
-      throw new ConflictException('Username already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(rawPassword, 10);
-
-    const savedUser = await this.userRepository.create({
-      username,
-      password: hashedPassword,
-    });
-
-    return omit(savedUser, ['password']);
+    return this.registerUserTransactionScript.apply(command);
   }
 
   async findByUsername(username: string): Promise<User | null> {
@@ -87,7 +65,7 @@ export class UsersService {
 
   async updateUsername(
     command: UpdateUsernameCommand
-  ): Promise<Omit<User, 'password'>> {
+  ): Promise<UserResponseProjection> {
     return await this.updateUsernameTransactionScript.apply(command);
   }
 

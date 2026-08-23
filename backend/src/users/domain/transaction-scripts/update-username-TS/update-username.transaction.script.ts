@@ -1,13 +1,14 @@
 import {
-  Injectable,
+  BadRequestException,
   ConflictException,
+  Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserRepository } from '../../../infra/repositories/user.repository';
 import { UpdateUsernameCommand } from './update-username.command';
-import { User } from '../../entities/user.entity';
+import { UserResponseProjection } from '../user-response.projection';
 import * as bcrypt from 'bcrypt';
-import { omit } from 'lodash';
 
 /**
  * Transaction script for updating user username.
@@ -21,7 +22,7 @@ export class UpdateUsernameTransactionScript {
    * Update user username.
    * Validates business rules and updates the username.
    */
-  async apply(command: UpdateUsernameCommand): Promise<Omit<User, 'password'>> {
+  async apply(command: UpdateUsernameCommand): Promise<UserResponseProjection> {
     const { userId, newUsername, currentPassword, user } = command;
 
     // Verify user is updating their own account
@@ -29,25 +30,29 @@ export class UpdateUsernameTransactionScript {
       throw new UnauthorizedException("Cannot update another user's account");
     }
 
-    // Validate username format (4-20 chars, matching CreateUserDto)
+    // Validate username format (4-20 chars, matching RegisterUserRequestDto)
     if (
       !newUsername ||
       newUsername.trim().length < 4 ||
       newUsername.trim().length > 20
     ) {
-      throw new Error('Username must be between 4 and 20 characters');
+      throw new BadRequestException(
+        'Username must be between 4 and 20 characters'
+      );
     }
 
     const trimmedUsername = newUsername.trim();
 
-    // Check if new username is different from current
+    // Fetch current user once (entity includes the password hash for verification)
     const currentUser = await this.userRepository.findById(userId);
     if (!currentUser) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     if (currentUser.username === trimmedUsername) {
-      throw new Error('New username must be different from current username');
+      throw new BadRequestException(
+        'New username must be different from current username'
+      );
     }
 
     // Check username uniqueness (excluding current user)
@@ -58,14 +63,9 @@ export class UpdateUsernameTransactionScript {
     }
 
     // Verify current password
-    const userWithPassword = await this.userRepository.findById(userId);
-    if (!userWithPassword) {
-      throw new Error('User not found');
-    }
-
     const isPasswordValid = await bcrypt.compare(
       currentPassword,
-      userWithPassword.password
+      currentUser.password
     );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Current password is incorrect');
@@ -76,6 +76,7 @@ export class UpdateUsernameTransactionScript {
       username: trimmedUsername,
     });
 
-    return omit(updatedUser, ['password']);
+    const { password: _hashedPassword, ...projection } = updatedUser;
+    return projection;
   }
 }
