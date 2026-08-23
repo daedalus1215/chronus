@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   MinLength,
   MaxLength,
-  IsEmail,
 } from 'class-validator';
 
 export class RegisterUserRequestDto {
@@ -11,7 +10,6 @@ export class RegisterUserRequestDto {
   @IsNotEmpty()
   @MinLength(4)
   @MaxLength(20)
-  @IsEmail()
   readonly username: string;
 
   @IsString()
