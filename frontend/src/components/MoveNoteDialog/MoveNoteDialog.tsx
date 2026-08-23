@@ -33,8 +33,10 @@ type Props = {
   helperText?: string;
   /**
    * The note's current folder. After the folder list loads, the matching
-   * folder is pre-selected (Root stays selected when null) and a helper
-   * line shows the current location.
+   * folder is pre-selected (Root is pre-selected when null) and a helper
+   * line shows the current location. When omitted (unknown), nothing is
+   * pre-selected and "Move here" stays disabled until the user explicitly
+   * picks a folder or Root.
    */
   currentFolderId?: number | null;
   /** Error message to display above the actions (dialog stays open). */
@@ -53,16 +55,18 @@ export const MoveNoteDialog: React.FC<Props> = ({
 }) => {
   const [folders, setFolders] = useState<FolderDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<FolderDto | null>(null);
+  const [selected, setSelected] = useState<FolderDto | null | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     if (!open) return;
-    setSelected(null);
+    setSelected(currentFolderId === null ? null : undefined);
     setLoading(true);
     fetchFolders()
       .then(data => {
         setFolders(data);
-        if (currentFolderId != null) {
+        if (typeof currentFolderId === 'number') {
           const current = data.find(f => f.id === currentFolderId);
           if (current) setSelected(current);
         }
@@ -149,8 +153,13 @@ export const MoveNoteDialog: React.FC<Props> = ({
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
-          disabled={selected !== null && disabled.has(selected.id)}
-          onClick={() => onConfirm(selected)}
+          disabled={
+            selected === undefined ||
+            (selected !== null && disabled.has(selected.id))
+          }
+          onClick={() => {
+            if (selected !== undefined) onConfirm(selected);
+          }}
         >
           Move here
         </Button>
@@ -162,7 +171,7 @@ export const MoveNoteDialog: React.FC<Props> = ({
 type PickerItemProps = {
   node: FolderTreeNode;
   depth: number;
-  selected: FolderDto | null;
+  selected: FolderDto | null | undefined;
   disabledFolderIds: ReadonlySet<number>;
   onSelect: (f: FolderDto) => void;
 };
