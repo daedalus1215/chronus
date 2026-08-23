@@ -18,6 +18,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import SnackbarContent from '@mui/material/SnackbarContent';
 import {
   convertChecklistToMemo,
   deleteNote,
@@ -32,8 +33,16 @@ import {
 } from '../../../hooks/useMergeIntoNote';
 import { MergeSelectionDialog } from '../../MergeSelectionDialog/MergeSelectionDialog';
 import { ParsedMemo } from '../../ImportSelectionDialog/ImportSelectionDialog';
+import { MoveNoteDialog } from '../../../../../components/MoveNoteDialog/MoveNoteDialog';
+import { useMoveNoteToFolder } from '../../../../../pages/NotePage/hooks/useMoveNoteToFolder/useMoveNoteToFolder';
+import type { FolderDto } from '../../../../../api/dtos/folder.dtos';
 
-type Note = { name: string; id: number; isMemo: number };
+type Note = {
+  name: string;
+  id: number;
+  isMemo: number;
+  folderId: number | null;
+};
 
 interface NoteItemProps {
   note: Note;
@@ -69,6 +78,13 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
   const { exportNote } = useExportNote();
+  const {
+    moveNote,
+    error: moveError,
+    clearError: clearMoveError,
+    snackbarMessage: moveSnackbarMessage,
+    closeSnackbar: closeMoveSnackbar,
+  } = useMoveNoteToFolder(note.id);
   const { mergeIntoNote, isMerging } = useMergeIntoNote(note.id);
   const {
     timeTracks,
@@ -95,6 +111,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
+  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConvertingToMemo, setIsConvertingToMemo] = useState(false);
   const [convertError, setConvertError] = useState<string | null>(null);
@@ -148,6 +165,26 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   const handleArchive = () => {
     setIsActionsOpen(false);
     setArchiveDialogOpen(true);
+  };
+  const handleMoveToFolder = () => {
+    clearMoveError();
+    setIsActionsOpen(false);
+    setIsMoveDialogOpen(true);
+  };
+
+  const handleMoveConfirm = async (folder: FolderDto | null) => {
+    try {
+      await moveNote(folder);
+      setIsMoveDialogOpen(false);
+    } catch {
+      // Error is exposed via the hook; the dialog stays open with the
+      // message and the user can retry.
+    }
+  };
+
+  const handleMoveDialogClose = () => {
+    setIsMoveDialogOpen(false);
+    clearMoveError();
   };
 
   const confirmDelete = async () => {
@@ -395,8 +432,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onArchive={handleArchive}
         onTimeTracking={handleTimeTracking}
         onViewTimeEntries={handleViewTimeEntries}
-        onPin={handleTimeTracking}
-        onStar={handleTimeTracking}
+        onMoveToFolder={handleMoveToFolder}
         onTextToSpeech={handleTextToSpeech}
         onDownloadAudio={handleDownloadAudio}
         onViewAudioHistory={handleViewAudioHistory}
@@ -405,7 +441,6 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onLabel={handleTimeTracking}
         onExport={handleExport}
         onImportIntoNote={handleImportIntoNote}
-        onLock={handleTimeTracking}
         onConvertToMemo={handleConvertToMemo}
         isMemo={Boolean(note.isMemo)}
         isConverting={isConverting}
@@ -586,6 +621,21 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         >
           {toastMessage}
         </Alert>
+      </Snackbar>
+      <MoveNoteDialog
+        open={isMoveDialogOpen}
+        onClose={handleMoveDialogClose}
+        onConfirm={handleMoveConfirm}
+        currentFolderId={note.folderId}
+        error={moveError}
+      />
+
+      <Snackbar
+        open={moveSnackbarMessage !== null}
+        autoHideDuration={4000}
+        onClose={closeMoveSnackbar}
+      >
+        <SnackbarContent message={moveSnackbarMessage ?? ''} />
       </Snackbar>
     </>
   );
