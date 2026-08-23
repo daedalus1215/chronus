@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import { RightSheet } from '@components/RightSheet/RightSheet';
 import { Note } from '../../api/responses';
 import { SidebarChecklistView } from '../SidebarChecklistView/SidebarChecklistView';
+import { SidebarFolderView } from '../SidebarFolderView/SidebarFolderView';
 import { SidebarTagsView } from '../SidebarTagsView/SidebarTagsView';
 import { SidebarAudioHistoryView } from '../SidebarAudioHistoryView/SidebarAudioHistoryView';
 import { TimeTrackHistoryView } from '../TimeTrackHistoryView/TimeTrackHistoryView';
@@ -83,6 +84,9 @@ export const MobileTagsView: React.FC<MobileTagsViewProps> = ({
       <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
         {activeTab === 'checklist' && <SidebarChecklistView note={note} />}
         {activeTab === 'tags' && <SidebarTagsView noteId={noteId} />}
+        {activeTab === 'folder' && (
+          <SidebarFolderView noteId={noteId} folderId={note.folderId} />
+        )}
         {activeTab === 'audio' && <SidebarAudioHistoryView noteId={noteId} />}
         {activeTab === 'time' && <TimeTrackHistoryView noteId={noteId} />}
         {activeTab === 'history' && noteId && onVersionLoaded && (
