@@ -10,6 +10,7 @@ export const fetchNoteById = async (id: number): Promise<Note> => {
       description: '',
       userId: '',
       isMemo: false,
+      folderId: null,
       createdAt: '',
       updatedAt: '',
       archivedDate: null,
