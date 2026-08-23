@@ -23,7 +23,7 @@ import {
   moveNoteToFolder,
 } from '../../../../api/requests/notes.requests';
 import { FolderDto } from '../../../../api/dtos/folder.dtos';
-import { MoveNoteDialog } from '../MoveNoteDialog/MoveNoteDialog';
+import { MoveNoteDialog } from '@components/MoveNoteDialog/MoveNoteDialog';
 import styles from './NotesBrowser.module.css';
 
 type Props = {

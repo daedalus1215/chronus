@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -15,12 +16,12 @@ import {
 } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
 import AllInboxIcon from '@mui/icons-material/AllInbox';
-import { fetchFolders } from '../../../../api/requests/folders.requests';
+import { fetchFolders } from '../../api/requests/folders.requests';
 import {
   buildFolderTree,
   FolderDto,
   FolderTreeNode,
-} from '../../../../api/dtos/folder.dtos';
+} from '../../api/dtos/folder.dtos';
 
 type Props = {
   open: boolean;
@@ -30,6 +31,14 @@ type Props = {
   disabledFolderIds?: ReadonlySet<number>;
   dialogTitle?: string;
   helperText?: string;
+  /**
+   * The note's current folder. After the folder list loads, the matching
+   * folder is pre-selected (Root stays selected when null) and a helper
+   * line shows the current location.
+   */
+  currentFolderId?: number | null;
+  /** Error message to display above the actions (dialog stays open). */
+  error?: string | null;
 };
 
 export const MoveNoteDialog: React.FC<Props> = ({
@@ -39,6 +48,8 @@ export const MoveNoteDialog: React.FC<Props> = ({
   disabledFolderIds,
   dialogTitle = 'Move to folder',
   helperText,
+  currentFolderId,
+  error,
 }) => {
   const [folders, setFolders] = useState<FolderDto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,20 +60,40 @@ export const MoveNoteDialog: React.FC<Props> = ({
     setSelected(null);
     setLoading(true);
     fetchFolders()
-      .then(setFolders)
+      .then(data => {
+        setFolders(data);
+        if (currentFolderId != null) {
+          const current = data.find(f => f.id === currentFolderId);
+          if (current) setSelected(current);
+        }
+      })
       .finally(() => setLoading(false));
-  }, [open]);
+  }, [open, currentFolderId]);
 
   const tree = buildFolderTree(folders);
   const disabled = disabledFolderIds ?? new Set<number>();
 
+  const currentFolder =
+    currentFolderId != null
+      ? (folders.find(f => f.id === currentFolderId) ?? null)
+      : null;
+
+  const derivedHelperText =
+    !loading && currentFolderId != null
+      ? currentFolder
+        ? `Currently in: ${currentFolder.name}`
+        : 'Current folder no longer exists — pick a new one'
+      : null;
+
+  const shownHelperText = derivedHelperText ?? helperText;
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>{dialogTitle}</DialogTitle>
-      {helperText ? (
+      {shownHelperText ? (
         <Box sx={{ px: 3, pb: 0 }}>
           <Typography variant="caption" color="text.secondary">
-            {helperText}
+            {shownHelperText}
           </Typography>
         </Box>
       ) : null}
@@ -109,6 +140,11 @@ export const MoveNoteDialog: React.FC<Props> = ({
           </List>
         )}
       </DialogContent>
+      {error ? (
+        <Box sx={{ px: 3 }}>
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      ) : null}
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button
