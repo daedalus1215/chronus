@@ -4,6 +4,7 @@ import { ApiQuery } from '@nestjs/swagger';
 type NoteNameResponse = {
   id: number;
   name: string;
+  folderId: number | null;
 };
 
 export const GetNoteNamesByUserIdSwagger: ProtectedActionOptions = {
