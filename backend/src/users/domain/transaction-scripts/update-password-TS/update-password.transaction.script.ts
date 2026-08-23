@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserRepository } from '../../../infra/repositories/user.repository';
 import { UpdatePasswordCommand } from './update-password.command';
 import * as bcrypt from 'bcrypt';
@@ -23,15 +28,17 @@ export class UpdatePasswordTransactionScript {
       throw new UnauthorizedException("Cannot update another user's account");
     }
 
-    // Validate new password format (6-50 chars, matching CreateUserDto)
+    // Validate new password format (6-50 chars, matching RegisterUserRequestDto)
     if (!newPassword || newPassword.length < 6 || newPassword.length > 50) {
-      throw new Error('Password must be between 6 and 50 characters');
+      throw new BadRequestException(
+        'Password must be between 6 and 50 characters'
+      );
     }
 
     // Get user with password
     const userWithPassword = await this.userRepository.findById(userId);
     if (!userWithPassword) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     // Verify current password
@@ -49,7 +56,9 @@ export class UpdatePasswordTransactionScript {
       userWithPassword.password
     );
     if (isSamePassword) {
-      throw new Error('New password must be different from current password');
+      throw new BadRequestException(
+        'New password must be different from current password'
+      );
     }
 
     // Hash new password
