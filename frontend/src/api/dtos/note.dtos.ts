@@ -2,6 +2,7 @@ export type NoteNameItem = {
   name: string;
   id: number;
   isMemo: number;
+  folderId: number | null;
 };
 
 export type NamesOfNotesResponse = {

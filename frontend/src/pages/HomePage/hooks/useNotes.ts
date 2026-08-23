@@ -5,7 +5,7 @@ import { NOTE_TYPES } from '../../../constant';
 
 export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
   const [notes, setNotes] = useState<
-    { name: string; id: number; isMemo: number }[]
+    { name: string; id: number; isMemo: number; folderId: number | null }[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

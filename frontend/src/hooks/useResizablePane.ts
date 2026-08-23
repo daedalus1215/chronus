@@ -26,7 +26,9 @@ export const useResizablePane = (options: UseResizablePaneOptions) => {
   } = options;
 
   const [size, setSize] = React.useState<number>(() => {
-    const saved = Number(localStorage.getItem(localStorageKey));
+    const stored = localStorage.getItem(localStorageKey);
+    if (stored === null) return initial;
+    const saved = Number(stored);
     if (!Number.isFinite(saved)) return initial;
     return Math.min(Math.max(saved, min), max);
   });
