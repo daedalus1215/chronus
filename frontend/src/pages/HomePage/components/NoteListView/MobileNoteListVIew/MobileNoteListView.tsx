@@ -7,6 +7,8 @@ import styles from './MobileNoteListView.module.css';
 import { NOTE_TYPES } from '../../../../../constant';
 import Fade from '@mui/material/Fade';
 import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
+import { useCreateChecklistByName } from '../../../hooks/useCreateChecklistByName';
+import { AddNoteSuggestion } from '../AddNoteSuggestion/AddNoteSuggestion';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -36,6 +38,7 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
     searchNotes,
     clearSearch,
     searchQuery,
+    refreshNotes,
     moveNoteToTop,
   } = useNotes(type, tagId);
 
@@ -80,6 +83,28 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
     [moveNoteToTop, navigate]
   );
 
+  const { createChecklistByName, isCreating, error: createError } =
+    useCreateChecklistByName();
+
+  const trimmedSearchQuery = searchQuery.trim();
+  const showAddSuggestion =
+    // The `type` prop is declared as NOTE_TYPES keys, but HomePage passes
+    // NOTE_TYPES values ('memo' | 'checklist') at runtime.
+    (type as string | undefined) === NOTE_TYPES.CHECKLIST &&
+    trimmedSearchQuery.length > 0 &&
+    notes.length === 0 &&
+    !isLoading &&
+    !error;
+
+  const handleAddChecklist = async () => {
+    const name = trimmedSearchQuery;
+    if (!name || isCreating) return;
+    const note = await createChecklistByName(name);
+    if (note) {
+      refreshNotes();
+    }
+  };
+
   if (isLoading && notes.length === 0) {
     return <div className={styles.noteListLoading}>Loading notes...</div>;
   }
@@ -107,6 +132,14 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
           ref={scrollContainerRef}
           className={styles.noteListScrollContainer}
         >
+          {showAddSuggestion && (
+            <AddNoteSuggestion
+              query={trimmedSearchQuery}
+              onAdd={handleAddChecklist}
+              isAdding={isCreating}
+              error={createError}
+            />
+          )}
           {notes.map((note, index) => (
             <Fade
               key={note.id}
@@ -125,7 +158,7 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
             </Fade>
           ))}
           {isLoading && <LoadingSpinner />}
-          {!hasMore && <NoMoreNotes />}
+          {!hasMore && !showAddSuggestion && <NoMoreNotes />}
         </div>
       </div>
     </div>

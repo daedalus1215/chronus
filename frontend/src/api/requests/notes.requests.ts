@@ -50,6 +50,14 @@ export const createMemoByName = async (name: string): Promise<NoteResponse> => {
   return response.data;
 };
 
+export const createChecklistByName = async (name: string): Promise<NoteResponse> => {
+  const response = await api.post<NoteResponse>('/notes', {
+    name,
+    isMemo: false,
+  });
+  return response.data;
+};
+
 export const getNamesOfNotes = async (
   cursor: number,
   limit: number = 20,
