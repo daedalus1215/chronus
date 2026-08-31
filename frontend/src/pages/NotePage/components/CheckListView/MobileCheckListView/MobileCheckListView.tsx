@@ -12,6 +12,8 @@ import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import { useCheckItemsQuery } from '../hooks/useCheckItems';
 import { Fab } from '@mui/material';
+import { Button } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Add as AddIcon } from '@mui/icons-material';
 import styles from './MobileCheckListView.module.css';
 import { useCheckItemEditDialog } from '../hooks/useCheckItemEditDialog';
@@ -46,8 +48,15 @@ const getStatusColor = (status?: string): string => {
 
 export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
   const { data: checkItems = [], error } = useCheckItemsQuery(note.id);
-  const { addItem, toggleItem, deleteItem, updateItem, reorderItems } =
-    useCheckItems(note);
+  const {
+    addItem,
+    toggleItem,
+    deleteItem,
+    updateItem,
+    reorderItems,
+    isAdding,
+    addError,
+  } = useCheckItems(note);
   const {
     filters,
     setSearchText,
@@ -140,6 +149,21 @@ export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
     }
   };
 
+  const showAddFromSearch =
+    filters.statusFilter === 'all' &&
+    filters.searchText.trim().length > 0 &&
+    filteredItems.length === 0;
+
+  const handleAddFromSearch = async () => {
+    const name = filters.searchText.trim();
+    if (!name || isAdding) return;
+    try {
+      await addItem(name);
+    } catch (err) {
+      console.error('Failed to add item:', err);
+    }
+  };
+
   const handleReorder = async (checkItemIds: number[]) => {
     try {
       await reorderItems(checkItemIds);
@@ -193,6 +217,31 @@ export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
             <Typography color="text.secondary">
               No items match the current filters.
             </Typography>
+            {showAddFromSearch && (
+              <>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleAddFromSearch}
+                  disabled={isAdding}
+                  startIcon={
+                    isAdding ? (
+                      <CircularProgress size={16} color="inherit" />
+                    ) : (
+                      <AddIcon />
+                    )
+                  }
+                  sx={{ mt: 2 }}
+                >
+                  Add "{filters.searchText.trim()}" item
+                </Button>
+                {addError && (
+                  <Alert severity="error" sx={{ mt: 2, textAlign: 'left' }}>
+                    {addError}
+                  </Alert>
+                )}
+              </>
+            )}
           </Box>
         )}
 
