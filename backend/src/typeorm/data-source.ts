@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import { configurePgDateParser } from '../bootstrap/configure-pg-date-parser';
 
+// Same contract as the factory in app.module.ts: set up before the DataSource is built.
 configurePgDateParser();
 
 // Must describe the same database as app.module.ts, or generated migrations

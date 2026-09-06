@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { configurePgDateParser } from './bootstrap/configure-pg-date-parser';
 import { NotesModule } from './notes/notes.module';
 import { TimeTracksModule } from './time-tracks/time-tracks.module';
 import { TagsModule } from './tags/tags.module';
@@ -61,20 +62,26 @@ import { HealthController } from './health/health.controller';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres' as const,
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USER'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        migrations: [__dirname + '/typeorm/migrations/*{.ts,.js}'],
-        // NOT `runMigrations` — that key is silently ignored.
-        migrationsRun: true,
-        synchronize: false,
-        logging: configService.get<string>('NODE_ENV') === 'development',
-      }),
+      useFactory: async (configService: ConfigService) => {
+        // Bound to connection creation, not to app bootstrap, so no entry point
+        // (worker, seed script, integration test) can open a connection without it.
+        configurePgDateParser();
+
+        return {
+          type: 'postgres' as const,
+          host: configService.get<string>('DB_HOST'),
+          port: configService.get<number>('DB_PORT'),
+          username: configService.get<string>('DB_USER'),
+          password: configService.get<string>('DB_PASSWORD'),
+          database: configService.get<string>('DB_NAME'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          migrations: [__dirname + '/typeorm/migrations/*{.ts,.js}'],
+          // NOT `runMigrations` — that key is silently ignored.
+          migrationsRun: true,
+          synchronize: false,
+          logging: configService.get<string>('NODE_ENV') === 'development',
+        };
+      },
       inject: [ConfigService],
     }),
     UsersModule,

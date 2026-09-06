@@ -9,12 +9,8 @@ import { configureCors } from './bootstrap/configure-cors';
 import { configureValidation } from './bootstrap/configure-validation';
 import { configureSwagger } from './bootstrap/configure-swagger';
 import { configureGracefulShutdown } from './bootstrap/configure-graceful-shutdown';
-import { configurePgDateParser } from './bootstrap/configure-pg-date-parser';
 
 const bootstrap = async (): Promise<void> => {
-  // Before anything opens a connection.
-  configurePgDateParser();
-
   const httpsOptions = getHttpsOptions();
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
