@@ -6,8 +6,8 @@ export class TimeTrackResponseDto {
   startTime: string;
   durationMinutes: number;
   note?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor(timeTrack: {
     id: number;
@@ -17,8 +17,8 @@ export class TimeTrackResponseDto {
     startTime: string;
     durationMinutes: number;
     note?: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
   }) {
     this.id = timeTrack.id;
     this.userId = timeTrack.userId;

@@ -117,8 +117,8 @@ describe('UsersService', () => {
       const projection = {
         id: 1,
         username: command.username,
-        createdAt: '2024-01-15T09:00:00Z',
-        updatedAt: '2024-01-15T09:00:00Z',
+        createdAt: new Date('2024-01-15T09:00:00Z'),
+        updatedAt: new Date('2024-01-15T09:00:00Z'),
       };
       registerUserTSMock.apply.mockResolvedValue(projection);
 
@@ -138,8 +138,8 @@ describe('UsersService', () => {
       const projection = {
         id: 2,
         username: command.username,
-        createdAt: '2024-01-15T09:00:00Z',
-        updatedAt: '2024-01-15T09:00:00Z',
+        createdAt: new Date('2024-01-15T09:00:00Z'),
+        updatedAt: new Date('2024-01-15T09:00:00Z'),
       };
       registerUserTSMock.apply.mockResolvedValue(projection);
 

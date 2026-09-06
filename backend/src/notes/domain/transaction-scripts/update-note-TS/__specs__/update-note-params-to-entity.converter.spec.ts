@@ -39,8 +39,8 @@ describe('UpdateNoteParamsToEntityConverter', () => {
           id: generateRandomNumbers(),
           description: 'Old Description',
           note: null,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         };
         const note = createMockNote({ memo: existingMemo });
         const updateParams: UpdateNoteParams = {
