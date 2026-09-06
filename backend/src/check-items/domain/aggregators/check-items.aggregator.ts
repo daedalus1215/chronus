@@ -26,9 +26,18 @@ export class CheckItemsAggregator implements CheckItemWriterPort {
 
   async searchByQuery(
     userId: number,
-    query: string
-  ): Promise<{ noteId: number; noteName: string; checkItemName: string }[]> {
-    return this.checkItemsRepository.searchByQuery(userId, query);
+    query: string,
+    options?: { includeArchived?: boolean }
+  ): Promise<Array<{
+    noteId: number;
+    noteName: string;
+    checkItemId: number;
+    checkItemName: string;
+    checkItemStatus: 'ready' | 'in_progress' | 'review' | 'done';
+    checkItemDescription: string | null;
+    checkItemIsArchived: boolean;
+  }>> {
+    return this.checkItemsRepository.searchByQuery(userId, query, options);
   }
 
   async deleteCheckItemsByNoteId(noteId: number): Promise<void> {
