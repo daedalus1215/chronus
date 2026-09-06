@@ -1,5 +1,8 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
+import { configurePgDateParser } from '../bootstrap/configure-pg-date-parser';
+
+configurePgDateParser();
 
 // Must describe the same database as app.module.ts, or generated migrations
 // will not match what the app actually talks to.
