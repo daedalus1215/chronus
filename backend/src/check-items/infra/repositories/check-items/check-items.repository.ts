@@ -14,6 +14,16 @@ export type SearchCheckItemResult = {
   checkItemIsArchived: boolean;
 };
 
+/**
+ * Normalises a SQL boolean across drivers.
+ *
+ * `pg` returns a real boolean; SQLite returned 1/0, and some drivers hand back 't' or '1'
+ * as text. Reading a raw result means reading whatever the driver produced, so accept all
+ * of them rather than assuming one.
+ */
+const isTruthy = (value: unknown): boolean =>
+  value === true || value === 1 || value === '1' || value === 't';
+
 @Injectable()
 export class CheckItemsRepository {
   constructor(
@@ -158,7 +168,10 @@ export class CheckItemsRepository {
       checkItemName: row.checkItemName,
       checkItemStatus: row.checkItemStatus as 'ready' | 'in_progress' | 'review' | 'done',
       checkItemDescription: row.checkItemDescription ?? null,
-      checkItemIsArchived: row.checkItemIsArchived === '1' || row.checkItemIsArchived === 1,
+      // ⚠️ Postgres returns a real boolean for `archived_date IS NOT NULL`; SQLite
+      // returned 1/0. Comparing only against 1/'1' made every archived item read as NOT
+      // archived once the database changed, with no error to notice.
+      checkItemIsArchived: isTruthy(row.checkItemIsArchived),
     }));
   }
 
