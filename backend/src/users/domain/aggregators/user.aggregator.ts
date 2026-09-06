@@ -4,8 +4,8 @@ import { UserRepository } from '../../infra/repositories/user.repository';
 export type UserProjection = {
   id: number;
   username: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 @Injectable()
@@ -20,8 +20,8 @@ export class UserAggregator {
     id: number;
     username: string;
     password: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
   } | null> {
     return this.userRepository.findByUsername(username);
   }

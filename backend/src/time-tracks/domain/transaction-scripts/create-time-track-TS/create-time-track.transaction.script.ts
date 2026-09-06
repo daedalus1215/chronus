@@ -14,8 +14,8 @@ export class CreateTimeTrackTransactionScript {
     startTime: string;
     durationMinutes: number;
     note?: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
   }> {
     return this.timeTrackRepository.create({
       ...command,
