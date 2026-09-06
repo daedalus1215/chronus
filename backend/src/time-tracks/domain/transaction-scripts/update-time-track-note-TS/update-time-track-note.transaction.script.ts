@@ -24,8 +24,8 @@ export class UpdateTimeTrackNoteTransactionScript {
     startTime: string;
     durationMinutes: number;
     note?: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
   }> {
     const updates = this.payloadConverter.apply(payload);
 

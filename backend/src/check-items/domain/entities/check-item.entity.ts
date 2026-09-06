@@ -12,19 +12,19 @@ export class CheckItem {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
   @Column()
   name: string;
 
-  @Column({ name: 'done_date', nullable: true })
+  @Column({ name: 'done_date', type: 'timestamptz', nullable: true })
   doneDate: Date | null;
 
-  @Column({ name: 'archived_date', nullable: true })
+  @Column({ name: 'archived_date', type: 'timestamptz', nullable: true })
   archiveDate: Date | null;
 
   @Column({ name: 'note_id' })

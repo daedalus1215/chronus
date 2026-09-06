@@ -14,6 +14,16 @@ export type SearchCheckItemResult = {
   checkItemIsArchived: boolean;
 };
 
+/**
+ * Normalises a SQL boolean across drivers.
+ *
+ * `pg` returns a real boolean; SQLite returned 1/0, and some drivers hand back 't' or '1'
+ * as text. Reading a raw result means reading whatever the driver produced, so accept all
+ * of them rather than assuming one.
+ */
+const isTruthy = (value: unknown): boolean =>
+  value === true || value === 1 || value === '1' || value === 't';
+
 @Injectable()
 export class CheckItemsRepository {
   constructor(
@@ -60,7 +70,13 @@ export class CheckItemsRepository {
   ): Promise<CheckItem | null> {
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
-      .select('checkItem.*')
+      // ⚠️ The alias MUST be quoted here. TypeORM rewrites `alias.property` into
+      // `"alias"."column"` everywhere it recognises a property or column name, but `*` is
+      // neither, so this string reaches Postgres verbatim. Unquoted, Postgres folds
+      // `checkItem` to `checkitem`, which does not match the quoted alias it emitted in the
+      // FROM clause: `missing FROM-clause entry for table "checkitem"` (42P01). SQLite was
+      // case-insensitive and hid this. Same applies to the two other `.*` selects below.
+      .select('"checkItem".*')
       .addSelect('note.user_id', 'noteUserId')
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('checkItem.id = :id', { id })
@@ -80,7 +96,7 @@ export class CheckItemsRepository {
   ): Promise<CheckItem | null> {
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
-      .select('checkItem.*')
+      .select('"checkItem".*')
       .addSelect('note.user_id', 'noteUserId')
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('checkItem.id = :id', { id })
@@ -98,7 +114,7 @@ export class CheckItemsRepository {
   ): Promise<CheckItem[]> {
     const results = await this.checkItemRepository
       .createQueryBuilder('checkItem')
-      .select('checkItem.*')
+      .select('"checkItem".*')
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('checkItem.note_id = :noteId', { noteId })
       .andWhere('note.user_id = :userId', { userId })
@@ -152,7 +168,10 @@ export class CheckItemsRepository {
       checkItemName: row.checkItemName,
       checkItemStatus: row.checkItemStatus as 'ready' | 'in_progress' | 'review' | 'done',
       checkItemDescription: row.checkItemDescription ?? null,
-      checkItemIsArchived: row.checkItemIsArchived === '1' || row.checkItemIsArchived === 1,
+      // ⚠️ Postgres returns a real boolean for `archived_date IS NOT NULL`; SQLite
+      // returned 1/0. Comparing only against 1/'1' made every archived item read as NOT
+      // archived once the database changed, with no error to notice.
+      checkItemIsArchived: isTruthy(row.checkItemIsArchived),
     }));
   }
 

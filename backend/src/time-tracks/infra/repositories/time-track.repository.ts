@@ -124,11 +124,11 @@ export class TimeTrackRepository {
     const aggregations = await this.repository
       .createQueryBuilder('timeTrack')
       .select([
-        'timeTrack.noteId as noteId',
-        'SUM(timeTrack.durationMinutes) as totalTimeMinutes',
-        'SUM(CASE WHEN timeTrack.date = :date THEN timeTrack.durationMinutes ELSE 0 END) as dailyTimeMinutes',
-        'MAX(CASE WHEN timeTrack.date = :date THEN timeTrack.startTime END) as mostRecentStartTime',
-        'MAX(CASE WHEN timeTrack.date = :date THEN timeTrack.date END) as mostRecentDate',
+        'timeTrack.noteId as "noteId"',
+        'SUM(timeTrack.durationMinutes) as "totalTimeMinutes"',
+        'SUM(CASE WHEN timeTrack.date = :date THEN timeTrack.durationMinutes ELSE 0 END) as "dailyTimeMinutes"',
+        'MAX(CASE WHEN timeTrack.date = :date THEN timeTrack.startTime END) as "mostRecentStartTime"',
+        'MAX(CASE WHEN timeTrack.date = :date THEN timeTrack.date END) as "mostRecentDate"',
       ])
       .where('timeTrack.userId = :userId', { userId })
       .groupBy('timeTrack.noteId')
@@ -136,8 +136,8 @@ export class TimeTrackRepository {
         'SUM(CASE WHEN timeTrack.date = :date THEN timeTrack.durationMinutes ELSE 0 END) > 0',
         { date }
       )
-      .orderBy('mostRecentDate', 'DESC')
-      .addOrderBy('mostRecentStartTime', 'DESC')
+      .orderBy('"mostRecentDate"', 'DESC')
+      .addOrderBy('"mostRecentStartTime"', 'DESC')
       .getRawMany();
 
     return aggregations.map(agg => ({
@@ -211,7 +211,7 @@ export class TimeTrackRepository {
       .createQueryBuilder('timeTrack')
       .select([
         'timeTrack.date as date',
-        'SUM(timeTrack.durationMinutes) as totalMinutes',
+        'SUM(timeTrack.durationMinutes) as "totalMinutes"',
       ])
       .where('timeTrack.userId = :userId', { userId })
       .andWhere('timeTrack.date >= :startDate', {
@@ -257,10 +257,10 @@ export class TimeTrackRepository {
     const result = await this.repository
       .createQueryBuilder('time_track')
       .select([
-        "time_track.noteId as 'noteId'",
-        "SUM(time_track.durationMinutes) as 'totalTimeMinutes'",
-        "MIN(time_track.date) as 'weekStartDate'",
-        "MAX(time_track.date) as 'weekEndDate'",
+        "time_track.noteId as \"noteId\"",
+        "SUM(time_track.durationMinutes) as \"totalTimeMinutes\"",
+        "MIN(time_track.date) as \"weekStartDate\"",
+        "MAX(time_track.date) as \"weekEndDate\"",
       ])
       .where('time_track.userId = :userId', { userId })
       .andWhere('time_track.date BETWEEN :startDate AND :endDate', {
@@ -268,7 +268,7 @@ export class TimeTrackRepository {
         endDate: weekEndDate,
       })
       .groupBy('time_track.noteId')
-      .orderBy('totalTimeMinutes', 'DESC')
+      .orderBy('"totalTimeMinutes"', 'DESC')
       .limit(1)
       .getRawOne();
 
@@ -295,17 +295,17 @@ export class TimeTrackRepository {
     const result = await this.repository
       .createQueryBuilder('timeTrack')
       .select([
-        'timeTrack.noteId as noteId',
-        "CAST(strftime('%Y', timeTrack.date) AS INTEGER) as year",
-        'MIN(timeTrack.date) as firstDate',
-        'MAX(timeTrack.date) as lastDate',
-        'SUM(timeTrack.durationMinutes) as totalTimeMinutes',
-        'COUNT(DISTINCT timeTrack.date) as dateCount',
+        'timeTrack.noteId as "noteId"',
+        'CAST(EXTRACT(YEAR FROM timeTrack.date) AS INTEGER) as year',
+        'MIN(timeTrack.date) as "firstDate"',
+        'MAX(timeTrack.date) as "lastDate"',
+        'SUM(timeTrack.durationMinutes) as "totalTimeMinutes"',
+        'COUNT(DISTINCT timeTrack.date) as "dateCount"',
       ])
       .where('timeTrack.userId = :userId', { userId })
       .groupBy('timeTrack.noteId')
-      .addGroupBy("strftime('%Y', timeTrack.date)")
-      .orderBy("strftime('%Y', timeTrack.date)", 'DESC')
+      .addGroupBy('EXTRACT(YEAR FROM timeTrack.date)')
+      .orderBy('EXTRACT(YEAR FROM timeTrack.date)', 'DESC')
       .addOrderBy('MAX(timeTrack.date)', 'DESC')
       .getRawMany();
 
