@@ -15,11 +15,11 @@ export class TagNote {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @CreateDateColumn({ name: 'created_at', type: 'text' })
-  createdAt: string;
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'text' })
-  updatedAt: string;
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  updatedAt: Date;
 
   @Column({ name: 'tag_id' })
   tagId: number;
@@ -35,6 +35,6 @@ export class TagNote {
   @JoinColumn({ name: 'notes_id' })
   notes: Note;
 
-  @Column({ name: 'archived_date', nullable: true })
+  @Column({ name: 'archived_date', type: 'timestamptz', nullable: true })
   archivedDate: Date;
 }

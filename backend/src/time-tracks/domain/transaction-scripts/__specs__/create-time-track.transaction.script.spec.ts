@@ -16,8 +16,8 @@ describe('CreateTimeTrackTransactionScript', () => {
     startTime: '09:00',
     durationMinutes: 30,
     note: 'Test note',
-    createdAt: '2024-01-15T09:00:00Z',
-    updatedAt: '2024-01-15T09:00:00Z',
+    createdAt: new Date('2024-01-15T09:00:00Z'),
+    updatedAt: new Date('2024-01-15T09:00:00Z'),
   };
 
   beforeEach(async () => {

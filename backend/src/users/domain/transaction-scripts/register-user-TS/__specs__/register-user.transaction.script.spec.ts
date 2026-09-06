@@ -13,8 +13,8 @@ describe('RegisterUserTransactionScript', () => {
     id: generateRandomNumbers(),
     username: 'testuser@example.com',
     password: 'hashedpassword',
-    createdAt: '2024-01-15T09:00:00Z',
-    updatedAt: '2024-01-15T09:00:00Z',
+    createdAt: new Date('2024-01-15T09:00:00Z'),
+    updatedAt: new Date('2024-01-15T09:00:00Z'),
   };
 
   beforeEach(async () => {
