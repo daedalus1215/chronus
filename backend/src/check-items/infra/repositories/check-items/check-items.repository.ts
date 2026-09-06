@@ -4,6 +4,16 @@ import { Repository } from 'typeorm';
 import { CheckItem } from '../../../domain/entities/check-item.entity';
 import { CheckItemsHydrator } from './check-items.hydrator';
 
+export type SearchCheckItemResult = {
+  noteId: number;
+  noteName: string;
+  checkItemId: number;
+  checkItemName: string;
+  checkItemStatus: 'ready' | 'in_progress' | 'review' | 'done';
+  checkItemDescription: string | null;
+  checkItemIsArchived: boolean;
+};
+
 @Injectable()
 export class CheckItemsRepository {
   constructor(
@@ -110,22 +120,40 @@ export class CheckItemsRepository {
 
   async searchByQuery(
     userId: number,
-    query: string
-  ): Promise<{ noteId: number; noteName: string; checkItemName: string }[]> {
-    return this.checkItemRepository
+    query: string,
+    options?: { includeArchived?: boolean }
+  ): Promise<SearchCheckItemResult[]> {
+    const qb = this.checkItemRepository
       .createQueryBuilder('checkItem')
       .select('note.id', 'noteId')
       .addSelect('note.name', 'noteName')
+      .addSelect('checkItem.id', 'checkItemId')
       .addSelect('checkItem.name', 'checkItemName')
+      .addSelect('checkItem.status', 'checkItemStatus')
+      .addSelect('checkItem.description', 'checkItemDescription')
+      .addSelect('checkItem.archived_date IS NOT NULL', 'checkItemIsArchived')
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('note.user_id = :userId', { userId })
-      .andWhere('LOWER(checkItem.name) LIKE LOWER(:query)', {
-        query: `%${query}%`,
-      })
-      .andWhere('checkItem.archived_date IS NULL')
-      .orderBy('note.updated_at', 'DESC')
-      .limit(20)
-      .getRawMany();
+      .andWhere(
+        '(LOWER(checkItem.name) LIKE LOWER(:query) OR LOWER(checkItem.description) LIKE LOWER(:query))',
+        { query: `%${query}%` }
+      );
+
+    if (!options?.includeArchived) {
+      qb.andWhere('checkItem.archived_date IS NULL');
+    }
+
+    const raw = await qb.orderBy('note.updated_at', 'DESC').limit(20).getRawMany();
+
+    return raw.map(row => ({
+      noteId: parseInt(row.noteId, 10),
+      noteName: row.noteName,
+      checkItemId: parseInt(row.checkItemId, 10),
+      checkItemName: row.checkItemName,
+      checkItemStatus: row.checkItemStatus as 'ready' | 'in_progress' | 'review' | 'done',
+      checkItemDescription: row.checkItemDescription ?? null,
+      checkItemIsArchived: row.checkItemIsArchived === '1' || row.checkItemIsArchived === 1,
+    }));
   }
 
   async getMinOrderByNoteId(noteId: number): Promise<number> {

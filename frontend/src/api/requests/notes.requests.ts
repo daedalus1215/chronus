@@ -87,9 +87,15 @@ export const reorderNotes = async (data: {
   await api.patch('/notes/reorder', data);
 };
 
-export const searchNotes = async (query: string): Promise<SearchResult[]> => {
+export const searchNotes = async (
+  query: string,
+  options?: { includeArchived?: boolean }
+): Promise<SearchResult[]> => {
   const response = await api.get<SearchResult[]>('/notes/search', {
-    params: { query },
+    params: {
+      query,
+      includeArchived: options?.includeArchived ?? false,
+    },
   });
   return response.data;
 };
