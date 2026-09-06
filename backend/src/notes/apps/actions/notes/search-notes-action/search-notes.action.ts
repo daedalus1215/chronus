@@ -4,6 +4,11 @@ import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.dec
 import { NoteService } from 'src/notes/domain/services/note.service';
 import { SearchNotesResponder, SearchResult } from './search-notes.responder';
 
+function parseIncludeArchived(val: string | undefined): boolean {
+  if (val === undefined) return false;
+  return val === 'true';
+}
+
 @Controller('notes')
 export class SearchNotesAction {
   constructor(
@@ -18,10 +23,13 @@ export class SearchNotesAction {
   })
   async apply(
     @GetAuthUser('userId') userId: number,
-    @Query('query') query?: string
+    @Query('query') query?: string,
+    @Query('includeArchived') includeArchived?: string
   ): Promise<SearchResult[]> {
     if (!query || query.trim().length < 2) return [];
-    const results = await this.noteService.search(userId, query.trim());
+    const results = await this.noteService.search(userId, query.trim(), {
+      includeArchived: parseIncludeArchived(includeArchived),
+    });
     return this.searchNotesResponder.apply(results);
   }
 }
