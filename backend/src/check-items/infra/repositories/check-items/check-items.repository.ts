@@ -50,7 +50,13 @@ export class CheckItemsRepository {
   ): Promise<CheckItem | null> {
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
-      .select('checkItem.*')
+      // ⚠️ The alias MUST be quoted here. TypeORM rewrites `alias.property` into
+      // `"alias"."column"` everywhere it recognises a property or column name, but `*` is
+      // neither, so this string reaches Postgres verbatim. Unquoted, Postgres folds
+      // `checkItem` to `checkitem`, which does not match the quoted alias it emitted in the
+      // FROM clause: `missing FROM-clause entry for table "checkitem"` (42P01). SQLite was
+      // case-insensitive and hid this. Same applies to the two other `.*` selects below.
+      .select('"checkItem".*')
       .addSelect('note.user_id', 'noteUserId')
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('checkItem.id = :id', { id })
@@ -70,7 +76,7 @@ export class CheckItemsRepository {
   ): Promise<CheckItem | null> {
     const result = await this.checkItemRepository
       .createQueryBuilder('checkItem')
-      .select('checkItem.*')
+      .select('"checkItem".*')
       .addSelect('note.user_id', 'noteUserId')
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('checkItem.id = :id', { id })
@@ -88,7 +94,7 @@ export class CheckItemsRepository {
   ): Promise<CheckItem[]> {
     const results = await this.checkItemRepository
       .createQueryBuilder('checkItem')
-      .select('checkItem.*')
+      .select('"checkItem".*')
       .innerJoin('notes', 'note', 'note.id = checkItem.note_id')
       .where('checkItem.note_id = :noteId', { noteId })
       .andWhere('note.user_id = :userId', { userId })
