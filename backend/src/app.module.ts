@@ -46,8 +46,15 @@ import { HealthController } from './health/health.controller';
         FRONTEND_ORIGIN: Joi.string().optional(),
         // Optional on purpose: deployment copies a fixed .env onto the host, so a
         // missing value must disable transcription rather than block startup.
-        THOTH_WS_URL: Joi.string().optional(),
-        THOTH_CA_CERT: Joi.string().optional(),
+        //
+        // ⚠️ .allow('') matters as much as .optional(). Docker Compose cannot omit an
+        // environment key conditionally — an unset variable is passed through as an
+        // EMPTY STRING, not left out. Without this, a compose file that leaves
+        // transcription off crash-loops the container on a validation error, which is
+        // the exact opposite of the intent stated above. The consumer already treats
+        // '' and undefined identically (`if (!url)`).
+        THOTH_WS_URL: Joi.string().allow('').optional(),
+        THOTH_CA_CERT: Joi.string().allow('').optional(),
         TRANSCRIPTION_MAX_SESSION_MS: Joi.number().optional(),
         TRANSCRIPTION_MAX_SESSIONS_PER_USER: Joi.number().optional(),
       }),
