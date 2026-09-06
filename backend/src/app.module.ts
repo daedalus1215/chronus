@@ -17,6 +17,7 @@ import { SecurityEventsModule } from './security-events/security-events.module';
 import { FoldersModule } from './folders/folders.module';
 import { NoteTransferModule } from './note-transfer/note-transfer.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -82,7 +83,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     SharedKernelModule,
     FoldersModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_GUARD,
