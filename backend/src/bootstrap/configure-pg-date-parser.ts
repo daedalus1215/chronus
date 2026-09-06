@@ -19,8 +19,11 @@ const PG_OID_DATE = 1082;
  *
  * SQLite stored these as TEXT, so string is also what the code was always written against.
  *
- * ⚠️ Must run before the first query. It is a process-wide setting on the pg driver, which
- * is why it lives here and not in a module.
+ * ⚠️ Must run before the first query, and it is a process-wide setting on the pg driver.
+ * Call it where a connection is *created* — the TypeORM factory in `app.module.ts` and the
+ * CLI `data-source.ts` — never from an entry point's bootstrap. Bootstrap only covers the
+ * HTTP app: Jest, a worker or a seed script would then run with different driver semantics
+ * than production, which is exactly how this class of bug stays invisible to tests.
  */
 export const configurePgDateParser = (): void => {
   types.setTypeParser(PG_OID_DATE, (value: string) => value);
