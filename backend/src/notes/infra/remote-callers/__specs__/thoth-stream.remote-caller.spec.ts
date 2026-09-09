@@ -144,7 +144,12 @@ describe('ThothStreamRemoteCaller', () => {
     await target.open({ ...noopHandlers, onClose });
 
     thoth.dropConnection();
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Poll instead of a fixed sleep: the server's clients set only empties
+    // once the close handshake round trip completes, which can outlast a
+    // fixed delay under parallel test load.
+    for (let i = 0; i < 50 && thoth.server.clients.size > 0; i += 1) {
+      await new Promise<void>(resolve => setTimeout(resolve, 20));
+    }
 
     expect(onClose).toHaveBeenCalledTimes(1);
     // A reconnect would splice unrelated audio into one Whisper window,
