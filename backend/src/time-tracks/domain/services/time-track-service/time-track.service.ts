@@ -220,8 +220,8 @@ export class TimeTrackService {
     startTime: string;
     durationMinutes: number;
     note?: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
   }): TimeTrackProjection {
     return {
       id: entity.id,

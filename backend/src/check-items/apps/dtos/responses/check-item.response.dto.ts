@@ -12,10 +12,10 @@ export class CheckItem {
   id: number;
 
   @CreateDateColumn({ name: 'created_at', type: 'text' })
-  createdAt: Date;
+  createdAt: string;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'text' })
-  updatedAt: Date;
+  updatedAt: string;
 
   @Column()
   name: string;
@@ -48,13 +48,13 @@ export class CheckItemResponseDto {
   order: number;
   status: 'ready' | 'in_progress' | 'review' | 'done';
   description: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 
   constructor(checkItem: {
     id: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
     name: string;
     doneDate: Date | null;
     archiveDate: Date | null;

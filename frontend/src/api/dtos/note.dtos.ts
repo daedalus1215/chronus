@@ -58,11 +58,6 @@ export type SearchResult = {
   contextBefore: string;
   matchText: string;
   contextAfter: string;
-  // NEW optional fields for check items
-  checkItemId?: number;
-  checkItemStatus?: 'ready' | 'in_progress' | 'review' | 'done';
-  checkItemDescriptionSnippet?: string | null;
-  checkItemIsArchived?: boolean;
 };
 
 export type TimeTrackTotalResponseDto = {

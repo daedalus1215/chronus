@@ -19,11 +19,11 @@ export class Note {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  createdAt: Date;
+  @CreateDateColumn({ name: 'created_at', type: 'text' })
+  createdAt: string;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
-  updatedAt: Date;
+  @UpdateDateColumn({ name: 'updated_at', type: 'text' })
+  updatedAt: string;
 
   @OneToOne(() => Memo, memo => memo.id, {
     cascade: true,
@@ -39,11 +39,7 @@ export class Note {
   @Column({ name: 'user_id' })
   userId: number;
 
-  @DeleteDateColumn({
-    name: 'archived_at',
-    nullable: true,
-    type: 'timestamptz',
-  })
+  @DeleteDateColumn({ name: 'archived_at', nullable: true })
   archivedAt: Date | null;
 
   @Column({ name: 'folder_id', nullable: true, type: 'integer' })

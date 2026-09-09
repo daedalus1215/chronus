@@ -8,6 +8,6 @@ export type UserResponseProjection = {
   id: number;
   username: string;
   email?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };

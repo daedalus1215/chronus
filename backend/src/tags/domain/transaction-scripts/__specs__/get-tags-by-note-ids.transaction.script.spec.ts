@@ -91,11 +91,8 @@ describe('GetTagsByNoteIdsTransactionScript', () => {
 
   it('should return Map with TagResponseDto[] for multiple noteIds', async () => {
     // Arrange
-    // Must differ: the assertion below is `result.size === 2`, and these become
-    // Map keys. generateRandomNumbers() draws 0-20, so two independent draws
-    // collided about 1 run in 21 and failed the test for no real reason.
     const noteId1 = generateRandomNumbers();
-    const noteId2 = noteId1 + 1;
+    const noteId2 = generateRandomNumbers();
     const userId = generateRandomNumbers();
     const tags1: Tag[] = [
       {
