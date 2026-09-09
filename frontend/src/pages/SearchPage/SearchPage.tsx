@@ -10,6 +10,8 @@ import {
   InputAdornment,
   IconButton,
   Paper,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -26,6 +28,20 @@ const MATCH_TYPE_LABELS: Record<SearchResult['matchType'], string> = {
   check_item: 'Checklist item',
 };
 
+const STATUS_LABELS: Record<string, string> = {
+  ready: 'Ready',
+  in_progress: 'In Progress',
+  review: 'Review',
+  done: 'Done',
+};
+
+const STATUS_COLORS: Record<string, 'default' | 'primary' | 'warning' | 'success'> = {
+  ready: 'default',
+  in_progress: 'primary',
+  review: 'warning',
+  done: 'success',
+};
+
 const DEBOUNCE_MS = 400;
 
 export const SearchPage: React.FC = () => {
@@ -33,6 +49,7 @@ export const SearchPage: React.FC = () => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [includeArchived, setIncludeArchived] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
 
@@ -44,7 +61,7 @@ export const SearchPage: React.FC = () => {
     }
     setLoading(true);
     try {
-      const data = await searchNotes(q.trim());
+      const data = await searchNotes(q.trim(), { includeArchived });
       setResults(data);
       setSearched(true);
     } catch {
@@ -53,13 +70,22 @@ export const SearchPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [includeArchived]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setQuery(val);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => runSearch(val), DEBOUNCE_MS);
+  };
+
+  const handleArchiveToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setIncludeArchived(checked);
+    if (query.trim().length >= 2) {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => runSearch(query), 0);
+    }
   };
 
   const handleClear = () => {
@@ -100,6 +126,16 @@ export const SearchPage: React.FC = () => {
               </InputAdornment>
             ) : null,
           }}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              size="small"
+              checked={includeArchived}
+              onChange={handleArchiveToggle}
+            />
+          }
+          label="Include archived"
         />
       </Box>
 
@@ -145,7 +181,15 @@ export const SearchPage: React.FC = () => {
                         sx={{ color: 'secondary.main' }}
                       />
                     )}
-                    <Typography variant="subtitle2" className={styles.noteName}>
+                    <Typography
+                      variant="subtitle2"
+                      className={styles.noteName}
+                      sx={
+                        result.checkItemIsArchived
+                          ? { textDecoration: 'line-through', color: 'text.disabled' }
+                          : {}
+                      }
+                    >
                       {result.noteName}
                     </Typography>
                     <Chip
@@ -154,6 +198,26 @@ export const SearchPage: React.FC = () => {
                       variant="outlined"
                       className={styles.matchChip}
                     />
+                    {result.matchType === 'check_item' &&
+                      result.checkItemStatus && (
+                        <Chip
+                          label={STATUS_LABELS[result.checkItemStatus]}
+                          size="small"
+                          color={STATUS_COLORS[result.checkItemStatus] ?? 'default'}
+                          variant="outlined"
+                          className={styles.matchChip}
+                        />
+                      )}
+                    {result.matchType === 'check_item' &&
+                      result.checkItemIsArchived && (
+                        <Chip
+                          label="Archived"
+                          size="small"
+                          variant="outlined"
+                          sx={{ color: 'text.disabled' }}
+                          className={styles.matchChip}
+                        />
+                      )}
                   </Box>
                   <Typography variant="body2" className={styles.context}>
                     <span className={styles.contextText}>
@@ -164,6 +228,16 @@ export const SearchPage: React.FC = () => {
                       {result.contextAfter}
                     </span>
                   </Typography>
+                  {result.matchType === 'check_item' &&
+                    result.checkItemDescriptionSnippet && (
+                      <Typography
+                        variant="caption"
+                        className={styles.descriptionSnippet}
+                        sx={{ color: 'text.secondary' }}
+                      >
+                        {result.checkItemDescriptionSnippet}
+                      </Typography>
+                    )}
                 </Box>
               </ListItemButton>
             </Paper>

@@ -27,7 +27,11 @@ export type SearchResults = NoteSearchMatches & {
   checkItemMatches: {
     noteId: number;
     noteName: string;
+    checkItemId: number;
     checkItemName: string;
+    checkItemStatus: 'ready' | 'in_progress' | 'review' | 'done';
+    checkItemDescription: string | null;
+    checkItemIsArchived: boolean;
   }[];
 };
 
@@ -94,10 +98,14 @@ export class NoteService {
     };
   }
 
-  async search(userId: number, query: string): Promise<SearchResults> {
+  async search(
+    userId: number,
+    query: string,
+    options?: { includeArchived?: boolean }
+  ): Promise<SearchResults> {
     const [noteMatches, checkItemMatches] = await Promise.all([
       this.searchNotesTransactionScript.apply(userId, query),
-      this.checkItemsAggregator.searchByQuery(userId, query),
+      this.checkItemsAggregator.searchByQuery(userId, query, options),
     ]);
 
     return { query, ...noteMatches, checkItemMatches };

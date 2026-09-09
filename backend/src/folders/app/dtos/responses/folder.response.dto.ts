@@ -5,8 +5,8 @@ export class FolderResponseDto {
   name: string;
   parentId: number | null;
   sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor(folder: Folder) {
     this.id = folder.id;
