@@ -35,7 +35,9 @@ const bootstrap = async (): Promise<void> => {
   configureGracefulShutdown(app, logger);
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
+  // 0.0.0.0, not the default: inside a container, binding to localhost makes the
+  // app unreachable from Traefik on the edge network.
+  await app.listen(port, '0.0.0.0');
 
   const protocol = httpsOptions ? 'HTTPS' : 'HTTP';
   logger.log(`${protocol} enabled on port ${port}`);

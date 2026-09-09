@@ -79,3 +79,9 @@
   border-radius: 2px;
   font-style: normal;
 }
+
+.descriptionSnippet {
+  font-size: 0.75rem !important;
+  line-height: 1.4 !important;
+  margin-top: 0.2rem;
+}

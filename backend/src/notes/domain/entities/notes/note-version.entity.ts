@@ -19,6 +19,6 @@ export class NoteVersion {
   @Column({ name: 'description', type: 'text' })
   description: string;
 
-  @CreateDateColumn({ name: 'created_at', type: 'text' })
-  createdAt: string;
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  createdAt: Date;
 }

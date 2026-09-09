@@ -41,8 +41,8 @@ export type TimeTrackWithNoteProjection = {
   startTime: string;
   durationMinutes: number;
   note?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type WeeklyMostActiveNoteProjection = {
@@ -61,6 +61,6 @@ export type TimeTrackProjection = {
   startTime: string;
   durationMinutes: number;
   note?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };

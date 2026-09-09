@@ -9,7 +9,14 @@ export type SearchResult = {
   contextBefore: string;
   matchText: string;
   contextAfter: string;
+  // NEW: Check item specific fields (populated when matchType === 'check_item')
+  checkItemId?: number;
+  checkItemStatus?: 'ready' | 'in_progress' | 'review' | 'done';
+  checkItemDescriptionSnippet?: string | null;
+  checkItemIsArchived?: boolean;
 };
+
+const DESCRIPTION_SNIPPET_LEN = 100;
 
 function extractContext(
   text: string,
@@ -35,6 +42,12 @@ function extractContext(
       text.slice(idx + query.length, afterEnd) +
       (afterEnd < text.length ? '...' : ''),
   };
+}
+
+function descriptionSnippet(description: string | null): string | null {
+  if (!description) return null;
+  if (description.length <= DESCRIPTION_SNIPPET_LEN) return description;
+  return description.slice(0, DESCRIPTION_SNIPPET_LEN) + '...';
 }
 
 @Injectable()
@@ -68,12 +81,17 @@ export class SearchNotesResponder {
     }
 
     for (const row of checkItemMatches) {
+      const snippet = descriptionSnippet(row.checkItemDescription);
       results.push({
         noteId: row.noteId,
         noteName: row.noteName,
         isMemo: false,
         matchType: 'check_item',
         ...extractContext(row.checkItemName, query),
+        checkItemId: row.checkItemId,
+        checkItemStatus: row.checkItemStatus,
+        checkItemDescriptionSnippet: snippet,
+        checkItemIsArchived: row.checkItemIsArchived,
       });
     }
 
