@@ -26,8 +26,8 @@ export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
   folderId: null,
   sortOrder: 0,
   memo: null,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   ...overrides,
 });
 

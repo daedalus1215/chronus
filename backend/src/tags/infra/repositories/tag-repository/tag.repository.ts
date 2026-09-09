@@ -76,11 +76,11 @@ export class TagRepository {
       .innerJoin('tags', 'tag', 'tag.id = tagNote.tag_id')
       .where('tagNote.notes_id IN (:...noteIds)', { noteIds })
       .select([
-        'tagNote.notes_id as "noteId"',
+        'tagNote.notes_id as noteId',
         'tag.id as id',
         'tag.name as name',
         'tag.description as description',
-        'tag.user_id as "userId"',
+        'tag.user_id as userId',
       ])
       .getRawMany();
 

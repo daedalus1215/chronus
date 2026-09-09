@@ -22,8 +22,8 @@ describe('UpdateUsernameTransactionScript', () => {
     id: userId,
     username: 'currentuser',
     password: currentPasswordHash,
-    createdAt: new Date('2024-01-15T09:00:00Z'),
-    updatedAt: new Date('2024-01-15T09:00:00Z'),
+    createdAt: '2024-01-15T09:00:00Z',
+    updatedAt: '2024-01-15T09:00:00Z',
   };
 
   const mockAuthUser = { userId, username: 'currentuser' };

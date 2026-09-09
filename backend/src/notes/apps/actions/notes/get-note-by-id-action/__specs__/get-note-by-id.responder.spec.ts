@@ -6,8 +6,8 @@ import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 
 const createMockMemo = (overrides: Partial<Memo> = {}): Memo => ({
   id: 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   description: 'Memo body',
   note: null as unknown as Memo['note'],
   ...overrides,

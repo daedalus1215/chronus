@@ -11,11 +11,11 @@ export class User {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  createdAt: Date;
+  @CreateDateColumn({ name: 'created_at', type: 'text' })
+  createdAt: string;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
-  updatedAt: Date;
+  @UpdateDateColumn({ name: 'updated_at', type: 'text' })
+  updatedAt: string;
 
   @Column({ unique: true, length: 20 })
   username: string;

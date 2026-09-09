@@ -11,5 +11,5 @@ export class NoteVersionResponseDto {
   description: string;
 
   @ApiProperty()
-  createdAt: Date;
+  createdAt: string;
 }
