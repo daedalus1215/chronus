@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Patch } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { ReorderNotesTransactionScript } from 'src/notes/domain/transaction-scripts/reorder-notes.transaction-script';
+import { ReorderNotesTransactionScript } from 'src/notes/domain/transaction-scripts/reorder-notes.transaction.script';
 import { ReorderNotesDto } from './reorder-notes.dto';
 
 @Controller('notes')
