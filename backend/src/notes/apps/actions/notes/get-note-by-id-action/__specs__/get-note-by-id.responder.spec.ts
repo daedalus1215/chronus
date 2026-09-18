@@ -9,7 +9,6 @@ const createMockMemo = (overrides: Partial<Memo> = {}): Memo => ({
   createdAt: new Date(),
   updatedAt: new Date(),
   description: 'Memo body',
-  note: null as unknown as Memo['note'],
   ...overrides,
 });
 
