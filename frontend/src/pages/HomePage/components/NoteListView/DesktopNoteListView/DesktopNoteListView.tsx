@@ -1,10 +1,10 @@
 import React, { useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useNotes } from '../../../hooks/useNotes';
 import { NoteItem } from '../NoteItem/NoteItem';
 import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './DesktopNoteListView.module.css';
-import { useResizablePane } from '../../../../../hooks/useResizablePane';
+import { useSidebar } from '../../../../../hooks/useSidebar';
 import Fade from '@mui/material/Fade';
 import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
 
@@ -30,6 +30,8 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
   selectedNoteId,
 }) => {
   const navigate = useNavigate();
+  const { id: routeNoteId } = useParams<{ id: string }>();
+  const { isNoteListOpen } = useSidebar();
   const {
     notes,
     isLoading,
@@ -126,6 +128,7 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
           onChange={searchNotes}
           onClear={clearSearch}
           type={type}
+          tabFocusEnabled={!routeNoteId && isNoteListOpen}
         />
       )}
       <div className={styles.noteListContent}>
