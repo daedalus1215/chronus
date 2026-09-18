@@ -4,6 +4,8 @@ import { ArchiveNoteTransactionScript } from '../transaction-scripts/archive-not
 import { ConvertChecklistToMemoTransactionScript } from '../transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script';
 import { GetNoteByIdTransactionScript } from '../transaction-scripts/get-note-by-id.transaction.script';
 import { UpdateNoteTransactionScript } from '../transaction-scripts/update-note-TS/update-note.transaction.script';
+import { CreateNoteTransactionScript } from '../transaction-scripts/create-note.transaction.script';
+import { CreateNoteCommand } from '../transaction-scripts/create-note.command';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
@@ -43,10 +45,15 @@ export class NoteService {
     private readonly getNoteByIdTransactionScript: GetNoteByIdTransactionScript,
     private readonly updateNoteTransactionScript: UpdateNoteTransactionScript,
     private readonly searchNotesTransactionScript: SearchNotesTransactionScript,
+    private readonly createNoteTransactionScript: CreateNoteTransactionScript,
     private readonly eventEmitter: EventEmitter2,
     private readonly noteRepository: NoteMemoTagRepository,
     private readonly checkItemsAggregator: CheckItemsAggregator
   ) {}
+
+  async createNote(command: CreateNoteCommand): Promise<Note> {
+    return this.createNoteTransactionScript.apply(command);
+  }
 
   async archiveNote(noteId: number, authUser: AuthUser): Promise<Note> {
     return await this.archiveNoteTransactionScript.apply(
