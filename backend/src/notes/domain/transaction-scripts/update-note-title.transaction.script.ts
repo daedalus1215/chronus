@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
-import { UpdateNoteTitleDto } from 'src/notes/apps/dtos/requests/update-note-title.dto';
+import { UpdateNoteTitleCommand } from './update-note-title.command';
 
 @Injectable()
 export class UpdateNoteTitleTransactionScript {
@@ -8,14 +8,14 @@ export class UpdateNoteTitleTransactionScript {
 
   async apply(
     id: number,
-    updateNoteTitleDto: UpdateNoteTitleDto,
+    command: UpdateNoteTitleCommand,
     userId: number
   ): Promise<{ id: number; name: string }> {
     const note = await this.noteRepository.findById(id, userId);
     if (!note) {
       throw new NotFoundException('Note not found');
     }
-    note.name = updateNoteTitleDto.name;
+    note.name = command.name;
     const updatedNote = await this.noteRepository.save(note);
     return {
       ...updatedNote,

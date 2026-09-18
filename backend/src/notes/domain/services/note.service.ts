@@ -6,6 +6,7 @@ import { GetNoteByIdTransactionScript } from '../transaction-scripts/get-note-by
 import { UpdateNoteTransactionScript } from '../transaction-scripts/update-note-TS/update-note.transaction.script';
 import { CreateNoteTransactionScript } from '../transaction-scripts/create-note.transaction.script';
 import { CreateNoteCommand } from '../transaction-scripts/create-note.command';
+import { UpdateNoteTitleTransactionScript } from '../transaction-scripts/update-note-title.transaction.script';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
@@ -46,6 +47,7 @@ export class NoteService {
     private readonly updateNoteTransactionScript: UpdateNoteTransactionScript,
     private readonly searchNotesTransactionScript: SearchNotesTransactionScript,
     private readonly createNoteTransactionScript: CreateNoteTransactionScript,
+    private readonly updateNoteTitleTransactionScript: UpdateNoteTitleTransactionScript,
     private readonly eventEmitter: EventEmitter2,
     private readonly noteRepository: NoteMemoTagRepository,
     private readonly checkItemsAggregator: CheckItemsAggregator
@@ -53,6 +55,10 @@ export class NoteService {
 
   async createNote(command: CreateNoteCommand): Promise<Note> {
     return this.createNoteTransactionScript.apply(command);
+  }
+
+  async updateNoteTitle(id: number, name: string, userId: number): Promise<{ id: number; name: string }> {
+    return this.updateNoteTitleTransactionScript.apply(id, { name }, userId);
   }
 
   async archiveNote(noteId: number, authUser: AuthUser): Promise<Note> {
