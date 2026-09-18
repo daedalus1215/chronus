@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateNoteDto } from 'src/notes/apps/dtos/requests/create-note.dto';
 import { Memo } from 'src/notes/domain/entities/notes/memo.entity';
 import { Note } from 'src/notes/domain/entities/notes/note.entity';
 import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
 import { Repository } from 'typeorm';
+import { CreateNoteCommand } from './create-note.command';
 
 @Injectable()
 export class CreateNoteTransactionScript {
@@ -15,10 +15,8 @@ export class CreateNoteTransactionScript {
     private memoRepository: Repository<Memo>
   ) {}
 
-  async apply(
-    createNoteDto: CreateNoteDto & { userId: number }
-  ): Promise<Note> {
-    const { name, userId, isMemo, folderId } = createNoteDto;
+  async apply(command: CreateNoteCommand): Promise<Note> {
+    const { name, userId, isMemo, folderId } = command;
 
     const note = new Note();
     note.name = name;
