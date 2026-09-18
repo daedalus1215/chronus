@@ -4,6 +4,7 @@ import { useNotes } from '../../../hooks/useNotes';
 import { NoteItem } from '../NoteItem/NoteItem';
 import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './DesktopNoteListView.module.css';
+import { useResizablePane } from '../../../../../hooks/useResizablePane';
 import { useSidebar } from '../../../../../hooks/useSidebar';
 import Fade from '@mui/material/Fade';
 import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
