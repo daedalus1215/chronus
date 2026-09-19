@@ -7,6 +7,11 @@ import { UpdateNoteTransactionScript } from '../transaction-scripts/update-note-
 import { CreateNoteTransactionScript } from '../transaction-scripts/create-note.transaction.script';
 import { CreateNoteCommand } from '../transaction-scripts/create-note.command';
 import { UpdateNoteTitleTransactionScript } from '../transaction-scripts/update-note-title.transaction.script';
+import { MoveNoteToFolderTransactionScript } from '../transaction-scripts/move-note-to-folder.transaction.script';
+import {
+  ReorderNotesTransactionScript,
+  ReorderNotesInput,
+} from '../transaction-scripts/reorder-notes.transaction.script';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
@@ -48,6 +53,8 @@ export class NoteService {
     private readonly searchNotesTransactionScript: SearchNotesTransactionScript,
     private readonly createNoteTransactionScript: CreateNoteTransactionScript,
     private readonly updateNoteTitleTransactionScript: UpdateNoteTitleTransactionScript,
+    private readonly moveNoteToFolderTransactionScript: MoveNoteToFolderTransactionScript,
+    private readonly reorderNotesTransactionScript: ReorderNotesTransactionScript,
     private readonly eventEmitter: EventEmitter2,
     private readonly noteRepository: NoteMemoTagRepository,
     private readonly checkItemsAggregator: CheckItemsAggregator
@@ -59,6 +66,18 @@ export class NoteService {
 
   async updateNoteTitle(id: number, name: string, userId: number): Promise<{ id: number; name: string }> {
     return this.updateNoteTitleTransactionScript.apply(id, { name }, userId);
+  }
+
+  async moveNoteToFolder(
+    noteId: number,
+    userId: number,
+    folderId: number | null
+  ): Promise<Note> {
+    return this.moveNoteToFolderTransactionScript.apply(noteId, userId, folderId);
+  }
+
+  async reorderNotes(input: ReorderNotesInput): Promise<void> {
+    return this.reorderNotesTransactionScript.apply(input);
   }
 
   async archiveNote(noteId: number, authUser: AuthUser): Promise<Note> {
