@@ -11,14 +11,14 @@ import { DeleteAudioAction } from './apps/actions/delete-audio/delete-audio.acti
 import { UpdatePlaybackPositionAction } from './apps/actions/update-playback-position-action/update-playback-position.action';
 import { AudioService } from './domain/services/audio.service';
 import { AudioStreamingService } from './domain/services/audio-streaming.service';
-import { TextToSpeechTransactionScript } from './domain/transaction-scripts/text-to-speech.transaction.script';
-import { DownloadAudioTransactionScript } from './domain/transaction-scripts/download-audio.transaction.script';
+import { TextToSpeechTransactionScript } from './domain/transaction-scripts/text-to-speech-TS/text-to-speech.transaction.script';
+import { DownloadAudioTransactionScript } from './domain/transaction-scripts/download-audio-TS/download-audio.transaction.script';
 import { SaveNoteAudioTransactionScript } from './domain/transaction-scripts/save-note-audio-TS/save-note-audio.transaction.script';
 import { GetNoteAudiosTransactionScript } from './domain/transaction-scripts/get-note-audios-TS/get-note-audios.transaction.script';
 import { GetNoteAudioByIdTransactionScript } from './domain/transaction-scripts/get-note-audio-by-id-TS/get-note-audio-by-id.transaction.script';
 import { DeleteNoteAudiosTransactionScript } from './domain/transaction-scripts/delete-note-audios-TS/delete-note-audios.transaction.script';
 import { DeleteAudioTransactionScript } from './domain/transaction-scripts/delete-audio-TS/delete-audio.transaction.script';
-import { StreamAudioTransactionScript } from './domain/transaction-scripts/stream-audio-ts/stream-audio.transaction.script';
+import { StreamAudioTransactionScript } from './domain/transaction-scripts/stream-audio-TS/stream-audio.transaction.script';
 import { UpdatePlaybackPositionTransactionScript } from './domain/transaction-scripts/update-playback-position-TS/update-playback-position.transaction.script';
 import { HermesRemoteCaller } from './infrastructure/remote-callers/hermes.remote-caller';
 import { AudioFileCache } from './infrastructure/cache/audio-file.cache';
