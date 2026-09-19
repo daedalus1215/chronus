@@ -3,7 +3,7 @@ import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-act
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { UpdateFolderTransactionScript } from 'src/folders/domain/transaction-scripts/update-folder.transaction-script';
 import { FolderResponseDto } from 'src/folders/app/dtos/responses/folder.response.dto';
-import { UpdateFolderDto } from './dtos/update-folder.dto';
+import { UpdateFolderDto } from './update-folder.dto';
 
 @Controller('folders')
 export class UpdateFolderAction {

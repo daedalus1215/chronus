@@ -3,7 +3,7 @@ import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-act
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { BulkReparentFoldersTransactionScript } from 'src/folders/domain/transaction-scripts/bulk-reparent-folders.transaction-script';
 import { FolderResponseDto } from 'src/folders/app/dtos/responses/folder.response.dto';
-import { BulkReparentFoldersDto } from './dtos/bulk-reparent.dto';
+import { BulkReparentFoldersDto } from './bulk-reparent.dto';
 
 @Controller('folders')
 export class BulkReparentAction {
