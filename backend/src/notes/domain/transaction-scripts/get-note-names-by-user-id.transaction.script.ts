@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
-
-export type NoteNameRow = {
-  name: string;
-  id: number;
-  isMemo: number;
-  folderId: number | null;
-};
+import { NoteNameRow } from './note-name-row.projection';
 
 export type GetNoteNamesQuery = {
   userId: number;
