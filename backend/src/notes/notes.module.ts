@@ -45,6 +45,7 @@ import { GetNoteNamesForExplorerTransactionScript } from './domain/transaction-s
 import { GetNoteVersionsTransactionScript } from './domain/transaction-scripts/get-note-versions.transaction.script';
 import { LoadNoteVersionTransactionScript } from './domain/transaction-scripts/load-note-version.transaction.script';
 import { UpdateNoteTimestampTransactionScript } from './domain/transaction-scripts/update-note-timestamp.transaction.script';
+import { DeleteNoteTransactionScript } from './domain/transaction-scripts/delete-note.transaction.script';
 import { GetNoteNamesForExplorerAction } from './apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action';
 import { NoteFolderAdapter } from './apps/adapters/note-folder.adapter';
 import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
@@ -94,6 +95,7 @@ import { LoadNoteVersionResponder } from './apps/actions/notes/load-note-version
     GetNoteVersionsTransactionScript,
     LoadNoteVersionTransactionScript,
     UpdateNoteTimestampTransactionScript,
+    DeleteNoteTransactionScript,
     {
       provide: NOTE_OWNERSHIP_PORT,
       useExisting: NoteOwnershipAdapter,
