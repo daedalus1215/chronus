@@ -22,6 +22,7 @@ import { NoteNameRow } from '../transaction-scripts/note-name-row.projection';
 import { GetNoteVersionsTransactionScript } from '../transaction-scripts/get-note-versions.transaction.script';
 import { NoteVersion } from '../entities/notes/note-version.entity';
 import { LoadNoteVersionTransactionScript } from '../transaction-scripts/load-note-version.transaction.script';
+import { UpdateNoteTimestampTransactionScript } from '../transaction-scripts/update-note-timestamp.transaction.script';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
@@ -71,6 +72,7 @@ export class NoteService {
     private readonly noteRepository: NoteMemoTagRepository,
     private readonly getNoteVersionsTransactionScript: GetNoteVersionsTransactionScript,
     private readonly loadNoteVersionTransactionScript: LoadNoteVersionTransactionScript,
+    private readonly updateNoteTimestampTransactionScript: UpdateNoteTimestampTransactionScript,
     private readonly checkItemsAggregator: CheckItemsAggregator
   ) {}
 
@@ -121,6 +123,10 @@ export class NoteService {
       { description: version.description, skipVersionCapture: true },
       userId
     );
+  }
+
+  async updateNoteTimestamp(id: number, userId: number): Promise<void> {
+    return this.updateNoteTimestampTransactionScript.apply(id, userId);
   }
 
   async archiveNote(noteId: number, authUser: AuthUser): Promise<Note> {

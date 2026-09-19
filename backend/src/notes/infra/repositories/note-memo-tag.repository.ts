@@ -120,20 +120,16 @@ export class NoteMemoTagRepository {
     return await qb.orderBy('note.sort_order', 'ASC').take(500).getRawMany();
   }
 
-  async updateNoteTimestamp(id: number): Promise<UpdateResult> {
-    const result = await this.repository
+  async updateNoteTimestamp(id: number, userId: number): Promise<UpdateResult> {
+    return this.repository
       .createQueryBuilder('note')
       .update(Note)
       .set({
         updatedAt: () => 'CURRENT_TIMESTAMP',
       })
       .where('id = :id', { id })
+      .andWhere('user_id = :userId', { userId })
       .execute();
-
-    if (result.affected === 0) {
-      throw new Error('Note not found');
-    }
-    return result;
   }
 
   async deleteNoteById(id: number, userId: number): Promise<void> {
