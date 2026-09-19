@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTagTransactionScript } from '../create-tag.transaction.script';
 import { Tag } from '../../../domain/entities/tag.entity';
-import { CreateTagDto } from '../../../app/actions/create-tag-action/dtos/create-tag.dto';
+import { CreateTagDto } from '../../../apps/actions/create-tag-action/create-tag.dto';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { createMock } from 'src/shared-kernel/test-utils';
 

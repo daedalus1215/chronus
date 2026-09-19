@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import type { StringValue } from 'ms';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthService } from './domain/auth.service';
-import { LoginAction } from './app/actions/login.action';
+import { LoginAction } from './apps/actions/login.action';
 import { UsersModule } from 'src/users/users.module';
 import { SecurityEventsModule } from 'src/security-events/security-events.module';
 
