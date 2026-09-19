@@ -1,5 +1,5 @@
 import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
-import { RemoveTagFromNoteDto } from '../dtos/requests/remove-tag-from-note.dto';
+import { RemoveTagFromNoteDto } from './dtos/requests/remove-tag-from-note.dto';
 
 export const RemoveTagFromNoteSwagger: ProtectedActionOptions = {
   tag: 'tags',

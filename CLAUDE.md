@@ -25,16 +25,16 @@ Double underscore `__` between segments, single underscore within.
 ## Backend module structure
 
 ```
-{module}/app/actions/
+{module}/apps/actions/
 └── {verb}-{entity}-action/
     ├── {verb}-{entity}.action.ts
-    └── dtos/
-        └── {verb}-{entity}.dto.ts    ← request DTOs live with the action
+    ├── {verb}-{entity}.dto.ts            ← request DTOs live with the action
+    └── {verb}-{entity}.action.swagger.ts
 
-{module}/app/dtos/responses/          ← shared response DTOs only
+{module}/apps/dtos/responses/          ← shared response DTOs only
 ```
 
-Actions that have no request body (GET, DELETE with no body) do not need a `dtos/` subfolder.
+Actions that have no request body (GET, DELETE with no body) do not need a request DTO.
 
 ## Pattern reference docs
 

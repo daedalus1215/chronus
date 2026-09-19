@@ -3,7 +3,7 @@ import { UpdateTagTransactionScript } from '../update-tag.transaction.script';
 import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
 import { NotFoundException } from '@nestjs/common';
 import { Tag } from '../../../domain/entities/tag.entity';
-import { UpdateTagDto } from '../../../app/actions/update-tag-action/dtos/update-tag.dto';
+import { UpdateTagDto } from '../../../apps/actions/update-tag-action/update-tag.dto';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { createMock } from 'src/shared-kernel/test-utils';
 
