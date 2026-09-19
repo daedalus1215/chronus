@@ -3,14 +3,14 @@ import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-act
 import { GetNoteVersionsSwagger } from './get-note-versions.swagger';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { NoteVersionRepository } from '../../../../infra/repositories/note-version.repository';
+import { NoteService } from 'src/notes/domain/services/note.service';
 import { GetNoteVersionsResponder } from './get-note-versions.responder';
 import { NoteVersionResponseDto } from '../../../dtos/responses/note-version.response.dto';
 
 @Controller('notes')
 export class GetNoteVersionsAction {
   constructor(
-    private readonly noteVersionRepository: NoteVersionRepository,
+    private readonly noteService: NoteService,
     private readonly responder: GetNoteVersionsResponder
   ) {}
 
@@ -21,7 +21,7 @@ export class GetNoteVersionsAction {
     @GetAuthUser() authUser: AuthUser
   ): Promise<{ versions: NoteVersionResponseDto[]; total: number }> {
     const noteId = parseInt(id, 10);
-    const versions = await this.noteVersionRepository.findByNoteId(
+    const versions = await this.noteService.getNoteVersions(
       noteId,
       authUser.userId
     );
