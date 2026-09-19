@@ -34,23 +34,48 @@ observable contract and fail on a plausible bug; wiring/shape assertions are pad
 House style throughout: SUT `target`, `__specs__/` adjacent, `createMock` +
 `useValue` providers, `generateRandomNumbers`, Arrange/Act/Assert.
 
-## The integration gap (next step, not done here)
+## The integration layer (built, 2026-09-18)
 
 The query-builder half of the repository — user scoping in `findById`, the
 `updateNoteTimestamp` `user_id` predicate (the IDOR fix), LIKE/tag-join/pagination in
-`getNoteNamesByUserId`, explorer ordering — is only defensible against a real database.
-The scaffolding exists but has never been used: `test/jest-integration.json`
-(testRegex `*.integration.spec.ts`, excluded from `npm run test`),
-`Dockerfile.test`, and a stale `docker-compose.test.yml` (SQLite-era
-`file:/app/data/test.db`; the app is Postgres now). Zero integration specs exist and
-there is no shared DataSource bootstrap helper.
+`getNoteNamesByUserId`, explorer ordering — is only defensible against a real
+database. The scaffolding existed but had never been used (`test/jest-integration.json`,
+a stale SQLite-era `docker-compose.test.yml` + `Dockerfile.test`). It is now wired up:
 
-A follow-up would need to decide: test Postgres via compose (replace the stale yml) vs
-testcontainers; `synchronize: true` vs running the real migration chain in the test DB.
-Until then the repository's SQL-level contracts rest on manual testing.
+- `docker-compose.test.yml` (repo root) — single `postgres:16-alpine` service
+  (matches home-lab prod), `chronus_test` DB on port **5433** so it cannot collide
+  with a local 5432, healthchecked. Replaces the dead full-stack file.
+  `backend/Dockerfile.test` (SQLite-era, unreferenced) is deleted.
+- `src/shared-kernel/integration-test-data-source.ts` — shared bootstrap:
+  `createIntegrationDataSource()` (real Postgres, runs the real migration chain with
+  `migrationsRun`, no `synchronize`, so the schema under test is the production schema)
+  and `truncateIntegrationTables()` (wipes all app tables + restarts identities in
+  `beforeEach`). Env-overridable via the usual `DB_*` vars, defaults match compose.
+- `test/jest-integration.json` — `maxWorkers: 1` (single shared DB), `testTimeout: 30000`
+  (first migration run).
+- `infra/repositories/__specs__/note-memo-tag.repository.integration.spec.ts` — 18
+  tests against the live DB: `findById` user scoping + memo hydration,
+  `save` memo-first FK link, `getNoteNamesByUserId` ordering/`query`/`type`/`tag`/
+  pagination, `getNoteNamesForExplorer` root/folder/sort, `updateNoteTimestamp`
+  owner-vs-other (the IDOR guard), `deleteNoteById` scoping.
+
+**Finding:** the extra `addSelect('CASE …', 'isMemo')` in `findById`/`findMemoById`
+never surfaces — `getOne()` hydrates the `Note` entity and drops unmapped extra
+columns; every caller derives `isMemo` from `note.memo !== null` (responders) or
+`note !== null` (aggregators/adapter). The column is dead weight in the SQL,
+a one-line cleanup candidate, no behavior change.
+
+`no-orphans` depcruise rule gains an `integration-test` path exclusion (bootstrap is
+test-only, imported only by specs).
+
+Run: `docker compose -f docker-compose.test.yml up -d` then `npm run test:integration`
+from `backend/`.
 
 ## Verification
 
-- `npm run test`: 38 suites / 178 tests green (17 new).
-- `npm run depcruise`: no violations.
+- `npm run test`: 38 suites / 178 tests green (17 new unit).
+- `npm run test:integration`: 1 suite / 18 tests green against live Postgres (new).
+- `npm run test:architecture` (depcruise): no violations.
+- `npm run test:fitness`: all checks pass (also fixed 2 pre-existing time-tracks
+  DTO-placement violations surfaced while running the gate).
 - eslint + prettier clean on the new specs; `npm run build` green.
