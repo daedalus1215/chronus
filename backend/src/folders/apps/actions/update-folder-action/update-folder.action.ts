@@ -2,7 +2,7 @@ import { Body, Controller, Param, ParseIntPipe, Patch } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { UpdateFolderTransactionScript } from 'src/folders/domain/transaction-scripts/update-folder.transaction-script';
-import { FolderResponseDto } from 'src/folders/app/dtos/responses/folder.response.dto';
+import { FolderResponseDto } from 'src/folders/apps/dtos/responses/folder.response.dto';
 import { UpdateFolderDto } from './update-folder.dto';
 
 @Controller('folders')

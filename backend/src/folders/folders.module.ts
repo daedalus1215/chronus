@@ -8,12 +8,12 @@ import { UpdateFolderTransactionScript } from './domain/transaction-scripts/upda
 import { DeleteFolderTransactionScript } from './domain/transaction-scripts/delete-folder.transaction-script';
 import { BulkReparentFoldersTransactionScript } from './domain/transaction-scripts/bulk-reparent-folders.transaction-script';
 import { ReorderFoldersTransactionScript } from './domain/transaction-scripts/reorder-folders.transaction-script';
-import { CreateFolderAction } from './app/actions/create-folder-action/create-folder.action';
-import { GetFoldersByUserAction } from './app/actions/get-folders-by-user-action/get-folders-by-user.action';
-import { BulkReparentAction } from './app/actions/bulk-reparent-action/bulk-reparent.action';
-import { UpdateFolderAction } from './app/actions/update-folder-action/update-folder.action';
-import { DeleteFolderAction } from './app/actions/delete-folder-action/delete-folder.action';
-import { ReorderFoldersAction } from './app/actions/reorder-folders-action/reorder-folders.action';
+import { CreateFolderAction } from './apps/actions/create-folder-action/create-folder.action';
+import { GetFoldersByUserAction } from './apps/actions/get-folders-by-user-action/get-folders-by-user.action';
+import { BulkReparentAction } from './apps/actions/bulk-reparent-action/bulk-reparent.action';
+import { UpdateFolderAction } from './apps/actions/update-folder-action/update-folder.action';
+import { DeleteFolderAction } from './apps/actions/delete-folder-action/delete-folder.action';
+import { ReorderFoldersAction } from './apps/actions/reorder-folders-action/reorder-folders.action';
 import { NotesModule } from 'src/notes/notes.module';
 
 @Module({
