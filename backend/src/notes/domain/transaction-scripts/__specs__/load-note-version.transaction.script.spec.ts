@@ -62,9 +62,9 @@ describe('LoadNoteVersionTransactionScript', () => {
       mockVersionRepository.findById.mockResolvedValue(null);
 
       // Act / Assert
-      await expect(
-        target.apply(noteId, versionId, userId)
-      ).rejects.toThrow(NotFoundException);
+      await expect(target.apply(noteId, versionId, userId)).rejects.toThrow(
+        NotFoundException
+      );
     });
   });
 });

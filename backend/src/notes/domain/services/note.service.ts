@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Note } from '../entities/notes/note.entity';
 import { ArchiveNoteTransactionScript } from '../transaction-scripts/archive-note/archive-note.transaction.script';
 import { ConvertChecklistToMemoTransactionScript } from '../transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script';
@@ -80,7 +80,11 @@ export class NoteService {
     return this.createNoteTransactionScript.apply(command);
   }
 
-  async updateNoteTitle(id: number, name: string, userId: number): Promise<{ id: number; name: string }> {
+  async updateNoteTitle(
+    id: number,
+    name: string,
+    userId: number
+  ): Promise<{ id: number; name: string }> {
     return this.updateNoteTitleTransactionScript.apply(id, { name }, userId);
   }
 
@@ -89,22 +93,37 @@ export class NoteService {
     userId: number,
     folderId: number | null
   ): Promise<Note> {
-    return this.moveNoteToFolderTransactionScript.apply(noteId, userId, folderId);
+    return this.moveNoteToFolderTransactionScript.apply(
+      noteId,
+      userId,
+      folderId
+    );
   }
 
   async reorderNotes(input: ReorderNotesInput): Promise<void> {
     return this.reorderNotesTransactionScript.apply(input);
   }
 
-  async getNoteNamesByUserId(params: GetNoteNamesQuery): Promise<GetNoteNamesResult> {
+  async getNoteNamesByUserId(
+    params: GetNoteNamesQuery
+  ): Promise<GetNoteNamesResult> {
     return this.getNoteNamesByUserIdTransactionScript.apply(params);
   }
 
-  async getNoteNamesForExplorer(userId: number, folderId?: string): Promise<NoteNameRow[]> {
-    return this.getNoteNamesForExplorerTransactionScript.apply(userId, folderId);
+  async getNoteNamesForExplorer(
+    userId: number,
+    folderId?: string
+  ): Promise<NoteNameRow[]> {
+    return this.getNoteNamesForExplorerTransactionScript.apply(
+      userId,
+      folderId
+    );
   }
 
-  async getNoteVersions(noteId: number, userId: number): Promise<NoteVersion[]> {
+  async getNoteVersions(
+    noteId: number,
+    userId: number
+  ): Promise<NoteVersion[]> {
     return this.getNoteVersionsTransactionScript.apply(noteId, userId);
   }
 
