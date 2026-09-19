@@ -533,9 +533,13 @@ Manual smoke (optional, against a running stack):
    **Done (2026-09-18):** `specs/notes-module-test-coverage.md` — specs for
    `note.aggregator.ts` and the data-operation half of
    `note-memo-tag.repository.ts`; the remaining files ruled out or blocked on the
-   (unused) integration-test infra, which is the open next step.
+   (now-built) integration-test infra — see `specs/notes-module-test-coverage.md`.
 2. **F2 — Cross-module `app/` → `apps/` rename** (`auth/app`, `folders/app`, `users/app`,
    `tags/app` + its stray `tags/apps` twin).
+   **Done (2026-09-18, branch `apps-rename`):** one commit per module
+   (auth, users, folders, tags-merge); folders and tags also co-located
+   action-level DTO/swagger files the rename would have newly flagged under
+   the DTO-structure fitness check (which only scans `src/*/apps`).
 3. **F3 — TS layout unification + docs:** decide flat vs `{ts-name}-TS/` subfolder, move
    the minority, and reconcile root `AGENTS.md` (`{ts-name}-ts/`) with the module
    `AGENTS.md` (`{ts-name}-TS/`) against the code.
