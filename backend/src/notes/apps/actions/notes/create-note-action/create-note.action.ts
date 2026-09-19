@@ -5,24 +5,29 @@ import { CreateNoteCommand } from 'src/notes/domain/transaction-scripts/create-n
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { CreateNoteSwagger } from './create-note.swagger';
-import { Note } from 'src/notes/domain/entities/notes/note.entity';
+import { CreateNoteResponder } from './create-note.responder';
+import { NoteResponseDto } from '../../../dtos/responses/note.response.dto';
 
 @Controller('notes')
 export class CreateNoteAction {
-  constructor(private readonly noteService: NoteService) {}
+  constructor(
+    private readonly noteService: NoteService,
+    private readonly createNoteResponder: CreateNoteResponder
+  ) {}
 
   @Post()
   @ProtectedAction(CreateNoteSwagger)
   async apply(
     @GetAuthUser('userId') userId: number,
     @Body() createNoteDto: CreateNoteDto
-  ): Promise<Note> {
+  ): Promise<NoteResponseDto> {
     const command: CreateNoteCommand = {
       name: createNoteDto.name,
       userId,
       isMemo: createNoteDto.isMemo,
       folderId: createNoteDto.folderId,
     };
-    return this.noteService.createNote(command);
+    const note = await this.noteService.createNote(command);
+    return this.createNoteResponder.apply(note);
   }
 }
