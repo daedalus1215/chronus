@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
-import { UpdateTagDto } from '../../apps/actions/update-tag-action/update-tag.dto';
-import { Tag } from '../../domain/entities/tag.entity';
+import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
+import { UpdateTagDto } from '../../../apps/actions/update-tag-action/update-tag.dto';
+import { Tag } from '../../../domain/entities/tag.entity';
 
 @Injectable()
 export class UpdateTagTransactionScript {

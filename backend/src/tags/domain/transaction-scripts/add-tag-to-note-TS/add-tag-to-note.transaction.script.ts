@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
-import { AddTagToNoteDto } from '../../apps/dtos/requests/add-tag-to-note.dto';
-import { Tag } from '../../domain/entities/tag.entity';
+import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
+import { AddTagToNoteDto } from '../../../apps/dtos/requests/add-tag-to-note.dto';
+import { Tag } from '../../../domain/entities/tag.entity';
 
 /**
  * Transaction script to add a tag to a note.

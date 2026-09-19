@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
+import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
 import { GetTagsByUserIdProjection } from './get-tags-by-user-id.projection';
 
 @Injectable()

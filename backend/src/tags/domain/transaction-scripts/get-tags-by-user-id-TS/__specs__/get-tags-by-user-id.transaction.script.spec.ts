@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { GetTagsByUserIdTransactionScript } from '../get-tags-by-user-id.transaction.script';
 import { GetTagsByUserIdProjection } from '../get-tags-by-user-id.projection';
-import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
+import { TagRepository } from '../../../../infra/repositories/tag-repository/tag.repository';
 import { createTagRepositoryMock } from 'src/tags/test-utils';
 
 describe('GetTagsByUserIdTransactionScript', () => {

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
+import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
 
 @Injectable()
 export class DeleteTagTransactionScript {
