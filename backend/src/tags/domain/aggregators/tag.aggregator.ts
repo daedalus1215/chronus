@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { GetTagsByNoteIdsTransactionScript } from '../transaction-scripts/get-tags-by-note-ids.transaction.script';
-import { GetTagsByNoteIdTransactionScript } from '../transaction-scripts/get-tags-by-note-id.transaction.script';
+import { GetTagsByNoteIdsTransactionScript } from '../transaction-scripts/get-tags-by-note-ids-TS/get-tags-by-note-ids.transaction.script';
+import { GetTagsByNoteIdTransactionScript } from '../transaction-scripts/get-tags-by-note-id-TS/get-tags-by-note-id.transaction.script';
 import { TagAttacherPort } from '../../../note-transfer/domain/ports/tag-attacher.port';
 import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
 import { Tag } from '../entities/tag.entity';

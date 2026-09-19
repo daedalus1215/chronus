@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { DeleteTagTransactionScript } from '../delete-tag.transaction.script';
-import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
+import { TagRepository } from '../../../../infra/repositories/tag-repository/tag.repository';
 import { NotFoundException } from '@nestjs/common';
-import { Tag } from '../../../domain/entities/tag.entity';
+import { Tag } from '../../../../domain/entities/tag.entity';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { createMock } from 'src/shared-kernel/test-utils';
 

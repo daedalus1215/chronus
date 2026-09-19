@@ -1,5 +1,5 @@
 import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
-import { RemoveTagFromNoteTransactionScript } from 'src/tags/domain/transaction-scripts/remove-tag-from-note/remove-tag-from-note.transaction.script';
+import { RemoveTagFromNoteTransactionScript } from 'src/tags/domain/transaction-scripts/remove-tag-from-note-TS/remove-tag-from-note.transaction.script';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { RemoveTagFromNoteSwagger } from './remove-tag-from-note.swagger';

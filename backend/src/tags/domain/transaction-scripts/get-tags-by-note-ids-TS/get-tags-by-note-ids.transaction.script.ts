@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
-import { TagResponseDto } from '../../apps/dtos/responses/tag.response.dto';
+import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
+import { TagResponseDto } from '../../../apps/dtos/responses/tag.response.dto';
 
 @Injectable()
 export class GetTagsByNoteIdsTransactionScript {

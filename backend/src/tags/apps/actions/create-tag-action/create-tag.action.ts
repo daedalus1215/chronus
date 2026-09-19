@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { CreateTagTransactionScript } from '../../../domain/transaction-scripts/create-tag.transaction.script';
+import { CreateTagTransactionScript } from '../../../domain/transaction-scripts/create-tag-TS/create-tag.transaction.script';
 import { CreateTagDto } from './create-tag.dto';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
