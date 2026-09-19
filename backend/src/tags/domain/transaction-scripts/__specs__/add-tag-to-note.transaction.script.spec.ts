@@ -3,7 +3,7 @@ import { AddTagToNoteTransactionScript } from '../add-tag-to-note.transaction.sc
 import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
 import { NotFoundException } from '@nestjs/common';
 import { Tag } from '../../../domain/entities/tag.entity';
-import { AddTagToNoteDto } from '../../../app/dtos/requests/add-tag-to-note.dto';
+import { AddTagToNoteDto } from '../../../apps/dtos/requests/add-tag-to-note.dto';
 import {
   createMock,
   generateRandomNumbers,

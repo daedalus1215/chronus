@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TagRepository } from '../../infra/repositories/tag-repository/tag.repository';
-import { AddTagToNoteDto } from '../../app/dtos/requests/add-tag-to-note.dto';
+import { AddTagToNoteDto } from '../../apps/dtos/requests/add-tag-to-note.dto';
 import { Tag } from '../../domain/entities/tag.entity';
 
 /**

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { AddTagToNoteTransactionScript } from '../transaction-scripts/add-tag-to-note.transaction.script';
 import { GetTagsByNoteIdTransactionScript } from '../transaction-scripts/get-tags-by-note-id.transaction.script';
 import { GetTagsByUserIdTransactionScript } from '../transaction-scripts/get-tags-by-user-id.transaction.script';
-import { AddTagToNoteDto } from '../../app/dtos/requests/add-tag-to-note.dto';
-import { TagResponseDto } from '../../app/dtos/responses/tag.response.dto';
+import { AddTagToNoteDto } from '../../apps/dtos/requests/add-tag-to-note.dto';
+import { TagResponseDto } from '../../apps/dtos/responses/tag.response.dto';
 import { Tag } from '../entities/tag.entity';
 import { GetTagsByUserIdProjection } from '../transaction-scripts/get-tags-by-user-id.projection';
 
