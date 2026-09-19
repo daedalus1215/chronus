@@ -117,7 +117,7 @@ If you need to coordinate multiple Assemblers, use a **Mapper** one level up. Th
 | -------- | ---------- | ------- |
 | Class name | `{Purpose}Assembler` | `CreateFileAttachmentAssembler`, `GroupAndSortCaseFilesAssembler` |
 | File name | `{purpose}.assembler.ts` | `create-file-attachment.assembler.ts` |
-| Folder | Colocated with the consuming Transaction Script | `{ts-name}/{assembler-name}/` |
+| Folder | Colocated with the consuming Transaction Script | `{ts-name}-TS/` |
 | Spec file | `{purpose}.assembler.spec.ts` in `__specs__/` | adjacent `__specs__/` folder |
 
 ---

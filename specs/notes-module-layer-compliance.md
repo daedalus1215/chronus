@@ -543,6 +543,12 @@ Manual smoke (optional, against a running stack):
 3. **F3 — TS layout unification + docs:** decide flat vs `{ts-name}-TS/` subfolder, move
    the minority, and reconcile root `AGENTS.md` (`{ts-name}-ts/`) with the module
    `AGENTS.md` (`{ts-name}-TS/`) against the code.
+   **Done (2026-09-19, branch `f3-ts-layout-unification`):** repo-wide survey found
+   23 flat TS files vs 32 subfolders in three folder-name styles; unified on
+   "every TS lives in its own `{ts-name}-TS/` folder" (the pattern docs' layout and
+   the repo majority), one commit per module. Shared types with several consumers
+   (e.g. `note-name-row.projection`) stay at the `transaction-scripts/` root, per
+   the "as high as the highest consumer" rule. Docs reconciled on `-TS`.
 4. **F4 — `CreateNoteAction` response DTO** (raw `Note` entity → response DTO; wire change).
 5. **F5 — Metatron report discrepancy:** "7 unreachable" not reproducible on either
    checkout (all 67 notes source files reachable from `notes.module.ts` wiring); report's

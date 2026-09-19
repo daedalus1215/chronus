@@ -107,7 +107,7 @@ Converters sit at the same hierarchical level and must not inject each other. If
 | -------- | ---------- | ------- |
 | Class name | `{Source}To{Target}Converter` or `{Purpose}Converter` | `FileAttachmentToCaseFilesProjectionConverter` |
 | File name | `{source}-to-{target}.converter.ts` or `{purpose}.converter.ts` | `file-attachment-to-case-files-projection.converter.ts` |
-| Location | Within the transaction script folder that consumes it, or as high as the highest consumer | `{module}/domain/converters/` or `{module}/domain/transaction-scripts/{ts-name}/` |
+| Location | Within the transaction script folder that consumes it, or as high as the highest consumer | `{module}/domain/converters/` or `{module}/domain/transaction-scripts/{ts-name}-TS/` |
 | Spec file | `{name}.converter.spec.ts` in `__specs__/` | adjacent `__specs__/` folder |
 
 ---

@@ -61,8 +61,9 @@ src/{module-name}/
     {action-name}.swagger.ts
   apps/dtos/requests/ and responses/
   domain/services/{service-name}.service.ts
-  domain/transaction-scripts/{ts-name}-ts/
+  domain/transaction-scripts/{ts-name}-TS/
     {ts-name}.transaction.script.ts
+    {purpose}.converter.ts            # colocated collaborator, if any
     __specs__/{ts-name}.transaction.script.spec.ts
   domain/entities/{entity-name}.entity.ts
   domain/aggregators/

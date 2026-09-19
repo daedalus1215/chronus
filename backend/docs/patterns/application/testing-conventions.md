@@ -16,7 +16,7 @@ Tests live in `__specs__/` folders adjacent to the source file they test. Every 
 {module}/
 └── domain/
     └── transaction-scripts/
-        └── fetch-case-detail-ts/
+        └── fetch-case-detail-TS/
             ├── fetch-case-detail.transaction.script.ts
             └── __specs__/
                 └── fetch-case-detail.transaction.script.spec.ts
@@ -24,7 +24,7 @@ Tests live in `__specs__/` folders adjacent to the source file they test. Every 
 
 | Artifact | Convention | Example |
 | -------- | ---------- | ------- |
-| Spec folder | `__specs__/` adjacent to the source file | `transaction-scripts/fetch-case-detail-ts/__specs__/` |
+| Spec folder | `__specs__/` adjacent to the source file | `transaction-scripts/fetch-case-detail-TS/__specs__/` |
 | Spec file name | `{original-name}.spec.ts` | `fetch-case-detail.transaction.script.spec.ts` |
 
 ---
@@ -162,8 +162,8 @@ Domain-specific test helpers (`createMock{Entity}`, `createMock{Params}`) live i
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileObjectAggregator } from '../file-object.aggregator';
-import { UploadStartTS } from '../../transaction-scripts/upload-start-ts/upload-start.transaction.script';
-import { DeleteFileTS } from '../../transaction-scripts/delete-file-ts/delete-file.transaction.script';
+import { UploadStartTS } from '../../transaction-scripts/upload-start-TS/upload-start.transaction.script';
+import { DeleteFileTS } from '../../transaction-scripts/delete-file-TS/delete-file.transaction.script';
 import { DeleteParams } from 'src/generic/domain/file-object/file-object.aggregator.port';
 import { createApplyMock, generateRandomString } from 'src/test-utils/test-utils';
 import { createMockUploadStartParams } from 'src/file-objects/test-utils';
