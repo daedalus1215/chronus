@@ -1,18 +1,12 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
+import { NoteService } from 'src/notes/domain/services/note.service';
+import { NoteNameRow } from 'src/notes/domain/transaction-scripts/note-name-row.projection';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 
-type ExplorerNoteItem = {
-  name: string;
-  id: number;
-  isMemo: number;
-  folderId: number | null;
-};
-
 @Controller('notes')
 export class GetNoteNamesForExplorerAction {
-  constructor(private readonly noteRepository: NoteMemoTagRepository) {}
+  constructor(private readonly noteService: NoteService) {}
 
   @Get('explorer-names')
   @ProtectedAction({
@@ -22,7 +16,7 @@ export class GetNoteNamesForExplorerAction {
   async apply(
     @GetAuthUser('userId') userId: number,
     @Query('folderId') folderId?: string
-  ): Promise<ExplorerNoteItem[]> {
-    return this.noteRepository.getNoteNamesForExplorer(userId, folderId);
+  ): Promise<NoteNameRow[]> {
+    return this.noteService.getNoteNamesForExplorer(userId, folderId);
   }
 }
