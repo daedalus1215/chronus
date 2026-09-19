@@ -529,9 +529,11 @@ Manual smoke (optional, against a running stack):
 
 ## Follow-ups (explicitly out of scope, recorded for the next spec)
 
-1. **F1 — Test-coverage spec** for the 15 untested high-risk files the report named
-   (top candidate: `note-memo-tag.repository.ts`, 30 commits / 19 dependents; then
-   `note.entity.ts`, `note.service.ts` — the latter gets partial coverage via T7 here).
+1. **F1 — Test-coverage spec** for the untested high-risk files the report named.
+   **Done (2026-09-18):** `specs/notes-module-test-coverage.md` — specs for
+   `note.aggregator.ts` and the data-operation half of
+   `note-memo-tag.repository.ts`; the remaining files ruled out or blocked on the
+   (unused) integration-test infra, which is the open next step.
 2. **F2 — Cross-module `app/` → `apps/` rename** (`auth/app`, `folders/app`, `users/app`,
    `tags/app` + its stray `tags/apps` twin).
 3. **F3 — TS layout unification + docs:** decide flat vs `{ts-name}-TS/` subfolder, move
