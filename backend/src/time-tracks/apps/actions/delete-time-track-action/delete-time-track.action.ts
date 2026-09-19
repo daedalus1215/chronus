@@ -4,7 +4,7 @@ import {
   AuthUser,
   GetAuthUser,
 } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { DeleteTimeTrackTransactionScript } from 'src/time-tracks/domain/transaction-scripts/delete-time-track.transaction.script';
+import { DeleteTimeTrackTransactionScript } from 'src/time-tracks/domain/transaction-scripts/delete-time-track-TS/delete-time-track.transaction.script';
 import { DeleteTimeTrackSwagger } from './delete-time-track.swagger';
 
 @Controller('time-tracks')

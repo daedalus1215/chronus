@@ -14,7 +14,7 @@ import { TagsModule } from '../tags/tags.module';
 import { TimeTrackService } from './domain/services/time-track-service/time-track.service';
 import { TimeTrackWithNoteNamesResponder } from './apps/actions/fetch-daily-time-tracks-aggregation-action/time-track-with-note-names.responder';
 import { DeleteTimeTrackAction } from './apps/actions/delete-time-track-action/delete-time-track.action';
-import { DeleteTimeTrackTransactionScript } from './domain/transaction-scripts/delete-time-track.transaction.script';
+import { DeleteTimeTrackTransactionScript } from './domain/transaction-scripts/delete-time-track-TS/delete-time-track.transaction.script';
 import { UpdateTimeTrackNoteAction } from './apps/actions/update-time-track-note-action/update-time-track-note.action';
 import { UpdateTimeTrackNoteTransactionScript } from './domain/transaction-scripts/update-time-track-note-TS/update-time-track-note.transaction.script';
 import { UpdateTimeTrackPayloadConverter } from './domain/transaction-scripts/update-time-track-note-TS/update-time-track-note.converter';
