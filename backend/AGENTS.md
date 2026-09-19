@@ -252,6 +252,28 @@ describe('given: CreateTimeTrackTransactionScript', () => {
 });
 ```
 
+### Integration tests
+
+`*.integration.spec.ts` files run against a real Postgres (excluded from `npm run test`,
+picked up by `npm run test:integration` via `test/jest-integration.json`).
+
+```bash
+docker compose -f ../docker-compose.test.yml up -d   # from backend/
+npm run test:integration
+```
+
+Conventions:
+
+- One shared DB (`chronus_test` on port 5433); the config runs a single worker.
+- Bootstrap the data source with `createIntegrationDataSource()` from
+  `src/shared-kernel/integration-test-data-source.ts` — it runs the real migration
+  chain (`migrationsRun`, no `synchronize`), so the schema under test is the
+  production schema.
+- Wipe state with `truncateIntegrationTables(dataSource)` in `beforeEach` so tests
+  are isolated and identities are deterministic.
+- The SUT is constructed directly (`new MyRepo(ds.getRepository(X), ...)`) — no Nest
+  module needed for repository-level integration tests.
+
 ### Coverage
 
 Minimum 80% coverage for all production code. All production classes (Transaction Scripts, Repositories, Aggregators, Domain Services, Converters) require tests.

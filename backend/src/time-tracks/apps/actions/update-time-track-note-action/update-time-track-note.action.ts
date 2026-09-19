@@ -15,7 +15,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared-kernel/apps/guards/jwt-auth.guard';
 import { TimeTrackService } from '../../../domain/services/time-track-service/time-track.service';
 import { TimeTrackResponseDto } from '../../dtos/responses/time-track.response.dto';
-import { UpdateTimeTrackDto } from './dtos/update-time-track.dto';
+import { UpdateTimeTrackDto } from './update-time-track.dto';
 import { UpdateTimeTrackNoteSwagger } from './update-time-track-note.swagger';
 
 @Controller('time-tracks')

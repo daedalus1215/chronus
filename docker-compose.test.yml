@@ -1,39 +1,26 @@
-version: '3.8'
-
+# Test database for `npm run test:integration` (see backend/AGENTS.md).
+#
+#   docker compose -f docker-compose.test.yml up -d
+#   docker compose -f docker-compose.test.yml down   # drop data when done
+#
+# Mirrors the prod Postgres major version (home-lab infra: postgres:16-alpine).
+# Port 5433 so it cannot collide with a local 5432.
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.test
+  postgres:
+    image: postgres:16-alpine
     environment:
-      NODE_ENV: test
-      DATABASE_URL: "file:/app/data/test.db"
-      JWT_SECRET: test_secret_key
+      POSTGRES_DB: chronus_test
+      POSTGRES_USER: chronus
+      POSTGRES_PASSWORD: chronus_test
     ports:
-      - "3002:3001"
+      - "5433:5432"
     volumes:
-      - ./backend/data:/app/data
+      - test-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chronus -d chronus_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.test
-    environment:
-      VITE_API_URL: http://backend:3001
-    ports:
-      - "3003:3000"
-    depends_on:
-      - backend
-
-  e2e:
-    build:
-      context: ./e2e
-      dockerfile: Dockerfile
-    environment:
-      PLAYWRIGHT_BASE_URL: http://frontend:3000
-    depends_on:
-      - frontend
-      - backend
-    volumes:
-      - ./e2e/test-results:/e2e/test-results
-      - ./e2e/playwright-report:/e2e/playwright-report 
+volumes:
+  test-db-data:
