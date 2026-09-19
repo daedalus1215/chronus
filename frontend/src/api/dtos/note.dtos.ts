@@ -19,11 +19,24 @@ export type ExplorerNoteItem = {
   sortOrder: number;
 };
 
+export type CheckItemResponse = {
+  id: number;
+  name: string;
+  status: 'ready' | 'in_progress' | 'review' | 'done';
+  doneDate: string | null;
+  archiveDate: string | null;
+  noteId: number;
+  order: number;
+  description: string | null;
+};
+
 export type NoteResponse = {
   id: number;
   name: string;
-  userId: string;
+  checkItems: CheckItemResponse[];
+  description: string;
   isMemo: boolean;
+  folderId: number | null;
 };
 
 export type CreateTimeTrackRequest = {
