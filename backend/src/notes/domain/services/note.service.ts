@@ -25,7 +25,7 @@ import { LoadNoteVersionTransactionScript } from '../transaction-scripts/load-no
 import { UpdateNoteTimestampTransactionScript } from '../transaction-scripts/update-note-timestamp.transaction.script';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
+import { DeleteNoteTransactionScript } from '../transaction-scripts/delete-note.transaction.script';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DELETE_CHECK_ITEMS_BY_NOTE_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/check-items/delete-check-items-by-note.command';
 import { DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/tags/delete-note-tag-associations.command';
@@ -69,7 +69,7 @@ export class NoteService {
     private readonly getNoteNamesByUserIdTransactionScript: GetNoteNamesByUserIdTransactionScript,
     private readonly getNoteNamesForExplorerTransactionScript: GetNoteNamesForExplorerTransactionScript,
     private readonly eventEmitter: EventEmitter2,
-    private readonly noteRepository: NoteMemoTagRepository,
+    private readonly deleteNoteTransactionScript: DeleteNoteTransactionScript,
     private readonly getNoteVersionsTransactionScript: GetNoteVersionsTransactionScript,
     private readonly loadNoteVersionTransactionScript: LoadNoteVersionTransactionScript,
     private readonly updateNoteTimestampTransactionScript: UpdateNoteTimestampTransactionScript,
@@ -193,8 +193,7 @@ export class NoteService {
   }
 
   async deleteNote(noteId: number, userId: number): Promise<void> {
-    const note = await this.noteRepository.findById(noteId, userId);
-    if (!note) throw new NotFoundException('Note not found');
+    await this.getNoteByIdTransactionScript.apply(noteId, userId);
 
     await this.eventEmitter.emitAsync(DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND, {
       noteId,
@@ -206,6 +205,6 @@ export class NoteService {
       userId,
     });
 
-    await this.noteRepository.deleteNoteById(noteId, userId);
+    await this.deleteNoteTransactionScript.apply(noteId, userId);
   }
 }
