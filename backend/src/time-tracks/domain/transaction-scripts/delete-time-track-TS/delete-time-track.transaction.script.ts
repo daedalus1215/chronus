@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TimeTrackRepository } from '../../infra/repositories/time-track.repository';
+import { TimeTrackRepository } from '../../../infra/repositories/time-track.repository';
 
 @Injectable()
 export class DeleteTimeTrackTransactionScript {
