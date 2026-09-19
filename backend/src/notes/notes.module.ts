@@ -40,6 +40,7 @@ import { MoveNoteToFolderTransactionScript } from './domain/transaction-scripts/
 import { MoveNoteToFolderAction } from './apps/actions/notes/move-note-to-folder-action/move-note-to-folder.action';
 import { ReorderNotesTransactionScript } from './domain/transaction-scripts/reorder-notes.transaction.script';
 import { ReorderNotesAction } from './apps/actions/notes/reorder-notes-action/reorder-notes.action';
+import { GetNoteNamesByUserIdTransactionScript } from './domain/transaction-scripts/get-note-names-by-user-id.transaction.script';
 import { GetNoteNamesForExplorerAction } from './apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action';
 import { NoteFolderAdapter } from './apps/adapters/note-folder.adapter';
 import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
@@ -84,6 +85,7 @@ import { LoadNoteVersionResponder } from './apps/actions/notes/load-note-version
     NoteOwnershipAdapter,
     MoveNoteToFolderTransactionScript,
     ReorderNotesTransactionScript,
+    GetNoteNamesByUserIdTransactionScript,
     {
       provide: NOTE_OWNERSHIP_PORT,
       useExisting: NoteOwnershipAdapter,

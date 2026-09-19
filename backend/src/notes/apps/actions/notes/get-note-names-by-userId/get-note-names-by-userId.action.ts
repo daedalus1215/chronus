@@ -1,23 +1,13 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
+import { NoteService } from 'src/notes/domain/services/note.service';
+import { GetNoteNamesResult } from 'src/notes/domain/transaction-scripts/get-note-names-by-user-id.transaction.script';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { GetNoteNamesByUserIdSwagger } from './get-note-names-by-userId.swagger';
 
-type GetNoteNamesResponse = {
-  notes: {
-    name: string;
-    id: number;
-    isMemo: number;
-    folderId: number | null;
-  }[];
-  hasMore: boolean;
-  nextCursor: number | null;
-};
-
 @Controller('notes')
 export class GetNoteNamesByUserIdAction {
-  constructor(private readonly noteRepository: NoteMemoTagRepository) {}
+  constructor(private readonly noteService: NoteService) {}
 
   @Get('names')
   @ProtectedAction(GetNoteNamesByUserIdSwagger)
@@ -28,23 +18,14 @@ export class GetNoteNamesByUserIdAction {
     @Query('query') query?: string,
     @Query('type') type?: 'memo' | 'checklist',
     @Query('tagId') tagId?: string
-  ): Promise<GetNoteNamesResponse> {
-    const notes = await this.noteRepository.getNoteNamesByUserId(
+  ): Promise<GetNoteNamesResult> {
+    return this.noteService.getNoteNamesByUserId({
       userId,
       cursor,
       limit,
       query,
       type,
-      tagId
-    );
-    const hasMore = notes.length === limit;
-
-    const nextCursor = cursor + limit + 1;
-
-    return {
-      notes,
-      hasMore,
-      nextCursor,
-    };
+      tagId,
+    });
   }
 }
