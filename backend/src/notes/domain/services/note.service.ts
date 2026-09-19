@@ -21,6 +21,7 @@ import { GetNoteNamesForExplorerTransactionScript } from '../transaction-scripts
 import { NoteNameRow } from '../transaction-scripts/note-name-row.projection';
 import { GetNoteVersionsTransactionScript } from '../transaction-scripts/get-note-versions.transaction.script';
 import { NoteVersion } from '../entities/notes/note-version.entity';
+import { LoadNoteVersionTransactionScript } from '../transaction-scripts/load-note-version.transaction.script';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
@@ -69,6 +70,7 @@ export class NoteService {
     private readonly eventEmitter: EventEmitter2,
     private readonly noteRepository: NoteMemoTagRepository,
     private readonly getNoteVersionsTransactionScript: GetNoteVersionsTransactionScript,
+    private readonly loadNoteVersionTransactionScript: LoadNoteVersionTransactionScript,
     private readonly checkItemsAggregator: CheckItemsAggregator
   ) {}
 
@@ -102,6 +104,23 @@ export class NoteService {
 
   async getNoteVersions(noteId: number, userId: number): Promise<NoteVersion[]> {
     return this.getNoteVersionsTransactionScript.apply(noteId, userId);
+  }
+
+  async loadNoteVersion(
+    noteId: number,
+    versionId: number,
+    userId: number
+  ): Promise<NoteWithCheckItems> {
+    const version = await this.loadNoteVersionTransactionScript.apply(
+      noteId,
+      versionId,
+      userId
+    );
+    return this.updateNoteWithCheckItems(
+      noteId,
+      { description: version.description, skipVersionCapture: true },
+      userId
+    );
   }
 
   async archiveNote(noteId: number, authUser: AuthUser): Promise<Note> {
