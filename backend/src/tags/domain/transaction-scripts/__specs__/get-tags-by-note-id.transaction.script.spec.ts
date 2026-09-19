@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { GetTagsByNoteIdTransactionScript } from '../get-tags-by-note-id.transaction.script';
 import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
 import { Tag } from '../../../domain/entities/tag.entity';
-import { TagResponseDto } from '../../../app/dtos/responses/tag.response.dto';
+import { TagResponseDto } from '../../../apps/dtos/responses/tag.response.dto';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { createMock } from 'src/shared-kernel/test-utils';
 
