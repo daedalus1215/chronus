@@ -160,7 +160,7 @@ Repositories (shallow, data only)
 | -------- | ---------- | ------- |
 | Class name | `{Purpose}Validator` | `NoSelfLockoutValidator`, `NonEmptyFileListValidator` |
 | File name | `{purpose}.validator.ts` | `no-self-lockout.validator.ts` |
-| Folder | Co-located with the consuming Transaction Script | `{ts-name}/{purpose}.validator.ts` |
+| Folder | Co-located with the consuming Transaction Script | `{ts-name}-TS/{purpose}.validator.ts` |
 | Spec file | `{purpose}.validator.spec.ts` in `__specs__/` | adjacent `__specs__/` folder |
 
 ---

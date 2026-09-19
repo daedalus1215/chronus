@@ -123,7 +123,7 @@ If a Transaction Script needs multiple Mappers, consider whether the TS is doing
 | -------- | ---------- | ------- |
 | Class name | `{Purpose}Mapper` | `CreateRecordFileMapper`, `NoteFilesMapper` |
 | File name | `{purpose}.mapper.ts` | `create-record-file.mapper.ts` |
-| Folder | Colocated with the consuming Transaction Script | `{ts-name}/{mapper-name}/` |
+| Folder | Colocated with the consuming Transaction Script | `{ts-name}-TS/` |
 | Spec file | `{purpose}.mapper.spec.ts` in `__specs__/` | adjacent `__specs__/` folder |
 
 ---

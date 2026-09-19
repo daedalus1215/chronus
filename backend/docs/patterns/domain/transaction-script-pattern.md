@@ -142,7 +142,7 @@ If a Converter is used by a Mapper, the Transaction Script should inject the Map
 | -------- | ---------- | ------- |
 | Class name | `{Action}{Entity}TS` | `FetchCaseDetailTS`, `UploadCompleteRecordFileTS` |
 | File name | `{action-name}.transaction.script.ts` | `fetch-case-detail.transaction.script.ts` |
-| Folder | `{transaction-name}-ts/` | `fetch-case-detail-ts/` |
+| Folder | `{transaction-name}-TS/` | `fetch-case-detail-TS/` |
 | Param type | `{Action}{Entity}Params` | `UploadCompleteRecordFileParams` |
 | Param file | `{action-name}.param.ts` | `upload-complete-note-file.param.ts` |
 | Spec file | `{action-name}.transaction.script.spec.ts` in `__specs__/` | `fetch-case-detail.transaction.script.spec.ts` |
@@ -155,7 +155,7 @@ If a Converter is used by a Mapper, the Transaction Script should inject the Map
 {module}/
 └── domain/
     └── transaction-scripts/
-        └── {transaction-name}-ts/
+        └── {transaction-name}-TS/
             ├── {transaction-name}.transaction.script.ts
             ├── {transaction-name}.param.ts
             ├── {mapper-name}/           ← colocated mapper (if any)
