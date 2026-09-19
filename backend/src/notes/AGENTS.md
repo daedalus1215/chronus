@@ -31,7 +31,8 @@ Folder base: `apps/actions/`
 
 ## Services
 
-- `NoteService` (`domain/services/`)
+- `NoteService` (`domain/services/`) -- fronts every notes action (the only
+  domain-layer dependency any action may inject)
 
 ## Transaction Scripts
 
@@ -45,6 +46,14 @@ Folder: `domain/transaction-scripts/`
 - `ConvertChecklistToMemoTransactionScript`
 - `SearchNotesTransactionScript`
 - `GetNoteNamesByIdsTransactionScript`
+- `MoveNoteToFolderTransactionScript`
+- `ReorderNotesTransactionScript`
+- `GetNoteNamesByUserIdTransactionScript`
+- `GetNoteNamesForExplorerTransactionScript`
+- `GetNoteVersionsTransactionScript`
+- `LoadNoteVersionTransactionScript`
+- `UpdateNoteTimestampTransactionScript`
+- `DeleteNoteTransactionScript`
 
 ## Converters
 
