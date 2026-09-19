@@ -12,6 +12,11 @@ import {
   ReorderNotesTransactionScript,
   ReorderNotesInput,
 } from '../transaction-scripts/reorder-notes.transaction.script';
+import {
+  GetNoteNamesByUserIdTransactionScript,
+  GetNoteNamesQuery,
+  GetNoteNamesResult,
+} from '../transaction-scripts/get-note-names-by-user-id.transaction.script';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
@@ -55,6 +60,7 @@ export class NoteService {
     private readonly updateNoteTitleTransactionScript: UpdateNoteTitleTransactionScript,
     private readonly moveNoteToFolderTransactionScript: MoveNoteToFolderTransactionScript,
     private readonly reorderNotesTransactionScript: ReorderNotesTransactionScript,
+    private readonly getNoteNamesByUserIdTransactionScript: GetNoteNamesByUserIdTransactionScript,
     private readonly eventEmitter: EventEmitter2,
     private readonly noteRepository: NoteMemoTagRepository,
     private readonly checkItemsAggregator: CheckItemsAggregator
@@ -78,6 +84,10 @@ export class NoteService {
 
   async reorderNotes(input: ReorderNotesInput): Promise<void> {
     return this.reorderNotesTransactionScript.apply(input);
+  }
+
+  async getNoteNamesByUserId(params: GetNoteNamesQuery): Promise<GetNoteNamesResult> {
+    return this.getNoteNamesByUserIdTransactionScript.apply(params);
   }
 
   async archiveNote(noteId: number, authUser: AuthUser): Promise<Note> {
