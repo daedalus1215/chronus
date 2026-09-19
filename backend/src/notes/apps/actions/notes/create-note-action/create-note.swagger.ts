@@ -1,4 +1,4 @@
-import { Note } from 'src/notes/domain/entities/notes/note.entity';
+import { NoteResponseDto } from '../../../dtos/responses/note.response.dto';
 import { ProtectedActionOptions } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 
 export const CreateNoteSwagger: ProtectedActionOptions = {
@@ -8,7 +8,7 @@ export const CreateNoteSwagger: ProtectedActionOptions = {
     {
       status: 201,
       description: 'The note has been successfully created.',
-      type: Note,
+      type: NoteResponseDto,
     },
     {
       status: 400,

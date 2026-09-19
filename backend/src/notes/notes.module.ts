@@ -58,6 +58,7 @@ import { GetNoteVersionsAction } from './apps/actions/notes/get-note-versions-ac
 import { GetNoteVersionsResponder } from './apps/actions/notes/get-note-versions-action/get-note-versions.responder';
 import { LoadNoteVersionAction } from './apps/actions/notes/load-note-version-action/load-note-version.action';
 import { LoadNoteVersionResponder } from './apps/actions/notes/load-note-version-action/load-note-version.responder';
+import { CreateNoteResponder } from './apps/actions/notes/create-note-action/create-note.responder';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { LoadNoteVersionResponder } from './apps/actions/notes/load-note-version
     GetNoteVersionsResponder,
     LoadNoteVersionResponder,
     UpdateNoteResponder,
+    CreateNoteResponder,
     SearchNotesTransactionScript,
     SearchNotesResponder,
     NoteOwnershipAdapter,
