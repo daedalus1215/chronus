@@ -8,12 +8,12 @@ import {
 } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { MoveNoteToFolderTransactionScript } from 'src/notes/domain/transaction-scripts/move-note-to-folder.transaction.script';
+import { NoteService } from 'src/notes/domain/services/note.service';
 import { MoveNoteToFolderDto } from './move-note-to-folder.dto';
 
 @Controller('notes')
 export class MoveNoteToFolderAction {
-  constructor(private readonly moveNoteTS: MoveNoteToFolderTransactionScript) {}
+  constructor(private readonly noteService: NoteService) {}
 
   @Patch(':id/folder')
   @HttpCode(200)
@@ -23,7 +23,7 @@ export class MoveNoteToFolderAction {
     @Body() dto: MoveNoteToFolderDto,
     @GetAuthUser('userId') userId: number
   ): Promise<{ id: number; folderId: number | null }> {
-    const note = await this.moveNoteTS.apply(id, userId, dto.folderId);
+    const note = await this.noteService.moveNoteToFolder(id, userId, dto.folderId);
     return { id: note.id, folderId: note.folderId };
   }
 }
