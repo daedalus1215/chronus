@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
-import { Note } from '../entities/notes/note.entity';
+import { NoteMemoTagRepository } from '../../../infra/repositories/note-memo-tag.repository';
+import { Note } from '../../entities/notes/note.entity';
 
 @Injectable()
 export class GetNoteByIdTransactionScript {

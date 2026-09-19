@@ -6,7 +6,7 @@ import {
 import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
 import { Note } from '../entities/notes/note.entity';
 import { Memo } from '../entities/notes/memo.entity';
-import { GetNoteNamesByIdsTransactionScript } from '../transaction-scripts/get-note-names-by-ids.transaction.script';
+import { GetNoteNamesByIdsTransactionScript } from '../transaction-scripts/get-note-names-by-ids-TS/get-note-names-by-ids.transaction.script';
 import { NoteWriterPort } from '../../../note-transfer/domain/ports/note-writer.port';
 
 type NoteReference = {

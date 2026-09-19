@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
+import { NoteMemoTagRepository } from '../../../infra/repositories/note-memo-tag.repository';
 
 @Injectable()
 export class DeleteNoteTransactionScript {

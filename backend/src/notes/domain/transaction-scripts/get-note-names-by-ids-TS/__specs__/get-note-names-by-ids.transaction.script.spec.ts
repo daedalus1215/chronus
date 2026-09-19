@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetNoteNamesByIdsTransactionScript } from '../get-note-names-by-ids.transaction.script';
-import { NoteMemoTagRepository } from '../../../infra/repositories/note-memo-tag.repository';
+import { NoteMemoTagRepository } from '../../../../infra/repositories/note-memo-tag.repository';
 
 describe('GetNoteNamesByIdsTransactionScript', () => {
   let target: GetNoteNamesByIdsTransactionScript;

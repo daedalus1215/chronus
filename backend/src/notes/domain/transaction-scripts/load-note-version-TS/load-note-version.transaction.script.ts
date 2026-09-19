@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { NoteVersionRepository } from '../../infra/repositories/note-version.repository';
-import { NoteVersion } from '../entities/notes/note-version.entity';
+import { NoteVersionRepository } from '../../../infra/repositories/note-version.repository';
+import { NoteVersion } from '../../entities/notes/note-version.entity';
 
 @Injectable()
 export class LoadNoteVersionTransactionScript {

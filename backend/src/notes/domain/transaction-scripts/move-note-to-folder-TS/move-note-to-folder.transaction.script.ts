@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Note } from '../entities/notes/note.entity';
+import { Note } from '../../entities/notes/note.entity';
 
 @Injectable()
 export class MoveNoteToFolderTransactionScript {

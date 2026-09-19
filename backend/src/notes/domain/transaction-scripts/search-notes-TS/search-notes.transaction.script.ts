@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { NoteMemoTagRepository } from '../../infra/repositories/note-memo-tag.repository';
+import { NoteMemoTagRepository } from '../../../infra/repositories/note-memo-tag.repository';
 
 export type NoteSearchMatches = {
   noteNameMatches: { noteId: number; noteName: string; isMemo: boolean }[];
