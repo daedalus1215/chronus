@@ -32,13 +32,20 @@ describe('UpdateNoteTimestampTransactionScript', () => {
       // Arrange
       const id = generateRandomNumbers();
       const userId = generateRandomNumbers();
-      mockRepository.updateNoteTimestamp.mockResolvedValue({ affected: 1, raw: {}, generatedMaps: [] });
+      mockRepository.updateNoteTimestamp.mockResolvedValue({
+        affected: 1,
+        raw: {},
+        generatedMaps: [],
+      });
 
       // Act
       const result = await target.apply(id, userId);
 
       // Assert
-      expect(mockRepository.updateNoteTimestamp).toHaveBeenCalledWith(id, userId);
+      expect(mockRepository.updateNoteTimestamp).toHaveBeenCalledWith(
+        id,
+        userId
+      );
       expect(result).toBeUndefined();
     });
 
@@ -46,7 +53,11 @@ describe('UpdateNoteTimestampTransactionScript', () => {
       // Arrange
       const id = generateRandomNumbers();
       const userId = generateRandomNumbers();
-      mockRepository.updateNoteTimestamp.mockResolvedValue({ affected: 0, raw: {}, generatedMaps: [] });
+      mockRepository.updateNoteTimestamp.mockResolvedValue({
+        affected: 0,
+        raw: {},
+        generatedMaps: [],
+      });
 
       // Act / Assert
       await expect(target.apply(id, userId)).rejects.toThrow(NotFoundException);

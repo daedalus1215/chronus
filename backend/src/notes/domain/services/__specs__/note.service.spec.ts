@@ -3,7 +3,10 @@ import { NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { NoteService } from '../note.service';
-import { createMock, createMockNote } from 'src/notes/test-utils/mock-factories';
+import {
+  createMock,
+  createMockNote,
+} from 'src/notes/test-utils/mock-factories';
 import { NoteVersion } from 'src/notes/domain/entities/notes/note-version.entity';
 import { ArchiveNoteTransactionScript } from 'src/notes/domain/transaction-scripts/archive-note/archive-note.transaction.script';
 import { ConvertChecklistToMemoTransactionScript } from 'src/notes/domain/transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script';
@@ -129,8 +132,7 @@ describe('NoteService', () => {
       );
       expect(mockDeleteNoteTS.apply).toHaveBeenCalledWith(noteId, userId);
 
-      const guardOrder =
-        mockGetNoteByIdTS.apply.mock.invocationCallOrder[0];
+      const guardOrder = mockGetNoteByIdTS.apply.mock.invocationCallOrder[0];
       const tagEventOrder =
         mockEventEmitter.emitAsync.mock.invocationCallOrder[0];
       const checkItemEventOrder =
@@ -178,11 +180,7 @@ describe('NoteService', () => {
       mockCheckItemsAggregator.findByNoteId.mockResolvedValue(checkItems);
 
       // Act
-      const result = await service.loadNoteVersion(
-        noteId,
-        versionId,
-        userId
-      );
+      const result = await service.loadNoteVersion(noteId, versionId, userId);
 
       // Assert
       expect(mockLoadNoteVersionTS.apply).toHaveBeenCalledWith(

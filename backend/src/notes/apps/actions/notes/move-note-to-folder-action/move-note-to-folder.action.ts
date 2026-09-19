@@ -23,7 +23,11 @@ export class MoveNoteToFolderAction {
     @Body() dto: MoveNoteToFolderDto,
     @GetAuthUser('userId') userId: number
   ): Promise<{ id: number; folderId: number | null }> {
-    const note = await this.noteService.moveNoteToFolder(id, userId, dto.folderId);
+    const note = await this.noteService.moveNoteToFolder(
+      id,
+      userId,
+      dto.folderId
+    );
     return { id: note.id, folderId: note.folderId };
   }
 }

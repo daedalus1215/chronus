@@ -32,7 +32,13 @@ describe('GetNoteVersionsTransactionScript', () => {
       const noteId = generateRandomNumbers();
       const userId = generateRandomNumbers();
       const versions = [
-        { id: 1, noteId, versionNum: 1, description: 'old', createdAt: new Date() },
+        {
+          id: 1,
+          noteId,
+          versionNum: 1,
+          description: 'old',
+          createdAt: new Date(),
+        },
       ];
       mockVersionRepository.findByNoteId.mockResolvedValue(versions);
       // Act
