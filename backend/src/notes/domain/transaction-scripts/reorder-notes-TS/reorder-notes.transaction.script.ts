@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { Note } from '../entities/notes/note.entity';
+import { Note } from '../../entities/notes/note.entity';
 
 export type ReorderNotesInput = {
   userId: number;
