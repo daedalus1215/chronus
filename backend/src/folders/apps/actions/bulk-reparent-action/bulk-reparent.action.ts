@@ -1,7 +1,7 @@
 import { Body, Controller, Patch } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { BulkReparentFoldersTransactionScript } from 'src/folders/domain/transaction-scripts/bulk-reparent-folders.transaction-script';
+import { BulkReparentFoldersTransactionScript } from 'src/folders/domain/transaction-scripts/bulk-reparent-folders-TS/bulk-reparent-folders.transaction.script';
 import { FolderResponseDto } from 'src/folders/apps/dtos/responses/folder.response.dto';
 import { BulkReparentFoldersDto } from './bulk-reparent.dto';
 

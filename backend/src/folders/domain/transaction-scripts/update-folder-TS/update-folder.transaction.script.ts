@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { FolderRepository } from '../../infra/repositories/folder.repository';
-import { Folder } from '../entities/folder.entity';
+import { FolderRepository } from '../../../infra/repositories/folder.repository';
+import { Folder } from '../../entities/folder.entity';
 
 type Input = {
   id: number;

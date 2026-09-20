@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { FolderRepository } from '../../infra/repositories/folder.repository';
-import { Folder } from '../entities/folder.entity';
+import { FolderRepository } from '../../../infra/repositories/folder.repository';
+import { Folder } from '../../entities/folder.entity';
 
 export type BulkReparentFoldersInput = {
   userId: number;

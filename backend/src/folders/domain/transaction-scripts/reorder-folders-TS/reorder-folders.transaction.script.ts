@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { Folder } from '../entities/folder.entity';
+import { Folder } from '../../entities/folder.entity';
 
 export type ReorderFoldersInput = {
   userId: number;
