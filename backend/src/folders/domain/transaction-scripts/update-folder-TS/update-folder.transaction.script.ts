@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { FolderRepository } from '../../../infra/repositories/folder.repository';
 import { Folder } from '../../entities/folder.entity';
 
-type Input = {
+export type UpdateFolderInput = {
   id: number;
   userId: number;
   name?: string;
@@ -13,7 +13,7 @@ type Input = {
 export class UpdateFolderTransactionScript {
   constructor(private readonly folderRepository: FolderRepository) {}
 
-  async apply(input: Input): Promise<Folder> {
+  async apply(input: UpdateFolderInput): Promise<Folder> {
     const folder = await this.folderRepository.findById(input.id, input.userId);
     if (!folder) throw new NotFoundException('Folder not found');
 

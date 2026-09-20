@@ -7,11 +7,11 @@ import {
 } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { DeleteFolderTransactionScript } from 'src/folders/domain/transaction-scripts/delete-folder-TS/delete-folder.transaction.script';
+import { FolderService } from 'src/folders/domain/services/folder.service';
 
 @Controller('folders')
 export class DeleteFolderAction {
-  constructor(private readonly deleteFolderTS: DeleteFolderTransactionScript) {}
+  constructor(private readonly folderService: FolderService) {}
 
   @Delete(':id')
   @HttpCode(204)
@@ -23,6 +23,6 @@ export class DeleteFolderAction {
     @Param('id', ParseIntPipe) id: number,
     @GetAuthUser('userId') userId: number
   ): Promise<void> {
-    await this.deleteFolderTS.apply(id, userId);
+    await this.folderService.deleteFolder(id, userId);
   }
 }

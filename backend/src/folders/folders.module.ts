@@ -8,6 +8,7 @@ import { UpdateFolderTransactionScript } from './domain/transaction-scripts/upda
 import { DeleteFolderTransactionScript } from './domain/transaction-scripts/delete-folder-TS/delete-folder.transaction.script';
 import { BulkReparentFoldersTransactionScript } from './domain/transaction-scripts/bulk-reparent-folders-TS/bulk-reparent-folders.transaction.script';
 import { ReorderFoldersTransactionScript } from './domain/transaction-scripts/reorder-folders-TS/reorder-folders.transaction.script';
+import { FolderService } from './domain/services/folder.service';
 import { CreateFolderAction } from './apps/actions/create-folder-action/create-folder.action';
 import { GetFoldersByUserAction } from './apps/actions/get-folders-by-user-action/get-folders-by-user.action';
 import { BulkReparentAction } from './apps/actions/bulk-reparent-action/bulk-reparent.action';
@@ -26,6 +27,7 @@ import { NotesModule } from 'src/notes/notes.module';
     DeleteFolderTransactionScript,
     BulkReparentFoldersTransactionScript,
     ReorderFoldersTransactionScript,
+    FolderService,
   ],
   controllers: [
     BulkReparentAction,
