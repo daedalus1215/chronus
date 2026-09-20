@@ -1,14 +1,14 @@
 import { Body, Controller, Patch } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { BulkReparentFoldersTransactionScript } from 'src/folders/domain/transaction-scripts/bulk-reparent-folders-TS/bulk-reparent-folders.transaction.script';
+import { FolderService } from 'src/folders/domain/services/folder.service';
 import { FolderResponseDto } from 'src/folders/apps/dtos/responses/folder.response.dto';
 import { BulkReparentFoldersDto } from './bulk-reparent.dto';
 
 @Controller('folders')
 export class BulkReparentAction {
   constructor(
-    private readonly bulkReparentFoldersTS: BulkReparentFoldersTransactionScript
+    private readonly folderService: FolderService
   ) {}
 
   @Patch('bulk-reparent')
@@ -22,7 +22,7 @@ export class BulkReparentAction {
     @GetAuthUser('userId') userId: number
   ): Promise<FolderResponseDto[]> {
     const parentId = dto.parentId === undefined ? null : dto.parentId;
-    const folders = await this.bulkReparentFoldersTS.apply({
+    const folders = await this.folderService.bulkReparentFolders({
       userId,
       folderIds: dto.folderIds,
       parentId,
