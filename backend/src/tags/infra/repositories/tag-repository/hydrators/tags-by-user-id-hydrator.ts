@@ -1,4 +1,4 @@
-import { GetTagsByUserIdProjection } from 'src/tags/domain/transaction-scripts/get-tags-by-user-id.projection';
+import { GetTagsByUserIdProjection } from 'src/tags/domain/transaction-scripts/get-tags-by-user-id-TS/get-tags-by-user-id.projection';
 
 export const tagsByUserIdHydrator = (
   rows: [

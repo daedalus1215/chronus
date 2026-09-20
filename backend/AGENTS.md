@@ -375,7 +375,7 @@ async createTimeTrack(command: CreateTimeTrackCommand) {
 }
 ```
 
-### 5. Transaction Script (`domain/transaction-scripts/create-time-track.transaction.script.ts`)
+### 5. Transaction Script (`domain/transaction-scripts/create-time-track-TS/create-time-track.transaction.script.ts`)
 
 ```typescript
 @Injectable()

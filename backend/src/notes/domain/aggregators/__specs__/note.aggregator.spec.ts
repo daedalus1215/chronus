@@ -3,7 +3,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
 import { NoteAggregator } from '../note.aggregator';
 import { NoteMemoTagRepository } from 'src/notes/infra/repositories/note-memo-tag.repository';
-import { GetNoteNamesByIdsTransactionScript } from 'src/notes/domain/transaction-scripts/get-note-names-by-ids.transaction.script';
+import { GetNoteNamesByIdsTransactionScript } from 'src/notes/domain/transaction-scripts/get-note-names-by-ids-TS/get-note-names-by-ids.transaction.script';
 import {
   createMock,
   createMockNote,
