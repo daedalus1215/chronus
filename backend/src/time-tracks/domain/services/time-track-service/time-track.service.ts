@@ -19,6 +19,7 @@ import { GET_NOTE_DETAILS_COMMAND } from 'src/shared-kernel/domain/cross-domain-
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TagAggregator } from '../../../../tags/domain/aggregators/tag.aggregator';
 import { UpdateTimeTrackNoteTransactionScript } from '../../transaction-scripts/update-time-track-note-TS/update-time-track-note.transaction.script';
+import { DeleteTimeTrackTransactionScript } from '../../transaction-scripts/delete-time-track-TS/delete-time-track.transaction.script';
 import {
   WeeklyTrendProjection,
   StreakProjection,
@@ -56,7 +57,8 @@ export class TimeTrackService {
     private readonly getTimeTracksByDateRangeTS: GetTimeTracksByDateRangeTransactionScript,
     private readonly tagAggregator: TagAggregator,
     private readonly eventEmitter: EventEmitter2,
-    private readonly updateTimeTrackNoteTS: UpdateTimeTrackNoteTransactionScript
+    private readonly updateTimeTrackNoteTS: UpdateTimeTrackNoteTransactionScript,
+    private readonly deleteTimeTrackTS: DeleteTimeTrackTransactionScript
   ) {}
 
   async createTimeTrack(
@@ -65,6 +67,10 @@ export class TimeTrackService {
     await this.validateTimeTrackCreation(command);
     const entity = await this.createTimeTrackTS.apply(command);
     return this.toTimeTrackProjection(entity);
+  }
+
+  async deleteTimeTrack(id: number, userId: number): Promise<void> {
+    await this.deleteTimeTrackTS.apply(id, userId);
   }
 
   private async validateTimeTrackCreation(

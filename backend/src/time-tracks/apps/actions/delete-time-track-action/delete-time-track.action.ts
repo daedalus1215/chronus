@@ -4,12 +4,12 @@ import {
   AuthUser,
   GetAuthUser,
 } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { DeleteTimeTrackTransactionScript } from 'src/time-tracks/domain/transaction-scripts/delete-time-track-TS/delete-time-track.transaction.script';
+import { TimeTrackService } from 'src/time-tracks/domain/services/time-track-service/time-track.service';
 import { DeleteTimeTrackSwagger } from './delete-time-track.swagger';
 
 @Controller('time-tracks')
 export class DeleteTimeTrackAction {
-  constructor(private readonly deleteTS: DeleteTimeTrackTransactionScript) {}
+  constructor(private readonly timeTrackService: TimeTrackService) {}
 
   @Delete(':id')
   @ProtectedAction(DeleteTimeTrackSwagger)
@@ -17,7 +17,7 @@ export class DeleteTimeTrackAction {
     @Param('id') id: string,
     @GetAuthUser() authUser: AuthUser
   ): Promise<{ success: boolean }> {
-    await this.deleteTS.apply(Number(id), authUser.userId);
+    await this.timeTrackService.deleteTimeTrack(Number(id), authUser.userId);
     return { success: true };
   }
 }

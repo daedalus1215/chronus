@@ -112,6 +112,7 @@ If A uses B, and B uses C, then A depends only on B. B is a **blackbox** for A.
 - **Do not** reference entities from another domain inside an entity.
 - **Do** expose behavior/data through **Aggregators** in the owning domain.
 - **Join entities** for M:N relationships may live in `shared-kernel/domain/entities/` (anemic, no business logic).
+- **Foreign keys are implicit by design (DDD).** Entities carry plain ID columns (e.g. `noteId: number`) without TypeORM relation decorators (`@ManyToOne`/`@JoinColumn`); relationships are resolved in repositories and aggregators, never on the entity. Metatron's `implicit-fk` note is a known accepted decision, not a deviation.
 
 > Full worked examples in the `chronus-cross-domain` Hermes skill.
 
