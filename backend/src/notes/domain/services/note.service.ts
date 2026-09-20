@@ -35,6 +35,10 @@ import {
   SearchNotesTransactionScript,
   NoteSearchMatches,
 } from '../transaction-scripts/search-notes-TS/search-notes.transaction.script';
+// The action layer types its response against the service contract, not the
+// transaction script: re-export the result shape so no action->TS import edge
+// exists (metatron/dependency-cruiser treat any import from a TS file as a skip).
+export type { GetNoteNamesResult };
 
 export type NoteWithCheckItems = {
   note: Note;
