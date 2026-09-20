@@ -1,6 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { NoteService } from 'src/notes/domain/services/note.service';
-import type { GetNoteNamesResult } from 'src/notes/domain/transaction-scripts/get-note-names-by-user-id-TS/get-note-names-by-user-id.transaction.script';
+import {
+  NoteService,
+  type GetNoteNamesResult,
+} from 'src/notes/domain/services/note.service';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { GetNoteNamesByUserIdSwagger } from './get-note-names-by-userId.swagger';
