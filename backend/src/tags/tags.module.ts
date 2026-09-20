@@ -7,6 +7,7 @@ import { AddTagToNoteTransactionScript } from './domain/transaction-scripts/add-
 import { GetTagsByNoteIdTransactionScript } from './domain/transaction-scripts/get-tags-by-note-id-TS/get-tags-by-note-id.transaction.script';
 import { GetTagsByNoteIdsTransactionScript } from './domain/transaction-scripts/get-tags-by-note-ids-TS/get-tags-by-note-ids.transaction.script';
 import { GetTagsByUserIdTransactionScript } from './domain/transaction-scripts/get-tags-by-user-id-TS/get-tags-by-user-id.transaction.script';
+import { GetTagByIdTransactionScript } from './domain/transaction-scripts/get-tag-by-id-TS/get-tag-by-id.transaction.script';
 import { TagAggregator } from './domain/aggregators/tag.aggregator';
 import { UpdateTagTransactionScript } from './domain/transaction-scripts/update-tag-TS/update-tag.transaction.script';
 import { DeleteTagTransactionScript } from './domain/transaction-scripts/delete-tag-TS/delete-tag.transaction.script';
@@ -38,6 +39,7 @@ import { TAG_ATTACH_PORT } from '../note-transfer/domain/ports/tag-attacher.port
     UpdateTagTransactionScript,
     DeleteTagTransactionScript,
     RemoveTagFromNoteTransactionScript,
+    GetTagByIdTransactionScript,
     TagService,
     TagAggregator,
     DeleteNoteTagAssociationsListener,

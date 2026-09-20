@@ -1,5 +1,5 @@
 import { Controller, Patch, Param, Body, ParseIntPipe } from '@nestjs/common';
-import { UpdateTagTransactionScript } from '../../../domain/transaction-scripts/update-tag-TS/update-tag.transaction.script';
+import { TagService } from '../../../domain/services/tag.service';
 import { UpdateTagDto } from './update-tag.dto';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
@@ -8,7 +8,7 @@ import { TagResponseDto } from '../../dtos/responses/tag.response.dto';
 
 @Controller('tags')
 export class UpdateTagAction {
-  constructor(private readonly updateTagTS: UpdateTagTransactionScript) {}
+  constructor(private readonly tagService: TagService) {}
 
   @Patch(':id')
   @ProtectedAction(UpdateTagSwagger)
@@ -17,7 +17,7 @@ export class UpdateTagAction {
     @Body() updateTagDto: UpdateTagDto,
     @GetAuthUser('userId') userId: number
   ): Promise<TagResponseDto> {
-    const tag = await this.updateTagTS.apply(tagId, userId, updateTagDto);
+    const tag = await this.tagService.updateTag(tagId, userId, updateTagDto);
     return new TagResponseDto(tag);
   }
 }
