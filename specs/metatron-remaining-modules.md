@@ -81,23 +81,73 @@ metatron re-scan shows no folders findings.
 **Verify:** gate suite + metatron re-scan shows no `action>transaction-script`,
 `action>repository`, or `service>repository` findings anywhere.
 
-### Phase 3 — the 15 untested-risk files
+### Phase 3 — the 15 untested-risk files (complete, 2026-09-20)
 
 Triaged with the notes-F1 bar: a test earns its place only where a plausible bug would
 fail it (entity shape/defaults, service orchestration, repository query correctness).
 Pure wiring (module files, logic-less decorators/DTOs) is reported as intentionally
 untested rather than padded with tests that assert plumbing.
 
-Files (from the 2026-09-19 scan):
-- notes: `note.entity.ts`, `memo.entity.ts`, `note.response.dto.ts`, `notes.module.ts`
-- check-items: `check-item.entity.ts`, `check-item.service.ts`, `check-items.repository.ts`
-- time-tracks: `time-track.entity.ts`, `time-track.service.ts`, `time-track.repository.ts`
-- tags: `tag.entity.ts`, `tag.repository.ts`
-- audio: `audio.service.ts`
-- shared-kernel: `protected-action.decorator.ts`, `get-auth-user.decorator.ts`
+**Result: 12 new spec files, 81 tests, all green.** Each spec sits in `__specs__/`
+next to its source with a name matching the source (metatron credits by name);
+integration specs carry the `.integration.spec.ts` infix required by
+`test/jest-integration.json` (the unit config's `testPathIgnorePatterns` keeps them
+out of the default suite).
 
-**Verify:** gate suite + metatron re-scan; untested-risk list reduced to the
-intentionally-untested remainder, documented.
+| Source | Spec | Tests |
+|---|---|---|
+| `notes/.../note.entity.ts` | `note.entity.integration.spec.ts` | 3 |
+| `notes/.../memo.entity.ts` | `memo.entity.integration.spec.ts` | 1 |
+| `check-items/.../check-item.entity.ts` | `check-item.entity.integration.spec.ts` | 2 |
+| `check-items/.../check-item.service.ts` | `check-item.service.spec.ts` | 4 |
+| `check-items/.../check-items.repository.ts` | `check-items.repository.integration.spec.ts` | 14 |
+| `time-tracks/.../time-track.entity.ts` | `time-track.entity.integration.spec.ts` | 1 |
+| `time-tracks/.../time-track.service.ts` | `time-track.service.spec.ts` | 9 |
+| `time-tracks/.../time-track.repository.ts` | `time-track.repository.integration.spec.ts` | 18 |
+| `tags/.../tag.entity.ts` | `tag.entity.integration.spec.ts` | 1 |
+| `tags/.../tag.repository.ts` | `tag.repository.integration.spec.ts` | 11 |
+| `audio/.../audio.service.ts` | `audio.service.spec.ts` | 12 |
+| `shared-kernel/.../get-auth-user.decorator.ts` | `get-auth-user.decorator.spec.ts` | 5 |
+
+Pinned: DB defaults (check-item status 'ready'/order 0, note sortOrder 0, memo/tag
+description ''), ownership scoping (findByIdWithNoteValidation, findTagByIdAndUserId,
+delete/update by user, downloadAudio 403s), ordering (ASC + date DESC / startTime
+DESC, `Between` boundaries inclusive both ends), streak math (bug below), SUM
+scoping, searchByQuery case-insensitivity + archived exclusion, TTS/memo gating,
+content-type mapping, `GetAuthUser` key extraction (the spec resolves the factory
+`createParamDecorator` stores under `__routeArguments__` and invokes it exactly as
+NestJS's route-params-extractor does — real factory exercised, no re-implementation).
+
+**Intentionally untested (3 of the 15):**
+- `notes/notes.module.ts` — pure DI wiring.
+- `notes/apps/dtos/responses/note.response.dto.ts` — ApiProperty metadata only.
+- `shared-kernel/apps/decorators/protected-action.decorator.ts` — decorator wiring;
+  enforcement is covered by e2e auth behavior.
+
+**Findings surfaced by the tests (source untouched — report, don't fix):**
+1. **Bug — `TimeTrackRepository.getCurrentStreak` always returns 0.** pg returns
+   `DATE` as JS `Date` objects, so `activeDates` is a `Set<Date>`, but membership is
+   checked with strings (`activeDates.has(dateStr)`) — never matches. Pinned as
+   "returns 0 even when …"; the tests flip red if the bug is fixed.
+2. **Type mismatch — `getTotalTimeForNote` / `getDailyTotal`** declared
+   `Promise<number>` but return pg numeric strings (`"240"`) when rows exist;
+   downstream `TimeTrackTotalResponseDto` survives via JS arithmetic coercion.
+3. **Type mismatch — `GetTagsByUserIdProjection.id`** declared `string`, runtime
+   `number` (pg `int4` passed through by the hydrator).
+4. Pinned as-is (not bugs): `getMinOrderByNoteId` empty-case returns `0` (vs
+   `getMaxOrder`'s `-1`); `findTagsByNoteIds` returns a Map keyed by EVERY requested
+   noteId (empty arrays included); archived tag_notes excluded only from `noteCount`;
+   no FK on `check_items.note_id` / `time_tracks` (entity specs need no parent seeds).
+
+**Tooling note:** metatron's nestjs profile only credits `__specs__/<name>.spec.ts` —
+which is why the pre-existing `note-memo-tag.repository.integration.spec.ts` never
+suppressed its flag. The chronus scan config gains a
+`__specs__/<name>.integration.spec.ts` locator before the final re-scan.
+
+**Verify:** all 12 suites green after prettier — unit 30/30
+(`NODE_ENV=test npx jest <unit specs>`); integration 51/51
+(`NODE_ENV=test DB_NAME=chronus_test_{ci,tt,tags,ne} npx jest --config
+test/jest-integration.json <module>`).
 
 ## Explicitly out of scope
 
