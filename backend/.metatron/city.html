@@ -1,0 +1,935 @@
+<!-- arch-views: Walk around it. Perspective camera, fly to any module, copyable context digest for talking to Claude. -->
+<!-- metatron: Walk around the system. One tower per module, one floor per directory; switch between measurable isometric and immersive perspective. -->
+<title>Chronus Frontend Backend City</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400&display=swap">
+
+<style>
+:root {
+  --paper:#EEF2F7; --surface:#FFFFFF; --surface2:#E3EAF2; --sunk:#D9E1EB;
+  --ink:#141D28; --ink2:#47596E; --ink3:#78899D;
+  --rule:#D0D9E3; --rule2:#B7C2D0;
+  --blue:#2B5CA8; --amber:#A85B06; --rose:#A31C39; --green:#1B6448; --violet:#54479A;
+  --t0:#3B72C4; --t1:#8A98A8; --t2:#6A5AB8; --t3:#C06E12; --t4:#22795A;
+  --t5:#8E7C58; --t6:#177F98; --t7:#9A4E82; --t8:#6E7D8E;
+  --sky:#DCE4EE; --ground:#C9D4E0; --gridline:#B3C0CF; --link:#B4741F; --warn:#C2410C;
+  --shadow:0 1px 2px rgba(20,29,40,.06), 0 10px 30px rgba(20,29,40,.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:#0B1117; --surface:#131B24; --surface2:#1A242F; --sunk:#0F171F;
+    --ink:#E2E9F1; --ink2:#9DAEC0; --ink3:#6A7B90;
+    --rule:#26323D; --rule2:#34434E;
+    --blue:#79A4E6; --amber:#E0A04A; --rose:#EE7189; --green:#4FC195; --violet:#A093E6;
+    --t0:#5E93DE; --t1:#7E8C9C; --t2:#8B7CD8; --t3:#D9902F; --t4:#37A87C;
+    --t5:#B09A6C; --t6:#2E9EB8; --t7:#BE6C9F; --t8:#5C6B7C;
+    --sky:#0D141C; --ground:#18222C; --gridline:#243040; --link:#E0A04A; --warn:#F97316;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#0B1117; --surface:#131B24; --surface2:#1A242F; --sunk:#0F171F;
+  --ink:#E2E9F1; --ink2:#9DAEC0; --ink3:#6A7B90;
+  --rule:#26323D; --rule2:#34434E;
+  --blue:#79A4E6; --amber:#E0A04A; --rose:#EE7189; --green:#4FC195; --violet:#A093E6;
+  --t0:#5E93DE; --t1:#7E8C9C; --t2:#8B7CD8; --t3:#D9902F; --t4:#37A87C;
+  --t5:#B09A6C; --t6:#2E9EB8; --t7:#BE6C9F; --t8:#5C6B7C;
+  --sky:#0D141C; --ground:#18222C; --gridline:#243040; --link:#E0A04A; --warn:#F97316;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.45);
+}
+
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink);
+  font-family:'Archivo',ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; }
+.mono { font-family:'IBM Plex Mono',ui-monospace,monospace; }
+.wrap { max-width:1620px; margin:0 auto; padding:0 24px 80px; }
+
+.mast { padding:44px 0 20px; border-bottom:2px solid var(--ink); }
+.eyebrow { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink3); margin:0 0 14px; }
+h1 { font-size:clamp(32px,5vw,58px); line-height:1.02; letter-spacing:-.03em; font-weight:700; margin:0; text-wrap:balance; }
+.dek { font-family:'Source Serif 4',Georgia,serif; font-size:18px; line-height:1.6; color:var(--ink2);
+  max-width:64ch; margin:16px 0 0; }
+
+.bar { display:flex; gap:7px; flex-wrap:wrap; align-items:center; margin:22px 0 10px; }
+.btn { font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.04em;
+  border:1px solid var(--rule2); background:var(--surface); color:var(--ink2); padding:6px 11px; cursor:pointer; }
+.btn:hover { border-color:var(--ink3); color:var(--ink); }
+.btn.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.btn:focus-visible, input:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+#find { font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:6px 11px;
+  border:1px solid var(--rule2); background:var(--surface); color:var(--ink); min-width:190px; }
+.sep { width:1px; height:20px; background:var(--rule2); margin:0 3px; }
+.seg { display:flex; border:1px solid var(--rule2); }
+.seg button { font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.04em;
+  padding:6px 12px; background:transparent; color:var(--ink3); border:0; cursor:pointer; }
+.seg button.on { background:var(--ink); color:var(--paper); }
+.seg button:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+.fchip { display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px; letter-spacing:.04em; color:var(--ink2); padding:6px 11px;
+  border:1px solid var(--amber); background:color-mix(in srgb, var(--amber) 10%, var(--surface)); }
+.fchip b { font-weight:600; color:var(--ink); }
+.fchip button { font:inherit; letter-spacing:inherit; color:var(--blue); background:transparent;
+  border:0; padding:0; cursor:pointer; }
+
+.stagewrap { display:grid; grid-template-columns:minmax(0,1fr) 380px; border:1px solid var(--rule2);
+  background:var(--surface); box-shadow:var(--shadow); }
+@media (max-width:1160px){ .stagewrap { grid-template-columns:minmax(0,1fr); } }
+.viewport { position:relative; background:var(--sky); min-height:520px; height:min(72vh,780px); overflow:hidden; }
+canvas { display:block; width:100%; height:100%; cursor:grab; touch-action:none; }
+canvas.drag { cursor:grabbing; }
+.hud { position:absolute; left:12px; bottom:10px; font-family:'IBM Plex Mono',monospace; font-size:10px;
+  color:var(--ink3); background:color-mix(in srgb, var(--sky) 78%, transparent); padding:5px 9px;
+  border:1px solid var(--rule); pointer-events:none; letter-spacing:.03em; }
+.tourcap { position:absolute; left:16px; right:16px; top:14px; max-width:520px;
+  background:color-mix(in srgb, var(--surface) 94%, transparent); border:1px solid var(--rule2);
+  padding:12px 15px; box-shadow:var(--shadow); display:none; }
+.tourcap.show { display:block; }
+.tourcap h4 { margin:0 0 4px; font-size:13.5px; font-weight:600; letter-spacing:-.01em; }
+.tourcap p { margin:0; font-size:13px; color:var(--ink2); line-height:1.5; }
+.tourcap .step { font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--ink3);
+  letter-spacing:.12em; text-transform:uppercase; }
+
+.side { border-left:1px solid var(--rule2); display:flex; flex-direction:column;
+  max-height:min(72vh,780px); overflow:auto; }
+@media (max-width:1160px){ .side { border-left:0; border-top:1px solid var(--rule2); max-height:600px; } }
+.side .pad { padding:15px 17px; }
+.empty { font-family:'Source Serif 4',Georgia,serif; font-style:italic; color:var(--ink3); }
+.side h3 { margin:0 0 2px; font-size:18px; font-weight:700; letter-spacing:-.02em; }
+.isub { font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink3); margin:0 0 12px; }
+.ilab { font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink3); margin:15px 0 7px; padding-bottom:4px; border-bottom:1px solid var(--rule); }
+.flist { list-style:none; margin:0; padding:0; }
+.flist li { display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px; color:var(--ink2); padding:3.5px 0; border-bottom:1px dotted var(--rule); }
+.flist li .sw { width:11px; height:11px; flex:0 0 auto; }
+.flist li .nm { flex:1; color:var(--ink); word-break:break-all; }
+.flist li .ct { color:var(--ink3); font-variant-numeric:tabular-nums; }
+.tow { display:flex; align-items:center; gap:9px; width:100%; text-align:left; cursor:pointer;
+  font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:6px 8px; border:0;
+  background:transparent; color:var(--ink2); border-bottom:1px solid var(--rule); }
+.tow:hover { background:var(--surface2); color:var(--ink); }
+.tow.sel { background:var(--ink); color:var(--paper); }
+.tow .n { margin-left:auto; font-variant-numeric:tabular-nums; opacity:.7; }
+.tow .dot { width:7px; height:7px; border-radius:50%; background:var(--warn); flex:0 0 auto; }
+.tow .dot.none { background:transparent; }
+.warns { list-style:none; margin:0; padding:0; }
+.warns li { font-size:12.5px; color:var(--ink2); padding:5px 0 5px 11px; border-left:3px solid var(--warn);
+  margin-bottom:6px; background:var(--surface2); }
+.pills { display:flex; flex-wrap:wrap; gap:5px; }
+.pill { font-family:'IBM Plex Mono',monospace; font-size:9.5px; padding:2px 7px; border:1px solid var(--rule2);
+  color:var(--ink3); }
+.pill.gone { color:var(--warn); border-color:var(--warn); }
+pre { margin:0; background:var(--sunk); border:1px solid var(--rule); padding:11px 13px; overflow:auto;
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; line-height:1.5; color:var(--ink2);
+  max-height:260px; white-space:pre-wrap; word-break:break-word; }
+
+section { margin-top:48px; }
+.shead { display:flex; align-items:baseline; gap:13px; border-bottom:1px solid var(--rule2);
+  padding-bottom:9px; margin-bottom:18px; flex-wrap:wrap; }
+.shead h2 { font-size:21px; font-weight:600; letter-spacing:-.015em; margin:0; }
+.shead .num { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink3); letter-spacing:.1em; }
+.note { font-family:'Source Serif 4',Georgia,serif; font-size:16.5px; line-height:1.65; color:var(--ink2); max-width:68ch; }
+.note + .note { margin-top:12px; }
+.note strong { color:var(--ink); font-weight:400;
+  box-shadow:inset 0 -0.5em 0 color-mix(in srgb, var(--amber) 18%, transparent); }
+.keys { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:9px; margin-top:16px; }
+.key { border:1px solid var(--rule2); background:var(--surface); padding:10px 13px; }
+.key b { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink); display:block; margin-bottom:2px; }
+.key span { font-size:12.5px; color:var(--ink2); }
+footer { margin-top:60px; padding-top:20px; border-top:2px solid var(--ink); color:var(--ink3); }
+@media (prefers-reduced-motion:reduce){ .tourcap { transition:none; } }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Isometric and perspective · hand-written renderer · regenerated by metatron</p>
+  <h1>Chronus Frontend Backend City</h1>
+  <p class="dek">A place rather than a picture. Drag to orbit, scroll to fly in, click any tower to travel to it. Each tower is a module, each floor a real directory, and the vertical axis is the request path — <strong>you arrive at the roof and descend to the database</strong>.</p>
+</header>
+
+<div class="bar">
+  <div class="seg" role="group" aria-label="Projection">
+    <button id="pIso" class="on" title="Parallel projection — equal things stay equal, so heights are comparable">Isometric</button>
+    <button id="pPersp" title="Perspective projection — nearer things look larger, as a camera sees them">Perspective</button>
+  </div>
+  <span class="sep"></span>
+  <button class="btn" id="tour">▶ guided tour</button>
+  <span class="sep"></span>
+  <button class="btn on" id="tLinks">dependencies</button>
+  <button class="btn on" id="tMarks">deviation markers</button>
+  <button class="btn on" id="tLabels">labels</button>
+  <span class="sep"></span>
+  <input id="find" type="search" placeholder="fly to module…" aria-label="Fly to a module">
+  <button class="btn" id="home">reset camera</button>
+  <span class="fchip" id="fchip" style="display:none" title="Everything outside this set is a ghost">focused on <b id="fn"></b> — <button id="fclear" type="button">clear</button></span>
+</div>
+
+<div class="stagewrap" data-fullscreen data-fs-grow>
+  <div class="viewport" id="viewport">
+    <canvas id="cv" tabindex="0" aria-label="Interactive 3D city view of the Chronus Frontend Backend backend"></canvas>
+    <div class="hud" id="hud"></div>
+    <div class="tourcap" id="tourcap"><span class="step" id="tourstep"></span><h4 id="tourh"></h4><p id="tourp"></p></div>
+  </div>
+  <aside class="side" id="side"></aside>
+</div>
+
+<section>
+  <div class="shead"><span class="num">01</span><h2>Flying it</h2></div>
+  <div class="keys">
+    <div class="key"><b>drag</b><span>Orbit the camera around what you are looking at.</span></div>
+    <div class="key"><b>scroll</b><span>Dolly in and out along the view direction.</span></div>
+    <div class="key"><b>shift + drag</b><span>Pan across the city without rotating.</span></div>
+    <div class="key"><b>click a tower</b><span>Fly to it and open it in the panel.</span></div>
+    <div class="key"><b>W A S D</b><span>Walk the camera target over the ground plane.</span></div>
+    <div class="key"><b>Esc</b><span>Deselect and pull back out.</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="num">02</span><h2>Reading the city</h2></div>
+  <p class="note" data-narr="skyline"></p>
+  <p class="note">The amber pylons are deviations from the rules the repo writes down for itself, sited on the module they belong to. The arcs overhead are cross-domain dependencies.</p>
+  <p class="note" data-narr="deviations"></p>
+  <p class="note" data-narr="absent"></p>
+</section>
+
+<section>
+  <div class="shead"><span class="num">03</span><h2>Taking it to Claude</h2></div>
+  <p class="note">Selecting a tower fills the <strong>Context</strong> block in the panel with a plain-text digest of exactly what you are looking at — its floors, its absent tiers, its deviations and its dependencies. Copy it into a conversation and the model has the same view you do, without you narrating the codebase from memory.</p>
+</section>
+
+<section>
+  <div class="shead"><span class="num">04</span><h2>What is real, and what is staging</h2></div>
+  <p class="note" data-narr="provenance"></p>
+  <p class="note" data-narr="caveats"></p>
+  <p class="note">The renderer is hand-written: a perspective camera, back-face culling and painter's-algorithm depth sorting on canvas. There is no depth buffer, so if two towers ever interpenetrate the sort could pick wrong — they are laid out so they never do.</p>
+</section>
+
+<footer>
+  <p class="note" style="font-size:14.5px">Generated by <span class="mono">metatron</span> · <span id="gen"></span> · <span id="footstats"></span></p>
+</footer>
+
+</div>
+
+<script id="scene" type="application/json">{"generatedAt":"2026-09-20T23:22:04.213Z","stats":{"files":394,"edges":1284,"nodes":94,"externals":30,"endpoints":63,"hops":307},"tiers":[{"i":0,"name":"Entry","sub":"HTTP / WS surface"},{"i":1,"name":"Contract","sub":"DTOs & commands"},{"i":2,"name":"Service","sub":"orchestration"},{"i":3,"name":"Aggregator","sub":"cross-domain"},{"i":4,"name":"Transaction Script","sub":"use-case logic"},{"i":5,"name":"Mapping","sub":"converters & mappers"},{"i":6,"name":"Persistence","sub":"repositories"},{"i":7,"name":"Domain Model","sub":"entities & ports"},{"i":8,"name":"Wiring","sub":"modules"}],"modules":[{"id":"notes","files":99,"floors":[{"id":"notes/(root)","label":"(root)","tier":8,"count":2,"patterns":{"module":1,"test-util":1},"files":[{"f":"notes.module.ts","p":"module"},{"f":"test-utils.ts","p":"test-util"}]},{"id":"notes/domain/entities","label":"domain/entities","tier":7,"count":6,"patterns":{"spec":3,"entity":3},"files":[{"f":"domain/entities/notes/__specs__/memo.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/notes/__specs__/note-version.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/notes/__specs__/note.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/notes/memo.entity.ts","p":"entity"},{"f":"domain/entities/notes/note-version.entity.ts","p":"entity"},{"f":"domain/entities/notes/note.entity.ts","p":"entity"}]},{"id":"notes/infra/remote-callers","label":"infra/remote-callers","tier":6,"count":2,"patterns":{"spec":1,"remote-caller":1},"files":[{"f":"infra/remote-callers/__specs__/thoth-stream.remote-caller.spec.ts","p":"spec"},{"f":"infra/remote-callers/thoth-stream.remote-caller.ts","p":"remote-caller"}]},{"id":"notes/infra/repositories","label":"infra/repositories","tier":6,"count":4,"patterns":{"spec":2,"repository":2},"files":[{"f":"infra/repositories/__specs__/note-memo-tag.repository.integration.spec.ts","p":"spec"},{"f":"infra/repositories/__specs__/note-memo-tag.repository.spec.ts","p":"spec"},{"f":"infra/repositories/note-memo-tag.repository.ts","p":"repository"},{"f":"infra/repositories/note-version.repository.ts","p":"repository"}]},{"id":"notes/domain/transaction-scripts","label":"domain/transaction-scripts","tier":4,"count":32,"patterns":{"transaction-script":16,"spec":11,"command":2,"projection":1,"converter":1,"dto":1},"files":[{"f":"domain/transaction-scripts/archive-note-TS/archive-note.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/create-note-TS/__specs__/create-note.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/create-note-TS/create-note.command.ts","p":"command"},{"f":"domain/transaction-scripts/create-note-TS/create-note.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/delete-note-TS/__specs__/delete-note.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/delete-note-TS/delete-note.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-note-by-id-TS/get-note-by-id.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-note-names-by-ids-TS/__specs__/get-note-names-by-ids.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/get-note-names-by-ids-TS/get-note-names-by-ids.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-note-names-by-user-id-TS/__specs__/get-note-names-by-user-id.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/get-note-names-by-user-id-TS/get-note-names-by-user-id.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-note-names-for-explorer-TS/__specs__/get-note-names-for-explorer.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/get-note-names-for-explorer-TS/get-note-names-for-explorer.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-note-versions-TS/__specs__/get-note-versions.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/get-note-versions-TS/get-note-versions.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/load-note-version-TS/__specs__/load-note-version.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/load-note-version-TS/load-note-version.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/move-note-to-folder-TS/move-note-to-folder.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/note-name-row.projection.ts","p":"projection"},{"f":"domain/transaction-scripts/reorder-notes-TS/reorder-notes.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/search-notes-TS/search-notes.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-note-timestamp-TS/__specs__/update-note-timestamp.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/update-note-timestamp-TS/update-note-timestamp.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-note-title-TS/__specs__/update-note-title.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/update-note-title-TS/update-note-title.command.ts","p":"command"},{"f":"domain/transaction-scripts/update-note-title-TS/update-note-title.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-note-TS/__specs__/update-note-params-to-entity.converter.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/update-note-TS/__specs__/update-note.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/update-note-TS/update-note-params-to-entity.converter.ts","p":"converter"},{"f":"domain/transaction-scripts/update-note-TS/update-note.params.ts","p":"dto"},{"f":"domain/transaction-scripts/update-note-TS/update-note.transaction.script.ts","p":"transaction-script"}]},{"id":"notes/domain/aggregators","label":"domain/aggregators","tier":3,"count":2,"patterns":{"spec":1,"aggregator":1},"files":[{"f":"domain/aggregators/__specs__/note.aggregator.spec.ts","p":"spec"},{"f":"domain/aggregators/note.aggregator.ts","p":"aggregator"}]},{"id":"notes/domain/services","label":"domain/services","tier":2,"count":2,"patterns":{"spec":1,"service":1},"files":[{"f":"domain/services/__specs__/note.service.spec.ts","p":"spec"},{"f":"domain/services/note.service.ts","p":"service"}]},{"id":"notes/apps/dtos","label":"apps/dtos","tier":1,"count":5,"patterns":{"dto":5},"files":[{"f":"apps/dtos/requests/create-note.dto.ts","p":"dto"},{"f":"apps/dtos/requests/update-note-title.dto.ts","p":"dto"},{"f":"apps/dtos/requests/update-note.dto.ts","p":"dto"},{"f":"apps/dtos/responses/note-version.response.dto.ts","p":"dto"},{"f":"apps/dtos/responses/note.response.dto.ts","p":"dto"}]},{"id":"notes/apps/actions","label":"apps/actions","tier":0,"count":34,"patterns":{"action":15,"swagger":9,"responder":6,"spec":2,"dto":2},"files":[{"f":"apps/actions/archive-note/archive-note.action.ts","p":"action"},{"f":"apps/actions/archive-note/archive-note.swagger.ts","p":"swagger"},{"f":"apps/actions/notes/convert-checklist-to-memo-action/convert-checklist-to-memo.action.ts","p":"action"},{"f":"apps/actions/notes/convert-checklist-to-memo-action/convert-checklist-to-memo.swagger.ts","p":"swagger"},{"f":"apps/actions/notes/create-note-action/create-note.action.ts","p":"action"},{"f":"apps/actions/notes/create-note-action/create-note.responder.ts","p":"responder"},{"f":"apps/actions/notes/create-note-action/create-note.swagger.ts","p":"swagger"},{"f":"apps/actions/notes/delete-note.action.ts","p":"action"},{"f":"apps/actions/notes/get-note-by-id-action/__specs__/get-note-by-id.responder.spec.ts","p":"spec"},{"f":"apps/actions/notes/get-note-by-id-action/get-note-by-id.action.ts","p":"action"},{"f":"apps/actions/notes/get-note-by-id-action/get-note-by-id.responder.ts","p":"responder"},{"f":"apps/actions/notes/get-note-by-id-action/get-note-by-id.swagger.ts","p":"swagger"},{"f":"apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.action.ts","p":"action"},{"f":"apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.swagger.ts","p":"swagger"},{"f":"apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action.ts","p":"action"},{"f":"apps/actions/notes/get-note-versions-action/get-note-versions.action.ts","p":"action"},{"f":"apps/actions/notes/get-note-versions-action/get-note-versions.responder.ts","p":"responder"},{"f":"apps/actions/notes/get-note-versions-action/get-note-versions.swagger.ts","p":"swagger"},{"f":"apps/actions/notes/load-note-version-action/load-note-version.action.ts","p":"action"},{"f":"apps/actions/notes/load-note-version-action/load-note-version.responder.ts","p":"responder"},{"f":"apps/actions/notes/load-note-version-action/load-note-version.swagger.ts","p":"swagger"},{"f":"apps/actions/notes/move-note-to-folder-action/move-note-to-folder.action.ts","p":"action"},{"f":"apps/actions/notes/move-note-to-folder-action/move-note-to-folder.dto.ts","p":"dto"},{"f":"apps/actions/notes/reorder-notes-action/reorder-notes.action.ts","p":"action"},{"f":"apps/actions/notes/reorder-notes-action/reorder-notes.dto.ts","p":"dto"},{"f":"apps/actions/notes/search-notes-action/__specs__/search-notes.responder.spec.ts","p":"spec"},{"f":"apps/actions/notes/search-notes-action/search-notes.action.ts","p":"action"},{"f":"apps/actions/notes/search-notes-action/search-notes.responder.ts","p":"responder"},{"f":"apps/actions/notes/update-note-action/update-note.action.ts","p":"action"},{"f":"apps/actions/notes/update-note-action/update-note.responder.ts","p":"responder"},{"f":"apps/actions/notes/update-note-action/update-note.swagger.ts","p":"swagger"},{"f":"apps/actions/notes/update-note-title-action/update-note-title.action.ts","p":"action"},{"f":"apps/actions/notes/update-note-title-action/update-note-title.swagger.ts","p":"swagger"},{"f":"apps/actions/update-note-timestamp.action.ts","p":"action"}]},{"id":"notes/apps/adapters","label":"apps/adapters","tier":0,"count":2,"patterns":{"adapter":2},"files":[{"f":"apps/adapters/note-folder.adapter.ts","p":"adapter"},{"f":"apps/adapters/note-ownership.adapter.ts","p":"adapter"}]},{"id":"notes/apps/gateways","label":"apps/gateways","tier":0,"count":4,"patterns":{"spec":2,"gateway":2},"files":[{"f":"apps/gateways/__specs__/transcribe-audio.gateway.spec.ts","p":"spec"},{"f":"apps/gateways/__specs__/transcription-session.registry.spec.ts","p":"spec"},{"f":"apps/gateways/transcribe-audio.gateway.ts","p":"gateway"},{"f":"apps/gateways/transcription-session.registry.ts","p":"gateway"}]},{"id":"notes/apps/guards","label":"apps/guards","tier":0,"count":2,"patterns":{"spec":1,"guard":1},"files":[{"f":"apps/guards/__specs__/ws-jwt.authenticator.spec.ts","p":"spec"},{"f":"apps/guards/ws-jwt.authenticator.ts","p":"guard"}]},{"id":"notes/apps/listeners","label":"apps/listeners","tier":0,"count":2,"patterns":{"listener":2},"files":[{"f":"apps/listeners/get-note-details.listener.ts","p":"listener"},{"f":"apps/listeners/verify-note-access.listener.ts","p":"listener"}]}],"tiersPresent":[0,1,2,3,4,6,7,8],"absent":[5],"findings":[],"endpoints":15},{"id":"time-tracks","files":65,"floors":[{"id":"time-tracks/(root)","label":"(root)","tier":8,"count":1,"patterns":{"module":1},"files":[{"f":"time-tracks.module.ts","p":"module"}]},{"id":"time-tracks/domain/entities","label":"domain/entities","tier":7,"count":2,"patterns":{"spec":1,"entity":1},"files":[{"f":"domain/entities/time-track-entity/__specs__/time-track.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/time-track-entity/time-track.entity.ts","p":"entity"}]},{"id":"time-tracks/infra/repositories","label":"infra/repositories","tier":6,"count":2,"patterns":{"spec":1,"repository":1},"files":[{"f":"infra/repositories/__specs__/time-track.repository.integration.spec.ts","p":"spec"},{"f":"infra/repositories/time-track.repository.ts","p":"repository"}]},{"id":"time-tracks/domain/projections","label":"domain/projections","tier":4,"count":1,"patterns":{"projection":1},"files":[{"f":"domain/projections/time-track.projections.ts","p":"projection"}]},{"id":"time-tracks/domain/transaction-scripts","label":"domain/transaction-scripts","tier":4,"count":20,"patterns":{"spec":2,"command":6,"transaction-script":11,"converter":1},"files":[{"f":"domain/transaction-scripts/create-time-track-TS/__specs__/create-time-track.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/create-time-track-TS/create-time-track.command.ts","p":"command"},{"f":"domain/transaction-scripts/create-time-track-TS/create-time-track.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/delete-time-track-TS/delete-time-track.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-daily-time-tracks-aggregation-TS/__specs__/get-time-tracks-aggregation.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.command.ts","p":"command"},{"f":"domain/transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.command.ts","p":"command"},{"f":"domain/transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-notes-by-year-TS/get-notes-by-year.command.ts","p":"command"},{"f":"domain/transaction-scripts/get-notes-by-year-TS/get-notes-by-year.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-streak-TS/get-streak.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-time-tracks-by-date-range-TS/get-time-tracks-by-date-range.command.ts","p":"command"},{"f":"domain/transaction-scripts/get-time-tracks-by-date-range-TS/get-time-tracks-by-date-range.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-time-tracks-total-by-note-id-TS/get-time-tracks-total-by-note-id.command.ts","p":"command"},{"f":"domain/transaction-scripts/get-time-tracks-total-by-note-id-TS/get-time-tracks-total-by-note-id.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-weekly-trend-TS/get-weekly-trend.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-time-track-note-TS/update-time-track-note.converter.ts","p":"converter"},{"f":"domain/transaction-scripts/update-time-track-note-TS/update-time-track-note.transaction.script.ts","p":"transaction-script"}]},{"id":"time-tracks/domain/aggregators","label":"domain/aggregators","tier":3,"count":1,"patterns":{"aggregator":1},"files":[{"f":"domain/aggregators/time-tracks.aggregator.ts","p":"aggregator"}]},{"id":"time-tracks/domain/services","label":"domain/services","tier":2,"count":3,"patterns":{"spec":2,"service":1},"files":[{"f":"domain/services/time-track-service/__specs__/time-track.service.spec.ts","p":"spec"},{"f":"domain/services/time-track-service/converter/__specs__/time-track-with-note-names.converter.spec.ts","p":"spec"},{"f":"domain/services/time-track-service/time-track.service.ts","p":"service"}]},{"id":"time-tracks/apps/dtos","label":"apps/dtos","tier":1,"count":9,"patterns":{"dto":9},"files":[{"f":"apps/dtos/requests/create-time-track.dto.ts","p":"dto"},{"f":"apps/dtos/responses/notes-by-year.response.dto.ts","p":"dto"},{"f":"apps/dtos/responses/streak.response.dto.ts","p":"dto"},{"f":"apps/dtos/responses/time-track-aggregation.response.dto.ts","p":"dto"},{"f":"apps/dtos/responses/time-track-total.response.dto.ts","p":"dto"},{"f":"apps/dtos/responses/time-track-with-note.response.dto.ts","p":"dto"},{"f":"apps/dtos/responses/time-track.response.dto.ts","p":"dto"},{"f":"apps/dtos/responses/weekly-most-active-note.response.dto.ts","p":"dto"},{"f":"apps/dtos/responses/weekly-trend.response.dto.ts","p":"dto"}]},{"id":"time-tracks/apps/actions","label":"apps/actions","tier":0,"count":26,"patterns":{"action":11,"swagger":11,"dto":3,"responder":1},"files":[{"f":"apps/actions/create-time-track-action/create-time-track.action.ts","p":"action"},{"f":"apps/actions/create-time-track-action/create-time-track.swagger.ts","p":"swagger"},{"f":"apps/actions/delete-time-track-action/delete-time-track.action.ts","p":"action"},{"f":"apps/actions/delete-time-track-action/delete-time-track.swagger.ts","p":"swagger"},{"f":"apps/actions/fetch-daily-time-tracks-aggregation-action/fetch-daily-time-tracks-aggregation.action.ts","p":"action"},{"f":"apps/actions/fetch-daily-time-tracks-aggregation-action/fetch-daily-time-tracks-aggregation.swagger.ts","p":"swagger"},{"f":"apps/actions/fetch-daily-time-tracks-aggregation-action/time-track-with-note-names.dto.ts","p":"dto"},{"f":"apps/actions/fetch-daily-time-tracks-aggregation-action/time-track-with-note-names.responder.ts","p":"responder"},{"f":"apps/actions/fetch-notes-by-year-action/fetch-notes-by-year.action.ts","p":"action"},{"f":"apps/actions/fetch-notes-by-year-action/fetch-notes-by-year.swagger.ts","p":"swagger"},{"f":"apps/actions/fetch-streak-action/fetch-streak.action.ts","p":"action"},{"f":"apps/actions/fetch-streak-action/fetch-streak.swagger.ts","p":"swagger"},{"f":"apps/actions/fetch-time-tracks-by-date-range-action/fetch-time-tracks-by-date-range.action.ts","p":"action"},{"f":"apps/actions/fetch-time-tracks-by-date-range-action/fetch-time-tracks-by-date-range.swagger.ts","p":"swagger"},{"f":"apps/actions/fetch-time-tracks-by-date-range-action/get-time-tracks-by-date-range.dto.ts","p":"dto"},{"f":"apps/actions/fetch-time-tracks-by-note-id-action/fetch-time-tracks-by-note-id.action.ts","p":"action"},{"f":"apps/actions/fetch-time-tracks-by-note-id-action/fetch-time-tracks-by-note-id.swagger.ts","p":"swagger"},{"f":"apps/actions/fetch-time-tracks-total-by-note-id-action/fetch-time-tracks-total-by-note-id.action.ts","p":"action"},{"f":"apps/actions/fetch-time-tracks-total-by-note-id-action/fetch-time-tracks-total-by-note-id.swagger.ts","p":"swagger"},{"f":"apps/actions/fetch-weekly-most-active-note-action/fetch-weekly-most-active-note.action.ts","p":"action"},{"f":"apps/actions/fetch-weekly-most-active-note-action/fetch-weekly-most-active-note.swagger.ts","p":"swagger"},{"f":"apps/actions/fetch-weekly-trend-action/fetch-weekly-trend.action.ts","p":"action"},{"f":"apps/actions/fetch-weekly-trend-action/fetch-weekly-trend.swagger.ts","p":"swagger"},{"f":"apps/actions/update-time-track-note-action/update-time-track-note.action.ts","p":"action"},{"f":"apps/actions/update-time-track-note-action/update-time-track-note.swagger.ts","p":"swagger"},{"f":"apps/actions/update-time-track-note-action/update-time-track.dto.ts","p":"dto"}]}],"tiersPresent":[0,1,2,3,4,6,7,8],"absent":[5],"findings":[],"endpoints":11},{"id":"tags","files":46,"floors":[{"id":"tags/(root)","label":"(root)","tier":8,"count":2,"patterns":{"module":1,"test-util":1},"files":[{"f":"tags.module.ts","p":"module"},{"f":"test-utils.ts","p":"test-util"}]},{"id":"tags/domain/entities","label":"domain/entities","tier":7,"count":2,"patterns":{"spec":1,"entity":1},"files":[{"f":"domain/entities/__specs__/tag.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/tag.entity.ts","p":"entity"}]},{"id":"tags/infra/repositories","label":"infra/repositories","tier":6,"count":5,"patterns":{"repository":2,"spec":1,"hydrator":2},"files":[{"f":"infra/repositories/tag-note.repository.ts","p":"repository"},{"f":"infra/repositories/tag-repository/__specs__/tag.repository.integration.spec.ts","p":"spec"},{"f":"infra/repositories/tag-repository/hydrators/tags-by-note-ids-hydrator.ts","p":"hydrator"},{"f":"infra/repositories/tag-repository/hydrators/tags-by-user-id-hydrator.ts","p":"hydrator"},{"f":"infra/repositories/tag-repository/tag.repository.ts","p":"repository"}]},{"id":"tags/domain/transaction-scripts","label":"domain/transaction-scripts","tier":4,"count":15,"patterns":{"spec":6,"transaction-script":8,"projection":1},"files":[{"f":"domain/transaction-scripts/add-tag-to-note-TS/__specs__/add-tag-to-note.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/add-tag-to-note-TS/add-tag-to-note.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/delete-tag-TS/__specs__/delete-tag.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/delete-tag-TS/delete-tag.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-tag-by-id-TS/get-tag-by-id.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-tags-by-note-id-TS/__specs__/get-tags-by-note-id.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/get-tags-by-note-id-TS/get-tags-by-note-id.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-tags-by-note-ids-TS/__specs__/get-tags-by-note-ids.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/get-tags-by-note-ids-TS/get-tags-by-note-ids.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-tags-by-user-id-TS/__specs__/get-tags-by-user-id.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/get-tags-by-user-id-TS/get-tags-by-user-id.projection.ts","p":"projection"},{"f":"domain/transaction-scripts/get-tags-by-user-id-TS/get-tags-by-user-id.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/remove-tag-from-note-TS/remove-tag-from-note.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-tag-TS/__specs__/update-tag.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/update-tag-TS/update-tag.transaction.script.ts","p":"transaction-script"}]},{"id":"tags/domain/aggregators","label":"domain/aggregators","tier":3,"count":1,"patterns":{"aggregator":1},"files":[{"f":"domain/aggregators/tag.aggregator.ts","p":"aggregator"}]},{"id":"tags/domain/services","label":"domain/services","tier":2,"count":2,"patterns":{"spec":1,"service":1},"files":[{"f":"domain/services/__specs__/tag.service.spec.ts","p":"spec"},{"f":"domain/services/tag.service.ts","p":"service"}]},{"id":"tags/apps/dtos","label":"apps/dtos","tier":1,"count":2,"patterns":{"dto":2},"files":[{"f":"apps/dtos/requests/add-tag-to-note.dto.ts","p":"dto"},{"f":"apps/dtos/responses/tag.response.dto.ts","p":"dto"}]},{"id":"tags/apps/actions","label":"apps/actions","tier":0,"count":16,"patterns":{"action":7,"swagger":7,"dto":2},"files":[{"f":"apps/actions/add-tag-to-note-action/add-tag-to-note.action.ts","p":"action"},{"f":"apps/actions/add-tag-to-note-action/add-tag-to-note.swagger.ts","p":"swagger"},{"f":"apps/actions/delete-tag-action/delete-tag.action.ts","p":"action"},{"f":"apps/actions/delete-tag-action/delete-tag.swagger.ts","p":"swagger"},{"f":"apps/actions/get-tag-by-id-action/get-tag-by-id.action.ts","p":"action"},{"f":"apps/actions/get-tag-by-id-action/get-tag-by-id.swagger.ts","p":"swagger"},{"f":"apps/actions/get-tags-by-note-id-action/get-tags-by-note-id.action.ts","p":"action"},{"f":"apps/actions/get-tags-by-note-id-action/get-tags-by-note-id.swagger.ts","p":"swagger"},{"f":"apps/actions/get-tags-by-user-id-action/get-tags-by-user-id.action.ts","p":"action"},{"f":"apps/actions/get-tags-by-user-id-action/get-tags-by-user-id.swagger.ts","p":"swagger"},{"f":"apps/actions/remove-tag-from-note-action/dtos/requests/remove-tag-from-note.dto.ts","p":"dto"},{"f":"apps/actions/remove-tag-from-note-action/remove-tag-from-note.action.ts","p":"action"},{"f":"apps/actions/remove-tag-from-note-action/remove-tag-from-note.swagger.ts","p":"swagger"},{"f":"apps/actions/update-tag-action/update-tag.action.ts","p":"action"},{"f":"apps/actions/update-tag-action/update-tag.dto.ts","p":"dto"},{"f":"apps/actions/update-tag-action/update-tag.swagger.ts","p":"swagger"}]},{"id":"tags/apps/listeners","label":"apps/listeners","tier":0,"count":1,"patterns":{"listener":1},"files":[{"f":"apps/listeners/delete-note-tag-associations.listener.ts","p":"listener"}]}],"tiersPresent":[0,1,2,3,4,6,7,8],"absent":[5],"findings":[],"endpoints":7},{"id":"check-items","files":40,"floors":[{"id":"check-items/(root)","label":"(root)","tier":8,"count":1,"patterns":{"module":1},"files":[{"f":"check-items.module.ts","p":"module"}]},{"id":"check-items/domain/entities","label":"domain/entities","tier":7,"count":2,"patterns":{"spec":1,"entity":1},"files":[{"f":"domain/entities/__specs__/check-item.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/check-item.entity.ts","p":"entity"}]},{"id":"check-items/infra/repositories","label":"infra/repositories","tier":6,"count":3,"patterns":{"spec":1,"hydrator":1,"repository":1},"files":[{"f":"infra/repositories/check-items/__specs__/check-items.repository.integration.spec.ts","p":"spec"},{"f":"infra/repositories/check-items/check-items.hydrator.ts","p":"hydrator"},{"f":"infra/repositories/check-items/check-items.repository.ts","p":"repository"}]},{"id":"check-items/domain/transaction-scripts","label":"domain/transaction-scripts","tier":4,"count":8,"patterns":{"transaction-script":8},"files":[{"f":"domain/transaction-scripts/create-check-item-TS/create-check-item.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/delete-check-item-TS/delete-check-item.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-check-item-TS/get-check-item.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-check-items-by-note-TS/get-check-items-by-note.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/reorder-check-items-TS/reorder-check-items.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/toggle-check-item-TS/toggle-check-item.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-check-item-status-TS/update-check-item-status.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-check-item-TS/update-check-item.transaction.script.ts","p":"transaction-script"}]},{"id":"check-items/domain/aggregators","label":"domain/aggregators","tier":3,"count":2,"patterns":{"spec":1,"aggregator":1},"files":[{"f":"domain/aggregators/__specs__/check-items.aggregator.spec.ts","p":"spec"},{"f":"domain/aggregators/check-items.aggregator.ts","p":"aggregator"}]},{"id":"check-items/domain/services","label":"domain/services","tier":2,"count":2,"patterns":{"spec":1,"service":1},"files":[{"f":"domain/services/__specs__/check-item.service.spec.ts","p":"spec"},{"f":"domain/services/check-item.service.ts","p":"service"}]},{"id":"check-items/apps/dtos","label":"apps/dtos","tier":1,"count":5,"patterns":{"dto":5},"files":[{"f":"apps/dtos/requests/create-check-item.dto.ts","p":"dto"},{"f":"apps/dtos/requests/reorder-check-items.dto.ts","p":"dto"},{"f":"apps/dtos/requests/update-check-item-status.dto.ts","p":"dto"},{"f":"apps/dtos/requests/update-check-item.dto.ts","p":"dto"},{"f":"apps/dtos/responses/check-item.response.dto.ts","p":"dto"}]},{"id":"check-items/apps/actions","label":"apps/actions","tier":0,"count":16,"patterns":{"action":8,"swagger":8},"files":[{"f":"apps/actions/create-check-item/create-check-item.action.ts","p":"action"},{"f":"apps/actions/create-check-item/create-check-item.swagger.ts","p":"swagger"},{"f":"apps/actions/delete-check-item/delete-check-item.action.ts","p":"action"},{"f":"apps/actions/delete-check-item/delete-check-item.swagger.ts","p":"swagger"},{"f":"apps/actions/get-check-item/get-check-item.action.ts","p":"action"},{"f":"apps/actions/get-check-item/get-check-item.swagger.ts","p":"swagger"},{"f":"apps/actions/get-check-items-by-note/get-check-items-by-note.action.ts","p":"action"},{"f":"apps/actions/get-check-items-by-note/get-check-items-by-note.swagger.ts","p":"swagger"},{"f":"apps/actions/reorder-check-items/reorder-check-items.action.ts","p":"action"},{"f":"apps/actions/reorder-check-items/reorder-check-items.swagger.ts","p":"swagger"},{"f":"apps/actions/toggle-check-item/toggle-check-item.action.ts","p":"action"},{"f":"apps/actions/toggle-check-item/toggle-check-item.swagger.ts","p":"swagger"},{"f":"apps/actions/update-check-item-status/update-check-item-status.action.ts","p":"action"},{"f":"apps/actions/update-check-item-status/update-check-item-status.swagger.ts","p":"swagger"},{"f":"apps/actions/update-check-item/update-check-item.action.ts","p":"action"},{"f":"apps/actions/update-check-item/update-check-item.swagger.ts","p":"swagger"}]},{"id":"check-items/apps/listeners","label":"apps/listeners","tier":0,"count":1,"patterns":{"listener":1},"files":[{"f":"apps/listeners/delete-check-items-by-note.listener.ts","p":"listener"}]}],"tiersPresent":[0,1,2,3,4,6,7,8],"absent":[5],"findings":[],"endpoints":8},{"id":"audio","files":37,"floors":[{"id":"audio/(root)","label":"(root)","tier":8,"count":1,"patterns":{"module":1},"files":[{"f":"audio.module.ts","p":"module"}]},{"id":"audio/domain/entities","label":"domain/entities","tier":7,"count":2,"patterns":{"spec":1,"entity":1},"files":[{"f":"domain/entities/__specs__/note-audio.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/note-audio.entity.ts","p":"entity"}]},{"id":"audio/domain/ports","label":"domain/ports","tier":7,"count":1,"patterns":{"port":1},"files":[{"f":"domain/ports/note-ownership.port.ts","p":"port"}]},{"id":"audio/infrastructure/cache","label":"infrastructure/cache","tier":6,"count":1,"patterns":{"cache":1},"files":[{"f":"infrastructure/cache/audio-file.cache.ts","p":"cache"}]},{"id":"audio/infrastructure/remote-callers","label":"infrastructure/remote-callers","tier":6,"count":2,"patterns":{"spec":1,"remote-caller":1},"files":[{"f":"infrastructure/remote-callers/__specs__/hermes.remote-caller.spec.ts","p":"spec"},{"f":"infrastructure/remote-callers/hermes.remote-caller.ts","p":"remote-caller"}]},{"id":"audio/infrastructure/repositories","label":"infrastructure/repositories","tier":6,"count":2,"patterns":{"spec":1,"repository":1},"files":[{"f":"infrastructure/repositories/__specs__/note-audio.repository.spec.ts","p":"spec"},{"f":"infrastructure/repositories/note-audio.repository.ts","p":"repository"}]},{"id":"audio/domain/transaction-scripts","label":"domain/transaction-scripts","tier":4,"count":11,"patterns":{"transaction-script":9,"spec":2},"files":[{"f":"domain/transaction-scripts/delete-audio-TS/delete-audio.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/delete-note-audios-TS/delete-note-audios.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/download-audio-TS/download-audio.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-note-audio-by-id-TS/get-note-audio-by-id.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-note-audios-TS/get-note-audios.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/save-note-audio-TS/save-note-audio.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/stream-audio-TS/__specs__/stream-audio.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/stream-audio-TS/stream-audio.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/text-to-speech-TS/text-to-speech.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-playback-position-TS/__specs__/update-playback-position.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/update-playback-position-TS/update-playback-position.transaction.script.ts","p":"transaction-script"}]},{"id":"audio/domain/aggregators","label":"domain/aggregators","tier":3,"count":1,"patterns":{"aggregator":1},"files":[{"f":"domain/aggregators/audio-purge.aggregator.ts","p":"aggregator"}]},{"id":"audio/domain/services","label":"domain/services","tier":2,"count":3,"patterns":{"spec":1,"service":2},"files":[{"f":"domain/services/__specs__/audio.service.spec.ts","p":"spec"},{"f":"domain/services/audio-streaming.service.ts","p":"service"},{"f":"domain/services/audio.service.ts","p":"service"}]},{"id":"audio/apps/dtos","label":"apps/dtos","tier":1,"count":2,"patterns":{"dto":2},"files":[{"f":"apps/dtos/requests/text-to-speech.dto.ts","p":"dto"},{"f":"apps/dtos/responses/audio.response.dto.ts","p":"dto"}]},{"id":"audio/apps/actions","label":"apps/actions","tier":0,"count":11,"patterns":{"action":6,"swagger":3,"responder":1,"dto":1},"files":[{"f":"apps/actions/delete-audio/delete-audio.action.ts","p":"action"},{"f":"apps/actions/delete-audio/delete-audio.swagger.ts","p":"swagger"},{"f":"apps/actions/download-audio/download-audio.action.ts","p":"action"},{"f":"apps/actions/download-audio/download-audio.responder.ts","p":"responder"},{"f":"apps/actions/get-note-audios/get-note-audios.action.ts","p":"action"},{"f":"apps/actions/stream-audio/stream-audio.action.ts","p":"action"},{"f":"apps/actions/text-to-speech/text-to-speech.action.ts","p":"action"},{"f":"apps/actions/text-to-speech/text-to-speech.swagger.ts","p":"swagger"},{"f":"apps/actions/update-playback-position-action/dtos/requests/update-playback-position.dto.ts","p":"dto"},{"f":"apps/actions/update-playback-position-action/update-playback-position.action.ts","p":"action"},{"f":"apps/actions/update-playback-position-action/update-playback-position.swagger.ts","p":"swagger"}]}],"tiersPresent":[0,1,2,3,4,6,7,8],"absent":[5],"findings":[],"endpoints":6},{"id":"users","files":25,"floors":[{"id":"users/(root)","label":"(root)","tier":8,"count":1,"patterns":{"module":1},"files":[{"f":"users.module.ts","p":"module"}]},{"id":"users/domain/entities","label":"domain/entities","tier":7,"count":2,"patterns":{"spec":1,"entity":1},"files":[{"f":"domain/entities/__specs__/user.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/user.entity.ts","p":"entity"}]},{"id":"users/infra/repositories","label":"infra/repositories","tier":6,"count":2,"patterns":{"spec":1,"repository":1},"files":[{"f":"infra/repositories/__specs__/user.repository.integration.spec.ts","p":"spec"},{"f":"infra/repositories/user.repository.ts","p":"repository"}]},{"id":"users/domain/transaction-scripts","label":"domain/transaction-scripts","tier":4,"count":10,"patterns":{"spec":3,"command":3,"transaction-script":3,"projection":1},"files":[{"f":"domain/transaction-scripts/register-user-TS/__specs__/register-user.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/register-user-TS/register-user.command.ts","p":"command"},{"f":"domain/transaction-scripts/register-user-TS/register-user.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-password-TS/__specs__/update-password.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/update-password-TS/update-password.command.ts","p":"command"},{"f":"domain/transaction-scripts/update-password-TS/update-password.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-username-TS/__specs__/update-username.transaction.script.spec.ts","p":"spec"},{"f":"domain/transaction-scripts/update-username-TS/update-username.command.ts","p":"command"},{"f":"domain/transaction-scripts/update-username-TS/update-username.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/user-response.projection.ts","p":"projection"}]},{"id":"users/domain/aggregators","label":"domain/aggregators","tier":3,"count":1,"patterns":{"aggregator":1},"files":[{"f":"domain/aggregators/user.aggregator.ts","p":"aggregator"}]},{"id":"users/domain","label":"domain","tier":2,"count":1,"patterns":{"service":1},"files":[{"f":"domain/users.service.ts","p":"service"}]},{"id":"users/apps/actions","label":"apps/actions","tier":0,"count":6,"patterns":{"dto":2,"action":2,"swagger":2},"files":[{"f":"apps/actions/update-password-action/dtos/requests/update-password.dto.ts","p":"dto"},{"f":"apps/actions/update-password-action/update-password.action.ts","p":"action"},{"f":"apps/actions/update-password-action/update-password.swagger.ts","p":"swagger"},{"f":"apps/actions/update-username-action/dtos/requests/update-username.dto.ts","p":"dto"},{"f":"apps/actions/update-username-action/update-username.action.ts","p":"action"},{"f":"apps/actions/update-username-action/update-username.swagger.ts","p":"swagger"}]},{"id":"users/apps/controllers","label":"apps/controllers","tier":0,"count":2,"patterns":{"dto":1,"controller":1},"files":[{"f":"apps/controllers/dtos/requests/create-user.request.dto.ts","p":"dto"},{"f":"apps/controllers/users.controller.ts","p":"controller"}]}],"tiersPresent":[0,2,3,4,6,7,8],"absent":[1,5],"findings":[],"endpoints":4},{"id":"folders","files":23,"floors":[{"id":"folders/(root)","label":"(root)","tier":8,"count":1,"patterns":{"module":1},"files":[{"f":"folders.module.ts","p":"module"}]},{"id":"folders/domain/entities","label":"domain/entities","tier":7,"count":2,"patterns":{"spec":1,"entity":1},"files":[{"f":"domain/entities/__specs__/folder.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/folder.entity.ts","p":"entity"}]},{"id":"folders/domain/ports","label":"domain/ports","tier":7,"count":1,"patterns":{"port":1},"files":[{"f":"domain/ports/note-folder.port.ts","p":"port"}]},{"id":"folders/infra/repositories","label":"infra/repositories","tier":6,"count":1,"patterns":{"repository":1},"files":[{"f":"infra/repositories/folder.repository.ts","p":"repository"}]},{"id":"folders/domain/transaction-scripts","label":"domain/transaction-scripts","tier":4,"count":6,"patterns":{"transaction-script":6},"files":[{"f":"domain/transaction-scripts/bulk-reparent-folders-TS/bulk-reparent-folders.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/create-folder-TS/create-folder.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/delete-folder-TS/delete-folder.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/get-folders-by-user-TS/get-folders-by-user.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/reorder-folders-TS/reorder-folders.transaction.script.ts","p":"transaction-script"},{"f":"domain/transaction-scripts/update-folder-TS/update-folder.transaction.script.ts","p":"transaction-script"}]},{"id":"folders/domain/services","label":"domain/services","tier":2,"count":1,"patterns":{"service":1},"files":[{"f":"domain/services/folder.service.ts","p":"service"}]},{"id":"folders/apps/dtos","label":"apps/dtos","tier":1,"count":1,"patterns":{"dto":1},"files":[{"f":"apps/dtos/responses/folder.response.dto.ts","p":"dto"}]},{"id":"folders/apps/actions","label":"apps/actions","tier":0,"count":10,"patterns":{"action":6,"dto":4},"files":[{"f":"apps/actions/bulk-reparent-action/bulk-reparent.action.ts","p":"action"},{"f":"apps/actions/bulk-reparent-action/bulk-reparent.dto.ts","p":"dto"},{"f":"apps/actions/create-folder-action/create-folder.action.ts","p":"action"},{"f":"apps/actions/create-folder-action/create-folder.dto.ts","p":"dto"},{"f":"apps/actions/delete-folder-action/delete-folder.action.ts","p":"action"},{"f":"apps/actions/get-folders-by-user-action/get-folders-by-user.action.ts","p":"action"},{"f":"apps/actions/reorder-folders-action/reorder-folders.action.ts","p":"action"},{"f":"apps/actions/reorder-folders-action/reorder-folders.dto.ts","p":"dto"},{"f":"apps/actions/update-folder-action/update-folder.action.ts","p":"action"},{"f":"apps/actions/update-folder-action/update-folder.dto.ts","p":"dto"}]}],"tiersPresent":[0,1,2,4,6,7,8],"absent":[3,5],"findings":[],"endpoints":6},{"id":"note-transfer","files":22,"floors":[{"id":"note-transfer/(root)","label":"(root)","tier":8,"count":1,"patterns":{"module":1},"files":[{"f":"note-transfer.module.ts","p":"module"}]},{"id":"note-transfer/domain/services","label":"domain/services","tier":8,"count":4,"patterns":{"other":2,"converter":1,"service":1},"files":[{"f":"domain/services/note-transfer-service/export-note.ts","p":"other"},{"f":"domain/services/note-transfer-service/import-note.ts","p":"other"},{"f":"domain/services/note-transfer-service/note-export-converter.ts","p":"converter"},{"f":"domain/services/note-transfer-service/note-transfer.service.ts","p":"service"}]},{"id":"note-transfer/domain/ports","label":"domain/ports","tier":7,"count":5,"patterns":{"port":5},"files":[{"f":"domain/ports/audio-purge.port.ts","p":"port"},{"f":"domain/ports/check-item-writer.port.ts","p":"port"},{"f":"domain/ports/note-writer.port.ts","p":"port"},{"f":"domain/ports/tag-attacher.port.ts","p":"port"},{"f":"domain/ports/time-track-writer.port.ts","p":"port"}]},{"id":"note-transfer/apps/dtos","label":"apps/dtos","tier":1,"count":3,"patterns":{"dto":3},"files":[{"f":"apps/dtos/requests/import-note.dto.ts","p":"dto"},{"f":"apps/dtos/requests/merge-into-note.dto.ts","p":"dto"},{"f":"apps/dtos/responses/note-export.response.ts","p":"dto"}]},{"id":"note-transfer/apps/actions","label":"apps/actions","tier":0,"count":9,"patterns":{"action":4,"swagger":4,"dto":1},"files":[{"f":"apps/actions/export-note-action/export-note.action.ts","p":"action"},{"f":"apps/actions/export-note-action/export-note.swagger.ts","p":"swagger"},{"f":"apps/actions/import-note-action/import-note.action.ts","p":"action"},{"f":"apps/actions/import-note-action/import-note.swagger.ts","p":"swagger"},{"f":"apps/actions/merge-into-note-action/merge-into-note.action.ts","p":"action"},{"f":"apps/actions/merge-into-note-action/merge-into-note.swagger.ts","p":"swagger"},{"f":"apps/actions/merge-notes-action/merge-notes.action.ts","p":"action"},{"f":"apps/actions/merge-notes-action/merge-notes.request.dto.ts","p":"dto"},{"f":"apps/actions/merge-notes-action/merge-notes.swagger.ts","p":"swagger"}]}],"tiersPresent":[0,1,7,8],"absent":[2,3,4,5,6],"findings":[],"endpoints":4},{"id":"shared-kernel","files":15,"floors":[{"id":"shared-kernel/(root)","label":"(root)","tier":8,"count":3,"patterns":{"bootstrap":1,"module":1,"test-util":1},"files":[{"f":"integration-test-data-source.ts","p":"bootstrap"},{"f":"shared-kernel.module.ts","p":"module"},{"f":"test-utils.ts","p":"test-util"}]},{"id":"shared-kernel/apps/logging","label":"apps/logging","tier":8,"count":1,"patterns":{"module":1},"files":[{"f":"apps/logging/logging.module.ts","p":"module"}]},{"id":"shared-kernel/utils","label":"utils","tier":8,"count":1,"patterns":{"util":1},"files":[{"f":"utils/date.utils.ts","p":"util"}]},{"id":"shared-kernel/domain/entities","label":"domain/entities","tier":7,"count":2,"patterns":{"spec":1,"entity":1},"files":[{"f":"domain/entities/__specs__/tag-note.entity.integration.spec.ts","p":"spec"},{"f":"domain/entities/tag-note.entity.ts","p":"entity"}]},{"id":"shared-kernel/domain/cross-domain-commands","label":"domain/cross-domain-commands","tier":1,"count":4,"patterns":{"command":4},"files":[{"f":"domain/cross-domain-commands/check-items/delete-check-items-by-note.command.ts","p":"command"},{"f":"domain/cross-domain-commands/notes/get-note-details.command.ts","p":"command"},{"f":"domain/cross-domain-commands/notes/verify-note-access.command.ts","p":"command"},{"f":"domain/cross-domain-commands/tags/delete-note-tag-associations.command.ts","p":"command"}]},{"id":"shared-kernel/apps/decorators","label":"apps/decorators","tier":0,"count":3,"patterns":{"spec":1,"decorator":2},"files":[{"f":"apps/decorators/__specs__/get-auth-user.decorator.spec.ts","p":"spec"},{"f":"apps/decorators/get-auth-user.decorator.ts","p":"decorator"},{"f":"apps/decorators/protected-action.decorator.ts","p":"decorator"}]},{"id":"shared-kernel/apps/guards","label":"apps/guards","tier":0,"count":1,"patterns":{"guard":1},"files":[{"f":"apps/guards/jwt-auth.guard.ts","p":"guard"}]}],"tiersPresent":[0,1,7,8],"absent":[2,3,4,5,6],"findings":[],"endpoints":0},{"id":"auth","files":4,"floors":[{"id":"auth/(root)","label":"(root)","tier":8,"count":2,"patterns":{"module":1,"strategy":1},"files":[{"f":"auth.module.ts","p":"module"},{"f":"jwt.strategy.ts","p":"strategy"}]},{"id":"auth/domain","label":"domain","tier":2,"count":1,"patterns":{"service":1},"files":[{"f":"domain/auth.service.ts","p":"service"}]},{"id":"auth/apps/actions","label":"apps/actions","tier":0,"count":1,"patterns":{"action":1},"files":[{"f":"apps/actions/login.action.ts","p":"action"}]}],"tiersPresent":[0,2,8],"absent":[1,3,4,5,6,7],"findings":[],"endpoints":1},{"id":"security-events","files":4,"floors":[{"id":"security-events/(root)","label":"(root)","tier":8,"count":1,"patterns":{"module":1},"files":[{"f":"security-events.module.ts","p":"module"}]},{"id":"security-events/domain/entities","label":"domain/entities","tier":7,"count":1,"patterns":{"entity":1},"files":[{"f":"domain/entities/security-event.entity.ts","p":"entity"}]},{"id":"security-events/infra/repositories","label":"infra/repositories","tier":6,"count":1,"patterns":{"repository":1},"files":[{"f":"infra/repositories/security-event.repository.ts","p":"repository"}]},{"id":"security-events/domain/aggregators","label":"domain/aggregators","tier":3,"count":1,"patterns":{"aggregator":1},"files":[{"f":"domain/aggregators/security-event.aggregator.ts","p":"aggregator"}]}],"tiersPresent":[3,6,7,8],"absent":[0,1,2,4,5],"findings":[],"endpoints":0},{"id":"health","files":1,"floors":[{"id":"health/(root)","label":"(root)","tier":0,"count":1,"patterns":{"controller":1},"files":[{"f":"health.controller.ts","p":"controller"}]}],"tiersPresent":[0],"absent":[1,2,3,4,5,6,7,8],"findings":[],"endpoints":1}],"domainEdges":[{"f":"notes","t":"shared-kernel","w":51,"ex":["notes/apps/actions/archive-note/archive-note.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","notes/apps/actions/archive-note/archive-note.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","notes/apps/actions/archive-note/archive-note.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","notes/apps/actions/archive-note/archive-note.swagger.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts"]},{"f":"time-tracks","t":"shared-kernel","w":51,"ex":["time-tracks/apps/actions/create-time-track-action/create-time-track.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","time-tracks/apps/actions/create-time-track-action/create-time-track.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","time-tracks/apps/actions/create-time-track-action/create-time-track.action.ts -> shared-kernel/apps/guards/jwt-auth.guard.ts","time-tracks/apps/actions/create-time-track-action/create-time-track.swagger.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts"]},{"f":"check-items","t":"shared-kernel","w":40,"ex":["check-items/apps/actions/create-check-item/create-check-item.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","check-items/apps/actions/create-check-item/create-check-item.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","check-items/apps/actions/create-check-item/create-check-item.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","check-items/apps/actions/create-check-item/create-check-item.swagger.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts"]},{"f":"tags","t":"shared-kernel","w":24,"ex":["tags/apps/actions/add-tag-to-note-action/add-tag-to-note.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","tags/apps/actions/add-tag-to-note-action/add-tag-to-note.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","tags/apps/actions/add-tag-to-note-action/add-tag-to-note.swagger.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","tags/apps/actions/delete-tag-action/delete-tag.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts"]},{"f":"audio","t":"shared-kernel","w":21,"ex":["audio/apps/actions/delete-audio/delete-audio.action.ts -> shared-kernel/apps/guards/jwt-auth.guard.ts","audio/apps/actions/delete-audio/delete-audio.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","audio/apps/actions/delete-audio/delete-audio.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","audio/apps/actions/delete-audio/delete-audio.swagger.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts"]},{"f":"note-transfer","t":"shared-kernel","w":16,"ex":["note-transfer/apps/actions/export-note-action/export-note.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","note-transfer/apps/actions/export-note-action/export-note.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","note-transfer/apps/actions/export-note-action/export-note.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","note-transfer/apps/actions/export-note-action/export-note.swagger.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts"]},{"f":"folders","t":"shared-kernel","w":12,"ex":["folders/apps/actions/bulk-reparent-action/bulk-reparent.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","folders/apps/actions/bulk-reparent-action/bulk-reparent.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","folders/apps/actions/create-folder-action/create-folder.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","folders/apps/actions/create-folder-action/create-folder.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts"]},{"f":"users","t":"shared-kernel","w":11,"ex":["users/apps/actions/update-password-action/update-password.action.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts","users/apps/actions/update-password-action/update-password.action.ts -> shared-kernel/apps/decorators/get-auth-user.decorator.ts","users/apps/actions/update-password-action/update-password.action.ts -> shared-kernel/apps/guards/jwt-auth.guard.ts","users/apps/actions/update-password-action/update-password.swagger.ts -> shared-kernel/apps/decorators/protected-action.decorator.ts"]},{"f":"notes","t":"check-items","w":3,"ex":["notes/apps/dtos/responses/note.response.dto.ts -> check-items/domain/aggregators/check-items.aggregator.ts","notes/domain/services/note.service.ts -> check-items/domain/aggregators/check-items.aggregator.ts","notes/domain/services/note.service.ts -> check-items/domain/aggregators/check-items.aggregator.ts"]},{"f":"note-transfer","t":"notes","w":2,"ex":["note-transfer/domain/services/note-transfer-service/export-note.ts -> notes/domain/aggregators/note.aggregator.ts","note-transfer/domain/services/note-transfer-service/note-transfer.service.ts -> notes/domain/aggregators/note.aggregator.ts"]},{"f":"audio","t":"notes","w":1,"ex":["audio/domain/services/audio.service.ts -> notes/domain/aggregators/note.aggregator.ts"]},{"f":"auth","t":"users","w":1,"ex":["auth/domain/auth.service.ts -> users/domain/aggregators/user.aggregator.ts"]},{"f":"auth","t":"security-events","w":1,"ex":["auth/domain/auth.service.ts -> security-events/domain/aggregators/security-event.aggregator.ts"]},{"f":"note-transfer","t":"check-items","w":1,"ex":["note-transfer/domain/services/note-transfer-service/export-note.ts -> check-items/domain/aggregators/check-items.aggregator.ts"]},{"f":"note-transfer","t":"time-tracks","w":1,"ex":["note-transfer/domain/services/note-transfer-service/export-note.ts -> time-tracks/domain/aggregators/time-tracks.aggregator.ts"]},{"f":"note-transfer","t":"tags","w":1,"ex":["note-transfer/domain/services/note-transfer-service/export-note.ts -> tags/domain/aggregators/tag.aggregator.ts"]},{"f":"time-tracks","t":"notes","w":1,"ex":["time-tracks/domain/services/time-track-service/time-track.service.ts -> notes/domain/aggregators/note.aggregator.ts"]},{"f":"time-tracks","t":"tags","w":1,"ex":["time-tracks/domain/services/time-track-service/time-track.service.ts -> tags/domain/aggregators/tag.aggregator.ts"]},{"f":"users","t":"security-events","w":1,"ex":["users/domain/users.service.ts -> security-events/domain/aggregators/security-event.aggregator.ts"]}],"findings":[{"id":"cross-domain","tone":"good","title":"Every cross-domain edge goes through an allowed gateway","detail":"20 dependencies cross a bounded context. Allowed landing points: aggregator, port.","items":["audio/service -> notes/domain/aggregators/note.aggregator.ts","auth/service -> users/domain/aggregators/user.aggregator.ts","auth/service -> security-events/domain/aggregators/security-event.aggregator.ts","check-items/aggregator -> note-transfer/domain/ports/check-item-writer.port.ts","note-transfer/other -> notes/domain/aggregators/note.aggregator.ts","note-transfer/other -> check-items/domain/aggregators/check-items.aggregator.ts","note-transfer/other -> time-tracks/domain/aggregators/time-tracks.aggregator.ts","note-transfer/other -> tags/domain/aggregators/tag.aggregator.ts","note-transfer/service -> notes/domain/aggregators/note.aggregator.ts","notes/adapter -> folders/domain/ports/note-folder.port.ts","notes/adapter -> audio/domain/ports/note-ownership.port.ts","notes/dto -> check-items/domain/aggregators/check-items.aggregator.ts","notes/gateway -> audio/domain/ports/note-ownership.port.ts","notes/aggregator -> note-transfer/domain/ports/note-writer.port.ts","notes/service -> check-items/domain/aggregators/check-items.aggregator.ts","tags/aggregator -> note-transfer/domain/ports/tag-attacher.port.ts","time-tracks/aggregator -> note-transfer/domain/ports/time-track-writer.port.ts","time-tracks/service -> notes/domain/aggregators/note.aggregator.ts","time-tracks/service -> tags/domain/aggregators/tag.aggregator.ts","users/service -> security-events/domain/aggregators/security-event.aggregator.ts"]},{"id":"dag","tone":"good","gate":false,"title":"Domain dependency graph is acyclic","detail":"Strongly-connected components as sanctioned carve-outs are removed in turn.","items":["all import edges: 1 SCC(s)","minus wiring: 1 SCC(s)","minus wiring + ports: 1 SCC(s)","minus wiring + ports + infra entities: 0 SCC(s)"]},{"id":"no-same-level","tone":"good","title":"No same-level injection","detail":"Checked among transaction-script, service, aggregator, mapper, assembler, converter.","items":[]},{"id":"no-upward","tone":"good","title":"No upward calls","detail":"Layering holds in the direction the rules require.","items":["transaction-script -> service: 0","repository -> transaction-script: 0","aggregator -> service: 0"]},{"id":"implicit-fk","tone":"note","title":"10 entity references are implicit","detail":"The data model has 13 references between entities; 3 are declared to the ORM and 10 exist only as a bare id column. 10 of them cross a bounded context.","items":["NoteAudio.noteId -> Note  (crosses audio -> notes)","CheckItem.noteId -> Note  (crosses check-items -> notes)","Folder.userId -> User  (crosses folders -> users)","Folder.parentId -> Folder","NoteVersion.noteId -> Note","Note.userId -> User  (crosses notes -> users)","Note.folderId -> Folder  (crosses notes -> folders)","Tag.userId -> User  (crosses tags -> users)","TimeTrack.userId -> User  (crosses time-tracks -> users)","TimeTrack.noteId -> Note  (crosses time-tracks -> notes)"]},{"id":"hotspots","tone":"note","title":"Files that change often and are widely depended on","detail":"Across 298 commits. Score is commits multiplied by dependents: a file high on both is where a refactor pays for itself, and where a mistake spreads furthest.","items":["notes/infra/repositories/note-memo-tag.repository.ts  —  31 commits, 27 dependents, 3 authors","notes/domain/services/note.service.ts  —  24 commits, 23 dependents, 2 authors","notes/domain/entities/notes/note.entity.ts  —  18 commits, 27 dependents, 3 authors","shared-kernel/apps/decorators/protected-action.decorator.ts  —  4 commits, 103 dependents, 2 authors","time-tracks/infra/repositories/time-track.repository.ts  —  24 commits, 16 dependents, 3 authors","notes/notes.module.ts  —  52 commits, 5 dependents, 3 authors","time-tracks/domain/services/time-track-service/time-track.service.ts  —  22 commits, 13 dependents, 2 authors","check-items/domain/entities/check-item.entity.ts  —  11 commits, 23 dependents, 2 authors","tags/infra/repositories/tag-repository/tag.repository.ts  —  12 commits, 17 dependents, 2 authors","notes/apps/dtos/responses/note.response.dto.ts  —  11 commits, 16 dependents, 3 authors","notes/domain/entities/notes/memo.entity.ts  —  10 commits, 16 dependents, 3 authors","check-items/infra/repositories/check-items/check-items.repository.ts  —  13 commits, 12 dependents, 2 authors","shared-kernel/apps/decorators/get-auth-user.decorator.ts  —  2 commits, 77 dependents, 1 author","notes/domain/aggregators/note.aggregator.ts  —  14 commits, 10 dependents, 3 authors","time-tracks/domain/entities/time-track-entity/time-track.entity.ts  —  13 commits, 9 dependents, 3 authors"]},{"id":"logical-coupling","tone":"note","title":"Files that change together but do not reference each other","detail":"Across 298 commits (8 ignored for touching more than 25 files), 1 pair co-changes above 60% with no import edge between them. Usually a duplicated rule or a missing abstraction.","items":["notes/test-utils.ts  ~  notes/test-utils/mock-factories.ts   (8 of 11, 73%)"]},{"id":"absent-patterns","tone":"note","title":"7 configured patterns exist nowhere in the code","detail":"Either the architecture document describes shapes that were never built, or the config names patterns this project does not use.","items":["mapper (tier Mapping)","assembler (tier Mapping)","resolver (tier Entry)","interceptor (tier Entry)","schema (tier Domain Model)","event (tier Contract)","config (tier Wiring)"]}],"ports":[{"name":"note-ownership.port.ts","owner":"audio","consumers":["audio · spec","audio · transaction-script","notes · adapter","notes · spec","notes · gateway"]},{"name":"note-folder.port.ts","owner":"folders","consumers":["folders · transaction-script","notes · adapter"]},{"name":"audio-purge.port.ts","owner":"note-transfer","consumers":["note-transfer · service"]},{"name":"check-item-writer.port.ts","owner":"note-transfer","consumers":["check-items · aggregator","note-transfer · other","note-transfer · service"]},{"name":"note-writer.port.ts","owner":"note-transfer","consumers":["note-transfer · other","note-transfer · service","notes · aggregator"]},{"name":"tag-attacher.port.ts","owner":"note-transfer","consumers":["note-transfer · other","note-transfer · service","tags · aggregator"]},{"name":"time-track-writer.port.ts","owner":"note-transfer","consumers":["note-transfer · other","note-transfer · service","time-tracks · aggregator"]}],"crossDomain":[{"f":"audio/domain/services/audio.service.ts","t":"notes/domain/aggregators/note.aggregator.ts","fp":"service","tp":"aggregator","fm":"audio","tm":"notes"},{"f":"auth/domain/auth.service.ts","t":"users/domain/aggregators/user.aggregator.ts","fp":"service","tp":"aggregator","fm":"auth","tm":"users"},{"f":"auth/domain/auth.service.ts","t":"security-events/domain/aggregators/security-event.aggregator.ts","fp":"service","tp":"aggregator","fm":"auth","tm":"security-events"},{"f":"check-items/domain/aggregators/check-items.aggregator.ts","t":"note-transfer/domain/ports/check-item-writer.port.ts","fp":"aggregator","tp":"port","fm":"check-items","tm":"note-transfer"},{"f":"note-transfer/domain/services/note-transfer-service/export-note.ts","t":"notes/domain/aggregators/note.aggregator.ts","fp":"other","tp":"aggregator","fm":"note-transfer","tm":"notes"},{"f":"note-transfer/domain/services/note-transfer-service/export-note.ts","t":"check-items/domain/aggregators/check-items.aggregator.ts","fp":"other","tp":"aggregator","fm":"note-transfer","tm":"check-items"},{"f":"note-transfer/domain/services/note-transfer-service/export-note.ts","t":"time-tracks/domain/aggregators/time-tracks.aggregator.ts","fp":"other","tp":"aggregator","fm":"note-transfer","tm":"time-tracks"},{"f":"note-transfer/domain/services/note-transfer-service/export-note.ts","t":"tags/domain/aggregators/tag.aggregator.ts","fp":"other","tp":"aggregator","fm":"note-transfer","tm":"tags"},{"f":"note-transfer/domain/services/note-transfer-service/note-transfer.service.ts","t":"notes/domain/aggregators/note.aggregator.ts","fp":"service","tp":"aggregator","fm":"note-transfer","tm":"notes"},{"f":"notes/apps/adapters/note-folder.adapter.ts","t":"folders/domain/ports/note-folder.port.ts","fp":"adapter","tp":"port","fm":"notes","tm":"folders"},{"f":"notes/apps/adapters/note-ownership.adapter.ts","t":"audio/domain/ports/note-ownership.port.ts","fp":"adapter","tp":"port","fm":"notes","tm":"audio"},{"f":"notes/apps/dtos/responses/note.response.dto.ts","t":"check-items/domain/aggregators/check-items.aggregator.ts","fp":"dto","tp":"aggregator","fm":"notes","tm":"check-items"},{"f":"notes/apps/gateways/transcribe-audio.gateway.ts","t":"audio/domain/ports/note-ownership.port.ts","fp":"gateway","tp":"port","fm":"notes","tm":"audio"},{"f":"notes/domain/aggregators/note.aggregator.ts","t":"note-transfer/domain/ports/note-writer.port.ts","fp":"aggregator","tp":"port","fm":"notes","tm":"note-transfer"},{"f":"notes/domain/services/note.service.ts","t":"check-items/domain/aggregators/check-items.aggregator.ts","fp":"service","tp":"aggregator","fm":"notes","tm":"check-items"},{"f":"tags/domain/aggregators/tag.aggregator.ts","t":"note-transfer/domain/ports/tag-attacher.port.ts","fp":"aggregator","tp":"port","fm":"tags","tm":"note-transfer"},{"f":"time-tracks/domain/aggregators/time-tracks.aggregator.ts","t":"note-transfer/domain/ports/time-track-writer.port.ts","fp":"aggregator","tp":"port","fm":"time-tracks","tm":"note-transfer"},{"f":"time-tracks/domain/services/time-track-service/time-track.service.ts","t":"notes/domain/aggregators/note.aggregator.ts","fp":"service","tp":"aggregator","fm":"time-tracks","tm":"notes"},{"f":"time-tracks/domain/services/time-track-service/time-track.service.ts","t":"tags/domain/aggregators/tag.aggregator.ts","fp":"service","tp":"aggregator","fm":"time-tracks","tm":"tags"},{"f":"users/domain/users.service.ts","t":"security-events/domain/aggregators/security-event.aggregator.ts","fp":"service","tp":"aggregator","fm":"users","tm":"security-events"}],"endpoints":[{"v":"DELETE","r":"/audio/:audioId","m":"audio","f":"audio/apps/actions/delete-audio/delete-audio.action.ts","c":"DeleteAudioAction","h":"execute","ret":"void","dto":null,"hops":[{"c":"AudioService","k":"service","mth":"deleteAudio","d":1,"m":"audio"},{"c":"DeleteAudioTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"audio"},{"c":"HermesRemoteCaller","k":"remote-caller","mth":"deleteAudioByPath","d":3,"m":"audio"},{"c":"AudioFileCache","k":"cache","mth":"evictEntry","d":3,"m":"audio"},{"c":"NoteAudioRepository","k":"repository","mth":"deleteById","d":3,"m":"audio"}]},{"v":"PATCH","r":"/audio/:audioId/playback-position","m":"audio","f":"audio/apps/actions/update-playback-position-action/update-playback-position.action.ts","c":"UpdatePlaybackPositionAction","h":"execute","ret":"Promise<void>","dto":"UpdatePlaybackPositionDto","hops":[{"c":"AudioService","k":"service","mth":"updatePlaybackPosition","d":1,"m":"audio"},{"c":"UpdatePlaybackPositionTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"audio"},{"c":"NoteAudioRepository","k":"repository","mth":"updatePositionById","d":3,"m":"audio"}]},{"v":"GET","r":"/audio/download/:audioId","m":"audio","f":"audio/apps/actions/download-audio/download-audio.action.ts","c":"DownloadAudioAction","h":"execute","ret":"void","dto":null,"hops":[{"c":"DownloadAudioResponder","k":"responder","mth":"apply","d":1,"m":"audio"},{"c":"AudioService","k":"service","mth":"downloadAudioById","d":1,"m":"audio"},{"c":"DownloadAudioTransactionScript","k":"transaction-script","mth":"executeByPath","d":2,"m":"audio"},{"c":"HermesRemoteCaller","k":"remote-caller","mth":"downloadAudioByPath","d":3,"m":"audio"},{"c":"DownloadAudioTransactionScript","k":"transaction-script","mth":"execute","d":2,"m":"audio"},{"c":"HermesRemoteCaller","k":"remote-caller","mth":"downloadAudio","d":3,"m":"audio"}]},{"v":"GET","r":"/audio/note/:noteId","m":"audio","f":"audio/apps/actions/get-note-audios/get-note-audios.action.ts","c":"GetNoteAudiosAction","h":"execute","ret":"void","dto":null,"hops":[{"c":"AudioService","k":"service","mth":"getNoteAudios","d":1,"m":"audio"},{"c":"NoteAggregator","k":"aggregator","mth":"getReference","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"GetNoteAudiosTransactionScript","k":"transaction-script","mth":"execute","d":2,"m":"audio"},{"c":"NoteAudioRepository","k":"repository","mth":"findByNoteId","d":3,"m":"audio"}]},{"v":"GET","r":"/audio/stream/:audioId","m":"audio","f":"audio/apps/actions/stream-audio/stream-audio.action.ts","c":"StreamAudioAction","h":"execute","ret":"Promise<void>","dto":null,"hops":[{"c":"AudioStreamingService","k":"service","mth":"streamAudio","d":1,"m":"audio"},{"c":"StreamAudioTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"audio"}]},{"v":"POST","r":"/audio/text-to-speech","m":"audio","f":"audio/apps/actions/text-to-speech/text-to-speech.action.ts","c":"TextToSpeechAction","h":"execute","ret":"void","dto":"TextToSpeechRequestDto","hops":[{"c":"AudioService","k":"service","mth":"convertTextToSpeech","d":1,"m":"audio"},{"c":"NoteAggregator","k":"aggregator","mth":"getMemoById","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findMemoById","d":3,"m":"notes"},{"c":"TextToSpeechTransactionScript","k":"transaction-script","mth":"execute","d":2,"m":"audio"},{"c":"HermesRemoteCaller","k":"remote-caller","mth":"convertTextToSpeech","d":3,"m":"audio"},{"c":"SaveNoteAudioTransactionScript","k":"transaction-script","mth":"execute","d":2,"m":"audio"},{"c":"NoteAudioRepository","k":"repository","mth":"create","d":3,"m":"audio"}]},{"v":"POST","r":"/auth/login","m":"auth","f":"auth/apps/actions/login.action.ts","c":"LoginAction","h":"login","ret":"void","dto":"username","hops":[{"c":"AuthService","k":"service","mth":"attemptLogin","d":1,"m":"auth"},{"c":"SecurityEventAggregator","k":"aggregator","mth":"logFailedLogin","d":2,"m":"security-events"},{"c":"SecurityEventRepository","k":"repository","mth":"create","d":3,"m":"security-events"}]},{"v":"GET","r":"/check-items/items/:id","m":"check-items","f":"check-items/apps/actions/get-check-item/get-check-item.action.ts","c":"GetCheckItemAction","h":"apply","ret":"Promise<CheckItem>","dto":null,"hops":[{"c":"CheckItemService","k":"service","mth":"getCheckItem","d":1,"m":"check-items"},{"c":"GetCheckItemTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByIdWithNoteValidation","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResult","d":4,"m":"check-items"}]},{"v":"DELETE","r":"/check-items/items/:id/notes/:noteId","m":"check-items","f":"check-items/apps/actions/delete-check-item/delete-check-item.action.ts","c":"DeleteCheckItemAction","h":"apply","ret":"Promise<void>","dto":null,"hops":[{"c":"CheckItemService","k":"service","mth":"deleteCheckItem","d":1,"m":"check-items"},{"c":"DeleteCheckItemTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByIdWithNoteValidationForUpdate","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResult","d":4,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"delete","d":3,"m":"check-items"}]},{"v":"PATCH","r":"/check-items/items/:id/notes/:noteId","m":"check-items","f":"check-items/apps/actions/update-check-item/update-check-item.action.ts","c":"UpdateCheckItemAction","h":"apply","ret":"Promise<CheckItem>","dto":"UpdateCheckItemDto","hops":[{"c":"CheckItemService","k":"service","mth":"updateCheckItem","d":1,"m":"check-items"},{"c":"UpdateCheckItemTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByIdWithNoteValidationForUpdate","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResult","d":4,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"save","d":3,"m":"check-items"}]},{"v":"PATCH","r":"/check-items/items/:id/status","m":"check-items","f":"check-items/apps/actions/update-check-item-status/update-check-item-status.action.ts","c":"UpdateCheckItemStatusAction","h":"apply","ret":"Promise<CheckItem>","dto":"UpdateCheckItemStatusDto","hops":[{"c":"CheckItemService","k":"service","mth":"updateCheckItemStatus","d":1,"m":"check-items"},{"c":"UpdateCheckItemStatusTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByIdWithNoteValidation","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResult","d":4,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"save","d":3,"m":"check-items"}]},{"v":"PATCH","r":"/check-items/items/:id/toggle/notes/:noteId","m":"check-items","f":"check-items/apps/actions/toggle-check-item/toggle-check-item.action.ts","c":"ToggleCheckItemAction","h":"apply","ret":"Promise<CheckItem>","dto":null,"hops":[{"c":"CheckItemService","k":"service","mth":"toggleCheckItem","d":1,"m":"check-items"},{"c":"ToggleCheckItemTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByIdWithNoteValidationForUpdate","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResult","d":4,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"save","d":3,"m":"check-items"}]},{"v":"GET","r":"/check-items/notes/:noteId","m":"check-items","f":"check-items/apps/actions/get-check-items-by-note/get-check-items-by-note.action.ts","c":"GetCheckItemsByNoteAction","h":"apply","ret":"Promise<CheckItem[]>","dto":null,"hops":[{"c":"CheckItemService","k":"service","mth":"getCheckItemsByNoteId","d":1,"m":"check-items"},{"c":"GetCheckItemsByNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByNoteIdWithUserValidation","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResults","d":4,"m":"check-items"}]},{"v":"POST","r":"/check-items/notes/:noteId","m":"check-items","f":"check-items/apps/actions/create-check-item/create-check-item.action.ts","c":"CreateCheckItemAction","h":"apply","ret":"Promise<CheckItem[]>","dto":"CreateCheckItemDto","hops":[{"c":"CheckItemService","k":"service","mth":"createCheckItem","d":1,"m":"check-items"},{"c":"CreateCheckItemTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"check-items"}]},{"v":"PUT","r":"/check-items/notes/:noteId/reorder","m":"check-items","f":"check-items/apps/actions/reorder-check-items/reorder-check-items.action.ts","c":"ReorderCheckItemsAction","h":"apply","ret":"Promise<CheckItem[]>","dto":"ReorderCheckItemsDto","hops":[{"c":"CheckItemService","k":"service","mth":"reorderCheckItems","d":1,"m":"check-items"},{"c":"ReorderCheckItemsTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByIdWithNoteValidationForUpdate","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResult","d":4,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"save","d":3,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByNoteIdWithUserValidation","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResults","d":4,"m":"check-items"}]},{"v":"GET","r":"/folders","m":"folders","f":"folders/apps/actions/get-folders-by-user-action/get-folders-by-user.action.ts","c":"GetFoldersByUserAction","h":"apply","ret":"Promise<FolderResponseDto[]>","dto":null,"hops":[{"c":"FolderService","k":"service","mth":"getFoldersByUser","d":1,"m":"folders"},{"c":"GetFoldersByUserTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"folders"},{"c":"FolderRepository","k":"repository","mth":"findAllByUserId","d":3,"m":"folders"}]},{"v":"POST","r":"/folders","m":"folders","f":"folders/apps/actions/create-folder-action/create-folder.action.ts","c":"CreateFolderAction","h":"apply","ret":"Promise<FolderResponseDto>","dto":"CreateFolderDto","hops":[{"c":"FolderService","k":"service","mth":"createFolder","d":1,"m":"folders"},{"c":"CreateFolderTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"folders"},{"c":"FolderRepository","k":"repository","mth":"create","d":3,"m":"folders"}]},{"v":"DELETE","r":"/folders/:id","m":"folders","f":"folders/apps/actions/delete-folder-action/delete-folder.action.ts","c":"DeleteFolderAction","h":"apply","ret":"Promise<void>","dto":null,"hops":[{"c":"FolderService","k":"service","mth":"deleteFolder","d":1,"m":"folders"},{"c":"DeleteFolderTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"folders"},{"c":"FolderRepository","k":"repository","mth":"findById","d":3,"m":"folders"},{"c":"FolderRepository","k":"repository","mth":"findAllByUserId","d":3,"m":"folders"},{"c":"NoteFolderAdapter","k":"adapter","mth":"nullifyFolderIds","d":3,"m":"notes"},{"c":"FolderRepository","k":"repository","mth":"deleteByIds","d":3,"m":"folders"}]},{"v":"PATCH","r":"/folders/:id","m":"folders","f":"folders/apps/actions/update-folder-action/update-folder.action.ts","c":"UpdateFolderAction","h":"apply","ret":"Promise<FolderResponseDto>","dto":"UpdateFolderDto","hops":[{"c":"FolderService","k":"service","mth":"updateFolder","d":1,"m":"folders"},{"c":"UpdateFolderTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"folders"},{"c":"FolderRepository","k":"repository","mth":"findById","d":3,"m":"folders"},{"c":"FolderRepository","k":"repository","mth":"update","d":3,"m":"folders"}]},{"v":"PATCH","r":"/folders/bulk-reparent","m":"folders","f":"folders/apps/actions/bulk-reparent-action/bulk-reparent.action.ts","c":"BulkReparentAction","h":"apply","ret":"Promise<FolderResponseDto[]>","dto":"BulkReparentFoldersDto","hops":[{"c":"FolderService","k":"service","mth":"bulkReparentFolders","d":1,"m":"folders"},{"c":"BulkReparentFoldersTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"folders"},{"c":"FolderRepository","k":"repository","mth":"findAllByUserId","d":3,"m":"folders"}]},{"v":"PATCH","r":"/folders/reorder","m":"folders","f":"folders/apps/actions/reorder-folders-action/reorder-folders.action.ts","c":"ReorderFoldersAction","h":"apply","ret":"Promise<void>","dto":"ReorderFoldersDto","hops":[{"c":"FolderService","k":"service","mth":"reorderFolders","d":1,"m":"folders"},{"c":"ReorderFoldersTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"folders"}]},{"v":"GET","r":"/healthz","m":"health","f":"health/health.controller.ts","c":"HealthController","h":"check","ret":"","dto":null,"hops":[]},{"v":"GET","r":"/notes/:id/export","m":"note-transfer","f":"note-transfer/apps/actions/export-note-action/export-note.action.ts","c":"ExportNoteAction","h":"apply","ret":"Promise<void>","dto":null,"hops":[{"c":"NoteTransferService","k":"service","mth":"exportNote","d":1,"m":"note-transfer"},{"c":"ExportNote","k":"other","mth":"apply","d":2,"m":"note-transfer"},{"c":"NoteAggregator","k":"aggregator","mth":"getReference","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":4,"m":"notes"},{"c":"NoteAggregator","k":"aggregator","mth":"getMemoById","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findMemoById","d":4,"m":"notes"},{"c":"CheckItemsAggregator","k":"aggregator","mth":"findByNoteId","d":3,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByNoteIdWithUserValidation","d":4,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResults","d":5,"m":"check-items"},{"c":"TimeTracksAggregator","k":"aggregator","mth":"findByNoteId","d":3,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"findByUserIdAndNoteId","d":4,"m":"time-tracks"},{"c":"TagAggregator","k":"aggregator","mth":"getTagNamesByNoteId","d":3,"m":"tags"},{"c":"GetTagsByNoteIdTransactionScript","k":"transaction-script","mth":"apply","d":4,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagsByNoteId","d":5,"m":"tags"},{"c":"NoteExportConverter","k":"converter","mth":"convert","d":3,"m":"note-transfer"}]},{"v":"POST","r":"/notes/:id/merge","m":"note-transfer","f":"note-transfer/apps/actions/merge-into-note-action/merge-into-note.action.ts","c":"MergeIntoNoteAction","h":"apply","ret":"Promise<{ success: boolean }>","dto":"MergeIntoNoteDto","hops":[{"c":"NoteTransferService","k":"service","mth":"mergeIntoNote","d":1,"m":"note-transfer"},{"c":"NoteAggregator","k":"aggregator","mth":"getReference","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"NoteAggregator","k":"aggregator","mth":"replaceDescription","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"save","d":3,"m":"notes"},{"c":"TimeTracksAggregator","k":"aggregator","mth":"bulkCreate","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"create","d":3,"m":"time-tracks"},{"c":"CheckItemsAggregator","k":"aggregator","mth":"bulkCreate","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByNoteId","d":3,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"saveMany","d":3,"m":"check-items"},{"c":"TagAggregator","k":"aggregator","mth":"attachByName","d":2,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagByName","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"createTag","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagsByNoteId","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"addTagToNote","d":3,"m":"tags"}]},{"v":"POST","r":"/notes/import","m":"note-transfer","f":"note-transfer/apps/actions/import-note-action/import-note.action.ts","c":"ImportNoteAction","h":"apply","ret":"Promise<{ noteId: number }>","dto":"ImportNoteDto","hops":[{"c":"NoteTransferService","k":"service","mth":"importNote","d":1,"m":"note-transfer"},{"c":"ImportNote","k":"other","mth":"apply","d":2,"m":"note-transfer"},{"c":"NoteAggregator","k":"aggregator","mth":"createNoteWithMemo","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"save","d":4,"m":"notes"},{"c":"CheckItemsAggregator","k":"aggregator","mth":"bulkCreate","d":3,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByNoteId","d":4,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"saveMany","d":4,"m":"check-items"},{"c":"TimeTracksAggregator","k":"aggregator","mth":"bulkCreate","d":3,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"create","d":4,"m":"time-tracks"},{"c":"TagAggregator","k":"aggregator","mth":"attachByName","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagByName","d":4,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"createTag","d":4,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagsByNoteId","d":4,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"addTagToNote","d":4,"m":"tags"}]},{"v":"POST","r":"/notes/merge","m":"note-transfer","f":"note-transfer/apps/actions/merge-notes-action/merge-notes.action.ts","c":"MergeNotesAction","h":"apply","ret":"Promise<{ success: boolean; archivedNoteIds: number[] }>","dto":"MergeNotesDto","hops":[{"c":"NoteTransferService","k":"service","mth":"mergeNotes","d":1,"m":"note-transfer"},{"c":"NoteAggregator","k":"aggregator","mth":"getReference","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"NoteAggregator","k":"aggregator","mth":"getMemoById","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findMemoById","d":3,"m":"notes"},{"c":"NoteAggregator","k":"aggregator","mth":"replaceDescription","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"save","d":3,"m":"notes"},{"c":"CheckItemsAggregator","k":"aggregator","mth":"bulkCreate","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByNoteId","d":3,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"saveMany","d":3,"m":"check-items"},{"c":"TimeTracksAggregator","k":"aggregator","mth":"bulkCreate","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"create","d":3,"m":"time-tracks"},{"c":"TagAggregator","k":"aggregator","mth":"attachByName","d":2,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagByName","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"createTag","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagsByNoteId","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"addTagToNote","d":3,"m":"tags"},{"c":"NoteAggregator","k":"aggregator","mth":"archiveNotes","d":2,"m":"notes"},{"c":"AudioPurgeAggregator","k":"aggregator","mth":"purgeByNoteIds","d":2,"m":"audio"},{"c":"NoteAudioRepository","k":"repository","mth":"findByNoteId","d":3,"m":"audio"},{"c":"HermesRemoteCaller","k":"remote-caller","mth":"deleteAudioByPath","d":3,"m":"audio"},{"c":"NoteAudioRepository","k":"repository","mth":"deleteById","d":3,"m":"audio"}]},{"v":"POST","r":"/notes","m":"notes","f":"notes/apps/actions/notes/create-note-action/create-note.action.ts","c":"CreateNoteAction","h":"apply","ret":"Promise<NoteResponseDto>","dto":"CreateNoteDto","hops":[{"c":"NoteService","k":"service","mth":"createNote","d":1,"m":"notes"},{"c":"CreateNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"save","d":3,"m":"notes"},{"c":"CreateNoteResponder","k":"responder","mth":"apply","d":1,"m":"notes"}]},{"v":"DELETE","r":"/notes/:id","m":"notes","f":"notes/apps/actions/notes/delete-note.action.ts","c":"DeleteNoteAction","h":"apply","ret":"Promise<void>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"deleteNote","d":1,"m":"notes"},{"c":"GetNoteByIdTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"DeleteNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"deleteNoteById","d":3,"m":"notes"}]},{"v":"PATCH","r":"/notes/:id/archive","m":"notes","f":"notes/apps/actions/archive-note/archive-note.action.ts","c":"ArchiveNoteAction","h":"apply","ret":"Promise<Note>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"archiveNote","d":1,"m":"notes"},{"c":"ArchiveNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"save","d":3,"m":"notes"}]},{"v":"PATCH","r":"/notes/:id/convert-to-memo","m":"notes","f":"notes/apps/actions/notes/convert-checklist-to-memo-action/convert-checklist-to-memo.action.ts","c":"ConvertChecklistToMemoAction","h":"apply","ret":"Promise<NoteResponseDto>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"convertChecklistToMemo","d":1,"m":"notes"},{"c":"ConvertChecklistToMemoTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"save","d":3,"m":"notes"},{"c":"GetNoteByIdResponder","k":"responder","mth":"apply","d":1,"m":"notes"}]},{"v":"PATCH","r":"/notes/:id/folder","m":"notes","f":"notes/apps/actions/notes/move-note-to-folder-action/move-note-to-folder.action.ts","c":"MoveNoteToFolderAction","h":"apply","ret":"Promise<{ id: number; folderId: number | null }>","dto":"MoveNoteToFolderDto","hops":[{"c":"NoteService","k":"service","mth":"moveNoteToFolder","d":1,"m":"notes"},{"c":"MoveNoteToFolderTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"}]},{"v":"PATCH","r":"/notes/:id/timestamp","m":"notes","f":"notes/apps/actions/update-note-timestamp.action.ts","c":"UpdateNoteTimestampAction","h":"apply","ret":"Promise<void>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"updateNoteTimestamp","d":1,"m":"notes"},{"c":"UpdateNoteTimestampTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"updateNoteTimestamp","d":3,"m":"notes"}]},{"v":"GET","r":"/notes/:id/versions","m":"notes","f":"notes/apps/actions/notes/get-note-versions-action/get-note-versions.action.ts","c":"GetNoteVersionsAction","h":"apply","ret":"Promise<{ versions: NoteVersionResponseDto[]; total: number }>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"getNoteVersions","d":1,"m":"notes"},{"c":"GetNoteVersionsTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteVersionRepository","k":"repository","mth":"findByNoteId","d":3,"m":"notes"},{"c":"GetNoteVersionsResponder","k":"responder","mth":"apply","d":1,"m":"notes"}]},{"v":"POST","r":"/notes/:noteId/versions/:versionId/load","m":"notes","f":"notes/apps/actions/notes/load-note-version-action/load-note-version.action.ts","c":"LoadNoteVersionAction","h":"apply","ret":"Promise<NoteResponseDto>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"loadNoteVersion","d":1,"m":"notes"},{"c":"LoadNoteVersionTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteVersionRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"LoadNoteVersionResponder","k":"responder","mth":"apply","d":1,"m":"notes"}]},{"v":"GET","r":"/notes/detail/:id","m":"notes","f":"notes/apps/actions/notes/get-note-by-id-action/get-note-by-id.action.ts","c":"GetNoteByIdAction","h":"apply","ret":"Promise<NoteResponseDto>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"getNoteByIdWithCheckItems","d":1,"m":"notes"},{"c":"GetNoteByIdTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"CheckItemsAggregator","k":"aggregator","mth":"findByNoteId","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByNoteIdWithUserValidation","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResults","d":4,"m":"check-items"},{"c":"GetNoteByIdResponder","k":"responder","mth":"apply","d":1,"m":"notes"}]},{"v":"PATCH","r":"/notes/detail/:id","m":"notes","f":"notes/apps/actions/notes/update-note-action/update-note.action.ts","c":"UpdateNoteAction","h":"apply","ret":"Promise<NoteResponseDto>","dto":"UpdateNoteDto","hops":[{"c":"NoteService","k":"service","mth":"updateNoteWithCheckItems","d":1,"m":"notes"},{"c":"UpdateNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"save","d":3,"m":"notes"},{"c":"UpdateNoteParamsToEntityConverter","k":"converter","mth":"apply","d":3,"m":"notes"},{"c":"CheckItemsAggregator","k":"aggregator","mth":"findByNoteId","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"findByNoteIdWithUserValidation","d":3,"m":"check-items"},{"c":"CheckItemsHydrator","k":"hydrator","mth":"fromRawResults","d":4,"m":"check-items"},{"c":"UpdateNoteResponder","k":"responder","mth":"apply","d":1,"m":"notes"}]},{"v":"GET","r":"/notes/explorer-names","m":"notes","f":"notes/apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action.ts","c":"GetNoteNamesForExplorerAction","h":"apply","ret":"Promise<NoteNameRow[]>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"getNoteNamesForExplorer","d":1,"m":"notes"},{"c":"GetNoteNamesForExplorerTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"getNoteNamesForExplorer","d":3,"m":"notes"}]},{"v":"GET","r":"/notes/names","m":"notes","f":"notes/apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.action.ts","c":"GetNoteNamesByUserIdAction","h":"apply","ret":"Promise<GetNoteNamesResult>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"getNoteNamesByUserId","d":1,"m":"notes"},{"c":"GetNoteNamesByUserIdTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"getNoteNamesByUserId","d":3,"m":"notes"}]},{"v":"PATCH","r":"/notes/reorder","m":"notes","f":"notes/apps/actions/notes/reorder-notes-action/reorder-notes.action.ts","c":"ReorderNotesAction","h":"apply","ret":"Promise<void>","dto":"ReorderNotesDto","hops":[{"c":"NoteService","k":"service","mth":"reorderNotes","d":1,"m":"notes"},{"c":"ReorderNotesTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"}]},{"v":"GET","r":"/notes/search","m":"notes","f":"notes/apps/actions/notes/search-notes-action/search-notes.action.ts","c":"SearchNotesAction","h":"apply","ret":"Promise<SearchResult[]>","dto":null,"hops":[{"c":"NoteService","k":"service","mth":"search","d":1,"m":"notes"},{"c":"SearchNotesTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"searchNoteNames","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"searchMemoDescriptions","d":3,"m":"notes"},{"c":"CheckItemsAggregator","k":"aggregator","mth":"searchByQuery","d":2,"m":"check-items"},{"c":"CheckItemsRepository","k":"repository","mth":"searchByQuery","d":3,"m":"check-items"},{"c":"SearchNotesResponder","k":"responder","mth":"apply","d":1,"m":"notes"}]},{"v":"PATCH","r":"/notes/title/:id","m":"notes","f":"notes/apps/actions/notes/update-note-title-action/update-note-title.action.ts","c":"UpdateNoteTitleAction","h":"apply","ret":"Promise<{ id: number; name: string }>","dto":"UpdateNoteTitleDto","hops":[{"c":"NoteService","k":"service","mth":"updateNoteTitle","d":1,"m":"notes"},{"c":"UpdateNoteTitleTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"findById","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"save","d":3,"m":"notes"}]},{"v":"PATCH","r":"/notes/:id/add-tag","m":"tags","f":"tags/apps/actions/add-tag-to-note-action/add-tag-to-note.action.ts","c":"AddTagToNoteAction","h":"apply","ret":"Promise<Tag>","dto":"Partial","hops":[{"c":"TagService","k":"service","mth":"addTagToNote","d":1,"m":"tags"},{"c":"AddTagToNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"addTagToNote","d":3,"m":"tags"}]},{"v":"GET","r":"/tags","m":"tags","f":"tags/apps/actions/get-tags-by-user-id-action/get-tags-by-user-id.action.ts","c":"GetTagsByUserIdAction","h":"apply","ret":"Promise<GetTagsByUserIdProjection[]>","dto":null,"hops":[{"c":"TagService","k":"service","mth":"getTagsByUserId","d":1,"m":"tags"},{"c":"GetTagsByUserIdTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"getTagsByUserId","d":3,"m":"tags"}]},{"v":"DELETE","r":"/tags/:id","m":"tags","f":"tags/apps/actions/delete-tag-action/delete-tag.action.ts","c":"DeleteTagAction","h":"deleteTag","ret":"Promise<{ success: boolean }>","dto":null,"hops":[{"c":"TagService","k":"service","mth":"deleteTag","d":1,"m":"tags"},{"c":"DeleteTagTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagByIdAndUserId","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"removeTag","d":3,"m":"tags"}]},{"v":"GET","r":"/tags/:id","m":"tags","f":"tags/apps/actions/get-tag-by-id-action/get-tag-by-id.action.ts","c":"GetTagByIdAction","h":"getTagById","ret":"Promise<TagResponseDto>","dto":null,"hops":[{"c":"TagService","k":"service","mth":"getTagById","d":1,"m":"tags"},{"c":"GetTagByIdTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagByIdAndUserId","d":3,"m":"tags"}]},{"v":"PATCH","r":"/tags/:id","m":"tags","f":"tags/apps/actions/update-tag-action/update-tag.action.ts","c":"UpdateTagAction","h":"updateTag","ret":"Promise<TagResponseDto>","dto":"UpdateTagDto","hops":[{"c":"TagService","k":"service","mth":"updateTag","d":1,"m":"tags"},{"c":"UpdateTagTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagByIdAndUserId","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"updateTag","d":3,"m":"tags"}]},{"v":"DELETE","r":"/tags/:tagId/remove-from-note/notes/:noteId","m":"tags","f":"tags/apps/actions/remove-tag-from-note-action/remove-tag-from-note.action.ts","c":"RemoveTagFromNoteAction","h":"execute","ret":"Promise<{ success: boolean }>","dto":null,"hops":[{"c":"TagService","k":"service","mth":"removeTagFromNote","d":1,"m":"tags"},{"c":"RemoveTagFromNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"tags"},{"c":"TagNoteRepository","k":"repository","mth":"deleteByNoteIdAndTagId","d":3,"m":"tags"}]},{"v":"GET","r":"/tags/note/:id","m":"tags","f":"tags/apps/actions/get-tags-by-note-id-action/get-tags-by-note-id.action.ts","c":"GetTagsByNoteIdAction","h":"apply","ret":"Promise<TagResponseDto[]>","dto":null,"hops":[{"c":"TagService","k":"service","mth":"getTagsByNoteId","d":1,"m":"tags"},{"c":"GetTagsByNoteIdTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagsByNoteId","d":3,"m":"tags"}]},{"v":"POST","r":"/time-tracks","m":"time-tracks","f":"time-tracks/apps/actions/create-time-track-action/create-time-track.action.ts","c":"CreateTimeTrackAction","h":"apply","ret":"void","dto":"CreateTimeTrackDto","hops":[{"c":"TimeTrackService","k":"service","mth":"createTimeTrack","d":1,"m":"time-tracks"},{"c":"CreateTimeTrackTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"create","d":3,"m":"time-tracks"}]},{"v":"DELETE","r":"/time-tracks/:id","m":"time-tracks","f":"time-tracks/apps/actions/delete-time-track-action/delete-time-track.action.ts","c":"DeleteTimeTrackAction","h":"execute","ret":"Promise<{ success: boolean }>","dto":null,"hops":[{"c":"TimeTrackService","k":"service","mth":"deleteTimeTrack","d":1,"m":"time-tracks"},{"c":"DeleteTimeTrackTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"deleteByIdAndUserId","d":3,"m":"time-tracks"}]},{"v":"PATCH","r":"/time-tracks/:id","m":"time-tracks","f":"time-tracks/apps/actions/update-time-track-note-action/update-time-track-note.action.ts","c":"UpdateTimeTrackNoteAction","h":"apply","ret":"Promise<TimeTrackResponseDto>","dto":"UpdateTimeTrackDto","hops":[{"c":"TimeTrackService","k":"service","mth":"updateTimeTrackNote","d":1,"m":"time-tracks"},{"c":"UpdateTimeTrackNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"UpdateTimeTrackPayloadConverter","k":"converter","mth":"apply","d":3,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"updateByIdAndUserId","d":3,"m":"time-tracks"}]},{"v":"GET","r":"/time-tracks/daily","m":"time-tracks","f":"time-tracks/apps/actions/fetch-daily-time-tracks-aggregation-action/fetch-daily-time-tracks-aggregation.action.ts","c":"FetchDailyTimeTracksAction","h":"apply","ret":"void","dto":null,"hops":[{"c":"TimeTrackWithNoteNamesResponder","k":"responder","mth":"apply","d":1,"m":"time-tracks"},{"c":"TimeTrackService","k":"service","mth":"getDailyTimeTracksAggregation","d":1,"m":"time-tracks"},{"c":"GetDailyTimeTracksAggregationTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"getDailyTimeTracksAggregation","d":3,"m":"time-tracks"},{"c":"NoteAggregator","k":"aggregator","mth":"getNoteNamesByIds","d":2,"m":"notes"},{"c":"GetNoteNamesByIdsTransactionScript","k":"transaction-script","mth":"apply","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"getNoteNamesByIds","d":4,"m":"notes"}]},{"v":"GET","r":"/time-tracks/date-range","m":"time-tracks","f":"time-tracks/apps/actions/fetch-time-tracks-by-date-range-action/fetch-time-tracks-by-date-range.action.ts","c":"FetchTimeTracksByDateRangeAction","h":"apply","ret":"Promise<TimeTrackWithNoteResponse[]>","dto":null,"hops":[{"c":"TimeTrackService","k":"service","mth":"getTimeTracksByDateRange","d":1,"m":"time-tracks"},{"c":"GetTimeTracksByDateRangeTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"findByUserIdAndDateRange","d":3,"m":"time-tracks"},{"c":"NoteAggregator","k":"aggregator","mth":"getNoteNamesByIds","d":2,"m":"notes"},{"c":"GetNoteNamesByIdsTransactionScript","k":"transaction-script","mth":"apply","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"getNoteNamesByIds","d":4,"m":"notes"}]},{"v":"GET","r":"/time-tracks/note/:noteId","m":"time-tracks","f":"time-tracks/apps/actions/fetch-time-tracks-by-note-id-action/fetch-time-tracks-by-note-id.action.ts","c":"FetchTimeTracksByNoteIdAction","h":"apply","ret":"void","dto":null,"hops":[{"c":"TimeTrackService","k":"service","mth":"getNoteTimeTracks","d":1,"m":"time-tracks"},{"c":"GetNoteTimeTracksTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"findByUserIdAndNoteId","d":3,"m":"time-tracks"}]},{"v":"GET","r":"/time-tracks/note/:noteId/total","m":"time-tracks","f":"time-tracks/apps/actions/fetch-time-tracks-total-by-note-id-action/fetch-time-tracks-total-by-note-id.action.ts","c":"FetchTimeTracksTotalByNoteIdAction","h":"apply","ret":"void","dto":null,"hops":[{"c":"TimeTrackService","k":"service","mth":"getNoteTimeTracksTotal","d":1,"m":"time-tracks"},{"c":"GetTimeTracksTotalByNoteIdTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"getTotalTimeForNote","d":3,"m":"time-tracks"}]},{"v":"GET","r":"/time-tracks/notes-by-year","m":"time-tracks","f":"time-tracks/apps/actions/fetch-notes-by-year-action/fetch-notes-by-year.action.ts","c":"FetchNotesByYearAction","h":"apply","ret":"Promise<NotesByYearResponseDto>","dto":null,"hops":[{"c":"TimeTrackService","k":"service","mth":"getNotesByYear","d":1,"m":"time-tracks"},{"c":"GetNotesByYearTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"getNotesByYear","d":3,"m":"time-tracks"},{"c":"NoteAggregator","k":"aggregator","mth":"getNoteNamesByIds","d":2,"m":"notes"},{"c":"GetNoteNamesByIdsTransactionScript","k":"transaction-script","mth":"apply","d":3,"m":"notes"},{"c":"NoteMemoTagRepository","k":"repository","mth":"getNoteNamesByIds","d":4,"m":"notes"},{"c":"TagAggregator","k":"aggregator","mth":"getTagsByNoteIds","d":2,"m":"tags"},{"c":"GetTagsByNoteIdsTransactionScript","k":"transaction-script","mth":"apply","d":3,"m":"tags"},{"c":"TagRepository","k":"repository","mth":"findTagsByNoteIds","d":4,"m":"tags"}]},{"v":"GET","r":"/time-tracks/streak","m":"time-tracks","f":"time-tracks/apps/actions/fetch-streak-action/fetch-streak.action.ts","c":"FetchStreakAction","h":"apply","ret":"Promise<StreakResponseDto>","dto":null,"hops":[{"c":"TimeTrackService","k":"service","mth":"getStreak","d":1,"m":"time-tracks"},{"c":"GetStreakTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"getCurrentStreak","d":3,"m":"time-tracks"}]},{"v":"GET","r":"/time-tracks/weekly-most-active","m":"time-tracks","f":"time-tracks/apps/actions/fetch-weekly-most-active-note-action/fetch-weekly-most-active-note.action.ts","c":"FetchWeeklyMostActiveNoteAction","h":"apply","ret":"Promise<WeeklyMostActiveNoteResponseDto>","dto":null,"hops":[{"c":"TimeTrackService","k":"service","mth":"getWeeklyMostActiveNote","d":1,"m":"time-tracks"},{"c":"GetWeeklyMostActiveNoteTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"getWeeklyMostActiveNote","d":3,"m":"time-tracks"}]},{"v":"GET","r":"/time-tracks/weekly-trend","m":"time-tracks","f":"time-tracks/apps/actions/fetch-weekly-trend-action/fetch-weekly-trend.action.ts","c":"FetchWeeklyTrendAction","h":"apply","ret":"Promise<WeeklyTrendResponseDto>","dto":null,"hops":[{"c":"TimeTrackService","k":"service","mth":"getWeeklyTrend","d":1,"m":"time-tracks"},{"c":"GetWeeklyTrendTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"time-tracks"},{"c":"TimeTrackRepository","k":"repository","mth":"getWeeklyTrend","d":3,"m":"time-tracks"}]},{"v":"PUT","r":"/users/password","m":"users","f":"users/apps/actions/update-password-action/update-password.action.ts","c":"UpdatePasswordAction","h":"apply","ret":"void","dto":"UpdatePasswordRequestDto","hops":[{"c":"UsersService","k":"service","mth":"updatePassword","d":1,"m":"users"},{"c":"UpdatePasswordTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"users"},{"c":"UserRepository","k":"repository","mth":"findById","d":3,"m":"users"},{"c":"UserRepository","k":"repository","mth":"update","d":3,"m":"users"}]},{"v":"GET","r":"/users/profile","m":"users","f":"users/apps/controllers/users.controller.ts","c":"UsersController","h":"getProfile","ret":"void","dto":null,"hops":[{"c":"UsersService","k":"service","mth":null,"d":1,"m":"users"}]},{"v":"POST","r":"/users/register","m":"users","f":"users/apps/controllers/users.controller.ts","c":"UsersController","h":"register","ret":"void","dto":"RegisterUserRequestDto","hops":[{"c":"UsersService","k":"service","mth":"register","d":1,"m":"users"},{"c":"SecurityEventAggregator","k":"aggregator","mth":"logDisabledRegistrationAttempt","d":2,"m":"security-events"},{"c":"SecurityEventRepository","k":"repository","mth":"create","d":3,"m":"security-events"},{"c":"RegisterUserTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"users"},{"c":"UserRepository","k":"repository","mth":"findByUsername","d":3,"m":"users"},{"c":"UserRepository","k":"repository","mth":"create","d":3,"m":"users"}]},{"v":"PUT","r":"/users/username","m":"users","f":"users/apps/actions/update-username-action/update-username.action.ts","c":"UpdateUsernameAction","h":"apply","ret":"void","dto":"UpdateUsernameRequestDto","hops":[{"c":"UsersService","k":"service","mth":"updateUsername","d":1,"m":"users"},{"c":"UpdateUsernameTransactionScript","k":"transaction-script","mth":"apply","d":2,"m":"users"},{"c":"UserRepository","k":"repository","mth":"findById","d":3,"m":"users"},{"c":"UserRepository","k":"repository","mth":"findByUsername","d":3,"m":"users"},{"c":"UserRepository","k":"repository","mth":"update","d":3,"m":"users"}]}]}</script>
+<script>
+(function(){
+"use strict";
+var S = JSON.parse(document.getElementById('scene').textContent);
+var PROJECT = 'Chronus Frontend Backend';
+document.getElementById('gen').textContent = new Date(S.generatedAt).toISOString().slice(0,10);
+document.getElementById('footstats').textContent =
+  S.stats.files + ' files · ' + S.stats.edges + ' imports · ' + S.modules.length + ' towers · ' +
+  S.stats.endpoints + ' endpoints';
+
+/* ================= scene construction ================= */
+var COLS = 4, SPACING = 30;
+function buildCity(){
+  var list = S.modules.map(function(m){
+    var floors = [], y = 0;
+    m.floors.forEach(function(f){
+      var h = 1.1 + f.count * 0.55;
+      floors.push({ f:f, y0:y, y1:y+h });
+      y += h + 0.22;
+    });
+    var side = 5.5 + Math.min(6, Math.sqrt(m.files) * 0.9);
+    return { id:m.id, mod:m, floors:floors, top:y, side:side };
+  });
+  list.sort(function(a,b){ return b.top - a.top; }); // tallest to the back
+  var rows = Math.ceil(list.length / COLS);
+  list.forEach(function(b, i){
+    var r = Math.floor(i / COLS), c = i % COLS;
+    b.x = (c - (COLS-1)/2) * SPACING;
+    b.z = (r - (rows-1)/2) * SPACING;
+  });
+  return list;
+}
+var CITY = buildCity();
+var byId = {}; CITY.forEach(function(b){ byId[b.id] = b; });
+
+/* Focus: a ?focus= URL parameter lights a set of towers and ghosts the rest.
+   Each entry is a module name or a scan-root-relative file path, in the same
+   form the diff report and the model keys use. A file resolves to its tower
+   the way the adapter sliced the path — module id plus '/'. An entry that
+   matches nothing lights nothing: the view refuses silently. */
+var fileToMod = {};
+S.modules.forEach(function(m){
+  m.floors.forEach(function(f){
+    f.files.forEach(function(ff){
+      fileToMod[ff.f === m.id ? ff.f : m.id + '/' + ff.f] = m.id;
+    });
+  });
+});
+function parseFocus(){
+  var q = new URLSearchParams(location.search).get('focus');
+  if (!q) return null;
+  var set = {}, n = 0;
+  q.split(',').forEach(function(e){
+    e = e.trim();
+    var m = e && (byId[e] || fileToMod[e]);
+    if (m && !set[m]) { set[m] = true; n++; }
+  });
+  return n ? { set:set, n:n } : null;
+}
+
+/* ================= palette ================= */
+var PAL = {};
+function readPalette(){
+  var cs = getComputedStyle(document.documentElement);
+  ['t0','t1','t2','t3','t4','t5','t6','t7','t8','sky','ground','gridline','ink','ink3','link','warn','rule2']
+    .forEach(function(k){ PAL[k] = (cs.getPropertyValue('--'+k) || '').trim() || '#888888'; });
+}
+readPalette();
+function hex2rgb(h){
+  h = h.replace('#','');
+  if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  var n = parseInt(h, 16);
+  return [ (n>>16)&255, (n>>8)&255, n&255 ];
+}
+var rgbCache = {};
+function shade(hex, k, alpha){
+  var key = hex+'|'+k.toFixed(2)+'|'+(alpha===undefined?1:alpha);
+  if (rgbCache[key]) return rgbCache[key];
+  var c = hex2rgb(hex);
+  var r = Math.max(0, Math.min(255, Math.round(c[0]*k)));
+  var g = Math.max(0, Math.min(255, Math.round(c[1]*k)));
+  var b = Math.max(0, Math.min(255, Math.round(c[2]*k)));
+  var s = alpha === undefined || alpha >= 1 ? 'rgb('+r+','+g+','+b+')' : 'rgba('+r+','+g+','+b+','+alpha+')';
+  rgbCache[key] = s;
+  return s;
+}
+
+/* ================= camera ================= */
+var cam = { tx:0, ty:6, tz:0, dist:118, yaw:Math.PI/4, pitch:0.4636, fov:52*Math.PI/180 };
+var HOME = JSON.parse(JSON.stringify(cam));
+var tween = null;
+function eyePos(){
+  var ce = Math.cos(cam.pitch), se = Math.sin(cam.pitch);
+  return [ cam.tx + cam.dist*ce*Math.cos(cam.yaw), cam.ty + cam.dist*se, cam.tz + cam.dist*ce*Math.sin(cam.yaw) ];
+}
+var VIEW = { eye:[0,0,0], r:[1,0,0], u:[0,1,0], f:[0,0,1], focal:600, cx:0, cy:0 };
+function updateView(W, H){
+  var eye = eyePos();
+  var fx = cam.tx-eye[0], fy = cam.ty-eye[1], fz = cam.tz-eye[2];
+  var fl = Math.hypot(fx,fy,fz) || 1; fx/=fl; fy/=fl; fz/=fl;
+  // right = normalize(cross(forward, worldUp)); with up=(0,1,0) that is (-f.z, 0, f.x)
+  var rx = -fz, ry = 0, rz = fx;
+  var rl = Math.hypot(rx,ry,rz) || 1; rx/=rl; ry/=rl; rz/=rl;
+  // up = cross(right, f)
+  var ux = ry*fz - rz*fy, uy = rz*fx - rx*fz, uz = rx*fy - ry*fx;
+  VIEW.eye = eye; VIEW.r = [rx,ry,rz]; VIEW.u = [ux,uy,uz]; VIEW.f = [fx,fy,fz];
+  VIEW.focal = (H/2) / Math.tan(cam.fov/2);
+  VIEW.cx = W/2; VIEW.cy = H/2;
+}
+var NEAR = 1.2;
+/**
+ * The only difference between the two projections is whether the on-screen
+ * scale depends on depth.
+ *
+ *   perspective  s = focal / vz    things further away are drawn smaller
+ *   parallel     s = focal / dist  everything drawn at the scale of the aim point
+ *
+ * vz is still returned in both, because depth sorting needs it either way.
+ */
+function project(p){
+  var dx = p[0]-VIEW.eye[0], dy = p[1]-VIEW.eye[1], dz = p[2]-VIEW.eye[2];
+  var vz = dx*VIEW.f[0] + dy*VIEW.f[1] + dz*VIEW.f[2];
+  if (vz < NEAR) return null;
+  var vx = dx*VIEW.r[0] + dy*VIEW.r[1] + dz*VIEW.r[2];
+  var vy = dx*VIEW.u[0] + dy*VIEW.u[1] + dz*VIEW.u[2];
+  var s = state.proj === 'iso' ? VIEW.focal / cam.dist : VIEW.focal / vz;
+  return [ VIEW.cx + vx*s, VIEW.cy - vy*s, vz ];
+}
+
+/* ================= geometry ================= */
+var FACES = [
+  { n:[0,1,0],  v:[[0,1,0],[1,1,0],[1,1,1],[0,1,1]] },  // top
+  { n:[0,-1,0], v:[[0,0,1],[1,0,1],[1,0,0],[0,0,0]] },  // bottom
+  { n:[0,0,-1], v:[[0,0,0],[1,0,0],[1,1,0],[0,1,0]] },  // -z
+  { n:[0,0,1],  v:[[1,0,1],[0,0,1],[0,1,1],[1,1,1]] },  // +z
+  { n:[-1,0,0], v:[[0,0,1],[0,0,0],[0,1,0],[0,1,1]] },  // -x
+  { n:[1,0,0],  v:[[1,0,0],[1,0,1],[1,1,1],[1,1,0]] }   // +x
+];
+var LIGHT = (function(){ var l=[0.42,0.84,0.34]; var m=Math.hypot(l[0],l[1],l[2]); return [l[0]/m,l[1]/m,l[2]/m]; })();
+
+function boxFaces(x0,y0,z0,x1,y1,z1, colorKey, meta, out){
+  for (var i=0;i<FACES.length;i++){
+    var F = FACES[i];
+    var pts = [], cx=0, cy=0, cz=0, ok = true;
+    for (var j=0;j<4;j++){
+      var v = F.v[j];
+      var wx = v[0]?x1:x0, wy = v[1]?y1:y0, wz = v[2]?z1:z0;
+      cx+=wx; cy+=wy; cz+=wz;
+      var p = project([wx,wy,wz]);
+      if (!p) { ok=false; break; }
+      pts.push(p);
+    }
+    if (!ok) continue;
+    cx/=4; cy/=4; cz/=4;
+    // back-face cull: face normal vs direction from eye to face
+    var ex = cx-VIEW.eye[0], ey = cy-VIEW.eye[1], ez = cz-VIEW.eye[2];
+    if (F.n[0]*ex + F.n[1]*ey + F.n[2]*ez >= 0) continue;
+    var lam = 0.42 + 0.58 * Math.max(0, F.n[0]*LIGHT[0] + F.n[1]*LIGHT[1] + F.n[2]*LIGHT[2]);
+    var d = (pts[0][2]+pts[1][2]+pts[2][2]+pts[3][2])/4;
+    out.push({ pts:pts, depth:d, color:shade(PAL[colorKey], lam), meta:meta, edge:lam });
+  }
+}
+
+/* ================= state ================= */
+var state = { sel:null, links:true, marks:true, labels:true, hover:null, proj:'iso', focus:null };
+state.focus = parseFocus();
+
+/* ================= render ================= */
+var cv = document.getElementById('cv');
+var ctx = cv.getContext('2d');
+var VP = document.getElementById('viewport');
+var W = 0, H = 0, DPR = 1;
+
+function resize(){
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  var r = VP.getBoundingClientRect();
+  W = Math.max(320, Math.floor(r.width));
+  H = Math.max(320, Math.floor(r.height));
+  cv.width = Math.floor(W*DPR); cv.height = Math.floor(H*DPR);
+  cv.style.width = W+'px'; cv.style.height = H+'px';
+}
+resize();
+if (window.ResizeObserver) new ResizeObserver(resize).observe(VP);
+else window.addEventListener('resize', resize);
+
+function draw(){
+  updateView(W, H);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = PAL.sky; ctx.fillRect(0,0,W,H);
+
+  // ground grid
+  var half = (COLS*SPACING)/2 + SPACING, step = SPACING/2;
+  ctx.strokeStyle = PAL.gridline; ctx.lineWidth = 1; ctx.globalAlpha = .5;
+  ctx.beginPath();
+  for (var g=-half; g<=half+0.001; g+=step){
+    var a1 = project([g,0,-half]), a2 = project([g,0,half]);
+    if (a1 && a2) { ctx.moveTo(a1[0],a1[1]); ctx.lineTo(a2[0],a2[1]); }
+    var b1 = project([-half,0,g]), b2 = project([half,0,g]);
+    if (b1 && b2) { ctx.moveTo(b1[0],b1[1]); ctx.lineTo(b2[0],b2[1]); }
+  }
+  ctx.stroke(); ctx.globalAlpha = 1;
+
+  // collect faces
+  var faces = [];
+  CITY.forEach(function(b){
+    var h = b.side/2;
+    var dim = (state.sel && state.sel !== b.id) || (state.focus && !state.focus.set[b.id]);
+    b.floors.forEach(function(fl){
+      var key = 't' + Math.min(8, fl.f.tier);
+      boxFaces(b.x-h, fl.y0, b.z-h, b.x+h, fl.y1, b.z+h, key, { b:b, fl:fl, dim:dim }, faces);
+    });
+    // deviation pylon
+    if (state.marks && b.mod.findings.length){
+      var pw = 0.45;
+      boxFaces(b.x-pw, b.top+1.2, b.z-pw, b.x+pw, b.top+1.2+3.4+b.mod.findings.length*0.9, b.z+pw,
+        'warn', { b:b, mark:true, dim:dim }, faces);
+    }
+  });
+  faces.sort(function(a,b){ return b.depth - a.depth; });
+
+  for (var i=0;i<faces.length;i++){
+    var F = faces[i], p = F.pts;
+    ctx.globalAlpha = F.meta.dim ? 0.3 : 1;
+    ctx.beginPath();
+    ctx.moveTo(p[0][0],p[0][1]);
+    for (var k=1;k<4;k++) ctx.lineTo(p[k][0],p[k][1]);
+    ctx.closePath();
+    ctx.fillStyle = F.color; ctx.fill();
+    if (F.depth < 220){
+      ctx.strokeStyle = shade(PAL.sky, 0.55, 0.5); ctx.lineWidth = 0.6; ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // dependency arcs
+  if (state.links){
+    ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+    S.domainEdges.forEach(function(e){
+      var A = byId[e.f], B = byId[e.t];
+      if (!A || !B) return;
+      if (state.focus && (!state.focus.set[e.f] || !state.focus.set[e.t])) return;
+      var hot = state.sel && (state.sel === e.f || state.sel === e.t);
+      if (state.sel && !hot) return;
+      var a = [A.x, A.top+2, A.z], b2 = [B.x, B.top+2, B.z];
+      var lift = 10 + Math.min(26, e.w*0.7);
+      var mid = [(a[0]+b2[0])/2, Math.max(a[1],b2[1]) + lift, (a[2]+b2[2])/2];
+      ctx.beginPath();
+      var started = false, broke = false;
+      for (var t=0;t<=1.0001;t+=1/24){
+        var it = 1-t;
+        var pt = [ it*it*a[0]+2*it*t*mid[0]+t*t*b2[0],
+                   it*it*a[1]+2*it*t*mid[1]+t*t*b2[1],
+                   it*it*a[2]+2*it*t*mid[2]+t*t*b2[2] ];
+        var pp = project(pt);
+        if (!pp) { broke = true; continue; }
+        if (!started || broke) { ctx.moveTo(pp[0],pp[1]); started = true; broke = false; }
+        else ctx.lineTo(pp[0],pp[1]);
+      }
+      ctx.strokeStyle = shade(PAL.link, 1, hot ? 0.95 : 0.5);
+      ctx.lineWidth = hot ? 2.6 : 1.5;
+      ctx.stroke();
+    });
+  }
+
+  // labels
+  if (state.labels){
+    ctx.textAlign = 'center';
+    CITY.forEach(function(b){
+      var p = project([b.x, b.top + (state.marks && b.mod.findings.length ? 7.5 : 3.4), b.z]);
+      if (!p) return;
+      if (p[0] < -60 || p[0] > W+60 || p[1] < -30 || p[1] > H+30) return;
+      var fade = Math.max(0.25, Math.min(1, 260/p[2]));
+      var sel = state.sel === b.id;
+      ctx.globalAlpha = (state.sel && !sel) || (state.focus && !state.focus.set[b.id]) ? 0.25 : fade;
+      ctx.font = '600 12px "IBM Plex Mono", monospace';
+      ctx.fillStyle = PAL.ink;
+      ctx.fillText(b.id, p[0], p[1]);
+      ctx.font = '400 9.5px "IBM Plex Mono", monospace';
+      ctx.fillStyle = PAL.ink3;
+      ctx.fillText(b.mod.files + 'f · ' + b.floors.length + ' floors', p[0], p[1]+11);
+      ctx.globalAlpha = 1;
+    });
+    ctx.textAlign = 'start';
+  }
+
+  document.getElementById('hud').textContent =
+    'dist ' + cam.dist.toFixed(0) + '  ·  yaw ' + (cam.yaw*180/Math.PI).toFixed(0) + '°  ·  pitch ' +
+    (cam.pitch*180/Math.PI).toFixed(0) + '°' + (state.sel ? '  ·  ' + state.sel : '');
+}
+
+function loop(now){
+  if (tween){
+    var t = Math.min(1, (now - tween.t0) / tween.dur);
+    var e = t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+    cam.tx = tween.a.tx + (tween.b.tx-tween.a.tx)*e;
+    cam.ty = tween.a.ty + (tween.b.ty-tween.a.ty)*e;
+    cam.tz = tween.a.tz + (tween.b.tz-tween.a.tz)*e;
+    cam.dist = tween.a.dist + (tween.b.dist-tween.a.dist)*e;
+    cam.yaw = tween.a.yaw + (tween.b.yaw-tween.a.yaw)*e;
+    cam.pitch = tween.a.pitch + (tween.b.pitch-tween.a.pitch)*e;
+    if (t >= 1) tween = null;
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+function flyTo(target, dur){
+  tween = { t0: performance.now(), dur: dur || 850,
+    a: { tx:cam.tx, ty:cam.ty, tz:cam.tz, dist:cam.dist, yaw:cam.yaw, pitch:cam.pitch },
+    b: target };
+}
+function flyToModule(id){
+  var b = byId[id]; if (!b) return;
+  flyTo({ tx:b.x, ty:b.top*0.55, tz:b.z, dist: Math.max(34, b.top*2.1 + b.side*2.4),
+          yaw: cam.yaw, pitch: 0.34 });
+}
+
+/* Frames the whole city, labels and deviation pylons included, so nothing is
+   clipped at any viewport size. */
+function fitCity(){
+  if (!W || !H) return;
+  var pts = [];
+  CITY.forEach(function(b){
+    var h = b.side/2 * 1.25;
+    var head = b.top + (b.mod.findings.length ? 11 : 6);
+    [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(o){
+      pts.push([b.x+o[0]*h, 0, b.z+o[1]*h]);
+      pts.push([b.x+o[0]*h, head, b.z+o[1]*h]);
+    });
+  });
+  for (var it=0; it<10; it++){
+    updateView(W,H);
+    var minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9, clipped=false;
+    for (var i=0;i<pts.length;i++){
+      var q = project(pts[i]);
+      if (!q){ clipped = true; break; }
+      if (q[0]<minX) minX=q[0]; if (q[0]>maxX) maxX=q[0];
+      if (q[1]<minY) minY=q[1]; if (q[1]>maxY) maxY=q[1];
+    }
+    if (clipped){ cam.dist = Math.min(400, cam.dist*1.3); continue; }
+    var scale = cam.dist / VIEW.focal;
+    var dx = ((minX+maxX)/2) - W/2, dy = ((minY+maxY)/2) - H/2;
+    cam.tx += (VIEW.r[0]*dx - VIEW.u[0]*dy) * scale;
+    cam.ty += (VIEW.r[1]*dx - VIEW.u[1]*dy) * scale;
+    cam.tz += (VIEW.r[2]*dx - VIEW.u[2]*dy) * scale;
+    var need = Math.max((maxX-minX)/(W*0.88), (maxY-minY)/(H*0.88));
+    if (Math.abs(need-1) < 0.015 && Math.abs(dx) < 2 && Math.abs(dy) < 2) break;
+    cam.dist = Math.max(20, Math.min(400, cam.dist*need));
+  }
+}
+
+/* ================= picking ================= */
+function hull(points){
+  var p = points.slice().sort(function(a,b){ return a[0]-b[0] || a[1]-b[1]; });
+  function cross(o,a,b){ return (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]); }
+  var lo=[], hi=[];
+  for (var i=0;i<p.length;i++){ while(lo.length>=2 && cross(lo[lo.length-2],lo[lo.length-1],p[i])<=0) lo.pop(); lo.push(p[i]); }
+  for (var j=p.length-1;j>=0;j--){ while(hi.length>=2 && cross(hi[hi.length-2],hi[hi.length-1],p[j])<=0) hi.pop(); hi.push(p[j]); }
+  lo.pop(); hi.pop();
+  return lo.concat(hi);
+}
+function inPoly(pt, poly){
+  var inside = false;
+  for (var i=0,j=poly.length-1;i<poly.length;j=i++){
+    var xi=poly[i][0], yi=poly[i][1], xj=poly[j][0], yj=poly[j][1];
+    if (((yi>pt[1]) !== (yj>pt[1])) && (pt[0] < (xj-xi)*(pt[1]-yi)/((yj-yi)||1e-9) + xi)) inside = !inside;
+  }
+  return inside;
+}
+function pick(mx, my){
+  var best = null;
+  CITY.forEach(function(b){
+    var h = b.side/2, pts = [], zs = [];
+    for (var i=0;i<8;i++){
+      var p = project([ b.x + (i&1?h:-h), (i&2? b.top : 0), b.z + (i&4?h:-h) ]);
+      if (!p) return;
+      pts.push([p[0],p[1]]); zs.push(p[2]);
+    }
+    if (pts.length < 8) return;
+    var poly = hull(pts);
+    if (poly.length >= 3 && inPoly([mx,my], poly)){
+      var d = Math.min.apply(null, zs);
+      if (!best || d < best.d) best = { id:b.id, d:d };
+    }
+  });
+  return best ? best.id : null;
+}
+
+/* ================= input ================= */
+var drag = null;
+cv.addEventListener('pointerdown', function(ev){
+  cv.setPointerCapture(ev.pointerId);
+  drag = { x:ev.clientX, y:ev.clientY, moved:0, pan: ev.shiftKey || ev.button===1 };
+  cv.classList.add('drag');
+});
+cv.addEventListener('pointermove', function(ev){
+  if (!drag) return;
+  var dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+  drag.moved += Math.abs(dx) + Math.abs(dy);
+  drag.x = ev.clientX; drag.y = ev.clientY;
+  tween = null;
+  if (drag.pan){
+    var sc = cam.dist * 0.0016;
+    cam.tx -= (VIEW.r[0]*dx + VIEW.f[0]*(-dy)) * sc;
+    cam.tz -= (VIEW.r[2]*dx + VIEW.f[2]*(-dy)) * sc;
+  } else {
+    cam.yaw += dx * 0.006;
+    cam.pitch = Math.max(0.06, Math.min(1.45, cam.pitch + dy * 0.005));
+  }
+});
+function endDrag(ev){
+  if (!drag) return;
+  cv.classList.remove('drag');
+  if (drag.moved < 5){
+    var r = cv.getBoundingClientRect();
+    var id = pick(ev.clientX - r.left, ev.clientY - r.top);
+    select(id);
+    if (id) flyToModule(id);
+  }
+  drag = null;
+}
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', function(){ drag = null; cv.classList.remove('drag'); });
+cv.addEventListener('wheel', function(ev){
+  ev.preventDefault();
+  tween = null;
+  cam.dist = Math.max(12, Math.min(300, cam.dist * Math.exp(ev.deltaY * 0.0012)));
+}, { passive:false });
+cv.addEventListener('keydown', function(ev){
+  var sc = cam.dist * 0.035, used = true;
+  if (ev.key === 'w' || ev.key === 'ArrowUp')        { cam.tx += VIEW.f[0]*sc; cam.tz += VIEW.f[2]*sc; }
+  else if (ev.key === 's' || ev.key === 'ArrowDown') { cam.tx -= VIEW.f[0]*sc; cam.tz -= VIEW.f[2]*sc; }
+  else if (ev.key === 'a' || ev.key === 'ArrowLeft') { cam.tx -= VIEW.r[0]*sc; cam.tz -= VIEW.r[2]*sc; }
+  else if (ev.key === 'd' || ev.key === 'ArrowRight'){ cam.tx += VIEW.r[0]*sc; cam.tz += VIEW.r[2]*sc; }
+  else if (ev.key === 'Escape') { select(null); flyTo(HOME); }
+  else used = false;
+  if (used) { ev.preventDefault(); tween = null; }
+});
+
+/* ================= panel ================= */
+function tierName(i){ return (S.tiers[i] || { name:'?' }).name; }
+
+function digest(id){
+  var lines = [];
+  if (!id){
+    lines.push(PROJECT + ' — whole system');
+    lines.push(S.stats.files + ' files, ' + S.stats.edges + ' internal imports, ' + S.modules.length + ' modules with architectural layers');
+    lines.push(S.stats.endpoints + ' HTTP endpoints, ' + S.stats.hops + ' traced call hops');
+    lines.push('');
+    lines.push('Deviations found:');
+    S.findings.filter(function(f){ return f.tone === 'warn'; })
+      .forEach(function(f){ lines.push('  - ' + f.title + ' (' + f.items.length + ')'); });
+    return lines.join('\n');
+  }
+  var m = byId[id].mod;
+  lines.push('Module: ' + m.id);
+  lines.push(m.files + ' files across ' + m.floors.length + ' directories, ' + m.endpoints + ' endpoints');
+  lines.push('');
+  lines.push('Directories (architectural tier -> path, file count):');
+  m.floors.forEach(function(f){ lines.push('  ' + tierName(f.tier) + ' -> ' + f.id + '  (' + f.count + ')'); });
+  if (m.absent.length){
+    lines.push('');
+    lines.push('Tiers absent: ' + m.absent.map(tierName).join(', '));
+  }
+  var out = S.domainEdges.filter(function(e){ return e.f === id; });
+  var inc = S.domainEdges.filter(function(e){ return e.t === id; });
+  lines.push('');
+  lines.push('Depends on: ' + (out.length ? out.map(function(e){ return e.t + ' (x' + e.w + ')'; }).join(', ') : 'nothing'));
+  lines.push('Depended on by: ' + (inc.length ? inc.map(function(e){ return e.f + ' (x' + e.w + ')'; }).join(', ') : 'nothing'));
+  if (m.findings.length){
+    lines.push('');
+    lines.push('Deviations sited here:');
+    m.findings.forEach(function(w){
+      var full = S.findings.filter(function(x){ return x.id === w.id; })[0];
+      var mine = full ? full.items.filter(function(i){ return String(i).indexOf(m.id + '/') === 0; }) : [];
+      lines.push('  - ' + w.title);
+      mine.slice(0,6).forEach(function(i){ lines.push('      ' + i); });
+    });
+  }
+  return lines.join('\n');
+}
+
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderSide(){
+  var el = document.getElementById('side');
+  var h = [];
+  h.push('<div class="pad">');
+  if (!state.sel){
+    h.push('<p class="empty" style="margin:0 0 14px">Click a tower in the city, or pick one below. The camera will fly to it.</p>');
+  } else {
+    var b = byId[state.sel], m = b.mod;
+    h.push('<h3>'+esc(m.id)+'</h3>');
+    h.push('<p class="isub">'+m.files+' files · '+m.floors.length+' directories · '+m.endpoints+' endpoints</p>');
+    if (m.findings.length){
+      h.push('<p class="ilab">Deviations sited here</p><ul class="warns">');
+      m.findings.forEach(function(w){ h.push('<li>'+esc(w.title)+'</li>'); });
+      h.push('</ul>');
+    }
+    h.push('<p class="ilab">Storeys — roof to foundation</p><ul class="flist">');
+    m.floors.forEach(function(f){
+      h.push('<li><span class="sw" style="background:var(--t'+Math.min(8,f.tier)+')"></span>'+
+        '<span class="nm">'+esc(f.label)+'</span><span class="ct">'+f.count+'</span></li>');
+    });
+    h.push('</ul>');
+    if (m.absent.length){
+      h.push('<p class="ilab">Tiers absent</p><div class="pills">'+
+        m.absent.map(function(i){ return '<span class="pill gone">'+esc(tierName(i))+'</span>'; }).join('')+'</div>');
+    }
+  }
+  h.push('<p class="ilab">Context for Claude</p>');
+  h.push('<pre id="dig">'+esc(digest(state.sel))+'</pre>');
+  h.push('<button class="btn" id="copy" style="margin-top:8px">copy context</button>');
+  h.push('<p class="ilab">Towers</p>');
+  S.modules.forEach(function(m2){
+    h.push('<button class="tow'+(state.sel===m2.id?' sel':'')+'" data-m="'+esc(m2.id)+'">'+
+      '<span class="dot'+(m2.findings.length?'':' none')+'"></span>'+esc(m2.id)+
+      '<span class="n">'+m2.files+'f</span></button>');
+  });
+  h.push('</div>');
+  el.innerHTML = h.join('');
+
+  el.querySelectorAll('.tow').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-m');
+      select(id); flyToModule(id);
+    });
+  });
+  var cp = document.getElementById('copy');
+  if (cp) cp.addEventListener('click', function(){
+    var txt = digest(state.sel);
+    var done = function(){ cp.textContent = 'copied ✓'; setTimeout(function(){ cp.textContent = 'copy context'; }, 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done, function(){ selectPre(); });
+    } else selectPre();
+    function selectPre(){
+      var pre = document.getElementById('dig');
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      cp.textContent = 'selected — press ⌘C';
+      setTimeout(function(){ cp.textContent = 'copy context'; }, 2200);
+    }
+  });
+}
+function select(id){ state.sel = id; renderSide(); }
+
+/* ================= tour ================= */
+var TOUR = [
+  { m:null, h:'Eleven towers, one city', p:'Every module with architectural layers, drawn to the same scale. Height is how many layers a module actually has, so the skyline is a conformance chart.' },
+  { m:'notes', h:'notes — the full stack', p:'Thirteen directories, every tier present except Mapping. This is the shape the architecture document describes, and the yardstick for the rest.' },
+  { m:'folders', h:'folders — no Service storey', p:'Ten actions, six transaction scripts, and nothing in between. Every folders action calls a transaction script directly because there is no service to call.' },
+  { m:'note-transfer', h:'note-transfer — built on ports', p:'Entry and Service resting straight on a foundation of ports. No transaction scripts, no repositories, no tables. It writes into four other domains without any of them knowing it exists.' },
+  { m:'security-events', h:'security-events — no roof', p:'No Entry floor: no route reaches it. It exists only as an Aggregator that auth and users call when something needs recording.' },
+  { m:'shared-kernel', h:'shared-kernel — everyone depends here', p:'The guards and decorators every action imports. It is also the one place a cross-domain entity reference is allowed, in the tag-note join entity.' }
+];
+var tourIdx = -1, tourTimer = null;
+function tourStep(){
+  tourIdx++;
+  if (tourIdx >= TOUR.length){ stopTour(); return; }
+  var s = TOUR[tourIdx];
+  document.getElementById('tourstep').textContent = 'stop ' + (tourIdx+1) + ' of ' + TOUR.length;
+  document.getElementById('tourh').textContent = s.h;
+  document.getElementById('tourp').textContent = s.p;
+  document.getElementById('tourcap').classList.add('show');
+  if (s.m){ select(s.m); flyToModule(s.m); }
+  else { select(null); flyTo({ tx:0, ty:10, tz:0, dist:150, yaw:cam.yaw+0.5, pitch:0.5 }, 1200); }
+  tourTimer = setTimeout(tourStep, 7000);
+}
+function stopTour(){
+  clearTimeout(tourTimer); tourTimer = null; tourIdx = -1;
+  document.getElementById('tourcap').classList.remove('show');
+  document.getElementById('tour').classList.remove('on');
+  document.getElementById('tour').textContent = '▶ guided tour';
+}
+document.getElementById('tour').addEventListener('click', function(){
+  if (tourTimer){ stopTour(); return; }
+  this.classList.add('on'); this.textContent = '■ stop tour';
+  tourIdx = -1; tourStep();
+});
+
+/* ================= controls ================= */
+function toggle(id, key){
+  var b = document.getElementById(id);
+  b.addEventListener('click', function(){ state[key] = !state[key]; b.classList.toggle('on', state[key]); });
+}
+toggle('tLinks','links'); toggle('tMarks','marks'); toggle('tLabels','labels');
+/* The focus set comes from the URL; the chip is the only way to dismiss it,
+   and dismissing never touches the URL. */
+function focusChip(){
+  var el = document.getElementById('fchip');
+  if (!state.focus){ el.style.display = 'none'; return; }
+  document.getElementById('fn').textContent = state.focus.n;
+  el.style.display = '';
+}
+document.getElementById('fclear').addEventListener('click', function(){
+  state.focus = null;
+  focusChip();
+});
+focusChip();
+
+/* Switching to isometric snaps to the canonical 2:1 angle so the classic
+   crispness is the default; you can orbit freely from there in either mode. */
+function setProjection(mode){
+  if (state.proj === mode) return;
+  state.proj = mode;
+  document.getElementById('pIso').classList.toggle('on', mode === 'iso');
+  document.getElementById('pPersp').classList.toggle('on', mode === 'persp');
+  var goal = { tx:cam.tx, ty:cam.ty, tz:cam.tz, dist:cam.dist, yaw:cam.yaw, pitch:cam.pitch };
+  if (mode === 'iso') {
+    goal.pitch = 0.4636;
+    goal.yaw = Math.round(cam.yaw / (Math.PI/4)) * (Math.PI/4);
+  }
+  var save = { tx:cam.tx, ty:cam.ty, tz:cam.tz, dist:cam.dist, yaw:cam.yaw, pitch:cam.pitch };
+  cam.pitch = goal.pitch; cam.yaw = goal.yaw;
+  fitCity();
+  goal = { tx:cam.tx, ty:cam.ty, tz:cam.tz, dist:cam.dist, yaw:cam.yaw, pitch:cam.pitch };
+  cam.tx=save.tx; cam.ty=save.ty; cam.tz=save.tz; cam.dist=save.dist; cam.yaw=save.yaw; cam.pitch=save.pitch;
+  flyTo(goal, 650);
+}
+document.getElementById('pIso').addEventListener('click', function(){ setProjection('iso'); });
+document.getElementById('pPersp').addEventListener('click', function(){ setProjection('persp'); });
+document.getElementById('home').addEventListener('click', function(){ select(null); flyTo(HOME); });
+document.getElementById('find').addEventListener('input', function(ev){
+  var q = ev.target.value.trim().toLowerCase();
+  if (!q) return;
+  var hit = S.modules.filter(function(m){ return m.id.toLowerCase().indexOf(q) === 0; })[0]
+         || S.modules.filter(function(m){ return m.id.toLowerCase().indexOf(q) >= 0; })[0];
+  if (hit){ select(hit.id); flyToModule(hit.id); }
+});
+
+if (window.matchMedia){
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  if (mq.addEventListener) mq.addEventListener('change', function(){ rgbCache = {}; readPalette(); });
+}
+if (window.MutationObserver){
+  new MutationObserver(function(){ rgbCache = {}; readPalette(); })
+    .observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+}
+
+renderSide();
+fitCity();
+HOME = { tx:cam.tx, ty:cam.ty, tz:cam.tz, dist:cam.dist, yaw:cam.yaw, pitch:cam.pitch };
+var userMoved = false;
+cv.addEventListener('pointerdown', function(){ userMoved = true; });
+cv.addEventListener('wheel', function(){ userMoved = true; });
+var _resize0 = resize;
+resize = function(){
+  _resize0();
+  if (!userMoved && !state.sel){
+    fitCity();
+    HOME = { tx:cam.tx, ty:cam.ty, tz:cam.tz, dist:cam.dist, yaw:cam.yaw, pitch:cam.pitch };
+  }
+};
+if (window.ResizeObserver) new ResizeObserver(function(){ resize(); }).observe(VP);
+
+/* expose for headless verification */
+window.__city = { CITY:CITY, fitCity:fitCity, state:state, project:project, updateView:updateView, cam:cam, pick:pick, VIEW:VIEW, digest:digest };
+})();
+</script>
+
+<style>
+.metatron-full { position:fixed !important; inset:0 !important; z-index:9999;
+  margin:0 !important; border-radius:0 !important; display:flex; flex-direction:column;
+  background:var(--paper, var(--surface, #111)); }
+.metatron-full [data-fs-grow] { flex:1; min-height:0; }
+.metatron-full [data-fs-grow] > * { max-height:none !important; height:100% !important; }
+body.metatron-locked { overflow:hidden; }
+.metatron-fsbtn { position:absolute; top:8px; right:10px; z-index:3;
+  font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:11px; letter-spacing:.04em;
+  padding:5px 10px; cursor:pointer; color:var(--ink2, #889); background:var(--surface, #1a222c);
+  border:1px solid var(--rule2, #445); opacity:.72; }
+.metatron-fsbtn:hover { opacity:1; color:var(--ink, #eee); }
+.metatron-fsbtn:focus-visible { outline:2px solid var(--blue, #79a4e6); outline-offset:2px; }
+</style>
+<script>
+(function(){
+  var plate = document.querySelector('[data-fullscreen]');
+  if (!plate) return;
+  if (getComputedStyle(plate).position === 'static') plate.style.position = 'relative';
+  var btn = document.createElement('button');
+  btn.className = 'metatron-fsbtn';
+  btn.type = 'button';
+  btn.textContent = '⤢ full screen';
+  btn.title = 'Fill the screen (Esc to leave)';
+  plate.appendChild(btn);
+  function on(){ return plate.classList.contains('metatron-full'); }
+  function set(v){
+    plate.classList.toggle('metatron-full', v);
+    document.body.classList.toggle('metatron-locked', v);
+    btn.textContent = v ? '✕ exit' : '⤢ full screen';
+    try {
+      if (v && plate.requestFullscreen) plate.requestFullscreen().catch(function(){});
+      else if (!v && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){});
+    } catch (e) {}
+    // canvas lenses watch their own container, but nudge anything that does not
+    window.dispatchEvent(new Event('resize'));
+  }
+  btn.addEventListener('click', function(){ set(!on()); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && on()) { e.preventDefault(); set(false); } });
+  document.addEventListener('fullscreenchange', function(){ if (!document.fullscreenElement && on()) set(false); });
+})();
+</script>
+<script id="__narr" type="application/json">{"scale":"<strong>394 files</strong> under the scanned root, wired together by 1,284 internal imports across 94 directories and 15 modules. 63 HTTP endpoints were traced through 307 call hops.","flow":"Read left to right and it is the intended request path: <span class=\"mono\">action</span> → <span class=\"mono\">service</span> → <span class=\"mono\">transaction-script</span> → <span class=\"mono\">repository</span>. Anything that jumps a station is a layering violation, and the lenses colour it as one.","layering":"<strong>No import skips a layer.</strong> Every dependency either stays within a tier or moves to the next one, which is what <span class=\"mono\">action</span> → <span class=\"mono\">service</span> → <span class=\"mono\">transaction-script</span> → <span class=\"mono\">repository</span> asks for.","crossDomain":"20 dependencies cross a bounded context — 13 aggregators, 7 ports. <strong>Every one lands on an allowed gateway</strong> — nothing reaches an entity, a repository or a use-case script in another context.","absent":"<strong><span class=\"mono\">mapper</span>, <span class=\"mono\">assembler</span>, <span class=\"mono\">resolver</span>, <span class=\"mono\">interceptor</span>, and 3 others are configured but exist nowhere in the code</strong>. Either the architecture document describes a shape that was never built, or the config names something this project does not use.","skyline":"Height is layers, not importance: a module carries one floor per directory, stacked in architectural order, so <strong>its silhouette is its layer profile</strong>. <span class=\"mono\">notes</span> is the most complete, carrying 9 of 8 tiers. <span class=\"mono\">health</span> is the outlier, missing <span class=\"mono\">Contract</span>, <span class=\"mono\">Service</span>, <span class=\"mono\">Aggregator</span>, <span class=\"mono\">Transaction Script</span>, and 3 others. <span class=\"mono\">security-events</span> has no Entry floor at all — no route reaches it directly.","cycles":"Taken raw, the module graph has 1 strongly-connected component. Set aside module wiring, port imports and shared-kernel join entities — the carve-outs the architecture sanctions — and <strong>the graph is acyclic</strong>.","upheld":"<strong>4 of the rules this codebase writes down for itself hold across all 1,284 imports</strong>: Every cross-domain edge goes through an allowed gateway; Domain dependency graph is acyclic; No same-level injection; No upward calls.","deviations":"<strong>No deviations.</strong> Every rule the configuration encodes is upheld.","endpoints":"63 endpoints, traced by following <span class=\"mono\">this.x.y()</span> through real method bodies rather than guessed from the folder layout.","schema":"11 entities, 72 columns, 13 references between them. <strong>3 are declared to the ORM; 10 exist only as a bare id column</strong>. 10 cross a bounded context — which is usually the reason the relation was left undeclared, since declaring it would couple the two contexts. The dependency is still there; it is just the application's job to honour it rather than the database's. 2 entities do not name their table in <span class=\"mono\">@Entity()</span>, so the name comes from the class.","hotspots":"Across 298 commits, the file scoring highest on both axes is <span class=\"mono\">notes/infra/repositories/note-memo-tag.repository.ts</span> — <strong>31 commits and 27 dependents</strong>. <span class=\"mono\">notes/notes.module.ts</span> changes most often (52), <span class=\"mono\">shared-kernel/apps/decorators/protected-action.decorator.ts</span> is depended on by the most files (103). A file high on one axis alone is usually fine; it is the overlap that costs.","coupling":"Across 298 commits (8 ignored for touching more than 25 files), 19 pairs of files land in the same commit at least 30% of the time they move, and 7 of those pairs share no import edge — the ones worth reading. Commits are a proxy for change, and one team's commit granularity is not another's: a squash-merge workflow and a commit-per-thought workflow produce different numbers from identical work. Co-change is correlation, not mechanism — two files dragged along by the same sweeping rename are not coupled in any meaningful sense, and the size cap only blunts that, imperfectly. And the absence of coupling is not evidence of independence; it may just be young code.","provenance":"Generated from <span class=\"mono\">chronus-frontend-backend</span> by metatron. Every box is a directory that exists and every line is an <span class=\"mono\">import</span> that a file actually writes. 392 of 394 files (99.5%) matched a configured pattern.","caveats":"Imports are not calls: a type-only import counts the same as a constructor injection everywhere except the endpoint traces. Anything resolved through a DI token string rather than an imported symbol leaves no edge, so coupling is understated. Positions and footprints are chosen for legibility — only heights, tiers, links and colours carry meaning."}</script>
+<script>
+(function(){
+  var N;
+  try { N = JSON.parse(document.getElementById('__narr').textContent); } catch (e) { return; }
+  var slots = document.querySelectorAll('[data-narr]');
+  for (var i = 0; i < slots.length; i++) {
+    var el = slots[i], key = el.getAttribute('data-narr');
+    if (N[key]) el.innerHTML = N[key];
+    else if (el.parentNode) el.parentNode.removeChild(el);   // nothing to say, so say nothing
+  }
+})();
+</script>
