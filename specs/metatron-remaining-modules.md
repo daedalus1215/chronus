@@ -220,6 +220,41 @@ with real `tags`/`notes` FK seeds).
 --silent`); integration 6/6 (`NODE_ENV=test DB_NAME=chronus_test_p35 npx jest
 --config test/jest-integration.json <3 entity specs> --runInBand`).
 
+### Phase 4 — the 5 files the rolling top-15 surfaced after Phase 3.5 (complete, 2026-09-20)
+
+The post-Phase-3.5 re-scan rotated five more files into the untested-risk top-15.
+Same triage bar.
+
+**Result: 3 new spec files, 11 tests, all green.**
+
+| Source | Spec | Tests |
+|---|---|---|
+| `users/.../user.repository.ts` | `user.repository.integration.spec.ts` | 7 |
+| `users/.../user.entity.ts` | `user.entity.integration.spec.ts` | 3 |
+| `notes/.../note-version.entity.ts` | `note-version.entity.integration.spec.ts` | 1 |
+
+Pinned: `UserRepository` `findByUsername` hit/miss, `findById` numeric and
+numeric-string lookup, `update` persist-and-reload, `update` throwing on a
+missing id; `user.username` unique constraint (duplicate insert rejected), email
+null default, full-field round-trip with timestamps; `note_versions` round-trip
+(noteId, versionNum, description, createdAt — the table has no other defaults).
+
+**Intentionally untested (2 of the 5):**
+- `notes/apps/dtos/requests/update-note.dto.ts` — class-validator metadata only
+  (IsString/IsOptional/IsBoolean); no custom validation logic.
+- `audio/apps/dtos/requests/text-to-speech.dto.ts` — class-validator metadata
+  only (IsNumber).
+
+**Findings surfaced by the tests (source untouched — report, don't fix):**
+1. **Bug — `UserRepository.findById` with a non-numeric string id.** The
+   `Number(id)` coercion yields `NaN`, which TypeORM passes straight to postgres:
+   `QueryFailedError: invalid input syntax for type integer: "NaN"` — a
+   500-class failure where null/404 would be expected (a malformed route param
+   blows up the request). Pinned as written.
+
+**Verify:** integration 11/11 (`NODE_ENV=test DB_NAME=chronus_test_p4 npx jest
+--config test/jest-integration.json <3 specs> --runInBand`).
+
 ## Explicitly out of scope
 
 - **`implicit-fk` (10 entity references)** — accepted by design: entities carry plain
