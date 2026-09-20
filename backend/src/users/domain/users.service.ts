@@ -1,8 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { omit } from 'lodash';
-import { User } from './entities/user.entity';
-import { UserRepository } from '../infra/repositories/user.repository';
 import { RegisterUserCommand } from './transaction-scripts/register-user-TS/register-user.command';
 import { RegisterUserTransactionScript } from './transaction-scripts/register-user-TS/register-user.transaction.script';
 import { UpdateUsernameTransactionScript } from './transaction-scripts/update-username-TS/update-username.transaction.script';
@@ -16,7 +13,6 @@ import { SecurityEventAggregator } from '../../security-events/domain/aggregator
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly userRepository: UserRepository,
     private readonly registerUserTransactionScript: RegisterUserTransactionScript,
     private readonly updateUsernameTransactionScript: UpdateUsernameTransactionScript,
     private readonly updatePasswordTransactionScript: UpdatePasswordTransactionScript,
@@ -45,22 +41,6 @@ export class UsersService {
       throw new ForbiddenException('Registration is disabled');
     }
     return this.registerUserTransactionScript.apply(command);
-  }
-
-  async findByUsername(username: string): Promise<User | null> {
-    return this.userRepository.findByUsername(username);
-  }
-
-  async findById(id: string): Promise<User | null> {
-    return this.userRepository.findById(id);
-  }
-
-  async updateEmail(
-    userId: number,
-    email: string
-  ): Promise<Omit<User, 'password'>> {
-    const updatedUser = await this.userRepository.update(userId, { email });
-    return omit(updatedUser, ['password']);
   }
 
   async updateUsername(
