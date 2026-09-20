@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { GetFoldersByUserTransactionScript } from 'src/folders/domain/transaction-scripts/get-folders-by-user.transaction-script';
+import { GetFoldersByUserTransactionScript } from 'src/folders/domain/transaction-scripts/get-folders-by-user-TS/get-folders-by-user.transaction.script';
 import { FolderResponseDto } from 'src/folders/apps/dtos/responses/folder.response.dto';
 
 @Controller('folders')

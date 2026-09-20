@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { FolderRepository } from '../../infra/repositories/folder.repository';
-import { Folder } from '../entities/folder.entity';
-import { NOTE_FOLDER_PORT, NoteFolderPort } from '../ports/note-folder.port';
+import { FolderRepository } from '../../../infra/repositories/folder.repository';
+import { Folder } from '../../entities/folder.entity';
+import { NOTE_FOLDER_PORT, NoteFolderPort } from '../../ports/note-folder.port';
 
 @Injectable()
 export class DeleteFolderTransactionScript {

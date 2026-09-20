@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Patch } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { ReorderFoldersTransactionScript } from 'src/folders/domain/transaction-scripts/reorder-folders.transaction-script';
+import { ReorderFoldersTransactionScript } from 'src/folders/domain/transaction-scripts/reorder-folders-TS/reorder-folders.transaction.script';
 import { ReorderFoldersDto } from './reorder-folders.dto';
 
 @Controller('folders')

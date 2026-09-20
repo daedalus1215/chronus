@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { DeleteFolderTransactionScript } from 'src/folders/domain/transaction-scripts/delete-folder.transaction-script';
+import { DeleteFolderTransactionScript } from 'src/folders/domain/transaction-scripts/delete-folder-TS/delete-folder.transaction.script';
 
 @Controller('folders')
 export class DeleteFolderAction {
