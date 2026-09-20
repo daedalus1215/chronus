@@ -149,6 +149,77 @@ suppressed its flag. The chronus scan config gains a
 (`NODE_ENV=test DB_NAME=chronus_test_{ci,tt,tags,ne} npx jest --config
 test/jest-integration.json <module>`).
 
+### Phase 3.5 — the 12 files the rolling top-15 newly surfaced (complete, 2026-09-20)
+
+After the Phase 3 re-scan, the untested-risk top-15 (rolling over ~289 untested files,
+scored `commits × (1+dependents)`) lost the 12 Phase 3 files and surfaced 12 that had
+never been flagged: 5 `*.module.ts` files, 1 response DTO, and 6 substantive files.
+Triaged with the same Phase 3 bar.
+
+**Result: 5 new spec files, 27 tests, all green.** The 6th substantive file
+(`jwt-auth.guard.ts`) has no independently testable logic — see intentionally untested.
+
+| Source | Spec | Tests |
+|---|---|---|
+| `check-items/.../check-items.aggregator.ts` | `check-items.aggregator.spec.ts` | 5 |
+| `audio/.../hermes.remote-caller.ts` | `hermes.remote-caller.spec.ts` | 16 |
+| `audio/.../note-audio.entity.ts` | `note-audio.entity.integration.spec.ts` | 2 |
+| `folders/.../folder.entity.ts` | `folder.entity.integration.spec.ts` | 2 |
+| `shared-kernel/.../tag-note.entity.ts` | `tag-note.entity.integration.spec.ts` | 2 |
+
+Pinned: aggregator ownership-validated lookup, non-archived-first stable ordering,
+projection shape, `bulkCreate` order rebase onto the note's current max order
+(existing orders `[0,4,2]` → incoming land at `[5,6]`; empty note → `[0,1]`) with a
+single `saveMany` carrying the full field set; hermes caller constructor env gating
+(`HERMES_API_URL`), trailing-slash normalization, request shapes for
+`convertTextToSpeech`/`downloadAudio`/`deleteAudioByPath`/`downloadAudioByPath` (URL,
+body, headers, `responseType`, params), `sanitizeText` allowlist (newlines/tabs/
+multi-spaces collapsed; `$ & *` and all quote forms — straight AND curly — stripped,
+not normalized), and error mapping (404 and 500-with/without-`detail` → `HttpException`
+with the exact message; unmapped 502, network, and non-axios errors rethrown as-is;
+`deleteAudioByPath` 404 resolves silently); entity DB defaults (`note_audios`
+position/duration null, `folders` sortOrder 0 / parentId null, `tag_notes` archivedDate
+null) plus explicit round-trips (reals, `timestamptz` to the millisecond, `tag_notes`
+with real `tags`/`notes` FK seeds).
+
+**Intentionally untested (7 of the 12):**
+- `time-tracks/time-tracks.module.ts`, `tags/tags.module.ts`,
+  `check-items/check-items.module.ts`, `auth/auth.module.ts`,
+  `audio/audio.module.ts` — pure DI wiring.
+- `check-items/apps/dtos/responses/check-item.response.dto.ts` — ApiProperty
+  metadata only.
+- `shared-kernel/apps/guards/jwt-auth.guard.ts` — a 5-line
+  `class JwtAuthGuard extends AuthGuard('jwt') {}` with no `canActivate` override;
+  all 22 usages are bare `@UseGuards(JwtAuthGuard)`. A spec would assert the
+  re-export (plumbing) or test @nestjs/passport itself. Note the real auth logic
+  (`auth/jwt.strategy.ts`, `auth/domain/auth.service.ts`) is itself untested — a
+  genuine gap, out of scope for this arc (not in the top-15).
+
+**Findings surfaced by the tests (source untouched — report, don't fix):**
+1. **Latent duplication bug — `CheckItemsAggregator.findByNoteId`.** The non-archived
+   filter uses `doneDate == null` (loose — catches `null` AND `undefined`) while the
+   archived filter uses `doneDate !== null` (strict — `undefined !== null` is true),
+   so an item whose `doneDate` is *unset* (`undefined`) lands in **both** groups and
+   is emitted twice. DB-hydrated items always carry `null` or a `Date`, so only
+   in-memory entities with an unset `doneDate` trigger it. The quirk is pinned as
+   written by a dedicated test; the main ordering test uses `null`
+   (production-realistic) and asserts the clean split.
+2. **Dead DI dependency — `CheckItemsAggregator` injects
+   `GetCheckItemsByNoteTransactionScript`** (constructor) but never references it;
+   `CheckItemService` carries its own copy and uses it correctly.
+3. **Dead code — `HermesRemoteCaller.sanitizeText` quote normalization.** The
+   normalization replaces (curly/straight → straight) run *after* the strip
+   `.replace(/[^\w\s.,!?-]/g, '')`, which deletes every quote character first — the
+   replaces are unreachable for their intended characters. Actual behavior: quotes
+   are removed, not normalized. Pinned by two tests.
+4. Minor: `hermes.remote-caller.ts` constructor comment says "remove any trailing
+   slashes" but the code then re-appends exactly one, so the base URL always ends in
+   `/` — pinned by the URL assertions in every request-shape test.
+
+**Verify:** unit 21/21 (`NODE_ENV=test npx jest <aggregator spec> <hermes spec>
+--silent`); integration 6/6 (`NODE_ENV=test DB_NAME=chronus_test_p35 npx jest
+--config test/jest-integration.json <3 entity specs> --runInBand`).
+
 ## Explicitly out of scope
 
 - **`implicit-fk` (10 entity references)** — accepted by design: entities carry plain
