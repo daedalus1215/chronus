@@ -62,11 +62,15 @@ metatron re-scan shows no folders findings.
 
 ### Phase 2 — tags, time-tracks, notes leftover, users
 
-- **tags:** route `create-tag`, `delete-tag`, `remove-tag-from-note`, `update-tag`
-  through `TagService` (add delegating methods as needed). For `get-tag-by-id`:
-  create `get-tag-by-id-TS/get-tag-by-id.transaction.script.ts` (loads by id + userId,
-  404 if absent — verify current repository call semantics first), route the action
-  through `TagService`.
+- **tags:** route `delete-tag`, `remove-tag-from-note`, `update-tag` through
+  `TagService` (add delegating methods). `create-tag` turned out to be dead code:
+  `CreateTagAction` was never registered in `tags.module.ts` (zero occurrences in the
+  module's git history), nothing on the frontend calls `POST /tags`, and tag creation
+  is already covered by `add-tag-to-note`'s find-or-create-by-name — deleted the
+  action, its TS (+ spec), DTO, and swagger file. `get-tag-by-id` previously reached
+  the repository directly and had no TS: create
+  `get-tag-by-id-TS/get-tag-by-id.transaction.script.ts` (loads by id + userId,
+  404 if absent), route the action through `TagService`.
 - **time-tracks:** route `delete-time-track` through `TimeTrackService`.
 - **notes:** route `get-note-names-by-userId` through `NoteService` (add method if
   absent).

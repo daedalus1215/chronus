@@ -1,5 +1,5 @@
 import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
-import { RemoveTagFromNoteTransactionScript } from 'src/tags/domain/transaction-scripts/remove-tag-from-note-TS/remove-tag-from-note.transaction.script';
+import { TagService } from 'src/tags/domain/services/tag.service';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { RemoveTagFromNoteSwagger } from './remove-tag-from-note.swagger';
@@ -7,7 +7,7 @@ import { RemoveTagFromNoteSwagger } from './remove-tag-from-note.swagger';
 @Controller('tags')
 export class RemoveTagFromNoteAction {
   constructor(
-    private readonly transactionScript: RemoveTagFromNoteTransactionScript
+    private readonly tagService: TagService
   ) {}
 
   @Delete(':tagId/remove-from-note/notes/:noteId')
@@ -17,7 +17,7 @@ export class RemoveTagFromNoteAction {
     @Param('noteId', ParseIntPipe) noteId: number,
     @GetAuthUser('userId') userId: number
   ): Promise<{ success: boolean }> {
-    await this.transactionScript.apply(tagId, noteId, userId);
+    await this.tagService.removeTagFromNote(tagId, noteId, userId);
     return { success: true };
   }
 }

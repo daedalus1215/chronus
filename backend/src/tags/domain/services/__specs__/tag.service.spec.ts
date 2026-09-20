@@ -3,6 +3,10 @@ import { TagService } from '../tag.service';
 import { AddTagToNoteTransactionScript } from '../../transaction-scripts/add-tag-to-note-TS/add-tag-to-note.transaction.script';
 import { GetTagsByNoteIdTransactionScript } from '../../transaction-scripts/get-tags-by-note-id-TS/get-tags-by-note-id.transaction.script';
 import { GetTagsByUserIdTransactionScript } from '../../transaction-scripts/get-tags-by-user-id-TS/get-tags-by-user-id.transaction.script';
+import { DeleteTagTransactionScript } from '../../transaction-scripts/delete-tag-TS/delete-tag.transaction.script';
+import { GetTagByIdTransactionScript } from '../../transaction-scripts/get-tag-by-id-TS/get-tag-by-id.transaction.script';
+import { RemoveTagFromNoteTransactionScript } from '../../transaction-scripts/remove-tag-from-note-TS/remove-tag-from-note.transaction.script';
+import { UpdateTagTransactionScript } from '../../transaction-scripts/update-tag-TS/update-tag.transaction.script';
 import { AddTagToNoteDto } from '../../../apps/dtos/requests/add-tag-to-note.dto';
 import { TagResponseDto } from '../../../apps/dtos/responses/tag.response.dto';
 import { Tag } from '../../entities/tag.entity';
@@ -15,7 +19,10 @@ describe('TagService', () => {
   let mockAddTagToNoteTS: jest.Mocked<AddTagToNoteTransactionScript>;
   let mockGetTagsByNoteIdTS: jest.Mocked<GetTagsByNoteIdTransactionScript>;
   let mockGetTagsByUserIdTS: jest.Mocked<GetTagsByUserIdTransactionScript>;
-
+  let mockDeleteTagTS: jest.Mocked<DeleteTagTransactionScript>;
+  let mockGetTagByIdTS: jest.Mocked<GetTagByIdTransactionScript>;
+  let mockRemoveTagFromNoteTS: jest.Mocked<RemoveTagFromNoteTransactionScript>;
+  let mockUpdateTagTS: jest.Mocked<UpdateTagTransactionScript>;
   beforeEach(async () => {
     mockAddTagToNoteTS = createMock<AddTagToNoteTransactionScript>({
       apply: jest.fn(),
@@ -26,7 +33,18 @@ describe('TagService', () => {
     mockGetTagsByUserIdTS = createMock<GetTagsByUserIdTransactionScript>({
       apply: jest.fn(),
     });
-
+    mockDeleteTagTS = createMock<DeleteTagTransactionScript>({
+      apply: jest.fn(),
+    });
+    mockGetTagByIdTS = createMock<GetTagByIdTransactionScript>({
+      apply: jest.fn(),
+    });
+    mockRemoveTagFromNoteTS = createMock<RemoveTagFromNoteTransactionScript>({
+      apply: jest.fn(),
+    });
+    mockUpdateTagTS = createMock<UpdateTagTransactionScript>({
+      apply: jest.fn(),
+    });
     const moduleRef = await Test.createTestingModule({
       providers: [
         TagService,
@@ -41,6 +59,22 @@ describe('TagService', () => {
         {
           provide: GetTagsByUserIdTransactionScript,
           useValue: mockGetTagsByUserIdTS,
+        },
+        {
+          provide: DeleteTagTransactionScript,
+          useValue: mockDeleteTagTS,
+        },
+        {
+          provide: GetTagByIdTransactionScript,
+          useValue: mockGetTagByIdTS,
+        },
+        {
+          provide: RemoveTagFromNoteTransactionScript,
+          useValue: mockRemoveTagFromNoteTS,
+        },
+        {
+          provide: UpdateTagTransactionScript,
+          useValue: mockUpdateTagTS,
         },
       ],
     }).compile();

@@ -1,12 +1,12 @@
 import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
-import { DeleteTagTransactionScript } from '../../../domain/transaction-scripts/delete-tag-TS/delete-tag.transaction.script';
+import { TagService } from '../../../domain/services/tag.service';
 import { GetAuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { ProtectedAction } from 'src/shared-kernel/apps/decorators/protected-action.decorator';
 import { DeleteTagSwagger } from './delete-tag.swagger';
 
 @Controller('tags')
 export class DeleteTagAction {
-  constructor(private readonly deleteTagTS: DeleteTagTransactionScript) {}
+  constructor(private readonly tagService: TagService) {}
 
   @Delete(':id')
   @ProtectedAction(DeleteTagSwagger)
@@ -14,7 +14,7 @@ export class DeleteTagAction {
     @Param('id', ParseIntPipe) tagId: number,
     @GetAuthUser('userId') userId: number
   ): Promise<{ success: boolean }> {
-    await this.deleteTagTS.apply(tagId, userId);
+    await this.tagService.deleteTag(tagId, userId);
     return { success: true };
   }
 }
