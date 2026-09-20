@@ -255,6 +255,18 @@ null default, full-field round-trip with timestamps; `note_versions` round-trip
 **Verify:** integration 11/11 (`NODE_ENV=test DB_NAME=chronus_test_p4 npx jest
 --config test/jest-integration.json <3 specs> --runInBand`).
 
+### Follow-up — residual type-only import edge (2026-09-20, post-merge)
+
+`GetNoteNamesByUserIdAction` was already DI-routed through `NoteService` (original
+notes arc, `548a5c4`); the residual action→TS edge metatron still flagged after the
+merge was a **type-only import** of `GetNoteNamesResult` — the scanner counts any
+import edge, type-only or not. Fix: `NoteService` re-exports `GetNoteNamesResult`
+(its public contract for this use case; the file already exports `NoteWithCheckItems`
+and `SearchResults` the same way) and the action imports the type from the service.
+One import removed — depcruise 972→971 dependencies, build clean, metatron shows no
+action→TS edge and no rule violations (header "1 deviations" is the rolling
+untested-risk finding; `implicit-fk` remains the accepted note-level item).
+
 ## Explicitly out of scope
 
 - **`implicit-fk` (10 entity references)** — accepted by design: entities carry plain
