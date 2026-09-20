@@ -9,9 +9,9 @@ import {
   AudioResponse,
   AudioDownloadResult,
 } from 'src/audio/apps/dtos/responses/audio.response.dto';
-import { TextToSpeechTransactionScript } from '../transaction-scripts/text-to-speech.transaction.script';
+import { TextToSpeechTransactionScript } from '../transaction-scripts/text-to-speech-TS/text-to-speech.transaction.script';
 import { SaveNoteAudioTransactionScript } from '../transaction-scripts/save-note-audio-TS/save-note-audio.transaction.script';
-import { DownloadAudioTransactionScript } from '../transaction-scripts/download-audio.transaction.script';
+import { DownloadAudioTransactionScript } from '../transaction-scripts/download-audio-TS/download-audio.transaction.script';
 import { GetNoteAudiosTransactionScript } from '../transaction-scripts/get-note-audios-TS/get-note-audios.transaction.script';
 import { GetNoteAudioByIdTransactionScript } from '../transaction-scripts/get-note-audio-by-id-TS/get-note-audio-by-id.transaction.script';
 import { DeleteAudioTransactionScript } from '../transaction-scripts/delete-audio-TS/delete-audio.transaction.script';

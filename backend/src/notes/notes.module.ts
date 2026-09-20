@@ -8,26 +8,26 @@ import { NoteMemoTagRepository } from './infra/repositories/note-memo-tag.reposi
 import { NoteVersionRepository } from './infra/repositories/note-version.repository';
 import { GetNoteNamesByUserIdAction } from './apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.action';
 import { CreateNoteAction } from './apps/actions/notes/create-note-action/create-note.action';
-import { CreateNoteTransactionScript } from './domain/transaction-scripts/create-note.transaction.script';
+import { CreateNoteTransactionScript } from './domain/transaction-scripts/create-note-TS/create-note.transaction.script';
 import { GetNoteByIdAction } from './apps/actions/notes/get-note-by-id-action/get-note-by-id.action';
-import { GetNoteByIdTransactionScript } from './domain/transaction-scripts/get-note-by-id.transaction.script';
+import { GetNoteByIdTransactionScript } from './domain/transaction-scripts/get-note-by-id-TS/get-note-by-id.transaction.script';
 import { UpdateNoteAction } from './apps/actions/notes/update-note-action/update-note.action';
 import { UpdateNoteTransactionScript } from './domain/transaction-scripts/update-note-TS/update-note.transaction.script';
 import { UpdateNoteParamsToEntityConverter } from './domain/transaction-scripts/update-note-TS/update-note-params-to-entity.converter';
 import { NoteAggregator } from './domain/aggregators/note.aggregator';
 import { UpdateNoteTimestampAction } from './apps/actions/update-note-timestamp.action';
 import { UpdateNoteTitleAction } from './apps/actions/notes/update-note-title-action/update-note-title.action';
-import { UpdateNoteTitleTransactionScript } from './domain/transaction-scripts/update-note-title.transaction.script';
+import { UpdateNoteTitleTransactionScript } from './domain/transaction-scripts/update-note-title-TS/update-note-title.transaction.script';
 import { DeleteNoteAction } from './apps/actions/notes/delete-note.action';
 import { ArchiveNoteAction } from './apps/actions/archive-note/archive-note.action';
-import { ArchiveNoteTransactionScript } from './domain/transaction-scripts/archive-note/archive-note.transaction.script';
+import { ArchiveNoteTransactionScript } from './domain/transaction-scripts/archive-note-TS/archive-note.transaction.script';
 import { ConvertChecklistToMemoTransactionScript } from './domain/transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script';
 import { ConvertChecklistToMemoAction } from './apps/actions/notes/convert-checklist-to-memo-action/convert-checklist-to-memo.action';
 import { SearchNotesAction } from './apps/actions/notes/search-notes-action/search-notes.action';
-import { SearchNotesTransactionScript } from './domain/transaction-scripts/search-notes.transaction.script';
+import { SearchNotesTransactionScript } from './domain/transaction-scripts/search-notes-TS/search-notes.transaction.script';
 import { SearchNotesResponder } from './apps/actions/notes/search-notes-action/search-notes.responder';
 import { NoteService } from './domain/services/note.service';
-import { GetNoteNamesByIdsTransactionScript } from './domain/transaction-scripts/get-note-names-by-ids.transaction.script';
+import { GetNoteNamesByIdsTransactionScript } from './domain/transaction-scripts/get-note-names-by-ids-TS/get-note-names-by-ids.transaction.script';
 import { VerifyNoteAccessListener } from './apps/listeners/verify-note-access.listener';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GetNoteDetailsListener } from './apps/listeners/get-note-details.listener';
@@ -36,16 +36,16 @@ import { GetNoteByIdResponder } from './apps/actions/notes/get-note-by-id-action
 import { UpdateNoteResponder } from './apps/actions/notes/update-note-action/update-note.responder';
 import { NoteOwnershipAdapter } from './apps/adapters/note-ownership.adapter';
 import { NOTE_OWNERSHIP_PORT } from '../audio/domain/ports/note-ownership.port';
-import { MoveNoteToFolderTransactionScript } from './domain/transaction-scripts/move-note-to-folder.transaction.script';
+import { MoveNoteToFolderTransactionScript } from './domain/transaction-scripts/move-note-to-folder-TS/move-note-to-folder.transaction.script';
 import { MoveNoteToFolderAction } from './apps/actions/notes/move-note-to-folder-action/move-note-to-folder.action';
-import { ReorderNotesTransactionScript } from './domain/transaction-scripts/reorder-notes.transaction.script';
+import { ReorderNotesTransactionScript } from './domain/transaction-scripts/reorder-notes-TS/reorder-notes.transaction.script';
 import { ReorderNotesAction } from './apps/actions/notes/reorder-notes-action/reorder-notes.action';
-import { GetNoteNamesByUserIdTransactionScript } from './domain/transaction-scripts/get-note-names-by-user-id.transaction.script';
-import { GetNoteNamesForExplorerTransactionScript } from './domain/transaction-scripts/get-note-names-for-explorer.transaction.script';
-import { GetNoteVersionsTransactionScript } from './domain/transaction-scripts/get-note-versions.transaction.script';
-import { LoadNoteVersionTransactionScript } from './domain/transaction-scripts/load-note-version.transaction.script';
-import { UpdateNoteTimestampTransactionScript } from './domain/transaction-scripts/update-note-timestamp.transaction.script';
-import { DeleteNoteTransactionScript } from './domain/transaction-scripts/delete-note.transaction.script';
+import { GetNoteNamesByUserIdTransactionScript } from './domain/transaction-scripts/get-note-names-by-user-id-TS/get-note-names-by-user-id.transaction.script';
+import { GetNoteNamesForExplorerTransactionScript } from './domain/transaction-scripts/get-note-names-for-explorer-TS/get-note-names-for-explorer.transaction.script';
+import { GetNoteVersionsTransactionScript } from './domain/transaction-scripts/get-note-versions-TS/get-note-versions.transaction.script';
+import { LoadNoteVersionTransactionScript } from './domain/transaction-scripts/load-note-version-TS/load-note-version.transaction.script';
+import { UpdateNoteTimestampTransactionScript } from './domain/transaction-scripts/update-note-timestamp-TS/update-note-timestamp.transaction.script';
+import { DeleteNoteTransactionScript } from './domain/transaction-scripts/delete-note-TS/delete-note.transaction.script';
 import { GetNoteNamesForExplorerAction } from './apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action';
 import { NoteFolderAdapter } from './apps/adapters/note-folder.adapter';
 import { NOTE_FOLDER_PORT } from 'src/folders/domain/ports/note-folder.port';
@@ -58,6 +58,7 @@ import { GetNoteVersionsAction } from './apps/actions/notes/get-note-versions-ac
 import { GetNoteVersionsResponder } from './apps/actions/notes/get-note-versions-action/get-note-versions.responder';
 import { LoadNoteVersionAction } from './apps/actions/notes/load-note-version-action/load-note-version.action';
 import { LoadNoteVersionResponder } from './apps/actions/notes/load-note-version-action/load-note-version.responder';
+import { CreateNoteResponder } from './apps/actions/notes/create-note-action/create-note.responder';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { LoadNoteVersionResponder } from './apps/actions/notes/load-note-version
     GetNoteVersionsResponder,
     LoadNoteVersionResponder,
     UpdateNoteResponder,
+    CreateNoteResponder,
     SearchNotesTransactionScript,
     SearchNotesResponder,
     NoteOwnershipAdapter,

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Tag } from '../../../domain/entities/tag.entity';
 import { TagNote } from '../../../../shared-kernel/domain/entities/tag-note.entity';
-import { GetTagsByUserIdProjection } from 'src/tags/domain/transaction-scripts/get-tags-by-user-id.projection';
+import { GetTagsByUserIdProjection } from 'src/tags/domain/transaction-scripts/get-tags-by-user-id-TS/get-tags-by-user-id.projection';
 import { tagsByUserIdHydrator } from './hydrators/tags-by-user-id-hydrator';
 import { tagsByNoteIdsHydrator } from './hydrators/tags-by-note-ids-hydrator';
 

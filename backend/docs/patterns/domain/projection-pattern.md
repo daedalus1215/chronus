@@ -103,7 +103,7 @@ HTTP Request → DTO (validated) → Action → Command → Service → Projecti
 | -------- | ---------- | ------- |
 | Type name | `{Entity}Projection` or `{Action}{Entity}Projection` | `RecordFilesProjection`, `CaseDetailProjection` |
 | File name | `{purpose}.projection.ts` | `note-files.projection.ts` |
-| Location | Next to the Transaction Script that produces it | `{ts-name}/{purpose}.projection.ts` |
+| Location | Next to the Transaction Script that produces it | `{ts-name}-TS/{purpose}.projection.ts` |
 | Variable name (in domain) | `projection` | Never `dto` in domain code |
 | Variable name (in tests) | `mockProjection`, `expectedProjection` | |
 

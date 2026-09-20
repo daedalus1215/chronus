@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CheckItemsRepository } from '../../infra/repositories/check-items/check-items.repository';
-import { GetCheckItemsByNoteTransactionScript } from '../transaction-scripts/get-check-items-by-note/get-check-items-by-note.transaction.script';
+import { GetCheckItemsByNoteTransactionScript } from '../transaction-scripts/get-check-items-by-note-TS/get-check-items-by-note.transaction.script';
 import { CheckItemWriterPort } from '../../../note-transfer/domain/ports/check-item-writer.port';
 import { CheckItem } from '../entities/check-item.entity';
 

@@ -1,31 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { Note } from '../entities/notes/note.entity';
-import { ArchiveNoteTransactionScript } from '../transaction-scripts/archive-note/archive-note.transaction.script';
+import { ArchiveNoteTransactionScript } from '../transaction-scripts/archive-note-TS/archive-note.transaction.script';
 import { ConvertChecklistToMemoTransactionScript } from '../transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script';
-import { GetNoteByIdTransactionScript } from '../transaction-scripts/get-note-by-id.transaction.script';
+import { GetNoteByIdTransactionScript } from '../transaction-scripts/get-note-by-id-TS/get-note-by-id.transaction.script';
 import { UpdateNoteTransactionScript } from '../transaction-scripts/update-note-TS/update-note.transaction.script';
-import { CreateNoteTransactionScript } from '../transaction-scripts/create-note.transaction.script';
-import { CreateNoteCommand } from '../transaction-scripts/create-note.command';
-import { UpdateNoteTitleTransactionScript } from '../transaction-scripts/update-note-title.transaction.script';
-import { MoveNoteToFolderTransactionScript } from '../transaction-scripts/move-note-to-folder.transaction.script';
+import { CreateNoteTransactionScript } from '../transaction-scripts/create-note-TS/create-note.transaction.script';
+import { CreateNoteCommand } from '../transaction-scripts/create-note-TS/create-note.command';
+import { UpdateNoteTitleTransactionScript } from '../transaction-scripts/update-note-title-TS/update-note-title.transaction.script';
+import { MoveNoteToFolderTransactionScript } from '../transaction-scripts/move-note-to-folder-TS/move-note-to-folder.transaction.script';
 import {
   ReorderNotesTransactionScript,
   ReorderNotesInput,
-} from '../transaction-scripts/reorder-notes.transaction.script';
+} from '../transaction-scripts/reorder-notes-TS/reorder-notes.transaction.script';
 import {
   GetNoteNamesByUserIdTransactionScript,
   GetNoteNamesQuery,
   GetNoteNamesResult,
-} from '../transaction-scripts/get-note-names-by-user-id.transaction.script';
-import { GetNoteNamesForExplorerTransactionScript } from '../transaction-scripts/get-note-names-for-explorer.transaction.script';
+} from '../transaction-scripts/get-note-names-by-user-id-TS/get-note-names-by-user-id.transaction.script';
+import { GetNoteNamesForExplorerTransactionScript } from '../transaction-scripts/get-note-names-for-explorer-TS/get-note-names-for-explorer.transaction.script';
 import { NoteNameRow } from '../transaction-scripts/note-name-row.projection';
-import { GetNoteVersionsTransactionScript } from '../transaction-scripts/get-note-versions.transaction.script';
+import { GetNoteVersionsTransactionScript } from '../transaction-scripts/get-note-versions-TS/get-note-versions.transaction.script';
 import { NoteVersion } from '../entities/notes/note-version.entity';
-import { LoadNoteVersionTransactionScript } from '../transaction-scripts/load-note-version.transaction.script';
-import { UpdateNoteTimestampTransactionScript } from '../transaction-scripts/update-note-timestamp.transaction.script';
+import { LoadNoteVersionTransactionScript } from '../transaction-scripts/load-note-version-TS/load-note-version.transaction.script';
+import { UpdateNoteTimestampTransactionScript } from '../transaction-scripts/update-note-timestamp-TS/update-note-timestamp.transaction.script';
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
-import { DeleteNoteTransactionScript } from '../transaction-scripts/delete-note.transaction.script';
+import { DeleteNoteTransactionScript } from '../transaction-scripts/delete-note-TS/delete-note.transaction.script';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DELETE_CHECK_ITEMS_BY_NOTE_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/check-items/delete-check-items-by-note.command';
 import { DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/tags/delete-note-tag-associations.command';
@@ -34,7 +34,7 @@ import { CheckItemProjection } from 'src/check-items/domain/aggregators/check-it
 import {
   SearchNotesTransactionScript,
   NoteSearchMatches,
-} from '../transaction-scripts/search-notes.transaction.script';
+} from '../transaction-scripts/search-notes-TS/search-notes.transaction.script';
 
 export type NoteWithCheckItems = {
   note: Note;

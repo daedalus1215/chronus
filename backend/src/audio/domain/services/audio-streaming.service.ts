@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
-import { StreamAudioTransactionScript } from '../transaction-scripts/stream-audio-ts/stream-audio.transaction.script';
+import { StreamAudioTransactionScript } from '../transaction-scripts/stream-audio-TS/stream-audio.transaction.script';
 
 @Injectable()
 export class AudioStreamingService {
