@@ -1,0 +1,563 @@
+<!-- metatron: Which files change together without referencing each other? A dependency structure matrix over co-change, with the import graph overlaid to mark what it explains. -->
+<title>Chronus Frontend Backend Coupling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap">
+
+<style>
+:root {
+  --paper:#F2F4F8; --surface:#FFFFFF; --surface2:#E7ECF3; --sunk:#DEE5EF;
+  --ink:#151E29; --ink2:#485A6F; --ink3:#7A8B9F;
+  --rule:#D2DAE4; --rule2:#B9C4D2;
+  --blue:#2B5CA8; --amber:#A85B06; --rose:#A31C39; --green:#1B6448; --violet:#54479A; --teal:#136A80;
+  --hot:#A31C39; --warm:#A85B06; --calm:#5C7086;
+  --shadow:0 1px 2px rgba(21,30,41,.06), 0 8px 24px rgba(21,30,41,.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:#0E141B; --surface:#151D26; --surface2:#1C2631; --sunk:#111922;
+    --ink:#E3EAF2; --ink2:#9EAFC1; --ink3:#6B7C91;
+    --rule:#28343F; --rule2:#36454F;
+    --blue:#79A4E6; --amber:#E0A04A; --rose:#EE7189; --green:#4FC195; --violet:#A093E6; --teal:#4FB6CE;
+    --hot:#EE7189; --warm:#E0A04A; --calm:#67788C;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#0E141B; --surface:#151D26; --surface2:#1C2631; --sunk:#111922;
+  --ink:#E3EAF2; --ink2:#9EAFC1; --ink3:#6B7C91;
+  --rule:#28343F; --rule2:#36454F;
+  --blue:#79A4E6; --amber:#E0A04A; --rose:#EE7189; --green:#4FC195; --violet:#A093E6; --teal:#4FB6CE;
+  --hot:#EE7189; --warm:#E0A04A; --calm:#67788C;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+}
+
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink);
+  font-family:'Archivo',ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; }
+.mono { font-family:'IBM Plex Mono',ui-monospace,monospace; }
+.wrap { max-width:1560px; margin:0 auto; padding:0 26px 80px; }
+
+.mast { padding:48px 0 24px; border-bottom:2px solid var(--ink); }
+.eyebrow { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink3); margin:0 0 16px; }
+h1 { font-size:clamp(34px,5.2vw,58px); line-height:1.03; letter-spacing:-.03em; font-weight:700; margin:0; text-wrap:balance; }
+.dek { font-family:'Source Serif 4',Georgia,serif; font-size:18px; line-height:1.6; color:var(--ink2);
+  max-width:64ch; margin:18px 0 0; }
+.statrow { display:grid; grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); gap:1px;
+  background:var(--rule); border:1px solid var(--rule); margin-top:32px; }
+.stat { background:var(--paper); padding:13px 15px; }
+.stat b { display:block; font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:600;
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+.stat span { display:block; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink3); margin-top:3px; }
+.stat.hot b { color:var(--hot); }
+
+.bar { display:flex; gap:7px; flex-wrap:wrap; align-items:center; margin:26px 0 12px; }
+.btn { font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.04em;
+  border:1px solid var(--rule2); background:var(--surface); color:var(--ink2); padding:6px 11px; cursor:pointer; }
+.btn:hover { border-color:var(--ink3); color:var(--ink); }
+.btn.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.btn:focus-visible, input:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+.sep { width:1px; height:20px; background:var(--rule2); margin:0 3px; }
+.thr { display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink2); }
+.thr input[type=range] { width:130px; accent-color:var(--ink); }
+.thr b { color:var(--ink); font-weight:500; min-width:34px; text-align:right; font-variant-numeric:tabular-nums; }
+
+.plate { border:1px solid var(--rule2); background:var(--surface); box-shadow:var(--shadow); }
+.split { display:grid; grid-template-columns:minmax(0,1fr) 330px; }
+@media (max-width:1100px){ .split { grid-template-columns:minmax(0,1fr); } }
+.chart { overflow:hidden; }
+svg.sc { display:block; width:100%; height:auto; }
+svg.sc text { font-family:'IBM Plex Mono',monospace; }
+.cell { cursor:pointer; }
+.cell:hover { stroke:var(--ink); stroke-width:1.5; }
+.cell.sel { stroke:var(--ink); stroke-width:2; }
+.mlab { font-size:10px; fill:var(--ink2); }
+.mlab.top { font-size:9.5px; }
+.flab { font-size:9px; fill:var(--ink3); }
+.modsep { stroke:var(--ink); stroke-width:1.5; opacity:.5; }
+.modcap { font-size:9px; fill:var(--ink3); letter-spacing:.08em; }
+.insp { border-left:1px solid var(--rule2); padding:38px 18px 16px; overflow:auto; max-height:min(74vh,820px); }
+@media (max-width:1100px){ .insp { border-left:0; border-top:1px solid var(--rule2); max-height:520px; } }
+.insp .empty { font-family:'Source Serif 4',Georgia,serif; font-style:italic; color:var(--ink3); }
+.insp h3 { margin:0 0 3px; font-size:14px; font-weight:600; word-break:break-all; }
+.insp .sub { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink3); margin:0 0 12px; word-break:break-all; }
+.insp .pair2 { margin:10px 0 0; }
+.ilab { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--ink3); margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid var(--rule); }
+.kv { list-style:none; margin:0; padding:0; }
+.kv li { display:flex; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink2); padding:3px 0; }
+.kv li b { color:var(--ink); font-weight:500; margin-left:auto; font-variant-numeric:tabular-nums; }
+.legend { display:flex; flex-wrap:wrap; gap:11px 18px; padding:11px 16px; border-top:1px solid var(--rule); background:var(--surface2); }
+.lg { display:flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink2); }
+.lg i { width:10px; height:10px; display:block; }
+
+section { margin-top:52px; }
+.shead { display:flex; align-items:baseline; gap:13px; border-bottom:1px solid var(--rule2);
+  padding-bottom:9px; margin-bottom:18px; flex-wrap:wrap; }
+.shead h2 { font-size:21px; font-weight:600; letter-spacing:-.015em; margin:0; }
+.shead .num { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink3); letter-spacing:.1em; }
+.note { font-family:'Source Serif 4',Georgia,serif; font-size:16.5px; line-height:1.65; color:var(--ink2); max-width:68ch; }
+.note + .note { margin-top:12px; }
+.note strong { color:var(--ink); font-weight:400; box-shadow:inset 0 -0.5em 0 color-mix(in srgb, var(--amber) 18%, transparent); }
+.tblwrap { overflow-x:auto; border:1px solid var(--rule2); background:var(--surface); box-shadow:var(--shadow); }
+table { border-collapse:collapse; width:100%; font-size:13px; }
+th,td { text-align:left; padding:8px 12px; border-bottom:1px solid var(--rule); white-space:nowrap; }
+th { font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink3); font-weight:500; background:var(--surface2); }
+td.n { font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; text-align:right; }
+td.p { font-family:'IBM Plex Mono',monospace; font-size:11px; white-space:normal; word-break:break-all; }
+tbody tr { cursor:pointer; }
+tbody tr:hover { background:var(--surface2); }
+.none { padding:40px 24px; font-family:'Source Serif 4',Georgia,serif; font-style:italic; color:var(--ink3); }
+footer { margin-top:60px; padding-top:20px; border-top:2px solid var(--ink); color:var(--ink3); }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Co-change × import graph · from git history</p>
+  <h1>Chronus Frontend Backend Coupling</h1>
+  <p class="dek">One cell per pair of files that keeps landing in the same commit, shaded by how often. Every graph this tool draws comes from <span class="mono">import</span> statements; this is the only one that comes from history. <strong>The import overlay marks the pairs the graph already explains — the ones it cannot are a duplicated rule or a missing abstraction.</strong> Click a module block to zoom into the files behind it.</p>
+  <div class="statrow" id="statrow"></div>
+</header>
+
+<div class="bar" id="bar">
+  <button class="btn on" id="gModule">modules</button>
+  <button class="btn" id="gFile">files</button>
+  <span class="sep"></span>
+  <button class="btn on" id="tOverlay">import overlay</button>
+  <span class="sep"></span>
+  <span class="thr">min degree
+    <input id="thr" type="range" aria-label="Minimum coupling degree">
+    <b id="thrv"></b>
+  </span>
+  <span class="sep"></span>
+  <button class="btn" id="reset">reset</button>
+</div>
+
+<div class="plate" data-fullscreen>
+  <div class="split" data-fs-grow>
+    <div class="chart" id="chart"></div>
+    <aside class="insp" id="insp"></aside>
+  </div>
+  <div class="legend" id="legend"></div>
+</div>
+
+<section>
+  <div class="shead"><span class="num">01</span><h2>Reading it</h2></div>
+  <p class="note" data-narr="coupling"></p>
+  <p class="note">Both axes are the same list of files, so the matrix is symmetric and the diagonal is each module co-changing with itself. Shade is the Jaccard degree: of all the commits that touched either file, the fraction that touched both. The <span class="mono">a→b</span> column in the table below is the asymmetric reading — a file that always drags its partner along is a different story from one that is dragged.</p>
+</section>
+
+<section>
+  <div class="shead"><span class="num">02</span><h2>Pairs</h2></div>
+  <div class="tblwrap">
+    <table id="tbl"><thead><tr><th>File A</th><th>File B</th><th style="text-align:right">Together</th><th style="text-align:right">Degree</th><th style="text-align:right">A→B</th><th style="text-align:right">B→A</th><th>Import</th><th>Modules</th></tr></thead><tbody></tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="num">03</span><h2>What this does not know</h2></div>
+  <p class="note" data-narr="coupling"></p>
+</section>
+
+<footer>
+  <p class="note" style="font-size:14px" data-narr="provenance"></p>
+</footer>
+
+</div>
+
+<script id="data" type="application/json">{"generatedAt":"2026-09-20T23:22:04.213Z","project":"chronus-frontend-backend","root":"src","coupling":{"pairs":[{"a":"notes/test-utils.ts","b":"notes/test-utils/mock-factories.ts","co":8,"changesA":9,"changesB":10,"degree":0.727,"aThenB":0.889,"bThenA":0.8,"imports":0},{"a":"check-items/check-items.module.ts","b":"check-items/domain/services/check-item.service.ts","co":7,"changesA":11,"changesB":7,"degree":0.636,"aThenB":0.636,"bThenA":1,"imports":1},{"a":"check-items/domain/entities/check-item.entity.ts","b":"check-items/domain/services/check-item.service.ts","co":5,"changesA":6,"changesB":7,"degree":0.625,"aThenB":0.833,"bThenA":0.714,"imports":1},{"a":"check-items/apps/dtos/responses/check-item.response.dto.ts","b":"check-items/domain/entities/check-item.entity.ts","co":4,"changesA":5,"changesB":6,"degree":0.571,"aThenB":0.8,"bThenA":0.667,"imports":0},{"a":"notes/domain/entities/notes/note.entity.ts","b":"notes/test-utils/mock-factories.ts","co":8,"changesA":13,"changesB":10,"degree":0.533,"aThenB":0.615,"bThenA":0.8,"imports":1},{"a":"users/domain/users.service.ts","b":"users/users.module.ts","co":5,"changesA":8,"changesB":7,"degree":0.5,"aThenB":0.625,"bThenA":0.714,"imports":1},{"a":"notes/domain/entities/notes/note.entity.ts","b":"notes/test-utils.ts","co":7,"changesA":13,"changesB":9,"degree":0.467,"aThenB":0.538,"bThenA":0.778,"imports":1},{"a":"audio/domain/services/audio.service.ts","b":"audio/infrastructure/remote-callers/hermes.remote-caller.ts","co":5,"changesA":10,"changesB":6,"degree":0.455,"aThenB":0.5,"bThenA":0.833,"imports":0},{"a":"check-items/check-items.module.ts","b":"check-items/domain/entities/check-item.entity.ts","co":5,"changesA":11,"changesB":6,"degree":0.417,"aThenB":0.455,"bThenA":0.833,"imports":1},{"a":"notes/domain/transaction-scripts/update-note-TS/update-note.transaction.script.ts","b":"notes/test-utils/mock-factories.ts","co":5,"changesA":7,"changesB":10,"degree":0.417,"aThenB":0.714,"bThenA":0.5,"imports":0},{"a":"audio/audio.module.ts","b":"audio/domain/services/audio.service.ts","co":6,"changesA":12,"changesB":10,"degree":0.375,"aThenB":0.5,"bThenA":0.6,"imports":1},{"a":"tags/domain/aggregators/tag.aggregator.ts","b":"tags/domain/services/__specs__/tag.service.spec.ts","co":3,"changesA":6,"changesB":5,"degree":0.375,"aThenB":0.5,"bThenA":0.6,"imports":0},{"a":"audio/apps/actions/download-audio/download-audio.action.ts","b":"audio/domain/services/audio.service.ts","co":4,"changesA":5,"changesB":10,"degree":0.364,"aThenB":0.8,"bThenA":0.4,"imports":1},{"a":"time-tracks/infra/repositories/time-track.repository.ts","b":"time-tracks/time-tracks.module.ts","co":10,"changesA":20,"changesB":20,"degree":0.333,"aThenB":0.5,"bThenA":0.5,"imports":1},{"a":"time-tracks/domain/services/time-track-service/time-track.service.ts","b":"time-tracks/infra/repositories/time-track.repository.ts","co":9,"changesA":16,"changesB":20,"degree":0.333,"aThenB":0.563,"bThenA":0.45,"imports":0},{"a":"tags/domain/services/__specs__/tag.service.spec.ts","b":"tags/domain/services/tag.service.ts","co":3,"changesA":5,"changesB":7,"degree":0.333,"aThenB":0.6,"bThenA":0.429,"imports":1},{"a":"check-items/apps/dtos/responses/check-item.response.dto.ts","b":"check-items/domain/services/check-item.service.ts","co":3,"changesA":5,"changesB":7,"degree":0.333,"aThenB":0.6,"bThenA":0.429,"imports":0},{"a":"check-items/domain/aggregators/check-items.aggregator.ts","b":"check-items/infra/repositories/check-items/check-items.repository.ts","co":4,"changesA":8,"changesB":9,"degree":0.308,"aThenB":0.5,"bThenA":0.444,"imports":1},{"a":"notes/domain/transaction-scripts/update-note-TS/__specs__/update-note.transaction.script.spec.ts","b":"notes/domain/transaction-scripts/update-note-TS/update-note.transaction.script.ts","co":3,"changesA":6,"changesB":7,"degree":0.3,"aThenB":0.5,"bThenA":0.429,"imports":1}],"eligible":["notes/apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.action.ts","notes/domain/services/note.service.ts","users/domain/users.service.ts","time-tracks/domain/services/time-track-service/time-track.service.ts","tags/domain/services/__specs__/tag.service.spec.ts","tags/domain/services/tag.service.ts","tags/tags.module.ts","folders/folders.module.ts","notes/notes.module.ts","check-items/check-items.module.ts","check-items/domain/aggregators/check-items.aggregator.ts","check-items/domain/services/check-item.service.ts","tags/domain/aggregators/tag.aggregator.ts","tags/infra/repositories/tag-repository/tag.repository.ts","audio/audio.module.ts","audio/domain/services/audio.service.ts","time-tracks/time-tracks.module.ts","users/users.module.ts","auth/auth.module.ts","notes/apps/actions/notes/move-note-to-folder-action/move-note-to-folder.action.ts","notes/infra/repositories/note-memo-tag.repository.ts","notes/apps/actions/notes/update-note-title-action/update-note-title.action.ts","notes/domain/entities/notes/memo.entity.ts","app.module.ts","main.ts","typeorm/data-source.ts","check-items/infra/repositories/check-items/check-items.repository.ts","time-tracks/infra/repositories/time-track.repository.ts","notes/apps/dtos/responses/note.response.dto.ts","notes/domain/transaction-scripts/update-note-TS/__specs__/update-note.transaction.script.spec.ts","notes/domain/transaction-scripts/update-note-TS/update-note.transaction.script.ts","note-transfer/note-transfer.module.ts","notes/domain/aggregators/note.aggregator.ts","time-tracks/domain/entities/time-track-entity/time-track.entity.ts","shared-kernel/test-utils.ts","notes/domain/entities/notes/note.entity.ts","notes/test-utils.ts","notes/test-utils/mock-factories.ts","auth/domain/auth.service.ts","audio/infrastructure/remote-callers/hermes.remote-caller.ts","audio/apps/actions/download-audio/download-audio.action.ts","check-items/apps/dtos/responses/check-item.response.dto.ts","check-items/domain/entities/check-item.entity.ts","notes/apps/actions/notes/get-note-by-id-action/get-note-by-id.action.ts","time-tracks/apps/actions/create-time-track-action/create-time-track.action.ts","notes/apps/actions/notes/delete-note.action.ts"],"meta":{"commits":298,"excludedCommits":8,"eligibleFiles":46,"maxFiles":25,"minChanges":5,"minDegree":0.3,"reason":null}},"fileNodes":[{"f":"app.module.ts","m":"(root)","p":"bootstrap","t":9,"loc":109,"cls":"AppModule"},{"f":"audio/apps/actions/delete-audio/delete-audio.action.ts","m":"audio","p":"action","t":0,"loc":29,"cls":"DeleteAudioAction"},{"f":"audio/apps/actions/delete-audio/delete-audio.swagger.ts","m":"audio","p":"swagger","t":0,"loc":25,"cls":null},{"f":"audio/apps/actions/download-audio/download-audio.action.ts","m":"audio","p":"action","t":0,"loc":41,"cls":"DownloadAudioAction"},{"f":"audio/apps/actions/download-audio/download-audio.responder.ts","m":"audio","p":"responder","t":0,"loc":13,"cls":"DownloadAudioResponder"},{"f":"audio/apps/actions/get-note-audios/get-note-audios.action.ts","m":"audio","p":"action","t":0,"loc":27,"cls":"GetNoteAudiosAction"},{"f":"audio/apps/actions/stream-audio/stream-audio.action.ts","m":"audio","p":"action","t":0,"loc":73,"cls":"StreamAudioAction"},{"f":"audio/apps/actions/text-to-speech/text-to-speech.action.ts","m":"audio","p":"action","t":0,"loc":23,"cls":"TextToSpeechAction"},{"f":"audio/apps/actions/text-to-speech/text-to-speech.swagger.ts","m":"audio","p":"swagger","t":0,"loc":23,"cls":null},{"f":"audio/apps/actions/update-playback-position-action/dtos/requests/update-playback-position.dto.ts","m":"audio","p":"dto","t":1,"loc":13,"cls":"UpdatePlaybackPositionDto"},{"f":"audio/apps/actions/update-playback-position-action/update-playback-position.action.ts","m":"audio","p":"action","t":0,"loc":38,"cls":"UpdatePlaybackPositionAction"},{"f":"audio/apps/actions/update-playback-position-action/update-playback-position.swagger.ts","m":"audio","p":"swagger","t":0,"loc":21,"cls":null},{"f":"audio/apps/dtos/requests/text-to-speech.dto.ts","m":"audio","p":"dto","t":1,"loc":14,"cls":"TextToSpeechRequestDto"},{"f":"audio/apps/dtos/responses/audio.response.dto.ts","m":"audio","p":"dto","t":1,"loc":14,"cls":null},{"f":"audio/audio.module.ts","m":"audio","p":"module","t":8,"loc":71,"cls":"AudioModule"},{"f":"audio/domain/aggregators/audio-purge.aggregator.ts","m":"audio","p":"aggregator","t":3,"loc":52,"cls":"AudioPurgeAggregator"},{"f":"audio/domain/entities/__specs__/note-audio.entity.integration.spec.ts","m":"audio","p":"spec","t":10,"loc":68,"cls":null},{"f":"audio/domain/entities/note-audio.entity.ts","m":"audio","p":"entity","t":7,"loc":53,"cls":"NoteAudio"},{"f":"audio/domain/ports/note-ownership.port.ts","m":"audio","p":"port","t":7,"loc":19,"cls":null},{"f":"audio/domain/services/__specs__/audio.service.spec.ts","m":"audio","p":"spec","t":10,"loc":403,"cls":null},{"f":"audio/domain/services/audio-streaming.service.ts","m":"audio","p":"service","t":2,"loc":25,"cls":"AudioStreamingService"},{"f":"audio/domain/services/audio.service.ts","m":"audio","p":"service","t":2,"loc":173,"cls":"AudioService"},{"f":"audio/domain/transaction-scripts/delete-audio-TS/delete-audio.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":24,"cls":"DeleteAudioTransactionScript"},{"f":"audio/domain/transaction-scripts/delete-note-audios-TS/delete-note-audios.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":12,"cls":"DeleteNoteAudiosTransactionScript"},{"f":"audio/domain/transaction-scripts/download-audio-TS/download-audio.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":21,"cls":"DownloadAudioTransactionScript"},{"f":"audio/domain/transaction-scripts/get-note-audio-by-id-TS/get-note-audio-by-id.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":14,"cls":"GetNoteAudioByIdTransactionScript"},{"f":"audio/domain/transaction-scripts/get-note-audios-TS/get-note-audios.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":15,"cls":"GetNoteAudiosTransactionScript"},{"f":"audio/domain/transaction-scripts/save-note-audio-TS/save-note-audio.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":38,"cls":"SaveNoteAudioTransactionScript"},{"f":"audio/domain/transaction-scripts/stream-audio-TS/__specs__/stream-audio.transaction.script.spec.ts","m":"audio","p":"spec","t":10,"loc":515,"cls":null},{"f":"audio/domain/transaction-scripts/stream-audio-TS/stream-audio.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":204,"cls":"StreamAudioTransactionScript"},{"f":"audio/domain/transaction-scripts/text-to-speech-TS/text-to-speech.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":37,"cls":"TextToSpeechTransactionScript"},{"f":"audio/domain/transaction-scripts/update-playback-position-TS/__specs__/update-playback-position.transaction.script.spec.ts","m":"audio","p":"spec","t":10,"loc":107,"cls":null},{"f":"audio/domain/transaction-scripts/update-playback-position-TS/update-playback-position.transaction.script.ts","m":"audio","p":"transaction-script","t":4,"loc":20,"cls":"UpdatePlaybackPositionTransactionScript"},{"f":"audio/infrastructure/cache/audio-file.cache.ts","m":"audio","p":"cache","t":6,"loc":221,"cls":"AudioFileCache"},{"f":"audio/infrastructure/remote-callers/__specs__/hermes.remote-caller.spec.ts","m":"audio","p":"spec","t":10,"loc":342,"cls":null},{"f":"audio/infrastructure/remote-callers/hermes.remote-caller.ts","m":"audio","p":"remote-caller","t":6,"loc":165,"cls":"HermesRemoteCaller"},{"f":"audio/infrastructure/repositories/__specs__/note-audio.repository.spec.ts","m":"audio","p":"spec","t":10,"loc":124,"cls":null},{"f":"audio/infrastructure/repositories/note-audio.repository.ts","m":"audio","p":"repository","t":6,"loc":63,"cls":"NoteAudioRepository"},{"f":"auth/apps/actions/login.action.ts","m":"auth","p":"action","t":0,"loc":31,"cls":"LoginAction"},{"f":"auth/auth.module.ts","m":"auth","p":"module","t":8,"loc":40,"cls":"AuthModule"},{"f":"auth/domain/auth.service.ts","m":"auth","p":"service","t":2,"loc":55,"cls":"AuthService"},{"f":"auth/jwt.strategy.ts","m":"auth","p":"strategy","t":8,"loc":28,"cls":"JwtStrategy"},{"f":"bootstrap/configure-body-parser.ts","m":"bootstrap","p":"bootstrap","t":9,"loc":39,"cls":null},{"f":"bootstrap/configure-cors.ts","m":"bootstrap","p":"bootstrap","t":9,"loc":32,"cls":null},{"f":"bootstrap/configure-graceful-shutdown.ts","m":"bootstrap","p":"bootstrap","t":9,"loc":69,"cls":null},{"f":"bootstrap/configure-https.ts","m":"bootstrap","p":"bootstrap","t":9,"loc":65,"cls":null},{"f":"bootstrap/configure-pg-date-parser.ts","m":"bootstrap","p":"bootstrap","t":9,"loc":31,"cls":"configure-pg-date-parser"},{"f":"bootstrap/configure-swagger.ts","m":"bootstrap","p":"bootstrap","t":9,"loc":26,"cls":null},{"f":"bootstrap/configure-validation.ts","m":"bootstrap","p":"bootstrap","t":9,"loc":16,"cls":null},{"f":"check-items/apps/actions/create-check-item/create-check-item.action.ts","m":"check-items","p":"action","t":0,"loc":28,"cls":"CreateCheckItemAction"},{"f":"check-items/apps/actions/create-check-item/create-check-item.swagger.ts","m":"check-items","p":"swagger","t":0,"loc":28,"cls":null},{"f":"check-items/apps/actions/delete-check-item/delete-check-item.action.ts","m":"check-items","p":"action","t":0,"loc":22,"cls":"DeleteCheckItemAction"},{"f":"check-items/apps/actions/delete-check-item/delete-check-item.swagger.ts","m":"check-items","p":"swagger","t":0,"loc":17,"cls":null},{"f":"check-items/apps/actions/get-check-item/get-check-item.action.ts","m":"check-items","p":"action","t":0,"loc":22,"cls":"GetCheckItemAction"},{"f":"check-items/apps/actions/get-check-item/get-check-item.swagger.ts","m":"check-items","p":"swagger","t":0,"loc":19,"cls":null},{"f":"check-items/apps/actions/get-check-items-by-note/get-check-items-by-note.action.ts","m":"check-items","p":"action","t":0,"loc":22,"cls":"GetCheckItemsByNoteAction"},{"f":"check-items/apps/actions/get-check-items-by-note/get-check-items-by-note.swagger.ts","m":"check-items","p":"swagger","t":0,"loc":24,"cls":null},{"f":"check-items/apps/actions/reorder-check-items/reorder-check-items.action.ts","m":"check-items","p":"action","t":0,"loc":24,"cls":"ReorderCheckItemsAction"},{"f":"check-items/apps/actions/reorder-check-items/reorder-check-items.swagger.ts","m":"check-items","p":"swagger","t":0,"loc":23,"cls":null},{"f":"check-items/apps/actions/toggle-check-item/toggle-check-item.action.ts","m":"check-items","p":"action","t":0,"loc":23,"cls":"ToggleCheckItemAction"},{"f":"check-items/apps/actions/toggle-check-item/toggle-check-item.swagger.ts","m":"check-items","p":"swagger","t":0,"loc":19,"cls":null},{"f":"check-items/apps/actions/update-check-item/update-check-item.action.ts","m":"check-items","p":"action","t":0,"loc":30,"cls":"UpdateCheckItemAction"},{"f":"check-items/apps/actions/update-check-item/update-check-item.swagger.ts","m":"check-items","p":"swagger","t":0,"loc":19,"cls":null},{"f":"check-items/apps/actions/update-check-item-status/update-check-item-status.action.ts","m":"check-items","p":"action","t":0,"loc":24,"cls":"UpdateCheckItemStatusAction"},{"f":"check-items/apps/actions/update-check-item-status/update-check-item-status.swagger.ts","m":"check-items","p":"swagger","t":0,"loc":19,"cls":null},{"f":"check-items/apps/dtos/requests/create-check-item.dto.ts","m":"check-items","p":"dto","t":1,"loc":8,"cls":"CreateCheckItemDto"},{"f":"check-items/apps/dtos/requests/reorder-check-items.dto.ts","m":"check-items","p":"dto","t":1,"loc":9,"cls":"ReorderCheckItemsDto"},{"f":"check-items/apps/dtos/requests/update-check-item-status.dto.ts","m":"check-items","p":"dto","t":1,"loc":17,"cls":"UpdateCheckItemStatusDto"},{"f":"check-items/apps/dtos/requests/update-check-item.dto.ts","m":"check-items","p":"dto","t":1,"loc":12,"cls":"UpdateCheckItemDto"},{"f":"check-items/apps/dtos/responses/check-item.response.dto.ts","m":"check-items","p":"dto","t":1,"loc":69,"cls":"CheckItem"},{"f":"check-items/apps/listeners/delete-check-items-by-note.listener.ts","m":"check-items","p":"listener","t":0,"loc":20,"cls":"DeleteCheckItemsByNoteListener"},{"f":"check-items/check-items.module.ts","m":"check-items","p":"module","t":8,"loc":66,"cls":"CheckItemsModule"},{"f":"check-items/domain/aggregators/__specs__/check-items.aggregator.spec.ts","m":"check-items","p":"spec","t":10,"loc":232,"cls":null},{"f":"check-items/domain/aggregators/check-items.aggregator.ts","m":"check-items","p":"aggregator","t":3,"loc":117,"cls":"CheckItemsAggregator"},{"f":"check-items/domain/entities/__specs__/check-item.entity.integration.spec.ts","m":"check-items","p":"spec","t":10,"loc":60,"cls":null},{"f":"check-items/domain/entities/check-item.entity.ts","m":"check-items","p":"entity","t":7,"loc":43,"cls":"CheckItem"},{"f":"check-items/domain/services/__specs__/check-item.service.spec.ts","m":"check-items","p":"spec","t":10,"loc":180,"cls":null},{"f":"check-items/domain/services/check-item.service.ts","m":"check-items","p":"service","t":2,"loc":125,"cls":"CheckItemService"},{"f":"check-items/domain/transaction-scripts/create-check-item-TS/create-check-item.transaction.script.ts","m":"check-items","p":"transaction-script","t":4,"loc":43,"cls":"CreateCheckItemTransactionScript"},{"f":"check-items/domain/transaction-scripts/delete-check-item-TS/delete-check-item.transaction.script.ts","m":"check-items","p":"transaction-script","t":4,"loc":24,"cls":"DeleteCheckItemTransactionScript"},{"f":"check-items/domain/transaction-scripts/get-check-item-TS/get-check-item.transaction.script.ts","m":"check-items","p":"transaction-script","t":4,"loc":24,"cls":"GetCheckItemTransactionScript"},{"f":"check-items/domain/transaction-scripts/get-check-items-by-note-TS/get-check-items-by-note.transaction.script.ts","m":"check-items","p":"transaction-script","t":4,"loc":30,"cls":"GetCheckItemsByNoteTransactionScript"},{"f":"check-items/domain/transaction-scripts/reorder-check-items-TS/reorder-check-items.transaction.script.ts","m":"check-items","p":"transaction-script","t":4,"loc":59,"cls":"ReorderCheckItemsTransactionScript"},{"f":"check-items/domain/transaction-scripts/toggle-check-item-TS/toggle-check-item.transaction.script.ts","m":"check-items","p":"transaction-script","t":4,"loc":33,"cls":"ToggleCheckItemTransactionScript"},{"f":"check-items/domain/transaction-scripts/update-check-item-TS/update-check-item.transaction.script.ts","m":"check-items","p":"transaction-script","t":4,"loc":33,"cls":"UpdateCheckItemTransactionScript"},{"f":"check-items/domain/transaction-scripts/update-check-item-status-TS/update-check-item-status.transaction.script.ts","m":"check-items","p":"transaction-script","t":4,"loc":36,"cls":"UpdateCheckItemStatusTransactionScript"},{"f":"check-items/infra/repositories/check-items/__specs__/check-items.repository.integration.spec.ts","m":"check-items","p":"spec","t":10,"loc":254,"cls":null},{"f":"check-items/infra/repositories/check-items/check-items.hydrator.ts","m":"check-items","p":"hydrator","t":6,"loc":41,"cls":"CheckItemsHydrator"},{"f":"check-items/infra/repositories/check-items/check-items.repository.ts","m":"check-items","p":"repository","t":6,"loc":188,"cls":"CheckItemsRepository"},{"f":"folders/apps/actions/bulk-reparent-action/bulk-reparent.action.ts","m":"folders","p":"action","t":0,"loc":33,"cls":"BulkReparentAction"},{"f":"folders/apps/actions/bulk-reparent-action/bulk-reparent.dto.ts","m":"folders","p":"dto","t":1,"loc":15,"cls":"BulkReparentFoldersDto"},{"f":"folders/apps/actions/create-folder-action/create-folder.action.ts","m":"folders","p":"action","t":0,"loc":22,"cls":"CreateFolderAction"},{"f":"folders/apps/actions/create-folder-action/create-folder.dto.ts","m":"folders","p":"dto","t":1,"loc":11,"cls":"CreateFolderDto"},{"f":"folders/apps/actions/delete-folder-action/delete-folder.action.ts","m":"folders","p":"action","t":0,"loc":29,"cls":"DeleteFolderAction"},{"f":"folders/apps/actions/get-folders-by-user-action/get-folders-by-user.action.ts","m":"folders","p":"action","t":0,"loc":22,"cls":"GetFoldersByUserAction"},{"f":"folders/apps/actions/reorder-folders-action/reorder-folders.action.ts","m":"folders","p":"action","t":0,"loc":27,"cls":"ReorderFoldersAction"},{"f":"folders/apps/actions/reorder-folders-action/reorder-folders.dto.ts","m":"folders","p":"dto","t":1,"loc":33,"cls":"ReorderFoldersDto"},{"f":"folders/apps/actions/update-folder-action/update-folder.action.ts","m":"folders","p":"action","t":0,"loc":23,"cls":"UpdateFolderAction"},{"f":"folders/apps/actions/update-folder-action/update-folder.dto.ts","m":"folders","p":"dto","t":1,"loc":12,"cls":"UpdateFolderDto"},{"f":"folders/apps/dtos/responses/folder.response.dto.ts","m":"folders","p":"dto","t":1,"loc":20,"cls":"FolderResponseDto"},{"f":"folders/domain/entities/__specs__/folder.entity.integration.spec.ts","m":"folders","p":"spec","t":10,"loc":66,"cls":null},{"f":"folders/domain/entities/folder.entity.ts","m":"folders","p":"entity","t":7,"loc":32,"cls":"Folder"},{"f":"folders/domain/ports/note-folder.port.ts","m":"folders","p":"port","t":7,"loc":6,"cls":null},{"f":"folders/domain/services/folder.service.ts","m":"folders","p":"service","t":2,"loc":57,"cls":"FolderService"},{"f":"folders/domain/transaction-scripts/bulk-reparent-folders-TS/bulk-reparent-folders.transaction.script.ts","m":"folders","p":"transaction-script","t":4,"loc":108,"cls":"BulkReparentFoldersTransactionScript"},{"f":"folders/domain/transaction-scripts/create-folder-TS/create-folder.transaction.script.ts","m":"folders","p":"transaction-script","t":4,"loc":19,"cls":"CreateFolderTransactionScript"},{"f":"folders/domain/transaction-scripts/delete-folder-TS/delete-folder.transaction.script.ts","m":"folders","p":"transaction-script","t":4,"loc":39,"cls":"DeleteFolderTransactionScript"},{"f":"folders/domain/transaction-scripts/get-folders-by-user-TS/get-folders-by-user.transaction.script.ts","m":"folders","p":"transaction-script","t":4,"loc":13,"cls":"GetFoldersByUserTransactionScript"},{"f":"folders/domain/transaction-scripts/reorder-folders-TS/reorder-folders.transaction.script.ts","m":"folders","p":"transaction-script","t":4,"loc":44,"cls":"ReorderFoldersTransactionScript"},{"f":"folders/domain/transaction-scripts/update-folder-TS/update-folder.transaction.script.ts","m":"folders","p":"transaction-script","t":4,"loc":26,"cls":"UpdateFolderTransactionScript"},{"f":"folders/folders.module.ts","m":"folders","p":"module","t":8,"loc":42,"cls":"FoldersModule"},{"f":"folders/infra/repositories/folder.repository.ts","m":"folders","p":"repository","t":6,"loc":37,"cls":"FolderRepository"},{"f":"health/health.controller.ts","m":"health","p":"controller","t":0,"loc":18,"cls":"HealthController"},{"f":"main.ts","m":"(root)","p":"bootstrap","t":9,"loc":47,"cls":null},{"f":"note-transfer/apps/actions/export-note-action/export-note.action.ts","m":"note-transfer","p":"action","t":0,"loc":40,"cls":"ExportNoteAction"},{"f":"note-transfer/apps/actions/export-note-action/export-note.swagger.ts","m":"note-transfer","p":"swagger","t":0,"loc":21,"cls":null},{"f":"note-transfer/apps/actions/import-note-action/import-note.action.ts","m":"note-transfer","p":"action","t":0,"loc":27,"cls":"ImportNoteAction"},{"f":"note-transfer/apps/actions/import-note-action/import-note.swagger.ts","m":"note-transfer","p":"swagger","t":0,"loc":17,"cls":null},{"f":"note-transfer/apps/actions/merge-into-note-action/merge-into-note.action.ts","m":"note-transfer","p":"action","t":0,"loc":28,"cls":"MergeIntoNoteAction"},{"f":"note-transfer/apps/actions/merge-into-note-action/merge-into-note.swagger.ts","m":"note-transfer","p":"swagger","t":0,"loc":25,"cls":null},{"f":"note-transfer/apps/actions/merge-notes-action/merge-notes.action.ts","m":"note-transfer","p":"action","t":0,"loc":27,"cls":"MergeNotesAction"},{"f":"note-transfer/apps/actions/merge-notes-action/merge-notes.request.dto.ts","m":"note-transfer","p":"dto","t":1,"loc":107,"cls":"MergeNotesDto"},{"f":"note-transfer/apps/actions/merge-notes-action/merge-notes.swagger.ts","m":"note-transfer","p":"swagger","t":0,"loc":23,"cls":null},{"f":"note-transfer/apps/dtos/requests/import-note.dto.ts","m":"note-transfer","p":"dto","t":1,"loc":87,"cls":"ImportNoteDto"},{"f":"note-transfer/apps/dtos/requests/merge-into-note.dto.ts","m":"note-transfer","p":"dto","t":1,"loc":82,"cls":"MergeIntoNoteDto"},{"f":"note-transfer/apps/dtos/responses/note-export.response.ts","m":"note-transfer","p":"dto","t":1,"loc":23,"cls":null},{"f":"note-transfer/domain/ports/audio-purge.port.ts","m":"note-transfer","p":"port","t":7,"loc":20,"cls":null},{"f":"note-transfer/domain/ports/check-item-writer.port.ts","m":"note-transfer","p":"port","t":7,"loc":29,"cls":null},{"f":"note-transfer/domain/ports/note-writer.port.ts","m":"note-transfer","p":"port","t":7,"loc":38,"cls":null},{"f":"note-transfer/domain/ports/tag-attacher.port.ts","m":"note-transfer","p":"port","t":7,"loc":24,"cls":null},{"f":"note-transfer/domain/ports/time-track-writer.port.ts","m":"note-transfer","p":"port","t":7,"loc":28,"cls":null},{"f":"note-transfer/domain/services/note-transfer-service/export-note.ts","m":"note-transfer","p":"other","t":8,"loc":63,"cls":"ExportNote"},{"f":"note-transfer/domain/services/note-transfer-service/import-note.ts","m":"note-transfer","p":"other","t":8,"loc":81,"cls":"ImportNote"},{"f":"note-transfer/domain/services/note-transfer-service/note-export-converter.ts","m":"note-transfer","p":"converter","t":5,"loc":53,"cls":"NoteExportConverter"},{"f":"note-transfer/domain/services/note-transfer-service/note-transfer.service.ts","m":"note-transfer","p":"service","t":2,"loc":300,"cls":"NoteTransferService"},{"f":"note-transfer/note-transfer.module.ts","m":"note-transfer","p":"module","t":8,"loc":39,"cls":"NoteTransferModule"},{"f":"notes/apps/actions/archive-note/archive-note.action.ts","m":"notes","p":"action","t":0,"loc":22,"cls":"ArchiveNoteAction"},{"f":"notes/apps/actions/archive-note/archive-note.swagger.ts","m":"notes","p":"swagger","t":0,"loc":24,"cls":null},{"f":"notes/apps/actions/notes/convert-checklist-to-memo-action/convert-checklist-to-memo.action.ts","m":"notes","p":"action","t":0,"loc":30,"cls":"ConvertChecklistToMemoAction"},{"f":"notes/apps/actions/notes/convert-checklist-to-memo-action/convert-checklist-to-memo.swagger.ts","m":"notes","p":"swagger","t":0,"loc":29,"cls":null},{"f":"notes/apps/actions/notes/create-note-action/create-note.action.ts","m":"notes","p":"action","t":0,"loc":34,"cls":"CreateNoteAction"},{"f":"notes/apps/actions/notes/create-note-action/create-note.responder.ts","m":"notes","p":"responder","t":0,"loc":18,"cls":"CreateNoteResponder"},{"f":"notes/apps/actions/notes/create-note-action/create-note.swagger.ts","m":"notes","p":"swagger","t":0,"loc":19,"cls":null},{"f":"notes/apps/actions/notes/delete-note.action.ts","m":"notes","p":"action","t":0,"loc":26,"cls":"DeleteNoteAction"},{"f":"notes/apps/actions/notes/get-note-by-id-action/__specs__/get-note-by-id.responder.spec.ts","m":"notes","p":"spec","t":10,"loc":58,"cls":null},{"f":"notes/apps/actions/notes/get-note-by-id-action/get-note-by-id.action.ts","m":"notes","p":"action","t":0,"loc":31,"cls":"GetNoteByIdAction"},{"f":"notes/apps/actions/notes/get-note-by-id-action/get-note-by-id.responder.ts","m":"notes","p":"responder","t":0,"loc":19,"cls":"GetNoteByIdResponder"},{"f":"notes/apps/actions/notes/get-note-by-id-action/get-note-by-id.swagger.ts","m":"notes","p":"swagger","t":0,"loc":19,"cls":null},{"f":"notes/apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.action.ts","m":"notes","p":"action","t":0,"loc":34,"cls":"GetNoteNamesByUserIdAction"},{"f":"notes/apps/actions/notes/get-note-names-by-userId/get-note-names-by-userId.swagger.ts","m":"notes","p":"swagger","t":0,"loc":44,"cls":null},{"f":"notes/apps/actions/notes/get-note-names-for-explorer-action/get-note-names-for-explorer.action.ts","m":"notes","p":"action","t":0,"loc":23,"cls":"GetNoteNamesForExplorerAction"},{"f":"notes/apps/actions/notes/get-note-versions-action/get-note-versions.action.ts","m":"notes","p":"action","t":0,"loc":31,"cls":"GetNoteVersionsAction"},{"f":"notes/apps/actions/notes/get-note-versions-action/get-note-versions.responder.ts","m":"notes","p":"responder","t":0,"loc":20,"cls":"GetNoteVersionsResponder"},{"f":"notes/apps/actions/notes/get-note-versions-action/get-note-versions.swagger.ts","m":"notes","p":"swagger","t":0,"loc":22,"cls":null},{"f":"notes/apps/actions/notes/load-note-version-action/load-note-version.action.ts","m":"notes","p":"action","t":0,"loc":36,"cls":"LoadNoteVersionAction"},{"f":"notes/apps/actions/notes/load-note-version-action/load-note-version.responder.ts","m":"notes","p":"responder","t":0,"loc":19,"cls":"LoadNoteVersionResponder"},{"f":"notes/apps/actions/notes/load-note-version-action/load-note-version.swagger.ts","m":"notes","p":"swagger","t":0,"loc":19,"cls":null},{"f":"notes/apps/actions/notes/move-note-to-folder-action/move-note-to-folder.action.ts","m":"notes","p":"action","t":0,"loc":34,"cls":"MoveNoteToFolderAction"},{"f":"notes/apps/actions/notes/move-note-to-folder-action/move-note-to-folder.dto.ts","m":"notes","p":"dto","t":1,"loc":8,"cls":"MoveNoteToFolderDto"},{"f":"notes/apps/actions/notes/reorder-notes-action/reorder-notes.action.ts","m":"notes","p":"action","t":0,"loc":25,"cls":"ReorderNotesAction"},{"f":"notes/apps/actions/notes/reorder-notes-action/reorder-notes.dto.ts","m":"notes","p":"dto","t":1,"loc":33,"cls":"ReorderNotesDto"},{"f":"notes/apps/actions/notes/search-notes-action/__specs__/search-notes.responder.spec.ts","m":"notes","p":"spec","t":10,"loc":180,"cls":null},{"f":"notes/apps/actions/notes/search-notes-action/search-notes.action.ts","m":"notes","p":"action","t":0,"loc":36,"cls":"SearchNotesAction"},{"f":"notes/apps/actions/notes/search-notes-action/search-notes.responder.ts","m":"notes","p":"responder","t":0,"loc":101,"cls":"SearchNotesResponder"},{"f":"notes/apps/actions/notes/update-note-action/update-note.action.ts","m":"notes","p":"action","t":0,"loc":34,"cls":"UpdateNoteAction"},{"f":"notes/apps/actions/notes/update-note-action/update-note.responder.ts","m":"notes","p":"responder","t":0,"loc":19,"cls":"UpdateNoteResponder"},{"f":"notes/apps/actions/notes/update-note-action/update-note.swagger.ts","m":"notes","p":"swagger","t":0,"loc":23,"cls":null},{"f":"notes/apps/actions/notes/update-note-title-action/update-note-title.action.ts","m":"notes","p":"action","t":0,"loc":37,"cls":"UpdateNoteTitleAction"},{"f":"notes/apps/actions/notes/update-note-title-action/update-note-title.swagger.ts","m":"notes","p":"swagger","t":0,"loc":23,"cls":null},{"f":"notes/apps/actions/update-note-timestamp.action.ts","m":"notes","p":"action","t":0,"loc":35,"cls":"UpdateNoteTimestampAction"},{"f":"notes/apps/adapters/note-folder.adapter.ts","m":"notes","p":"adapter","t":0,"loc":22,"cls":"NoteFolderAdapter"},{"f":"notes/apps/adapters/note-ownership.adapter.ts","m":"notes","p":"adapter","t":0,"loc":19,"cls":"NoteOwnershipAdapter"},{"f":"notes/apps/dtos/requests/create-note.dto.ts","m":"notes","p":"dto","t":1,"loc":19,"cls":"CreateNoteDto"},{"f":"notes/apps/dtos/requests/update-note-title.dto.ts","m":"notes","p":"dto","t":1,"loc":9,"cls":"UpdateNoteTitleDto"},{"f":"notes/apps/dtos/requests/update-note.dto.ts","m":"notes","p":"dto","t":1,"loc":27,"cls":"UpdateNoteDto"},{"f":"notes/apps/dtos/responses/note-version.response.dto.ts","m":"notes","p":"dto","t":1,"loc":16,"cls":"NoteVersionResponseDto"},{"f":"notes/apps/dtos/responses/note.response.dto.ts","m":"notes","p":"dto","t":1,"loc":24,"cls":"NoteResponseDto"},{"f":"notes/apps/gateways/__specs__/transcribe-audio.gateway.spec.ts","m":"notes","p":"spec","t":10,"loc":362,"cls":"transcribe-audio.gateway.spec"},{"f":"notes/apps/gateways/__specs__/transcription-session.registry.spec.ts","m":"notes","p":"spec","t":10,"loc":73,"cls":null},{"f":"notes/apps/gateways/transcribe-audio.gateway.ts","m":"notes","p":"gateway","t":0,"loc":281,"cls":"TranscribeAudioGateway"},{"f":"notes/apps/gateways/transcription-session.registry.ts","m":"notes","p":"gateway","t":0,"loc":65,"cls":"TranscriptionSessionRegistry"},{"f":"notes/apps/guards/__specs__/ws-jwt.authenticator.spec.ts","m":"notes","p":"spec","t":10,"loc":91,"cls":null},{"f":"notes/apps/guards/ws-jwt.authenticator.ts","m":"notes","p":"guard","t":0,"loc":75,"cls":"WsJwtAuthenticator"},{"f":"notes/apps/listeners/get-note-details.listener.ts","m":"notes","p":"listener","t":0,"loc":22,"cls":"GetNoteDetailsListener"},{"f":"notes/apps/listeners/verify-note-access.listener.ts","m":"notes","p":"listener","t":0,"loc":24,"cls":"VerifyNoteAccessListener"},{"f":"notes/domain/aggregators/__specs__/note.aggregator.spec.ts","m":"notes","p":"spec","t":10,"loc":269,"cls":null},{"f":"notes/domain/aggregators/note.aggregator.ts","m":"notes","p":"aggregator","t":3,"loc":136,"cls":"NoteAggregator"},{"f":"notes/domain/entities/notes/__specs__/memo.entity.integration.spec.ts","m":"notes","p":"spec","t":10,"loc":35,"cls":null},{"f":"notes/domain/entities/notes/__specs__/note-version.entity.integration.spec.ts","m":"notes","p":"spec","t":10,"loc":56,"cls":null},{"f":"notes/domain/entities/notes/__specs__/note.entity.integration.spec.ts","m":"notes","p":"spec","t":10,"loc":75,"cls":null},{"f":"notes/domain/entities/notes/memo.entity.ts","m":"notes","p":"entity","t":7,"loc":23,"cls":"Memo"},{"f":"notes/domain/entities/notes/note-version.entity.ts","m":"notes","p":"entity","t":7,"loc":25,"cls":"NoteVersion"},{"f":"notes/domain/entities/notes/note.entity.ts","m":"notes","p":"entity","t":7,"loc":55,"cls":"Note"},{"f":"notes/domain/services/__specs__/note.service.spec.ts","m":"notes","p":"spec","t":10,"loc":216,"cls":null},{"f":"notes/domain/services/note.service.ts","m":"notes","p":"service","t":2,"loc":234,"cls":"NoteService"},{"f":"notes/domain/transaction-scripts/archive-note-TS/archive-note.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":24,"cls":"ArchiveNoteTransactionScript"},{"f":"notes/domain/transaction-scripts/convert-checklist-to-memo-TS/convert-checklist-to-memo.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":34,"cls":"ConvertChecklistToMemoTransactionScript"},{"f":"notes/domain/transaction-scripts/create-note-TS/__specs__/create-note.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":117,"cls":null},{"f":"notes/domain/transaction-scripts/create-note-TS/create-note.command.ts","m":"notes","p":"command","t":1,"loc":7,"cls":null},{"f":"notes/domain/transaction-scripts/create-note-TS/create-note.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":35,"cls":"CreateNoteTransactionScript"},{"f":"notes/domain/transaction-scripts/delete-note-TS/__specs__/delete-note.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":46,"cls":null},{"f":"notes/domain/transaction-scripts/delete-note-TS/delete-note.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":12,"cls":"DeleteNoteTransactionScript"},{"f":"notes/domain/transaction-scripts/get-note-by-id-TS/get-note-by-id.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":19,"cls":"GetNoteByIdTransactionScript"},{"f":"notes/domain/transaction-scripts/get-note-names-by-ids-TS/__specs__/get-note-names-by-ids.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":73,"cls":null},{"f":"notes/domain/transaction-scripts/get-note-names-by-ids-TS/get-note-names-by-ids.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":17,"cls":"GetNoteNamesByIdsTransactionScript"},{"f":"notes/domain/transaction-scripts/get-note-names-by-user-id-TS/__specs__/get-note-names-by-user-id.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":85,"cls":null},{"f":"notes/domain/transaction-scripts/get-note-names-by-user-id-TS/get-note-names-by-user-id.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":41,"cls":"GetNoteNamesByUserIdTransactionScript"},{"f":"notes/domain/transaction-scripts/get-note-names-for-explorer-TS/__specs__/get-note-names-for-explorer.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":48,"cls":null},{"f":"notes/domain/transaction-scripts/get-note-names-for-explorer-TS/get-note-names-for-explorer.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":13,"cls":"GetNoteNamesForExplorerTransactionScript"},{"f":"notes/domain/transaction-scripts/get-note-versions-TS/__specs__/get-note-versions.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":56,"cls":null},{"f":"notes/domain/transaction-scripts/get-note-versions-TS/get-note-versions.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":13,"cls":"GetNoteVersionsTransactionScript"},{"f":"notes/domain/transaction-scripts/load-note-version-TS/__specs__/load-note-version.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":71,"cls":null},{"f":"notes/domain/transaction-scripts/load-note-version-TS/load-note-version.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":25,"cls":"LoadNoteVersionTransactionScript"},{"f":"notes/domain/transaction-scripts/move-note-to-folder-TS/move-note-to-folder.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":27,"cls":"MoveNoteToFolderTransactionScript"},{"f":"notes/domain/transaction-scripts/note-name-row.projection.ts","m":"notes","p":"projection","t":4,"loc":7,"cls":null},{"f":"notes/domain/transaction-scripts/reorder-notes-TS/reorder-notes.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":44,"cls":"ReorderNotesTransactionScript"},{"f":"notes/domain/transaction-scripts/search-notes-TS/search-notes.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":22,"cls":"SearchNotesTransactionScript"},{"f":"notes/domain/transaction-scripts/update-note-TS/__specs__/update-note-params-to-entity.converter.spec.ts","m":"notes","p":"spec","t":10,"loc":105,"cls":null},{"f":"notes/domain/transaction-scripts/update-note-TS/__specs__/update-note.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":234,"cls":null},{"f":"notes/domain/transaction-scripts/update-note-TS/update-note-params-to-entity.converter.ts","m":"notes","p":"converter","t":5,"loc":33,"cls":"UpdateNoteParamsToEntityConverter"},{"f":"notes/domain/transaction-scripts/update-note-TS/update-note.params.ts","m":"notes","p":"dto","t":1,"loc":6,"cls":null},{"f":"notes/domain/transaction-scripts/update-note-TS/update-note.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":84,"cls":"UpdateNoteTransactionScript"},{"f":"notes/domain/transaction-scripts/update-note-timestamp-TS/__specs__/update-note-timestamp.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":67,"cls":null},{"f":"notes/domain/transaction-scripts/update-note-timestamp-TS/update-note-timestamp.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":15,"cls":"UpdateNoteTimestampTransactionScript"},{"f":"notes/domain/transaction-scripts/update-note-title-TS/__specs__/update-note-title.transaction.script.spec.ts","m":"notes","p":"spec","t":10,"loc":85,"cls":null},{"f":"notes/domain/transaction-scripts/update-note-title-TS/update-note-title.command.ts","m":"notes","p":"command","t":1,"loc":4,"cls":null},{"f":"notes/domain/transaction-scripts/update-note-title-TS/update-note-title.transaction.script.ts","m":"notes","p":"transaction-script","t":4,"loc":25,"cls":"UpdateNoteTitleTransactionScript"},{"f":"notes/infra/remote-callers/__specs__/thoth-stream.remote-caller.spec.ts","m":"notes","p":"spec","t":10,"loc":160,"cls":"thoth-stream.remote-caller.spec"},{"f":"notes/infra/remote-callers/thoth-stream.remote-caller.ts","m":"notes","p":"remote-caller","t":6,"loc":257,"cls":"ThothStreamRemoteCaller"},{"f":"notes/infra/repositories/__specs__/note-memo-tag.repository.integration.spec.ts","m":"notes","p":"spec","t":10,"loc":394,"cls":null},{"f":"notes/infra/repositories/__specs__/note-memo-tag.repository.spec.ts","m":"notes","p":"spec","t":10,"loc":93,"cls":null},{"f":"notes/infra/repositories/note-memo-tag.repository.ts","m":"notes","p":"repository","t":6,"loc":197,"cls":"NoteMemoTagRepository"},{"f":"notes/infra/repositories/note-version.repository.ts","m":"notes","p":"repository","t":6,"loc":97,"cls":"NoteVersionRepository"},{"f":"notes/notes.module.ts","m":"notes","p":"module","t":8,"loc":146,"cls":"NotesModule"},{"f":"notes/test-utils/mock-factories.ts","m":"notes","p":"test-util","t":10,"loc":76,"cls":null},{"f":"notes/test-utils.ts","m":"notes","p":"test-util","t":10,"loc":25,"cls":null},{"f":"security-events/domain/aggregators/security-event.aggregator.ts","m":"security-events","p":"aggregator","t":3,"loc":42,"cls":"SecurityEventAggregator"},{"f":"security-events/domain/entities/security-event.entity.ts","m":"security-events","p":"entity","t":7,"loc":26,"cls":"SecurityEvent"},{"f":"security-events/infra/repositories/security-event.repository.ts","m":"security-events","p":"repository","t":6,"loc":27,"cls":"SecurityEventRepository"},{"f":"security-events/security-events.module.ts","m":"security-events","p":"module","t":8,"loc":13,"cls":"SecurityEventsModule"},{"f":"shared-kernel/apps/decorators/__specs__/get-auth-user.decorator.spec.ts","m":"shared-kernel","p":"spec","t":10,"loc":65,"cls":"get-auth-user.decorator.spec"},{"f":"shared-kernel/apps/decorators/get-auth-user.decorator.ts","m":"shared-kernel","p":"decorator","t":0,"loc":15,"cls":null},{"f":"shared-kernel/apps/decorators/protected-action.decorator.ts","m":"shared-kernel","p":"decorator","t":0,"loc":47,"cls":null},{"f":"shared-kernel/apps/guards/jwt-auth.guard.ts","m":"shared-kernel","p":"guard","t":0,"loc":6,"cls":"JwtAuthGuard"},{"f":"shared-kernel/apps/logging/logging.module.ts","m":"shared-kernel","p":"module","t":8,"loc":62,"cls":"LoggingModule"},{"f":"shared-kernel/domain/cross-domain-commands/check-items/delete-check-items-by-note.command.ts","m":"shared-kernel","p":"command","t":1,"loc":7,"cls":null},{"f":"shared-kernel/domain/cross-domain-commands/notes/get-note-details.command.ts","m":"shared-kernel","p":"command","t":1,"loc":7,"cls":null},{"f":"shared-kernel/domain/cross-domain-commands/notes/verify-note-access.command.ts","m":"shared-kernel","p":"command","t":1,"loc":7,"cls":null},{"f":"shared-kernel/domain/cross-domain-commands/tags/delete-note-tag-associations.command.ts","m":"shared-kernel","p":"command","t":1,"loc":8,"cls":null},{"f":"shared-kernel/domain/entities/__specs__/tag-note.entity.integration.spec.ts","m":"shared-kernel","p":"spec","t":10,"loc":81,"cls":null},{"f":"shared-kernel/domain/entities/tag-note.entity.ts","m":"shared-kernel","p":"entity","t":7,"loc":41,"cls":"TagNote"},{"f":"shared-kernel/integration-test-data-source.ts","m":"shared-kernel","p":"bootstrap","t":9,"loc":66,"cls":null},{"f":"shared-kernel/shared-kernel.module.ts","m":"shared-kernel","p":"module","t":8,"loc":5,"cls":"SharedKernelModule"},{"f":"shared-kernel/test-utils.ts","m":"shared-kernel","p":"test-util","t":10,"loc":81,"cls":null},{"f":"shared-kernel/utils/date.utils.ts","m":"shared-kernel","p":"util","t":8,"loc":79,"cls":null},{"f":"tags/apps/actions/add-tag-to-note-action/add-tag-to-note.action.ts","m":"tags","p":"action","t":0,"loc":27,"cls":"AddTagToNoteAction"},{"f":"tags/apps/actions/add-tag-to-note-action/add-tag-to-note.swagger.ts","m":"tags","p":"swagger","t":0,"loc":23,"cls":null},{"f":"tags/apps/actions/delete-tag-action/delete-tag.action.ts","m":"tags","p":"action","t":0,"loc":21,"cls":"DeleteTagAction"},{"f":"tags/apps/actions/delete-tag-action/delete-tag.swagger.ts","m":"tags","p":"swagger","t":0,"loc":17,"cls":null},{"f":"tags/apps/actions/get-tag-by-id-action/get-tag-by-id.action.ts","m":"tags","p":"action","t":0,"loc":22,"cls":"GetTagByIdAction"},{"f":"tags/apps/actions/get-tag-by-id-action/get-tag-by-id.swagger.ts","m":"tags","p":"swagger","t":0,"loc":19,"cls":null},{"f":"tags/apps/actions/get-tags-by-note-id-action/get-tags-by-note-id.action.ts","m":"tags","p":"action","t":0,"loc":24,"cls":"GetTagsByNoteIdAction"},{"f":"tags/apps/actions/get-tags-by-note-id-action/get-tags-by-note-id.swagger.ts","m":"tags","p":"swagger","t":0,"loc":19,"cls":null},{"f":"tags/apps/actions/get-tags-by-user-id-action/get-tags-by-user-id.action.ts","m":"tags","p":"action","t":0,"loc":20,"cls":"GetTagsByUserIdAction"},{"f":"tags/apps/actions/get-tags-by-user-id-action/get-tags-by-user-id.swagger.ts","m":"tags","p":"swagger","t":0,"loc":19,"cls":null},{"f":"tags/apps/actions/remove-tag-from-note-action/dtos/requests/remove-tag-from-note.dto.ts","m":"tags","p":"dto","t":1,"loc":10,"cls":"RemoveTagFromNoteDto"},{"f":"tags/apps/actions/remove-tag-from-note-action/remove-tag-from-note.action.ts","m":"tags","p":"action","t":0,"loc":24,"cls":"RemoveTagFromNoteAction"},{"f":"tags/apps/actions/remove-tag-from-note-action/remove-tag-from-note.swagger.ts","m":"tags","p":"swagger","t":0,"loc":15,"cls":null},{"f":"tags/apps/actions/update-tag-action/update-tag.action.ts","m":"tags","p":"action","t":0,"loc":24,"cls":"UpdateTagAction"},{"f":"tags/apps/actions/update-tag-action/update-tag.dto.ts","m":"tags","p":"dto","t":1,"loc":15,"cls":"UpdateTagDto"},{"f":"tags/apps/actions/update-tag-action/update-tag.swagger.ts","m":"tags","p":"swagger","t":0,"loc":23,"cls":null},{"f":"tags/apps/dtos/requests/add-tag-to-note.dto.ts","m":"tags","p":"dto","t":1,"loc":19,"cls":"AddTagToNoteDto"},{"f":"tags/apps/dtos/responses/tag.response.dto.ts","m":"tags","p":"dto","t":1,"loc":20,"cls":"TagResponseDto"},{"f":"tags/apps/listeners/delete-note-tag-associations.listener.ts","m":"tags","p":"listener","t":0,"loc":20,"cls":"DeleteNoteTagAssociationsListener"},{"f":"tags/domain/aggregators/tag.aggregator.ts","m":"tags","p":"aggregator","t":3,"loc":65,"cls":"TagAggregator"},{"f":"tags/domain/entities/__specs__/tag.entity.integration.spec.ts","m":"tags","p":"spec","t":10,"loc":38,"cls":null},{"f":"tags/domain/entities/tag.entity.ts","m":"tags","p":"entity","t":7,"loc":20,"cls":"Tag"},{"f":"tags/domain/services/__specs__/tag.service.spec.ts","m":"tags","p":"spec","t":10,"loc":204,"cls":null},{"f":"tags/domain/services/tag.service.ts","m":"tags","p":"service","t":2,"loc":59,"cls":"TagService"},{"f":"tags/domain/transaction-scripts/add-tag-to-note-TS/__specs__/add-tag-to-note.transaction.script.spec.ts","m":"tags","p":"spec","t":10,"loc":105,"cls":null},{"f":"tags/domain/transaction-scripts/add-tag-to-note-TS/add-tag-to-note.transaction.script.ts","m":"tags","p":"transaction-script","t":4,"loc":40,"cls":"AddTagToNoteTransactionScript"},{"f":"tags/domain/transaction-scripts/delete-tag-TS/__specs__/delete-tag.transaction.script.spec.ts","m":"tags","p":"spec","t":10,"loc":90,"cls":null},{"f":"tags/domain/transaction-scripts/delete-tag-TS/delete-tag.transaction.script.ts","m":"tags","p":"transaction-script","t":4,"loc":18,"cls":"DeleteTagTransactionScript"},{"f":"tags/domain/transaction-scripts/get-tag-by-id-TS/get-tag-by-id.transaction.script.ts","m":"tags","p":"transaction-script","t":4,"loc":17,"cls":"GetTagByIdTransactionScript"},{"f":"tags/domain/transaction-scripts/get-tags-by-note-id-TS/__specs__/get-tags-by-note-id.transaction.script.spec.ts","m":"tags","p":"spec","t":10,"loc":58,"cls":null},{"f":"tags/domain/transaction-scripts/get-tags-by-note-id-TS/get-tags-by-note-id.transaction.script.ts","m":"tags","p":"transaction-script","t":4,"loc":15,"cls":"GetTagsByNoteIdTransactionScript"},{"f":"tags/domain/transaction-scripts/get-tags-by-note-ids-TS/__specs__/get-tags-by-note-ids.transaction.script.spec.ts","m":"tags","p":"spec","t":10,"loc":176,"cls":null},{"f":"tags/domain/transaction-scripts/get-tags-by-note-ids-TS/get-tags-by-note-ids.transaction.script.ts","m":"tags","p":"transaction-script","t":4,"loc":23,"cls":"GetTagsByNoteIdsTransactionScript"},{"f":"tags/domain/transaction-scripts/get-tags-by-user-id-TS/__specs__/get-tags-by-user-id.transaction.script.spec.ts","m":"tags","p":"spec","t":10,"loc":49,"cls":null},{"f":"tags/domain/transaction-scripts/get-tags-by-user-id-TS/get-tags-by-user-id.projection.ts","m":"tags","p":"projection","t":4,"loc":6,"cls":null},{"f":"tags/domain/transaction-scripts/get-tags-by-user-id-TS/get-tags-by-user-id.transaction.script.ts","m":"tags","p":"transaction-script","t":4,"loc":13,"cls":"GetTagsByUserIdTransactionScript"},{"f":"tags/domain/transaction-scripts/remove-tag-from-note-TS/remove-tag-from-note.transaction.script.ts","m":"tags","p":"transaction-script","t":4,"loc":21,"cls":"RemoveTagFromNoteTransactionScript"},{"f":"tags/domain/transaction-scripts/update-tag-TS/__specs__/update-tag.transaction.script.spec.ts","m":"tags","p":"spec","t":10,"loc":278,"cls":null},{"f":"tags/domain/transaction-scripts/update-tag-TS/update-tag.transaction.script.ts","m":"tags","p":"transaction-script","t":4,"loc":32,"cls":"UpdateTagTransactionScript"},{"f":"tags/infra/repositories/tag-note.repository.ts","m":"tags","p":"repository","t":6,"loc":37,"cls":"TagNoteRepository"},{"f":"tags/infra/repositories/tag-repository/__specs__/tag.repository.integration.spec.ts","m":"tags","p":"spec","t":10,"loc":261,"cls":null},{"f":"tags/infra/repositories/tag-repository/hydrators/tags-by-note-ids-hydrator.ts","m":"tags","p":"hydrator","t":6,"loc":33,"cls":null},{"f":"tags/infra/repositories/tag-repository/hydrators/tags-by-user-id-hydrator.ts","m":"tags","p":"hydrator","t":6,"loc":17,"cls":null},{"f":"tags/infra/repositories/tag-repository/tag.repository.ts","m":"tags","p":"repository","t":6,"loc":90,"cls":"TagRepository"},{"f":"tags/tags.module.ts","m":"tags","p":"module","t":8,"loc":74,"cls":"TagsModule"},{"f":"tags/test-utils.ts","m":"tags","p":"test-util","t":10,"loc":14,"cls":null},{"f":"time-tracks/apps/actions/create-time-track-action/create-time-track.action.ts","m":"time-tracks","p":"action","t":0,"loc":29,"cls":"CreateTimeTrackAction"},{"f":"time-tracks/apps/actions/create-time-track-action/create-time-track.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":23,"cls":null},{"f":"time-tracks/apps/actions/delete-time-track-action/delete-time-track.action.ts","m":"time-tracks","p":"action","t":0,"loc":24,"cls":"DeleteTimeTrackAction"},{"f":"time-tracks/apps/actions/delete-time-track-action/delete-time-track.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":10,"cls":null},{"f":"time-tracks/apps/actions/fetch-daily-time-tracks-aggregation-action/fetch-daily-time-tracks-aggregation.action.ts","m":"time-tracks","p":"action","t":0,"loc":34,"cls":"FetchDailyTimeTracksAction"},{"f":"time-tracks/apps/actions/fetch-daily-time-tracks-aggregation-action/fetch-daily-time-tracks-aggregation.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":25,"cls":null},{"f":"time-tracks/apps/actions/fetch-daily-time-tracks-aggregation-action/time-track-with-note-names.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":9,"cls":null},{"f":"time-tracks/apps/actions/fetch-daily-time-tracks-aggregation-action/time-track-with-note-names.responder.ts","m":"time-tracks","p":"responder","t":0,"loc":34,"cls":"TimeTrackWithNoteNamesResponder"},{"f":"time-tracks/apps/actions/fetch-notes-by-year-action/fetch-notes-by-year.action.ts","m":"time-tracks","p":"action","t":0,"loc":26,"cls":"FetchNotesByYearAction"},{"f":"time-tracks/apps/actions/fetch-notes-by-year-action/fetch-notes-by-year.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":13,"cls":null},{"f":"time-tracks/apps/actions/fetch-streak-action/fetch-streak.action.ts","m":"time-tracks","p":"action","t":0,"loc":29,"cls":"FetchStreakAction"},{"f":"time-tracks/apps/actions/fetch-streak-action/fetch-streak.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":14,"cls":null},{"f":"time-tracks/apps/actions/fetch-time-tracks-by-date-range-action/fetch-time-tracks-by-date-range.action.ts","m":"time-tracks","p":"action","t":0,"loc":34,"cls":"FetchTimeTracksByDateRangeAction"},{"f":"time-tracks/apps/actions/fetch-time-tracks-by-date-range-action/fetch-time-tracks-by-date-range.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":15,"cls":null},{"f":"time-tracks/apps/actions/fetch-time-tracks-by-date-range-action/get-time-tracks-by-date-range.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":10,"cls":"GetTimeTracksByDateRangeDto"},{"f":"time-tracks/apps/actions/fetch-time-tracks-by-note-id-action/fetch-time-tracks-by-note-id.action.ts","m":"time-tracks","p":"action","t":0,"loc":37,"cls":"FetchTimeTracksByNoteIdAction"},{"f":"time-tracks/apps/actions/fetch-time-tracks-by-note-id-action/fetch-time-tracks-by-note-id.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":19,"cls":null},{"f":"time-tracks/apps/actions/fetch-time-tracks-total-by-note-id-action/fetch-time-tracks-total-by-note-id.action.ts","m":"time-tracks","p":"action","t":0,"loc":37,"cls":"FetchTimeTracksTotalByNoteIdAction"},{"f":"time-tracks/apps/actions/fetch-time-tracks-total-by-note-id-action/fetch-time-tracks-total-by-note-id.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":18,"cls":null},{"f":"time-tracks/apps/actions/fetch-weekly-most-active-note-action/fetch-weekly-most-active-note.action.ts","m":"time-tracks","p":"action","t":0,"loc":32,"cls":"FetchWeeklyMostActiveNoteAction"},{"f":"time-tracks/apps/actions/fetch-weekly-most-active-note-action/fetch-weekly-most-active-note.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":19,"cls":null},{"f":"time-tracks/apps/actions/fetch-weekly-trend-action/fetch-weekly-trend.action.ts","m":"time-tracks","p":"action","t":0,"loc":29,"cls":"FetchWeeklyTrendAction"},{"f":"time-tracks/apps/actions/fetch-weekly-trend-action/fetch-weekly-trend.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":13,"cls":null},{"f":"time-tracks/apps/actions/update-time-track-note-action/update-time-track-note.action.ts","m":"time-tracks","p":"action","t":0,"loc":43,"cls":"UpdateTimeTrackNoteAction"},{"f":"time-tracks/apps/actions/update-time-track-note-action/update-time-track-note.swagger.ts","m":"time-tracks","p":"swagger","t":0,"loc":10,"cls":null},{"f":"time-tracks/apps/actions/update-time-track-note-action/update-time-track.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":22,"cls":"UpdateTimeTrackDto"},{"f":"time-tracks/apps/dtos/requests/create-time-track.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":22,"cls":"CreateTimeTrackDto"},{"f":"time-tracks/apps/dtos/responses/notes-by-year.response.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":18,"cls":null},{"f":"time-tracks/apps/dtos/responses/streak.response.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":4,"cls":null},{"f":"time-tracks/apps/dtos/responses/time-track-aggregation.response.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":25,"cls":"TimeTrackAggregationResponseDto"},{"f":"time-tracks/apps/dtos/responses/time-track-total.response.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":14,"cls":"TimeTrackTotalResponseDto"},{"f":"time-tracks/apps/dtos/responses/time-track-with-note.response.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":34,"cls":"TimeTrackWithNoteResponse"},{"f":"time-tracks/apps/dtos/responses/time-track.response.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":34,"cls":"TimeTrackResponseDto"},{"f":"time-tracks/apps/dtos/responses/weekly-most-active-note.response.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":22,"cls":"WeeklyMostActiveNoteResponseDto"},{"f":"time-tracks/apps/dtos/responses/weekly-trend.response.dto.ts","m":"time-tracks","p":"dto","t":1,"loc":10,"cls":null},{"f":"time-tracks/domain/aggregators/time-tracks.aggregator.ts","m":"time-tracks","p":"aggregator","t":3,"loc":57,"cls":"TimeTracksAggregator"},{"f":"time-tracks/domain/entities/time-track-entity/__specs__/time-track.entity.integration.spec.ts","m":"time-tracks","p":"spec","t":10,"loc":50,"cls":null},{"f":"time-tracks/domain/entities/time-track-entity/time-track.entity.ts","m":"time-tracks","p":"entity","t":7,"loc":43,"cls":"TimeTrack"},{"f":"time-tracks/domain/projections/time-track.projections.ts","m":"time-tracks","p":"projection","t":4,"loc":67,"cls":null},{"f":"time-tracks/domain/services/time-track-service/__specs__/time-track.service.spec.ts","m":"time-tracks","p":"spec","t":10,"loc":408,"cls":null},{"f":"time-tracks/domain/services/time-track-service/converter/__specs__/time-track-with-note-names.converter.spec.ts","m":"time-tracks","p":"spec","t":10,"loc":126,"cls":null},{"f":"time-tracks/domain/services/time-track-service/time-track.service.ts","m":"time-tracks","p":"service","t":2,"loc":245,"cls":"TimeTrackService"},{"f":"time-tracks/domain/transaction-scripts/create-time-track-TS/__specs__/create-time-track.transaction.script.spec.ts","m":"time-tracks","p":"spec","t":10,"loc":80,"cls":null},{"f":"time-tracks/domain/transaction-scripts/create-time-track-TS/create-time-track.command.ts","m":"time-tracks","p":"command","t":1,"loc":11,"cls":null},{"f":"time-tracks/domain/transaction-scripts/create-time-track-TS/create-time-track.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":27,"cls":"CreateTimeTrackTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/delete-time-track-TS/delete-time-track.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":18,"cls":"DeleteTimeTrackTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/get-daily-time-tracks-aggregation-TS/__specs__/get-time-tracks-aggregation.transaction.script.spec.ts","m":"time-tracks","p":"spec","t":10,"loc":139,"cls":null},{"f":"time-tracks/domain/transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.command.ts","m":"time-tracks","p":"command","t":1,"loc":7,"cls":null},{"f":"time-tracks/domain/transaction-scripts/get-daily-time-tracks-aggregation-TS/get-daily-time-tracks-aggregation.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":43,"cls":"GetDailyTimeTracksAggregationTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.command.ts","m":"time-tracks","p":"command","t":1,"loc":7,"cls":null},{"f":"time-tracks/domain/transaction-scripts/get-note-time-tracks-TS/get-note-time-tracks.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":21,"cls":"GetNoteTimeTracksTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/get-notes-by-year-TS/get-notes-by-year.command.ts","m":"time-tracks","p":"command","t":1,"loc":6,"cls":null},{"f":"time-tracks/domain/transaction-scripts/get-notes-by-year-TS/get-notes-by-year.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":22,"cls":"GetNotesByYearTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/get-streak-TS/get-streak.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":20,"cls":"GetStreakTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/get-time-tracks-by-date-range-TS/get-time-tracks-by-date-range.command.ts","m":"time-tracks","p":"command","t":1,"loc":6,"cls":null},{"f":"time-tracks/domain/transaction-scripts/get-time-tracks-by-date-range-TS/get-time-tracks-by-date-range.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":18,"cls":"GetTimeTracksByDateRangeTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/get-time-tracks-total-by-note-id-TS/get-time-tracks-total-by-note-id.command.ts","m":"time-tracks","p":"command","t":1,"loc":7,"cls":null},{"f":"time-tracks/domain/transaction-scripts/get-time-tracks-total-by-note-id-TS/get-time-tracks-total-by-note-id.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":21,"cls":"GetTimeTracksTotalByNoteIdTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/get-weekly-most-active-note-TS/get-weekly-most-active-note.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":33,"cls":"GetWeeklyMostActiveNoteTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/get-weekly-trend-TS/get-weekly-trend.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":21,"cls":"GetWeeklyTrendTransactionScript"},{"f":"time-tracks/domain/transaction-scripts/update-time-track-note-TS/update-time-track-note.converter.ts","m":"time-tracks","p":"converter","t":5,"loc":30,"cls":"UpdateTimeTrackPayloadConverter"},{"f":"time-tracks/domain/transaction-scripts/update-time-track-note-TS/update-time-track-note.transaction.script.ts","m":"time-tracks","p":"transaction-script","t":4,"loc":43,"cls":"UpdateTimeTrackNoteTransactionScript"},{"f":"time-tracks/infra/repositories/__specs__/time-track.repository.integration.spec.ts","m":"time-tracks","p":"spec","t":10,"loc":336,"cls":null},{"f":"time-tracks/infra/repositories/time-track.repository.ts","m":"time-tracks","p":"repository","t":6,"loc":322,"cls":"TimeTrackRepository"},{"f":"time-tracks/time-tracks.module.ts","m":"time-tracks","p":"module","t":8,"loc":75,"cls":"TimeTracksModule"},{"f":"typeorm/data-source.ts","m":"typeorm","p":"bootstrap","t":9,"loc":24,"cls":null},{"f":"typeorm/migrations/1788666418554-InitialPostgres.ts","m":"typeorm","p":"migration","t":9,"loc":41,"cls":"InitialPostgres1788666418554"},{"f":"users/apps/actions/update-password-action/dtos/requests/update-password.dto.ts","m":"users","p":"dto","t":1,"loc":18,"cls":"UpdatePasswordRequestDto"},{"f":"users/apps/actions/update-password-action/update-password.action.ts","m":"users","p":"action","t":0,"loc":64,"cls":"UpdatePasswordAction"},{"f":"users/apps/actions/update-password-action/update-password.swagger.ts","m":"users","p":"swagger","t":0,"loc":23,"cls":null},{"f":"users/apps/actions/update-username-action/dtos/requests/update-username.dto.ts","m":"users","p":"dto","t":1,"loc":14,"cls":"UpdateUsernameRequestDto"},{"f":"users/apps/actions/update-username-action/update-username.action.ts","m":"users","p":"action","t":0,"loc":55,"cls":"UpdateUsernameAction"},{"f":"users/apps/actions/update-username-action/update-username.swagger.ts","m":"users","p":"swagger","t":0,"loc":25,"cls":null},{"f":"users/apps/controllers/dtos/requests/create-user.request.dto.ts","m":"users","p":"dto","t":1,"loc":21,"cls":"RegisterUserRequestDto"},{"f":"users/apps/controllers/users.controller.ts","m":"users","p":"controller","t":0,"loc":45,"cls":"UsersController"},{"f":"users/domain/__specs__/users.service.spec.ts","m":"users","p":"spec","t":10,"loc":168,"cls":null},{"f":"users/domain/aggregators/user.aggregator.ts","m":"users","p":"aggregator","t":3,"loc":54,"cls":"UserAggregator"},{"f":"users/domain/entities/__specs__/user.entity.integration.spec.ts","m":"users","p":"spec","t":10,"loc":74,"cls":null},{"f":"users/domain/entities/user.entity.ts","m":"users","p":"entity","t":7,"loc":29,"cls":"User"},{"f":"users/domain/transaction-scripts/register-user-TS/__specs__/register-user.transaction.script.spec.ts","m":"users","p":"spec","t":10,"loc":100,"cls":null},{"f":"users/domain/transaction-scripts/register-user-TS/register-user.command.ts","m":"users","p":"command","t":1,"loc":5,"cls":null},{"f":"users/domain/transaction-scripts/register-user-TS/register-user.transaction.script.ts","m":"users","p":"transaction-script","t":4,"loc":49,"cls":"RegisterUserTransactionScript"},{"f":"users/domain/transaction-scripts/update-password-TS/__specs__/update-password.transaction.script.spec.ts","m":"users","p":"spec","t":10,"loc":142,"cls":null},{"f":"users/domain/transaction-scripts/update-password-TS/update-password.command.ts","m":"users","p":"command","t":1,"loc":9,"cls":null},{"f":"users/domain/transaction-scripts/update-password-TS/update-password.transaction.script.ts","m":"users","p":"transaction-script","t":4,"loc":73,"cls":"UpdatePasswordTransactionScript"},{"f":"users/domain/transaction-scripts/update-username-TS/__specs__/update-username.transaction.script.spec.ts","m":"users","p":"spec","t":10,"loc":210,"cls":null},{"f":"users/domain/transaction-scripts/update-username-TS/update-username.command.ts","m":"users","p":"command","t":1,"loc":9,"cls":null},{"f":"users/domain/transaction-scripts/update-username-TS/update-username.transaction.script.ts","m":"users","p":"transaction-script","t":4,"loc":83,"cls":"UpdateUsernameTransactionScript"},{"f":"users/domain/transaction-scripts/user-response.projection.ts","m":"users","p":"projection","t":4,"loc":14,"cls":null},{"f":"users/domain/users.service.ts","m":"users","p":"service","t":2,"loc":56,"cls":"UsersService"},{"f":"users/infra/repositories/__specs__/user.repository.integration.spec.ts","m":"users","p":"spec","t":10,"loc":107,"cls":null},{"f":"users/infra/repositories/user.repository.ts","m":"users","p":"repository","t":6,"loc":36,"cls":"UserRepository"},{"f":"users/users.module.ts","m":"users","p":"module","t":8,"loc":34,"cls":"UsersModule"}],"modules":[{"id":"notes","files":100,"nodes":14},{"id":"time-tracks","files":65,"nodes":9},{"id":"tags","files":46,"nodes":9},{"id":"check-items","files":40,"nodes":9},{"id":"audio","files":37,"nodes":11},{"id":"users","files":26,"nodes":9},{"id":"folders","files":23,"nodes":8},{"id":"note-transfer","files":22,"nodes":5},{"id":"shared-kernel","files":15,"nodes":7},{"id":"bootstrap","files":7,"nodes":1},{"id":"auth","files":4,"nodes":3},{"id":"security-events","files":4,"nodes":4},{"id":"(root)","files":2,"nodes":2},{"id":"typeorm","files":2,"nodes":2},{"id":"health","files":1,"nodes":1}],"moduleImports":["(root)\u0000users","(root)\u0000auth","(root)\u0000bootstrap","(root)\u0000notes","(root)\u0000time-tracks","(root)\u0000tags","(root)\u0000check-items","(root)\u0000audio","(root)\u0000shared-kernel","(root)\u0000security-events","(root)\u0000folders","(root)\u0000note-transfer","(root)\u0000health","audio\u0000shared-kernel","audio\u0000notes","audio\u0000note-transfer","auth\u0000users","auth\u0000security-events","check-items\u0000shared-kernel","check-items\u0000note-transfer","check-items\u0000notes","folders\u0000shared-kernel","folders\u0000notes","note-transfer\u0000shared-kernel","note-transfer\u0000notes","note-transfer\u0000time-tracks","note-transfer\u0000tags","notes\u0000shared-kernel","auth\u0000notes","shared-kernel\u0000tags","notes\u0000tags","tags\u0000users","shared-kernel\u0000time-tracks","notes\u0000time-tracks","tags\u0000time-tracks","bootstrap\u0000typeorm","shared-kernel\u0000users","security-events\u0000users"]}</script>
+<script>
+(function(){
+"use strict";
+var D = JSON.parse(document.getElementById('data').textContent);
+var C = D.coupling || { pairs: [], eligible: [], meta: {} };
+var M = C.meta || {};
+var PAIRS = C.pairs || [];
+
+var FN = {};
+D.fileNodes.forEach(function(n){ FN[n.f] = n; });
+var MODIMPORT = {};
+D.moduleImports.forEach(function(s){ MODIMPORT[s] = 1; });
+var MODS = (D.modules || []).map(function(m){ return m.id; });
+var modIdx = {};
+MODS.forEach(function(m, i){ modIdx[m] = i; });
+
+var FILES = (C.eligible || []).slice().sort(function(a, b){
+  var A = FN[a] || {}, B = FN[b] || {};
+  var ma = modIdx[A.m] != null ? modIdx[A.m] : 9999;
+  var mb = modIdx[B.m] != null ? modIdx[B.m] : 9999;
+  return ma - mb || a.localeCompare(b);
+});
+var FILEIDX = {};
+FILES.forEach(function(f, i){ FILEIDX[f] = i; });
+
+var PMAP = {};
+PAIRS.forEach(function(p){ PMAP[p.a + '\u0000' + p.b] = p; });
+
+var DEF = function(){
+  return { gran:'module', overlay:true, thr: M.minDegree || 0.3, sel:null, focus:null };
+};
+var state = DEF();
+
+function visible(){
+  return PAIRS.filter(function(p){ return p.degree >= state.thr; });
+}
+function pairKey(a, b){ return a < b ? a + '\u0000' + b : b + '\u0000' + a; }
+function pairOf(f1, f2){ return PMAP[pairKey(f1, f2)]; }
+function modOf(f){ var n = FN[f]; return n ? n.m : '?'; }
+
+function focusFiles(){
+  if (!state.focus) return FILES;
+  return FILES.filter(function(f){ return state.focus.indexOf(modOf(f)) >= 0; });
+}
+
+/* ---- stats ---- */
+function renderStats(){
+  var v = visible();
+  var unexp = v.filter(function(p){ return p.imports === 0; });
+  var heavy = M.commits > 0 && M.excludedCommits / M.commits >= 0.25;
+  var stats = [
+    ['commits scanned', M.commits || 0, ''],
+    ['commits excluded', (M.excludedCommits || 0) + ' of ' + (M.commits || 0), heavy ? 'hot' : ''],
+    ['eligible files', FILES.length, ''],
+    ['pairs in view', v.length, ''],
+    ['unexplained pairs', unexp.length, unexp.length ? 'hot' : '']
+  ];
+  document.getElementById('statrow').innerHTML = stats.map(function(s){
+    return '<div class="stat ' + s[2] + '"><b>' + s[1] + '</b><span>' + s[0] + '</span></div>';
+  }).join('');
+}
+
+/* ---- dependency structure matrix ---- */
+function esc(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function base(f){ return f.split('/').pop().replace(/\.ts$/, ''); }
+function trunc(s, n){ return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+
+function cellStyle(v){
+  if (state.overlay) {
+    if (v.imports) return 'fill:var(--blue);fill-opacity:' + (0.1 + 0.4 * v.degree).toFixed(3) + ';stroke:var(--ink3);stroke-width:0.7';
+    return 'fill:var(--rose);fill-opacity:' + (0.12 + 0.78 * v.degree).toFixed(3);
+  }
+  return 'fill:var(--amber);fill-opacity:' + (0.1 + 0.65 * v.degree).toFixed(3);
+}
+
+// One axis of items: {id, label, file?} and the value lookup for a cell.
+function render(){
+  var el = document.getElementById('chart');
+  if (M.reason) {
+    el.innerHTML = '<p class="none">No git history available' + (M.reason ? ' — ' + esc(M.reason) : '') +
+      '. Co-change needs commit history to exist at all.</p>';
+    return;
+  }
+  var v = visible();
+  if (state.gran === 'file' && focusFiles().length < 2) {
+    el.innerHTML = '<p class="none">Fewer than two files here changed often enough to form a pair' +
+      (M.reason ? '' : ' — a file needs ' + (M.minChanges || 5) + ' commits before it can be coupled to anything.') + '</p>';
+    return;
+  }
+
+  var axis, cellOf, title;
+  if (state.gran === 'module') {
+    axis = MODS.filter(function(m){ return FILES.some(function(f){ return modOf(f) === m; }); });
+    cellOf = {};
+    // strongest pair above threshold between two modules; the import graph
+    // explains the cell when any file pair across them imports the other
+    var cellCache = {};
+    for (var i = 0; i < axis.length; i++) {
+      for (var j = 0; j < axis.length; j++) {
+        var k = i < j ? axis[i] + '\u0000' + axis[j] : axis[j] + '\u0000' + axis[i];
+        if (cellCache[k]) { cellOf[i + ',' + j] = cellOf[j + ',' + i] = cellCache[k]; continue; }
+        var best = null;
+        for (var q = 0; q < v.length; q++) {
+          var p = v[q];
+          var ma = modOf(p.a), mb = modOf(p.b);
+          var hit = i === j ? (ma === mb && ma === axis[i])
+            : ((ma === axis[i] && mb === axis[j]) || (ma === axis[j] && mb === axis[i]));
+          if (hit && (!best || p.degree > best.degree)) best = p;
+        }
+        var imp = MODIMPORT[k] ? 1 : 0;
+        cellCache[k] = best ? { degree: best.degree, imports: best.imports || imp, best: best }
+                            : { degree: 0, imports: imp };
+        cellOf[i + ',' + j] = cellOf[j + ',' + i] = cellCache[k];
+      }
+    }
+    title = 'Modules ordered by size, co-change between them';
+  } else {
+    axis = focusFiles().map(function(f){ return f; });
+    cellOf = {};
+    for (var a = 0; a < axis.length; a++) {
+      for (var b = 0; b < axis.length; b++) {
+        var pp = a === b ? null : pairOf(axis[a], axis[b]);
+        cellOf[a + ',' + b] = pp || null;
+      }
+    }
+    title = state.focus
+      ? 'Files in ' + state.focus.map(esc).join(' and ') + ', co-change with each other'
+      : 'All eligible files ordered by module, co-change between them';
+  }
+
+  var N = axis.length;
+  if (!N) { el.innerHTML = '<p class="none">No files changed often enough to pair.</p>'; return; }
+  var cell = state.gran === 'module'
+    ? Math.max(10, Math.min(44, Math.floor(700 / N)))
+    : Math.max(4, Math.min(18, Math.floor(900 / N)));
+  var PL = state.gran === 'module' ? 150 : 132, PR = 18, PT = state.gran === 'module' ? 92 : 78, PB = 16;
+  var W = PL + N * cell + PR, H = PT + N * cell + PB;
+
+  var s = [];
+  s.push('<svg class="sc" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + esc(title) + '">');
+
+  var topStep = cell >= 26 ? 1 : Math.ceil(26 / cell);
+  for (var i = 0; i < N; i++) {
+    for (var j = 0; j < N; j++) {
+      var vv = cellOf[i + ',' + j];
+      var x = PL + j * cell, y = PT + i * cell;
+      if (vv && vv.degree > 0) {
+        var isSel = state.sel && vv.best && state.sel === pairKey(vv.best.a, vv.best.b);
+        s.push('<rect class="cell' + (isSel ? ' sel' : '') + '" x="' + (x + 0.5) + '" y="' + (y + 0.5) +
+          '" width="' + (cell - 1) + '" height="' + (cell - 1) + '" style="' + cellStyle(vv) + '" data-i="' + i + '" data-j="' + j + '"></rect>');
+      }
+    }
+  }
+
+  // module block separators in file mode
+  if (state.gran === 'file') {
+    for (var b2 = 1; b2 < N; b2++) {
+      if (modOf(axis[b2 - 1]) !== modOf(axis[b2])) {
+        var yy = PT + b2 * cell;
+        s.push('<line class="modsep" x1="' + PL + '" y1="' + yy + '" x2="' + (W - PR) + '" y2="' + yy + '"/>');
+        s.push('<line class="modsep" x1="' + PL + '" y1="' + PT + '" x2="' + PL + '" y2="' + yy + '"/>');
+        var cap = trunc(modOf(axis[b2]), 20);
+        s.push('<text class="modcap" x="' + (PL + 4) + '" y="' + (yy + 9) + '">' + esc(cap) + '</text>');
+      }
+    }
+  }
+
+  // labels
+  for (var li = 0; li < N; li++) {
+    var lab = state.gran === 'module' ? trunc(axis[li], 16) : trunc(base(axis[li]), 18);
+    s.push('<text class="mlab" x="' + (PL - 8) + '" y="' + (PT + li * cell + cell / 2 + 3.5) + '" text-anchor="end">' + esc(lab) + '</text>');
+    if (li % topStep === 0) {
+      var tx = PL + li * cell + cell / 2, ty = PT - 8;
+      s.push('<text class="mlab top" transform="rotate(-55 ' + tx + ' ' + ty + ')" x="' + tx + '" y="' + ty + '">' + esc(lab) + '</text>');
+    }
+  }
+
+  s.push('</svg>');
+  el.innerHTML = s.join('');
+  el.querySelectorAll('.cell').forEach(function(r){
+    r.addEventListener('click', function(){
+      var i = Number(r.getAttribute('data-i')), j = Number(r.getAttribute('data-j'));
+      if (state.gran === 'module') {
+        if (i === j) { state.focus = [axis[i]]; }
+        else { state.focus = [axis[i], axis[j]]; }
+        state.gran = 'file';
+        syncGranBtns();
+        state.sel = null;
+      } else {
+        var key = i === j ? null : pairKey(axis[i], axis[j]);
+        state.sel = state.sel === key ? null : key;
+      }
+      render(); renderStats(); renderTable(); inspect();
+    });
+  });
+}
+
+function syncGranBtns(){
+  document.getElementById('gModule').classList.toggle('on', state.gran === 'module');
+  document.getElementById('gFile').classList.toggle('on', state.gran === 'file');
+}
+
+/* ---- inspector ---- */
+function pct(x){ return Math.round(x * 100) + '%'; }
+function inspect(){
+  var el = document.getElementById('insp');
+  if (!M.reason && state.sel && PMAP[state.sel]) {
+    var p = PMAP[state.sel];
+    var na = FN[p.a] || {}, nb = FN[p.b] || {};
+    var cross = na.m !== nb.m;
+    el.innerHTML =
+      '<h3>' + esc(base(p.a)) + ' <span style="color:var(--ink3)">~</span> ' + esc(base(p.b)) + '</h3>' +
+      '<p class="sub">' + esc(p.a) + '</p>' +
+      '<p class="sub pair2">' + esc(p.b) + '</p>' +
+      '<ul class="kv">' +
+        '<li>together<b>' + p.co + ' of ' + (p.changesA + p.changesB - p.co) + '</b></li>' +
+        '<li>degree<b>' + pct(p.degree) + '</b></li>' +
+        '<li>when ' + esc(base(p.a).slice(0, 14)) + ' changes<b>' + pct(p.aThenB) + '</b></li>' +
+        '<li>when ' + esc(base(p.b).slice(0, 14)) + ' changes<b>' + pct(p.bThenA) + '</b></li>' +
+        '<li>import edge<b>' + (p.imports ? 'yes' : 'no') + '</b></li>' +
+        '<li>modules<b>' + (cross ? esc(na.m) + ' × ' + esc(nb.m) : esc(na.m) + ' (same)') + '</b></li>' +
+      '</ul>' +
+      '<p class="ilab">Read</p>' +
+      '<p class="note" style="font-size:14px;max-width:none">' +
+      (p.imports
+        ? 'The import graph already explains this pair — of course a file changes with the thing it imports.'
+        : 'No import edge goes between them. ' +
+          (cross ? 'They sit in different modules, which makes the shared habit harder to excuse. ' : '') +
+          'Look for a rule that belongs in both of their heads.</p>');
+    return;
+  }
+  var v = visible().slice(0, 5);
+  if (!M.reason && v.length) {
+    el.innerHTML = '<p class="empty">Click a cell for the pair behind it. The strongest pairs in view:</p>' +
+      v.map(function(p){
+        return '<p class="sub" style="margin:6px 0 0">' + esc(trunc(base(p.a), 22)) + ' ~ ' + esc(trunc(base(p.b), 22)) +
+          ' <b style="color:var(--ink)">' + pct(p.degree) + '</b>' + (p.imports ? '' : ' <span style="color:var(--hot)">· unexplained</span>') + '</p>';
+      }).join('');
+    return;
+  }
+  el.innerHTML = '<p class="empty">Nothing to pair yet — click a cell once the history is there.</p>';
+}
+
+/* ---- table ---- */
+function renderTable(){
+  var v = visible().slice(0, 40);
+  var tb = document.querySelector('#tbl tbody');
+  if (M.reason || !v.length) {
+    tb.innerHTML = '<tr><td colspan="8" class="none" style="padding:32px 24px">' +
+      (M.reason
+        ? 'No git history available' + (M.reason ? ' — ' + esc(M.reason) : '') + '.'
+        : 'No pair of files reaches the current threshold.') +
+      '</td></tr>';
+    return;
+  }
+  tb.innerHTML = v.map(function(p){
+    var na = FN[p.a] || {}, nb = FN[p.b] || {};
+    var cross = na.m !== nb.m;
+    return '<tr data-key="' + esc(pairKey(p.a, p.b)) + '">' +
+      '<td class="p">' + esc(p.a) + '</td><td class="p">' + esc(p.b) + '</td>' +
+      '<td class="n">' + p.co + ' of ' + (p.changesA + p.changesB - p.co) + '</td>' +
+      '<td class="n" style="color:' + (p.imports ? 'var(--ink2)' : 'var(--hot)') + '">' + pct(p.degree) + '</td>' +
+      '<td class="n">' + pct(p.aThenB) + '</td><td class="n">' + pct(p.bThenA) + '</td>' +
+      '<td class="p">' + (p.imports ? 'yes' : '<span style="color:var(--hot)">no</span>') + '</td>' +
+      '<td class="p" style="color:var(--ink3)">' + (cross ? esc(na.m) + ' × ' + esc(nb.m) : esc(na.m) + ' (same)') + '</td></tr>';
+  }).join('');
+  document.querySelectorAll('#tbl tbody tr').forEach(function(tr){
+    tr.addEventListener('click', function(){
+      var key = tr.getAttribute('data-key');
+      var p = PMAP[key];
+      state.sel = state.sel === key ? null : key;
+      if (p && state.sel && state.gran === 'module') {
+        var ma = modOf(p.a), mb = modOf(p.b);
+        state.focus = ma === mb ? [ma] : [ma, mb];
+        state.gran = 'file';
+        syncGranBtns();
+      }
+      render(); renderStats(); renderTable(); inspect();
+    });
+  });
+}
+
+/* ---- legend ---- */
+function renderLegend(){
+  document.getElementById('legend').innerHTML =
+    '<span class="lg"><i style="background:var(--rose)"></i>co-changes, no import edge</span>' +
+    (state.overlay
+      ? '<span class="lg"><i style="background:var(--blue);outline:1px solid var(--ink3)"></i>also shares an import edge</span>'
+      : '<span class="lg"><i style="background:var(--amber)"></i>degree, overlay off</span>') +
+    '<span class="lg" style="color:var(--ink3)">shade = fraction of commits in which both changed · click a block to zoom into its files</span>';
+}
+
+/* ---- controls ---- */
+function tog(id, key, after){
+  var b = document.getElementById(id);
+  b.addEventListener('click', function(){
+    state[key] = !state[key];
+    b.classList.toggle('on', state[key]);
+    render(); renderStats(); renderTable(); inspect(); renderLegend();
+    if (after) after();
+  });
+}
+tog('tOverlay', 'overlay');
+document.getElementById('gModule').addEventListener('click', function(){
+  state.gran = 'module'; state.focus = null; state.sel = null;
+  syncGranBtns(); render(); renderTable(); inspect();
+});
+document.getElementById('gFile').addEventListener('click', function(){
+  state.gran = 'file'; state.sel = null;
+  syncGranBtns(); render(); renderTable(); inspect();
+});
+(function(){
+  var r = document.getElementById('thr');
+  r.min = String(M.minDegree || 0.3); r.max = '1'; r.step = '0.05';
+  r.value = String(state.thr);
+  document.getElementById('thrv').textContent = Math.round(state.thr * 100) + '%';
+  r.addEventListener('input', function(){
+    state.thr = Number(r.value);
+    document.getElementById('thrv').textContent = Math.round(state.thr * 100) + '%';
+    render(); renderStats(); renderTable(); inspect();
+  });
+})();
+document.getElementById('reset').addEventListener('click', function(){
+  state = DEF();
+  document.getElementById('thr').value = String(state.thr);
+  document.getElementById('thrv').textContent = Math.round(state.thr * 100) + '%';
+  document.getElementById('tOverlay').classList.add('on');
+  syncGranBtns();
+  render(); renderStats(); renderTable(); inspect(); renderLegend();
+});
+
+renderStats(); render(); renderTable(); inspect(); renderLegend();
+window.__coupling = { PAIRS: PAIRS, FILES: FILES, state: state, visible: visible };
+})();
+</script>
+
+<style>
+.metatron-full { position:fixed !important; inset:0 !important; z-index:9999;
+  margin:0 !important; border-radius:0 !important; display:flex; flex-direction:column;
+  background:var(--paper, var(--surface, #111)); }
+.metatron-full [data-fs-grow] { flex:1; min-height:0; }
+.metatron-full [data-fs-grow] > * { max-height:none !important; height:100% !important; }
+body.metatron-locked { overflow:hidden; }
+.metatron-fsbtn { position:absolute; top:8px; right:10px; z-index:3;
+  font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:11px; letter-spacing:.04em;
+  padding:5px 10px; cursor:pointer; color:var(--ink2, #889); background:var(--surface, #1a222c);
+  border:1px solid var(--rule2, #445); opacity:.72; }
+.metatron-fsbtn:hover { opacity:1; color:var(--ink, #eee); }
+.metatron-fsbtn:focus-visible { outline:2px solid var(--blue, #79a4e6); outline-offset:2px; }
+</style>
+<script>
+(function(){
+  var plate = document.querySelector('[data-fullscreen]');
+  if (!plate) return;
+  if (getComputedStyle(plate).position === 'static') plate.style.position = 'relative';
+  var btn = document.createElement('button');
+  btn.className = 'metatron-fsbtn';
+  btn.type = 'button';
+  btn.textContent = '⤢ full screen';
+  btn.title = 'Fill the screen (Esc to leave)';
+  plate.appendChild(btn);
+  function on(){ return plate.classList.contains('metatron-full'); }
+  function set(v){
+    plate.classList.toggle('metatron-full', v);
+    document.body.classList.toggle('metatron-locked', v);
+    btn.textContent = v ? '✕ exit' : '⤢ full screen';
+    try {
+      if (v && plate.requestFullscreen) plate.requestFullscreen().catch(function(){});
+      else if (!v && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){});
+    } catch (e) {}
+    // canvas lenses watch their own container, but nudge anything that does not
+    window.dispatchEvent(new Event('resize'));
+  }
+  btn.addEventListener('click', function(){ set(!on()); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && on()) { e.preventDefault(); set(false); } });
+  document.addEventListener('fullscreenchange', function(){ if (!document.fullscreenElement && on()) set(false); });
+})();
+</script>
+<script id="__narr" type="application/json">{"scale":"<strong>394 files</strong> under the scanned root, wired together by 1,284 internal imports across 94 directories and 15 modules. 63 HTTP endpoints were traced through 307 call hops.","flow":"Read left to right and it is the intended request path: <span class=\"mono\">action</span> → <span class=\"mono\">service</span> → <span class=\"mono\">transaction-script</span> → <span class=\"mono\">repository</span>. Anything that jumps a station is a layering violation, and the lenses colour it as one.","layering":"<strong>No import skips a layer.</strong> Every dependency either stays within a tier or moves to the next one, which is what <span class=\"mono\">action</span> → <span class=\"mono\">service</span> → <span class=\"mono\">transaction-script</span> → <span class=\"mono\">repository</span> asks for.","crossDomain":"20 dependencies cross a bounded context — 13 aggregators, 7 ports. <strong>Every one lands on an allowed gateway</strong> — nothing reaches an entity, a repository or a use-case script in another context.","absent":"<strong><span class=\"mono\">mapper</span>, <span class=\"mono\">assembler</span>, <span class=\"mono\">resolver</span>, <span class=\"mono\">interceptor</span>, and 3 others are configured but exist nowhere in the code</strong>. Either the architecture document describes a shape that was never built, or the config names something this project does not use.","skyline":"Height is layers, not importance: a module carries one floor per directory, stacked in architectural order, so <strong>its silhouette is its layer profile</strong>. <span class=\"mono\">notes</span> is the most complete, carrying 9 of 8 tiers. <span class=\"mono\">health</span> is the outlier, missing <span class=\"mono\">Contract</span>, <span class=\"mono\">Service</span>, <span class=\"mono\">Aggregator</span>, <span class=\"mono\">Transaction Script</span>, and 3 others. <span class=\"mono\">security-events</span> has no Entry floor at all — no route reaches it directly.","cycles":"Taken raw, the module graph has 1 strongly-connected component. Set aside module wiring, port imports and shared-kernel join entities — the carve-outs the architecture sanctions — and <strong>the graph is acyclic</strong>.","upheld":"<strong>4 of the rules this codebase writes down for itself hold across all 1,284 imports</strong>: Every cross-domain edge goes through an allowed gateway; Domain dependency graph is acyclic; No same-level injection; No upward calls.","deviations":"<strong>No deviations.</strong> Every rule the configuration encodes is upheld.","endpoints":"63 endpoints, traced by following <span class=\"mono\">this.x.y()</span> through real method bodies rather than guessed from the folder layout.","schema":"11 entities, 72 columns, 13 references between them. <strong>3 are declared to the ORM; 10 exist only as a bare id column</strong>. 10 cross a bounded context — which is usually the reason the relation was left undeclared, since declaring it would couple the two contexts. The dependency is still there; it is just the application's job to honour it rather than the database's. 2 entities do not name their table in <span class=\"mono\">@Entity()</span>, so the name comes from the class.","hotspots":"Across 298 commits, the file scoring highest on both axes is <span class=\"mono\">notes/infra/repositories/note-memo-tag.repository.ts</span> — <strong>31 commits and 27 dependents</strong>. <span class=\"mono\">notes/notes.module.ts</span> changes most often (52), <span class=\"mono\">shared-kernel/apps/decorators/protected-action.decorator.ts</span> is depended on by the most files (103). A file high on one axis alone is usually fine; it is the overlap that costs.","coupling":"Across 298 commits (8 ignored for touching more than 25 files), 19 pairs of files land in the same commit at least 30% of the time they move, and 7 of those pairs share no import edge — the ones worth reading. Commits are a proxy for change, and one team's commit granularity is not another's: a squash-merge workflow and a commit-per-thought workflow produce different numbers from identical work. Co-change is correlation, not mechanism — two files dragged along by the same sweeping rename are not coupled in any meaningful sense, and the size cap only blunts that, imperfectly. And the absence of coupling is not evidence of independence; it may just be young code.","provenance":"Generated from <span class=\"mono\">chronus-frontend-backend</span> by metatron. Every box is a directory that exists and every line is an <span class=\"mono\">import</span> that a file actually writes. 392 of 394 files (99.5%) matched a configured pattern.","caveats":"Imports are not calls: a type-only import counts the same as a constructor injection everywhere except the endpoint traces. Anything resolved through a DI token string rather than an imported symbol leaves no edge, so coupling is understated. Positions and footprints are chosen for legibility — only heights, tiers, links and colours carry meaning."}</script>
+<script>
+(function(){
+  var N;
+  try { N = JSON.parse(document.getElementById('__narr').textContent); } catch (e) { return; }
+  var slots = document.querySelectorAll('[data-narr]');
+  for (var i = 0; i < slots.length; i++) {
+    var el = slots[i], key = el.getAttribute('data-narr');
+    if (N[key]) el.innerHTML = N[key];
+    else if (el.parentNode) el.parentNode.removeChild(el);   // nothing to say, so say nothing
+  }
+})();
+</script>
