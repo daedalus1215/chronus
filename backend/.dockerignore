@@ -1,9 +1,6 @@
 node_modules
 dist
 .git
-*.sqlite
-*.sqlite-back
-*.sqlite-journal
 .env
 .env.*
 coverage

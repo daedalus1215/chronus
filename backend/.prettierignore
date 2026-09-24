@@ -4,10 +4,6 @@ node_modules
 # Build outputs
 dist
 
-# Database files
-*.sqlite
-*.sqlite.old
-
 # Logs
 *.log
 

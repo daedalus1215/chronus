@@ -124,9 +124,6 @@
     "tar": "^7.5.7",
     "lodash": "^4.17.23",
     "js-yaml": "^4.1.1",
-    "sqlite3": {
-      "node-gyp": "^10.3.2"
-    },
     "multer": "^2.2.0"
   },
   "lint-staged": {

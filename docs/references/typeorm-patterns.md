@@ -1,6 +1,6 @@
 # TypeORM patterns -- quick reference
 
-Curated for patterns used in this project (SQLite database).
+Curated for patterns used in this project (Postgres database).
 
 ## Entity decorators
 
@@ -149,13 +149,13 @@ const result = await this.repository.delete({ id, userId });
 return result.affected > 0;
 ```
 
-## SQLite-specific notes
+## Postgres notes
 
-- Use `type: 'text'` for timestamp columns (SQLite has no native timestamp)
+- Use `type: 'timestamptz'` for timestamp columns
 - Use `type: 'integer'` for primary keys
-- Date functions: `strftime('%Y', column)` for year extraction
+- Date functions: `EXTRACT(YEAR FROM column)` for year extraction
 - Use `BETWEEN :start AND :end` for date ranges
-- No `ILIKE` -- use `LOWER(column) LIKE LOWER(:pattern)` for case-insensitive
+- Case-insensitive search: `LOWER(column) LIKE LOWER(:pattern)` (Postgres also has `ILIKE`)
 
 ## Migrations
 

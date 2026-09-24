@@ -200,7 +200,7 @@ Model on the existing single-note `mergeIntoNote` in
   cleanup sweep), never a lost note. Capture the file paths before deleting the rows.
 - **Validation:** all notes owned by `user_id`; ≥2 notes; same type (block mixed, #3);
   target ∈ selection.
-- **Cap (Q8):** `memo.description` is SQLite `TEXT` (~1 GB ceiling) with **no DTO length
+- **Cap (Q8):** `memo.description` is Postgres `TEXT` (~1 GB ceiling) with **no DTO length
   validation** — so there is **no meaningful note-count cap**. Add a defensive guard that
   rejects a merge whose *combined* description would exceed a generous soft limit
   (proposed **1,000,000 chars**) purely as a runaway backstop, surfaced as a clear error.
