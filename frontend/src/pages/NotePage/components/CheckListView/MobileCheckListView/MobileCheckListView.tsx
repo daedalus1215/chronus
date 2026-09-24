@@ -250,9 +250,10 @@ export const MobileCheckListView: React.FC<CheckListViewProps> = ({ note }) => {
             <DraggableCheckItemList
               checkItems={filteredItems}
               onReorder={handleReorder}
-              renderItem={item => (
+              renderItem={(item, _index, registerFlipNode) => (
                 <DraggableCheckItem
                   key={item.id}
+                  onFlipNode={registerFlipNode}
                   item={item}
                   className={styles.listItem}
                   sx={{

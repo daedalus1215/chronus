@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import ListItem from '@mui/material/ListItem';
@@ -11,6 +11,7 @@ type DraggableCheckItemProps = {
   className?: string;
   sx?: Record<string, unknown>;
   disablePadding?: boolean;
+  onFlipNode?: (id: number, node: HTMLElement | null) => void;
 };
 
 export const DraggableCheckItem: React.FC<DraggableCheckItemProps> = ({
@@ -20,6 +21,7 @@ export const DraggableCheckItem: React.FC<DraggableCheckItemProps> = ({
   className,
   sx,
   disablePadding,
+  onFlipNode,
 }) => {
   const {
     attributes,
@@ -30,6 +32,13 @@ export const DraggableCheckItem: React.FC<DraggableCheckItemProps> = ({
     isDragging,
   } = useSortable({ id: item.id });
 
+  const setRefs = useCallback(
+    (node: HTMLLIElement | null) => {
+      setNodeRef(node);
+      onFlipNode?.(item.id, node);
+    },
+    [setNodeRef, onFlipNode, item.id]
+  );
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -38,7 +47,7 @@ export const DraggableCheckItem: React.FC<DraggableCheckItemProps> = ({
 
   return (
     <ListItem
-      ref={setNodeRef}
+      ref={setRefs}
       style={style}
       className={className}
       sx={sx}

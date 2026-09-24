@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../api/axios.interceptor';
 import { CheckItem } from '../../NotePage/api/responses';
 import { checkItemKeys } from '../../NotePage/components/CheckListView/hooks/useCheckItems';
+import { orderCheckItemsForDisplay } from '../../NotePage/components/CheckListView/orderCheckItems';
 
 export type CheckItemStatus = 'ready' | 'in_progress' | 'review' | 'done';
 
@@ -69,8 +70,10 @@ export const useUpdateCheckItemStatus = (noteId: number) => {
         checkItemKeys.list(noteId),
         (oldItems: CheckItem[] | undefined) => {
           if (!oldItems) return oldItems;
-          return oldItems.map(item =>
-            item.id === updatedItem.id ? updatedItem : item
+          return orderCheckItemsForDisplay(
+            oldItems.map(item =>
+              item.id === updatedItem.id ? updatedItem : item
+            )
           );
         }
       );
@@ -80,8 +83,10 @@ export const useUpdateCheckItemStatus = (noteId: number) => {
           if (!oldNote?.checkItems) return oldNote;
           return {
             ...oldNote,
-            checkItems: oldNote.checkItems.map(item =>
-              item.id === updatedItem.id ? updatedItem : item
+            checkItems: orderCheckItemsForDisplay(
+              oldNote.checkItems.map(item =>
+                item.id === updatedItem.id ? updatedItem : item
+              )
             ),
           };
         }

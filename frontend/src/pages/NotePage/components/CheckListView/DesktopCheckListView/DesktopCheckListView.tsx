@@ -275,9 +275,10 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
             <DraggableCheckItemList
               checkItems={filteredItems}
               onReorder={handleReorder}
-              renderItem={item => (
+              renderItem={(item, _index, registerFlipNode) => (
                 <DraggableCheckItem
                   key={item.id}
+                  onFlipNode={registerFlipNode}
                   item={item}
                   className={styles.listItem}
                   sx={{
