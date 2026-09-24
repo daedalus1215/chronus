@@ -15,7 +15,7 @@ $ cp .env.sample .env
 ```
 
 2. Update the `.env` file with your configuration:
-   - **DATABASE**: SQLite database file path (default: `db.sqlite`)
+   - **DB_HOST / DB_PORT / DB_NAME / DB_USER / DB_PASSWORD**: Postgres connection (defaults: `localhost:5432`, db/user `chronus`)
    - **JWT_SECRET**: Secret key for JWT token signing (change in production!)
    - **JWT_EXPIRES_IN**: JWT token expiration (e.g., `7d`, `24h`)
    - **COOKIE_KEY**: Key for cookie encryption (change in production!)

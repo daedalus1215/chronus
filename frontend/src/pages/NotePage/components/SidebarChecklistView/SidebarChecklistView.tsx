@@ -188,9 +188,10 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
         <DraggableCheckItemList
           checkItems={checkItems}
           onReorder={handleReorder}
-          renderItem={item => (
+          renderItem={(item, _index, registerFlipNode) => (
             <DraggableCheckItem
               key={item.id}
+              onFlipNode={registerFlipNode}
               item={item}
               className={styles.listItem}
               sx={{

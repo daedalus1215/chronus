@@ -18,7 +18,7 @@ Chronus is a full-stack personal knowledge management app built around the idea 
 | Layer | Tech |
 |-------|------|
 | Frontend | React + Vite + MUI + React Query |
-| Backend | NestJS + TypeORM + SQLite |
+| Backend | NestJS + TypeORM + Postgres |
 | Styling | CSS Modules + MUI `sx` prop |
 | Auth | OIDC / JWT |
 

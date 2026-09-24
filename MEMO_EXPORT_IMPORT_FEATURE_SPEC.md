@@ -234,7 +234,7 @@ Validated with `class-validator`. Mirrors the file's `memo` object, but every se
 4. `TagAttacherPort.attachByName(noteId, userId, tagNames)` — resolve-or-create, then attach via TagNote (dedup by name lives in the adapter).
 5. Return the new `noteId` so the frontend can navigate to it.
 
-Steps 2–4 run only for the sections the user kept. (Atomicity note: SQLite + TypeORM can wrap this in a transaction inside the `NoteWriterAdapter` or via a unit-of-work; if cross-adapter transactions prove awkward, the fallback is best-effort ordering — create the note first, then children — since a partial import is still a usable note the user can re-run.)
+Steps 2–4 run only for the sections the user kept. (Atomicity note: TypeORM can wrap this in a transaction inside the `NoteWriterAdapter` or via a unit-of-work; if cross-adapter transactions prove awkward, the fallback is best-effort ordering — create the note first, then children — since a partial import is still a usable note the user can re-run.)
 
 ### Frontend create flow
 

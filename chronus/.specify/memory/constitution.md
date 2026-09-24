@@ -58,7 +58,7 @@ Domain layer MUST contain pure TypeScript classes with NO TypeORM decorators or 
 ### Technology Stack
 - **Backend**: NestJS framework with TypeORM for persistence
 - **Frontend**: React with TypeScript
-- **Database**: SQLite (development), with migration support
+- **Database**: Postgres, with migration support
 - **Testing**: Jest for unit and e2e tests
 - **Language**: TypeScript 5.1+ with strict mode
 

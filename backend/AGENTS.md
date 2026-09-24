@@ -445,8 +445,8 @@ export class TimeTrack {
 
 - Use `snake_case` for column names (`@Column({ name: 'user_id' })`)
 - Use `PrimaryGeneratedColumn({ type: 'integer' })` for auto-increment IDs
-- Timestamp columns use `CreateDateColumn` / `UpdateDateColumn` with `type: 'text'` (SQLite)
-- Database is **SQLite** -- no Postgres-specific syntax
+- Timestamp columns use `CreateDateColumn` / `UpdateDateColumn` with `type: 'timestamptz'`
+- Database is **Postgres**
 - Entities belong to their domain: `{module}/domain/entities/`
 - Shared join entities (M:N) live in `shared-kernel/domain/entities/` and are anemic (no business logic)
 - No cross-domain entity references via TypeORM relationships -- use Aggregators
