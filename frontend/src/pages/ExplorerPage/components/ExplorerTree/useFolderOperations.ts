@@ -16,6 +16,29 @@ import {
 import { NOTE_TYPES } from '../../../../constant';
 import { collectSubtreeIds, visibleFolderIdsInOrder } from './utils';
 
+const EXPANDED_FOLDERS_STORAGE_KEY = 'chronus-explorer-expanded-folders';
+
+/**
+ * Restore the folder expansion state from localStorage.
+ * Returns an empty set when nothing is stored or the stored value is
+ * malformed, so a corrupted entry never breaks the tree.
+ */
+const readStoredExpanded = (): Set<number> => {
+  try {
+    const stored = localStorage.getItem(EXPANDED_FOLDERS_STORAGE_KEY);
+    if (stored === null) return new Set();
+    const parsed: unknown = JSON.parse(stored);
+    if (!Array.isArray(parsed)) return new Set();
+    return new Set(
+      parsed.filter(
+        (v): v is number => typeof v === 'number' && Number.isFinite(v)
+      )
+    );
+  } catch {
+    return new Set();
+  }
+};
+
 export const useFolderOperations = (
   selectedFolderIds: Set<number> = new Set()
 ) => {
@@ -23,7 +46,7 @@ export const useFolderOperations = (
   const [folders, setFolders] = useState<FolderDto[]>([]);
   const [notes, setNotes] = useState<ExplorerNoteItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [expanded, setExpanded] = useState<Set<number>>(readStoredExpanded);
 
   // Dialog state
   const [newFolderParentId, setNewFolderParentId] = useState<
@@ -56,6 +79,27 @@ export const useFolderOperations = (
   useEffect(() => {
     load();
   }, [load]);
+
+  // Persist expansion state so it is retained when leaving the page
+  // (component unmount) and across reloads.
+  useEffect(() => {
+    localStorage.setItem(
+      EXPANDED_FOLDERS_STORAGE_KEY,
+      JSON.stringify([...expanded])
+    );
+  }, [expanded]);
+
+  // Drop IDs for folders that no longer exist so deleted folders do not
+  // accumulate in the stored set.
+  useEffect(() => {
+    if (loading) return;
+    const validIds = new Set(folders.map(f => f.id));
+    setExpanded(prev => {
+      const hasStale = [...prev].some(id => !validIds.has(id));
+      if (!hasStale) return prev;
+      return new Set([...prev].filter(id => validIds.has(id)));
+    });
+  }, [loading, folders]);
 
   // Derived data
   const tree = useMemo(() => buildFolderTree(folders), [folders]);
