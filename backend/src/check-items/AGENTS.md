@@ -41,6 +41,12 @@ Folder: `domain/transaction-scripts/`
 - `DeleteCheckItemTransactionScript`
 - `ReorderCheckItemsTransactionScript`
 
+- `orderCheckItemsForDisplay` (`domain/transaction-scripts/order-check-items-for-display.ts`) -- pure display-order
+  helper (not a transaction script). Unchecked items keep manual `sortOrder` (DESC); checked items sink below
+  all unchecked ones, newest `completedAt` first. Applied by the get-by-note, create, and reorder scripts so every
+  read path returns display order, and mirrored by the frontend (`NotePage/components/CheckListView/orderCheckItems.ts`)
+  for optimistic cache updates.
+
 ## Aggregators
 
 - CheckItemsAggregator (exported -- consumed by note-transfer via CHECK_ITEM_WRITER_PORT)

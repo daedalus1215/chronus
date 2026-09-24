@@ -1,6 +1,8 @@
+import { useCallback, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../../../api/axios.interceptor';
 import { CheckItem, Note } from '../../../api/responses';
+import { orderCheckItemsForDisplay } from '../orderCheckItems';
 
 export const checkItemKeys = {
   all: ['checkItems'] as const,
@@ -18,7 +20,7 @@ export const useCheckItemsQuery = (noteId: number) => {
       const response = await api.get<CheckItem[]>(
         `/check-items/notes/${noteId}`
       );
-      return response.data;
+      return orderCheckItemsForDisplay(response.data);
     },
     enabled: !!noteId,
   });
@@ -55,6 +57,47 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
   const { data: checkItems = [] } = useCheckItemsQuery(note.id);
   const noteState = { ...note, checkItems };
 
+  const orderRefreshTimer = useRef<number | null>(null);
+
+  const clearOrderRefresh = useCallback(() => {
+    if (orderRefreshTimer.current !== null) {
+      window.clearTimeout(orderRefreshTimer.current);
+    }
+  }, []);
+
+  // Re-derive the display order from cached state so items settle into
+  // their canonical slots (unchecked first, most recently completed on
+  // top) after a local mutation.
+  const applyDisplayOrder = useCallback(() => {
+    queryClient.setQueryData<CheckItem[]>(
+      checkItemKeys.list(note.id),
+      (oldItems: CheckItem[] | undefined) =>
+        oldItems ? orderCheckItemsForDisplay(oldItems) : oldItems
+    );
+    queryClient.setQueryData<Note>(
+      ['note', note.id],
+      (oldNote: Note | undefined) =>
+        oldNote?.checkItems
+          ? {
+              ...oldNote,
+              checkItems: orderCheckItemsForDisplay(oldNote.checkItems),
+            }
+          : oldNote
+    );
+  }, [queryClient, note.id]);
+
+  // Small delay so a toggle registers in place before the list settles
+  // into its new order; rapid toggles share one settle.
+  const scheduleDisplayOrder = useCallback(() => {
+    clearOrderRefresh();
+    orderRefreshTimer.current = window.setTimeout(() => {
+      orderRefreshTimer.current = null;
+      applyDisplayOrder();
+    }, 200);
+  }, [clearOrderRefresh, applyDisplayOrder]);
+
+  useEffect(() => clearOrderRefresh, [clearOrderRefresh]);
+
   const addItemMutation = useMutation({
     mutationFn: async (name: string) => {
       const response = await api.post<CheckItem[]>(
@@ -64,14 +107,15 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
       return response.data;
     },
     onSuccess: checkItems => {
+      const orderedCheckItems = orderCheckItemsForDisplay(checkItems);
       queryClient.setQueryData(
         ['note', note.id],
         (oldData: Note | undefined) => {
           if (!oldData) return oldData;
-          return { ...oldData, checkItems };
+          return { ...oldData, checkItems: orderedCheckItems };
         }
       );
-      queryClient.setQueryData(checkItemKeys.list(note.id), checkItems);
+      queryClient.setQueryData(checkItemKeys.list(note.id), orderedCheckItems);
     },
   });
 
@@ -82,19 +126,51 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
       );
       return response.data;
     },
-    onSuccess: (updatedItem, { id }) => {
-      queryClient.setQueryData(
-        ['note', note.id],
-        (oldCheckItems: CheckItem[] | undefined) => {
-          if (!oldCheckItems) return oldCheckItems;
-          return {
-            ...oldCheckItems,
-            checkItems: oldCheckItems.map(item =>
-              item.id === id ? updatedItem : item
-            ),
-          };
-        }
+    onMutate: async ({ id }: { id: number }) => {
+      // Cancel any outgoing refetches to avoid overwriting the optimistic update
+      await queryClient.cancelQueries({
+        queryKey: checkItemKeys.list(note.id),
+      });
+      await queryClient.cancelQueries({ queryKey: ['note', note.id] });
+
+      // Snapshot the previous values for rollback
+      const previousCheckItems = queryClient.getQueryData<CheckItem[]>(
+        checkItemKeys.list(note.id)
       );
+      const previousNote = queryClient.getQueryData<Note>(['note', note.id]);
+
+      // Flip the item in place -- no movement yet; the list settles
+      // into its new order shortly after.
+      const predictToggle = (item: CheckItem): CheckItem =>
+        item.doneDate
+          ? { ...item, doneDate: null, status: 'ready' }
+          : { ...item, doneDate: new Date().toISOString(), status: 'done' };
+
+      if (previousCheckItems) {
+        queryClient.setQueryData(
+          checkItemKeys.list(note.id),
+          previousCheckItems.map(item =>
+            item.id === id ? predictToggle(item) : item
+          )
+        );
+      }
+      if (previousNote) {
+        queryClient.setQueryData(
+          ['note', note.id],
+          previousNote.checkItems
+            ? {
+                ...previousNote,
+                checkItems: previousNote.checkItems.map(item =>
+                  item.id === id ? predictToggle(item) : item
+                ),
+              }
+            : previousNote
+        );
+      }
+
+      return { previousCheckItems, previousNote };
+    },
+    onSuccess: (updatedItem, { id }) => {
       queryClient.setQueryData(
         checkItemKeys.list(note.id),
         (oldItems: CheckItem[] | undefined) => {
@@ -102,6 +178,31 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
           return oldItems.map(item => (item.id === id ? updatedItem : item));
         }
       );
+      queryClient.setQueryData(
+        ['note', note.id],
+        (oldNote: Note | undefined) => {
+          if (!oldNote?.checkItems) return oldNote;
+          return {
+            ...oldNote,
+            checkItems: oldNote.checkItems.map(item =>
+              item.id === id ? updatedItem : item
+            ),
+          };
+        }
+      );
+      scheduleDisplayOrder();
+    },
+    onError: (_error, _variables, context) => {
+      clearOrderRefresh();
+      if (context?.previousCheckItems) {
+        queryClient.setQueryData(
+          checkItemKeys.list(note.id),
+          context.previousCheckItems
+        );
+      }
+      if (context?.previousNote) {
+        queryClient.setQueryData(['note', note.id], context.previousNote);
+      }
     },
   });
 
@@ -229,15 +330,15 @@ export const useCheckItems = (note: Note): UseCheckListReturn => {
       }
     },
     onSuccess: checkItems => {
-      // Update with server response (in case server made any adjustments)
+      const orderedCheckItems = orderCheckItemsForDisplay(checkItems);
       queryClient.setQueryData(
         ['note', note.id],
         (oldData: Note | undefined) => {
           if (!oldData) return oldData;
-          return { ...oldData, checkItems };
+          return { ...oldData, checkItems: orderedCheckItems };
         }
       );
-      queryClient.setQueryData(checkItemKeys.list(note.id), checkItems);
+      queryClient.setQueryData(checkItemKeys.list(note.id), orderedCheckItems);
     },
   });
 

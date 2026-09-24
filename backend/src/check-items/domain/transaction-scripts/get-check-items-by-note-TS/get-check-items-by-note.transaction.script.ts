@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CheckItem } from '../../entities/check-item.entity';
 import { CheckItemsRepository } from '../../../infra/repositories/check-items/check-items.repository';
+import { orderCheckItemsForDisplay } from '../order-check-items-for-display';
 
 @Injectable()
 export class GetCheckItemsByNoteTransactionScript {
@@ -13,17 +14,6 @@ export class GetCheckItemsByNoteTransactionScript {
         userId
       );
 
-    if (checkItems.length === 0) {
-      return [];
-    }
-
-    const nonArchivedCheckItems = checkItems.filter(
-      item => item.doneDate == null
-    );
-    const archivedCheckItems = checkItems.filter(
-      item => item.doneDate !== null
-    );
-
-    return [...nonArchivedCheckItems, ...archivedCheckItems];
+    return orderCheckItemsForDisplay(checkItems);
   }
 }

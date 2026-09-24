@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { CheckItem } from '../../entities/check-item.entity';
 import { CheckItemsRepository } from '../../../infra/repositories/check-items/check-items.repository';
+import { orderCheckItemsForDisplay } from '../order-check-items-for-display';
 import { ReorderCheckItemsDto } from '../../../apps/dtos/requests/reorder-check-items.dto';
 
 @Injectable()
@@ -50,9 +51,12 @@ export class ReorderCheckItemsTransactionScript {
 
     await Promise.all(updatePromises);
 
-    return this.checkItemsRepository.findByNoteIdWithUserValidation(
-      noteId,
-      userId
-    );
+    const checkItems =
+      await this.checkItemsRepository.findByNoteIdWithUserValidation(
+        noteId,
+        userId
+      );
+
+    return orderCheckItemsForDisplay(checkItems);
   }
 }
