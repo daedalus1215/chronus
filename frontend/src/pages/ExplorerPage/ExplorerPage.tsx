@@ -6,6 +6,7 @@ import { ExplorerTree } from './components/ExplorerTree/ExplorerTree';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useResizablePane } from '../../hooks/useResizablePane';
 import { useSidebar } from '../../hooks/useSidebar';
+import { STORAGE_KEYS } from '../../constants/storage';
 import styles from './ExplorerPage.module.css';
 
 const EXPLORER_NOTE_PATTERN = '/explorer/notes/:id';
@@ -22,7 +23,7 @@ export const ExplorerPage: React.FC = () => {
     handleKeyDown,
     handleDoubleClick,
   } = useResizablePane({
-    localStorageKey: 'explorerTreeWidthPx',
+    localStorageKey: STORAGE_KEYS.EXPLORER.TREE_WIDTH_PX,
     min: 10,
     max: 400,
     initial: 260,
