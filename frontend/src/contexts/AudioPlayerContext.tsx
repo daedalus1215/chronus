@@ -9,6 +9,7 @@ import api from '../api/axios.interceptor';
 import { useSavePlaybackPosition } from '../hooks/useSavePlaybackPosition';
 import { AudioPlayerContext, AudioTrack } from './AudioPlayerContextDefinition';
 import type { AudioPlayerContextType } from './AudioPlayerContextDefinition';
+import { STORAGE_KEYS } from '../constants/storage';
 
 interface AudioPlayerProviderProps {
   children: ReactNode;
@@ -114,7 +115,7 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
     audio.addEventListener('error', handleError);
 
     // Restore volume from localStorage
-    const savedVolume = localStorage.getItem('audioPlayerVolume');
+    const savedVolume = localStorage.getItem(STORAGE_KEYS.AUDIO_PLAYER.VOLUME);
     if (savedVolume) {
       const vol = parseFloat(savedVolume);
       audio.volume = vol;
@@ -321,7 +322,10 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({
     const clampedVolume = Math.max(0, Math.min(1, newVolume));
     audioRef.current.volume = clampedVolume;
     setVolumeState(clampedVolume);
-    localStorage.setItem('audioPlayerVolume', clampedVolume.toString());
+    localStorage.setItem(
+      STORAGE_KEYS.AUDIO_PLAYER.VOLUME,
+      clampedVolume.toString()
+    );
   }, []);
 
   const toggleExpanded = useCallback(() => {

@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import api from '../api/axios.interceptor';
+import { STORAGE_KEYS } from '../constants/storage';
 
 type User = {
   id: string;
@@ -32,7 +33,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuthProvider = () => {
   const [user, setUser] = useState<User | null>(() => {
-    const token = localStorage.getItem('jwt_token');
+    const token = localStorage.getItem(STORAGE_KEYS.AUTH.JWT_TOKEN);
     if (!token) {
       return null;
     }
@@ -45,7 +46,7 @@ export const useAuthProvider = () => {
       return user;
     } catch (error) {
       console.error('Failed to parse token:', error);
-      localStorage.removeItem('jwt_token');
+      localStorage.removeItem(STORAGE_KEYS.AUTH.JWT_TOKEN);
       return null;
     }
   });
@@ -72,7 +73,7 @@ export const useAuthProvider = () => {
           username: decoded.username,
         };
 
-        localStorage.setItem('jwt_token', access_token);
+        localStorage.setItem(STORAGE_KEYS.AUTH.JWT_TOKEN, access_token);
         setUser(userData);
         return true;
       } catch (error) {
@@ -84,7 +85,7 @@ export const useAuthProvider = () => {
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem('jwt_token');
+    localStorage.removeItem(STORAGE_KEYS.AUTH.JWT_TOKEN);
     setUser(null);
   }, []);
 
@@ -106,7 +107,7 @@ export const useAuthProvider = () => {
   // Update authentication status if token changes in another tab/window
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'jwt_token') {
+      if (e.key === STORAGE_KEYS.AUTH.JWT_TOKEN) {
         try {
           if (!e.newValue) {
             setUser(null);

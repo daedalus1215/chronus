@@ -15,8 +15,7 @@ import {
 } from '../../../../api/requests/notes.requests';
 import { NOTE_TYPES } from '../../../../constant';
 import { collectSubtreeIds, visibleFolderIdsInOrder } from './utils';
-
-const EXPANDED_FOLDERS_STORAGE_KEY = 'chronus-explorer-expanded-folders';
+import { STORAGE_KEYS } from '../../../../constants/storage';
 
 /**
  * Restore the folder expansion state from localStorage.
@@ -25,7 +24,7 @@ const EXPANDED_FOLDERS_STORAGE_KEY = 'chronus-explorer-expanded-folders';
  */
 const readStoredExpanded = (): Set<number> => {
   try {
-    const stored = localStorage.getItem(EXPANDED_FOLDERS_STORAGE_KEY);
+    const stored = localStorage.getItem(STORAGE_KEYS.EXPLORER.EXPANDED_FOLDERS);
     if (stored === null) return new Set();
     const parsed: unknown = JSON.parse(stored);
     if (!Array.isArray(parsed)) return new Set();
@@ -84,7 +83,7 @@ export const useFolderOperations = (
   // (component unmount) and across reloads.
   useEffect(() => {
     localStorage.setItem(
-      EXPANDED_FOLDERS_STORAGE_KEY,
+      STORAGE_KEYS.EXPLORER.EXPANDED_FOLDERS,
       JSON.stringify([...expanded])
     );
   }, [expanded]);

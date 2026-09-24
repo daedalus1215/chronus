@@ -32,8 +32,7 @@ import FolderOutlined from '@mui/icons-material/FolderOutlined';
 import { SidebarAudioHistoryView } from './components/SidebarAudioHistoryView/SidebarAudioHistoryView';
 import { TimeTrackHistoryView } from './components/TimeTrackHistoryView/TimeTrackHistoryView';
 import { SidebarNoteHistoryView } from './components/SidebarNoteHistoryView/SidebarNoteHistoryView';
-
-const SIDEBAR_TAB_STORAGE_KEY = 'chronus-sidebar-tab';
+import { STORAGE_KEYS } from '../../constants/storage';
 
 const sidebarTabs = [
   { id: 'checklist', icon: <ChecklistOutlined /> },
@@ -73,14 +72,14 @@ export const NotePage: React.FC = () => {
 
   // Active tab with localStorage persistence
   const [activeTab, setActiveTab] = useState<string>(() => {
-    const stored = localStorage.getItem(SIDEBAR_TAB_STORAGE_KEY);
+    const stored = localStorage.getItem(STORAGE_KEYS.NOTE_PAGE.SIDEBAR_TAB);
     return stored && sidebarTabs.some(t => t.id === stored)
       ? stored
       : 'checklist';
   });
 
   useEffect(() => {
-    localStorage.setItem(SIDEBAR_TAB_STORAGE_KEY, activeTab);
+    localStorage.setItem(STORAGE_KEYS.NOTE_PAGE.SIDEBAR_TAB, activeTab);
   }, [activeTab]);
 
   const handleTabChange = (tabId: string): void => {
