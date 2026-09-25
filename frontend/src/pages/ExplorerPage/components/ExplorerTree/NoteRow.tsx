@@ -86,7 +86,7 @@ export const NoteRow: React.FC<NoteRowProps> = React.memo(
             onClick={e => e.stopPropagation()}
           >
             <DragIndicatorIcon
-              sx={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}
+              sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
             />
           </span>
         )}
@@ -97,18 +97,18 @@ export const NoteRow: React.FC<NoteRowProps> = React.memo(
               checked={selected}
               onChange={() => onTogglePick()}
               inputProps={{ 'aria-label': `Select note ${note.name}` }}
-              sx={{ p: 0.25, color: 'rgba(255,255,255,0.45)' }}
+              sx={{ p: 0.25, color: 'var(--color-text-muted)' }}
             />
           </span>
         )}
         <span className={styles.rowIcon}>
           {note.isMemo ? (
             <StickyNote2Icon
-              sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}
+              sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
             />
           ) : (
             <CheckBoxIcon
-              sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}
+              sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
             />
           )}
         </span>
