@@ -8,6 +8,10 @@
  * Grouped by domain so each feature's keys live in one place.
  */
 export const STORAGE_KEYS = {
+  APPEARANCE: {
+    /** Selected theme mode ('light' | 'dark' | 'system'). */
+    THEME_MODE: 'chronus-theme-mode',
+  },
   AUTH: {
     /** JWT read by the axios interceptor, auth provider, and transcription socket. */
     JWT_TOKEN: 'jwt_token',
