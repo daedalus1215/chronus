@@ -8,6 +8,7 @@ import { useParams, useMatch, Outlet } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { useSidebar } from '../../hooks/useSidebar';
 import styles from './TagPage.module.css';
+import { STORAGE_KEYS } from '../../constants/storage';
 
 const TAG_NOTES_NOTE_PATTERN = '/tag-notes/:tagId/notes/:id';
 
@@ -24,7 +25,7 @@ export const TagPage: React.FC = () => {
     handleKeyDown,
     handleDoubleClick,
   } = useResizablePane({
-    localStorageKey: 'tagTreeWidthPx',
+    localStorageKey: STORAGE_KEYS.TAGS.TREE_WIDTH_PX,
     min: 10, // allow thin rail
     max: 300, // align with note list width cap
     initial: 300,

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { STORAGE_KEYS } from '../../../../constants/storage';
 
 type UseTranscriptionWebSocketProps = {
   noteId: number;
@@ -80,7 +81,7 @@ export const useTranscriptionWebSocket = ({
       wsRef.current = null;
     }
 
-    const token = localStorage.getItem('jwt_token');
+    const token = localStorage.getItem(STORAGE_KEYS.AUTH.JWT_TOKEN);
     if (!token) {
       const message = 'You must be signed in to record';
       setError(message);
