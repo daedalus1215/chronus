@@ -1,7 +1,7 @@
 .container {
   padding: 1.25rem;
   background-color: var(--color-bg-elevated) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid var(--color-border-light) !important;
   border-radius: 14px !important;
   box-shadow: var(--elevation-2) !important;
   transition:
@@ -10,7 +10,7 @@
 }
 
 .container:hover {
-  border-color: rgba(99, 102, 241, 0.2) !important;
+  border-color: var(--color-primary-light-2) !important;
   box-shadow: var(--elevation-3) !important;
 }
 
@@ -20,11 +20,11 @@
   gap: 0.5rem;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .headerIcon {
-  color: #6366f1;
+  color: var(--color-primary) !important;
   font-size: 20px !important;
 }
 
@@ -105,12 +105,12 @@
   min-width: 36px !important;
   padding: 0 !important;
   color: var(--color-text-secondary) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--color-border) !important;
 }
 
 .clearButton:hover {
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  background-color: rgba(255, 255, 255, 0.04) !important;
+  border-color: var(--color-border-dark) !important;
+  background-color: var(--color-overlay-light) !important;
 }
 
 .chipsRow {
@@ -119,7 +119,7 @@
   gap: 0.75rem;
   margin-top: 0.875rem;
   padding-top: 0.875rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--color-border-light);
 }
 
 .chipsLabel {
@@ -140,28 +140,28 @@
   font-size: 0.75rem !important;
   font-weight: 500 !important;
   height: 28px !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
+  background-color: var(--color-overlay-light) !important;
   color: var(--color-text-secondary) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--color-border-light) !important;
   transition: all 0.15s ease !important;
   cursor: pointer !important;
 }
 
 .durationChip:hover {
-  background-color: rgba(99, 102, 241, 0.15) !important;
+  background-color: var(--accent-soft) !important;
   border-color: rgba(99, 102, 241, 0.4) !important;
-  color: #818cf8 !important;
+  color: var(--color-primary) !important;
 }
 
 .durationChipSelected {
-  background-color: #6366f1 !important;
-  border-color: #6366f1 !important;
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
   color: white !important;
 }
 
 .durationChipSelected:hover {
-  background-color: #4f46e5 !important;
-  border-color: #4f46e5 !important;
+  background-color: var(--color-primary-dark) !important;
+  border-color: var(--color-primary-dark) !important;
   color: white !important;
 }
 
