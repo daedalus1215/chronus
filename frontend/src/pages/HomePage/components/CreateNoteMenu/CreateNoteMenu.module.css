@@ -45,7 +45,7 @@
 
 .menuButton:hover {
   background-color: var(--accent-soft);
-  color: #fff;
+  color: var(--color-text);
   transform: translateX(3px);
 }
 
