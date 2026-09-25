@@ -154,7 +154,7 @@
 /* Code */
 .markdownContent code {
   background-color: var(--accent-soft);
-  color: #cdd0ff;
+  color: var(--color-primary);
   padding: 0.1rem 0.35rem;
   border-radius: 5px;
   border: 1px solid var(--glass-border);

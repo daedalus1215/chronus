@@ -148,11 +148,11 @@ export const SidebarNoteHistoryView: React.FC<
                   px: 2,
                   cursor: 'pointer',
                   backgroundColor: isLoaded
-                    ? 'rgba(99,102,241,0.08)'
+                    ? 'var(--color-primary-light)'
                     : 'transparent',
                   '&:hover': {
                     backgroundColor: isLoaded
-                      ? 'rgba(99,102,241,0.12)'
+                      ? 'var(--accent-soft)'
                       : 'action.hover',
                   },
                 }}
