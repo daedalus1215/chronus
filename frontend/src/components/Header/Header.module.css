@@ -42,7 +42,7 @@
 .logo {
   height: 75px;
   width: auto;
-  filter: brightness(0) invert(1);
+  filter: var(--logo-filter);
 }
 
 .name {
