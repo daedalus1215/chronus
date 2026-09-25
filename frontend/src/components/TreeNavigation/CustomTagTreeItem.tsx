@@ -14,6 +14,7 @@ import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import SnackbarContent from '@mui/material/SnackbarContent';
 import MoreVert from '@mui/icons-material/MoreVert';
+import PushPin from '@mui/icons-material/PushPin';
 import LocalOffer from '@mui/icons-material/LocalOffer';
 import { ROUTES } from '../../constants/routes';
 import { NOTE_PREFIX, TAG_PREFIX, parseNoteId } from './tagTreeItems';
@@ -309,6 +310,17 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               minWidth: 0,
             }}
           >
+            {isPinned && (
+              <PushPin
+                fontSize="small"
+                sx={{
+                  flexShrink: 0,
+                  color: 'var(--color-primary)',
+                  fontSize: '0.8rem',
+                  mr: 0.5,
+                }}
+              />
+            )}
             <Box
               {...labelPropsForDom}
               sx={[
@@ -329,7 +341,7 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
           </Box>
         );
       },
-      [handleMoreClick]
+      [handleMoreClick, isPinned]
     );
 
     const tagLabelSx = {

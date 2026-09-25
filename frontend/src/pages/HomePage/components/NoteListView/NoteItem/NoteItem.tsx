@@ -24,6 +24,7 @@ import {
   deleteNote,
   updateNoteTimestamp,
 } from '../../../../../api/requests/notes.requests';
+import PushPin from '@mui/icons-material/PushPin';
 import styles from './NoteItem.module.css';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
 import { useExportNote } from '../../../hooks/useExportNote';
@@ -425,9 +426,14 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         }}
       >
         <div className={styles.noteInfo}>
-          <span className={styles.noteName} title={note.name}>
-            {note.name}
-          </span>
+          <div className={styles.noteNameRow}>
+            {note.pinned && (
+              <PushPin className={styles.pinIcon} aria-label="Pinned" />
+            )}
+            <span className={styles.noteName} title={note.name}>
+              {note.name}
+            </span>
+          </div>
           <span className={styles.noteType}>
             {note.isMemo ? 'Memo' : 'List'}
           </span>
