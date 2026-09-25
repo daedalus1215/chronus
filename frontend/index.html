@@ -10,6 +10,26 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Chronus" />
     <title>Chronus</title>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash of the
+      // wrong color scheme. Mirrors ThemeModeContext defaults: stored
+      // 'light'/'dark' wins, otherwise follow the system preference.
+      (function () {
+        var mode;
+        try {
+          var stored = localStorage.getItem('chronus-theme-mode');
+          mode =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+        } catch (error) {
+          mode = 'dark';
+        }
+        document.documentElement.dataset.theme = mode;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
