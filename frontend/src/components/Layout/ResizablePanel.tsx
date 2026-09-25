@@ -70,7 +70,7 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
         elevation={0}
         sx={{
           height: '100%',
-          backgroundColor: '#1a1a1a',
+          backgroundColor: 'background.paper',
           borderRight: '1px solid',
           borderColor: 'divider',
           overflow: 'hidden',
@@ -90,10 +90,10 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
           cursor: 'col-resize',
           backgroundColor: 'transparent',
           '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'action.hover',
           },
           '&:active': {
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            backgroundColor: 'action.selected',
           },
         }}
         onMouseDown={handleMouseDown}

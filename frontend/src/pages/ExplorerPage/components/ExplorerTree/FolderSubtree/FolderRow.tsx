@@ -99,7 +99,7 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(
             onClick={e => e.stopPropagation()}
           >
             <DragIndicatorIcon
-              sx={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}
+              sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
             />
           </span>
         )}
@@ -110,7 +110,7 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(
               checked={selected}
               onChange={() => onTogglePick(node.id)}
               inputProps={{ 'aria-label': `Select folder ${node.name}` }}
-              sx={{ p: 0.25, color: 'rgba(255,255,255,0.45)' }}
+              sx={{ p: 0.25, color: 'var(--color-text-muted)' }}
             />
           </span>
         )}
@@ -126,11 +126,11 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(
         <span className={styles.rowIcon}>
           {isOpen ? (
             <FolderOpenIcon
-              sx={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }}
+              sx={{ fontSize: 14, color: 'var(--color-text-secondary)' }}
             />
           ) : (
             <FolderIcon
-              sx={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}
+              sx={{ fontSize: 14, color: 'var(--color-text-muted)' }}
             />
           )}
         </span>

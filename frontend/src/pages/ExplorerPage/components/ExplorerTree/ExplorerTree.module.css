@@ -48,23 +48,23 @@
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--color-text-muted);
 }
 
 .headerBtn {
   padding: 3px !important;
-  color: rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-text-muted) !important;
   border-radius: 3px !important;
 }
 .headerBtn:hover {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: var(--color-text-secondary) !important;
   background: var(--color-overlay-medium) !important;
 }
 
 .headerSep {
   width: 1px;
   height: 16px;
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: var(--color-overlay-strong);
   flex-shrink: 0;
 }
 
@@ -157,7 +157,7 @@
   justify-content: center;
   width: 14px;
   flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--color-text-muted);
   transition:
     transform 0.18s var(--ease-out, ease),
     color 0.15s ease;
@@ -168,7 +168,7 @@
 }
 
 .row:hover .chevron {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-secondary);
 }
 
 /* ── Icon slot ─────────────────────────────────────────────────── */
@@ -185,13 +185,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-text-secondary);
   line-height: 1;
   font-size: 13px;
 }
 
 .labelActive {
-  color: rgba(255, 255, 255, 0.95) !important;
+  color: var(--color-text) !important;
 }
 
 /* ── Inline rename ─────────────────────────────────────────────── */
@@ -212,11 +212,11 @@
 
 .actionBtn {
   padding: 2px !important;
-  color: rgba(255, 255, 255, 0.4) !important;
+  color: var(--color-text-muted) !important;
   border-radius: 3px !important;
 }
 .actionBtn:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: var(--color-text) !important;
   background: var(--color-overlay-strong) !important;
 }
 
@@ -249,8 +249,8 @@
   padding: 6px 8px;
   flex-shrink: 0;
   min-height: 38px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background-color: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-overlay-light);
 }
 
 .filterInput {
@@ -259,11 +259,11 @@
 
 .filterInput .MuiInputBase-root {
   font-size: 12px !important;
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 .filterInput .MuiInputBase-input::placeholder {
-  color: rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-text-muted) !important;
 }
 
 .filterInput .MuiInputBase-input:focus {
@@ -272,11 +272,11 @@
 
 .filterClear {
   padding: 2px !important;
-  color: rgba(255, 255, 255, 0.35) !important;
+  color: var(--color-text-muted) !important;
 }
 
 .filterClear:hover {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 /* ── Dimmed row (filter non-match) ─────────────────────────────── */

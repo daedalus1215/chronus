@@ -223,7 +223,7 @@ export const NotePage: React.FC = () => {
                   px: 1,
                   py: 0.25,
                   borderRadius: 1,
-                  backgroundColor: 'rgba(99,102,241,0.08)',
+                  backgroundColor: 'var(--color-primary-light)',
                   whiteSpace: 'nowrap',
                 }}
               >

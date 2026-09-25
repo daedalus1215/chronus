@@ -23,17 +23,17 @@
   font-weight: 600 !important;
   letter-spacing: 0.07em !important;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35) !important;
+  color: var(--color-text-muted) !important;
   line-height: 1 !important;
 }
 
 .headerBtn {
   padding: 3px !important;
-  color: rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-text-muted) !important;
   border-radius: 3px !important;
 }
 .headerBtn:hover {
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: var(--color-text-secondary) !important;
   background: var(--color-overlay-medium) !important;
 }
 
@@ -74,7 +74,7 @@
 .item[aria-selected='true'] {
   background-color: var(--color-bg-elevated) !important;
   border-left-color: var(--color-primary);
-  color: rgba(255, 255, 255, 0.95) !important;
+  color: var(--color-text) !important;
 }
 
 .item.Mui-selected:hover {
@@ -88,7 +88,7 @@
   justify-content: center;
   width: 14px;
   flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--color-text-muted);
 }
 
 /* ── Folder / file icon ───────────────────────────────────────── */
@@ -102,7 +102,7 @@
 .label {
   font-size: 13px !important;
   line-height: 1 !important;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--color-text-secondary);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -110,7 +110,7 @@
 }
 
 .labelSelected {
-  color: rgba(255, 255, 255, 0.95) !important;
+  color: var(--color-text) !important;
 }
 
 /* ── Inline rename input ─────────────────────────────────────── */
@@ -132,10 +132,10 @@
 
 .actionBtn {
   padding: 2px !important;
-  color: rgba(255, 255, 255, 0.45) !important;
+  color: var(--color-text-muted) !important;
   border-radius: 3px !important;
 }
 .actionBtn:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: var(--color-text) !important;
   background: var(--color-overlay-strong) !important;
 }

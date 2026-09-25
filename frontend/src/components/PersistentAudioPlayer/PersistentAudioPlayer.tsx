@@ -124,17 +124,17 @@ export const PersistentAudioPlayer: React.FC = () => {
               onChange={(_, value) => seek(value as number)}
               disabled={isLoading}
               sx={{
-                color: '#6366f1',
+                color: 'primary.main',
                 '& .MuiSlider-thumb': {
                   width: 12,
                   height: 12,
-                  backgroundColor: '#6366f1',
+                  backgroundColor: 'primary.main',
                   '&:hover': {
                     boxShadow: '0 0 0 8px rgba(99, 102, 241, 0.16)',
                   },
                 },
                 '& .MuiSlider-rail': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  backgroundColor: 'action.hover',
                 },
               }}
             />
@@ -182,7 +182,7 @@ export const PersistentAudioPlayer: React.FC = () => {
                 onChange={(_, value) => setVolume(value as number)}
                 className={styles.volumeSlider}
                 sx={{
-                  color: '#6366f1',
+                  color: 'primary.main',
                   width: 60,
                   '& .MuiSlider-thumb': {
                     width: 10,
@@ -197,10 +197,10 @@ export const PersistentAudioPlayer: React.FC = () => {
               onClick={togglePlay}
               disabled={isLoading}
               sx={{
-                backgroundColor: '#6366f1',
+                backgroundColor: 'primary.main',
                 color: 'white',
                 '&:hover': {
-                  backgroundColor: '#4f46e5',
+                  backgroundColor: 'primary.dark',
                 },
                 '&.Mui-disabled': {
                   backgroundColor: 'rgba(99, 102, 241, 0.3)',

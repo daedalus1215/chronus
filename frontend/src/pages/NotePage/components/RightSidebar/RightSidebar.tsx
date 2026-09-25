@@ -51,7 +51,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               borderLeftColor: 'var(--color-overlay-stronger)',
             },
             '& .Mui-selected': {
-              backgroundColor: 'rgba(99,102,241,0.12)',
+              backgroundColor: 'var(--accent-soft)',
               color: 'primary.main',
             },
           }}
