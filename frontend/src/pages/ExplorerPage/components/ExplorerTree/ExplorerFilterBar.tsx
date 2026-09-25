@@ -37,7 +37,7 @@ export const ExplorerFilterBar: React.FC<ExplorerFilterBarProps> = ({
             <SearchIcon
               sx={{
                 fontSize: 14,
-                color: 'rgba(255,255,255,0.35)',
+                color: 'var(--color-text-muted)',
                 mr: 0.5,
               }}
             />
