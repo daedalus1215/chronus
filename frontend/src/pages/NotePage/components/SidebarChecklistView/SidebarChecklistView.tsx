@@ -196,7 +196,7 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
               className={styles.listItem}
               sx={{
                 background: item.doneDate
-                  ? 'rgba(99,102,241,0.08)'
+                  ? 'var(--color-primary-light)'
                   : 'transparent',
                 borderBottom: '1px solid var(--color-overlay-stronger)',
                 py: 0.5,
