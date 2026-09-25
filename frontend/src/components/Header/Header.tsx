@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { SidebarToggleIcon } from './Sidebar/SidebarToggleIcon';
 import { useTopRailActionsSlot } from '../../hooks/useTopRailActionsSlot';
+import { ThemeToggleButton } from '../ThemeToggle/ThemeToggleButton';
 import styles from './Header.module.css';
 
 export const MOBILE_HEADER_HEIGHT_PX = 48;
@@ -47,18 +48,17 @@ export const Header: React.FC<HeaderProps> = ({ actionsOnly = false }) => {
                 <SidebarToggleIcon isOpen={false} size={20} />
               </IconButton>
             )}
-            {pageActions && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
-                  ml: 'auto',
-                }}
-              >
-                {pageActions}
-              </Box>
-            )}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                ml: 'auto',
+              }}
+            >
+              <ThemeToggleButton />
+              {pageActions}
+            </Box>
           </div>
         </header>
         {!actionsOnly && (
@@ -82,6 +82,7 @@ export const Header: React.FC<HeaderProps> = ({ actionsOnly = false }) => {
             <span className={styles.name}>Chronus</span>
           </button>
           <div className={styles.rightSection}>
+            <ThemeToggleButton />
             <span className={styles.username}>{user?.username}</span>
             <button onClick={handleSignOut} className={styles.signOutButton}>
               Sign Out
