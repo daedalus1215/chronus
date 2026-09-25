@@ -122,7 +122,7 @@ export const FolderTree: React.FC<Props> = ({ selectedId, onSelect }) => {
                   color:
                     selectedId === null
                       ? 'primary.light'
-                      : 'rgba(255,255,255,0.45)',
+                      : 'var(--color-text-muted)',
                 }}
               />
             </Box>
