@@ -100,13 +100,18 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
       if (!target) {
         return prevNotes;
       }
+      const otherNotes = prevNotes.filter(note => note.id !== noteId);
       if (pinned) {
-        const otherNotes = prevNotes.filter(note => note.id !== noteId);
         return [{ ...target, pinned: true }, ...otherNotes];
       }
-      return prevNotes.map(note =>
-        note.id === noteId ? { ...note, pinned: false } : note
-      );
+      // Unpin: drop to the top of the unpinned section. The server keeps the
+      // note's updated_at, so the next fetch settles its exact position.
+      const pinnedCount = otherNotes.filter(note => note.pinned).length;
+      return [
+        ...otherNotes.slice(0, pinnedCount),
+        { ...target, pinned: false },
+        ...otherNotes.slice(pinnedCount),
+      ];
     });
   }, []);
 
