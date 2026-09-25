@@ -125,7 +125,7 @@
 }
 
 .playButton:hover {
-  background-color: rgba(99, 102, 241, 0.1);
+  background-color: var(--color-primary-light);
 }
 
 .downloadButton {
@@ -137,5 +137,5 @@
 }
 
 .deleteButton:hover {
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: var(--color-destructive-light);
 }

@@ -512,7 +512,7 @@ export const ExplorerTree: React.FC = () => {
 
           {rootNotes.length === 0 && tree.length === 0 && (
             <Box sx={{ px: 2, py: 1 }}>
-              <Typography sx={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+              <Typography sx={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
                 No notes or folders yet
               </Typography>
             </Box>

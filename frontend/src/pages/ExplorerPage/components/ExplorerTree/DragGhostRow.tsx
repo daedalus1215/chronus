@@ -26,16 +26,16 @@ export const DragGhostRow: React.FC<DragGhostRowProps> = ({
     const folder = folders.find(f => f.id === folderId);
     name = folder?.name ?? '';
     icon = (
-      <FolderIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.55)' }} />
+      <FolderIcon sx={{ fontSize: 14, color: 'var(--color-text-secondary)' }} />
     );
   } else {
     const noteId = parseInt(id.slice(5), 10);
     const note = notes.find(n => n.id === noteId);
     name = note?.name ?? '';
     icon = note?.isMemo ? (
-      <StickyNote2Icon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
+      <StickyNote2Icon sx={{ fontSize: 13, color: 'var(--color-text-muted)' }} />
     ) : (
-      <CheckBoxIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }} />
+      <CheckBoxIcon sx={{ fontSize: 13, color: 'var(--color-text-muted)' }} />
     );
   }
 
@@ -44,8 +44,8 @@ export const DragGhostRow: React.FC<DragGhostRowProps> = ({
       className={styles.row}
       sx={{
         opacity: 0.85,
-        background: 'rgba(255,255,255,0.1)',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+        background: 'var(--color-overlay-stronger)',
+        boxShadow: 'var(--elevation-2)',
         pl: '10px',
         pointerEvents: 'none',
       }}

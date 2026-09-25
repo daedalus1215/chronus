@@ -63,7 +63,7 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
               component="span"
               sx={{
                 fontSize: 11,
-                color: 'rgba(255,255,255,0.35)',
+                color: 'var(--color-text-muted)',
                 maxWidth: 90,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -126,10 +126,10 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
             letterSpacing: 0.01,
             whiteSpace: 'nowrap',
             color: pickItemsMode
-              ? 'rgba(255,255,255,0.95)'
-              : 'rgba(255,255,255,0.45)',
+              ? 'var(--color-text)'
+              : 'var(--color-text-muted)',
             backgroundColor: pickItemsMode
-              ? 'rgba(255,255,255,0.1)'
+              ? 'var(--color-overlay-stronger)'
               : 'transparent',
           }}
         >
@@ -142,7 +142,7 @@ export const ExplorerTreeHeader: React.FC<ExplorerTreeHeaderProps> = ({
           aria-pressed={dragMode !== 'off'}
           onClick={onCycleDragMode}
           sx={{
-            color: dragMode !== 'off' ? 'rgba(255,255,255,0.95)' : undefined,
+            color: dragMode !== 'off' ? 'var(--color-text)' : undefined,
           }}
         >
           <SwapVertIcon sx={{ fontSize: 14 }} />

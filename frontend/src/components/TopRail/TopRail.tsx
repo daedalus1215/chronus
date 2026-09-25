@@ -41,7 +41,7 @@ export const TopRail: React.FC = () => {
         px: 0.5,
         borderBottom: '1px solid',
         borderColor: 'divider',
-        backgroundColor: '#111',
+        backgroundColor: 'background.paper',
         zIndex: 10,
       }}
     >

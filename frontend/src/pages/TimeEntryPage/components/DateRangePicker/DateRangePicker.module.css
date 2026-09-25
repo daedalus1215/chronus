@@ -1,7 +1,7 @@
 .container {
   padding: 1rem 1.25rem;
   background-color: var(--color-bg-elevated) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid var(--color-border-light) !important;
   border-radius: 14px !important;
   box-shadow: var(--elevation-2) !important;
   transition:
@@ -10,7 +10,7 @@
 }
 
 .container:hover {
-  border-color: rgba(99, 102, 241, 0.2) !important;
+  border-color: var(--color-primary-light-2) !important;
   box-shadow: var(--elevation-3) !important;
 }
 
@@ -20,11 +20,11 @@
   gap: 0.5rem;
   margin-bottom: 0.875rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .icon {
-  color: #6366f1;
+  color: var(--color-primary);
   font-size: 20px !important;
 }
 
@@ -51,33 +51,33 @@
   text-transform: none !important;
   font-weight: 500 !important;
   font-size: 0.8125rem !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--color-border) !important;
   color: var(--color-text-secondary) !important;
   transition: all 0.15s ease !important;
 }
 
 .presetButton:hover {
   border-color: rgba(99, 102, 241, 0.4) !important;
-  background-color: rgba(99, 102, 241, 0.08) !important;
-  color: #818cf8 !important;
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
 }
 
 .presetButtonActive {
-  background-color: #6366f1 !important;
-  border-color: #6366f1 !important;
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
   color: white !important;
 }
 
 .presetButtonActive:hover {
-  background-color: #4f46e5 !important;
-  border-color: #4f46e5 !important;
+  background-color: var(--color-primary-dark) !important;
+  border-color: var(--color-primary-dark) !important;
   color: white !important;
 }
 
 .divider {
   width: 1px;
   height: 28px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-overlay-stronger);
 }
 
 .customRange {

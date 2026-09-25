@@ -43,7 +43,7 @@
 }
 
 .snackbarError {
-  background-color: #ef4444 !important;
+  background-color: var(--color-destructive) !important;
   color: white !important;
   border-radius: 8px !important;
   padding: 0.5rem 1rem !important;

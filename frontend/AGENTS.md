@@ -18,19 +18,14 @@ npm run preview      # preview production build locally
 
 ## Theme
 
-The MUI theme is in `src/theme.ts`. Dark mode, palette:
+Light and dark modes.
 
-```typescript
-palette: {
-  mode: 'dark',
-  primary: { main: '#6366f1' },
-  secondary: { main: '#ffd700' },
-  background: { default: '#000', paper: '#111' },
-  text: { primary: '#fff', secondary: '#9ca3af' },
-},
-```
+- `src/contexts/ThemeModeContext.tsx` — `ThemeModeProvider` + `useThemeMode()`. Modes: `'light' | 'dark' | 'system'` (system follows `prefers-color-scheme`, live). The selection persists under `STORAGE_KEYS.APPEARANCE.THEME_MODE`; the resolved mode is applied as `data-theme` on `<html>`. A pre-paint script in `index.html` applies the saved mode before React mounts (no flash).
+- `src/theme.ts` — `createChronusTheme(mode)` builds the MUI theme per palette mode; `App.tsx` memoizes it from the context.
+- `src/styles/global.scss` — design tokens. `:root` holds light-mode values, `[data-theme='dark']` holds dark-mode values. Always consume tokens (`var(--color-*)`, `var(--glass-*)`, `var(--elevation-*)`, …) — never hardcode hex/rgba in CSS or `sx`.
+- Entry points: `ThemeToggleButton` in the app header (quick switch) and Settings → Appearance (Light / Dark / System).
 
-Use `theme.palette.*` via `sx` or `useTheme()` — don't hardcode hex unless matching a design token.
+Use `theme.palette.*` via `sx` or `useTheme()` for MUI colors — don't hardcode hex unless matching a design token.
 
 ## Routing
 

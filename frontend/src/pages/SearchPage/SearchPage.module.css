@@ -63,7 +63,7 @@
 }
 
 .context {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-secondary);
   font-size: 0.85rem !important;
   line-height: 1.5 !important;
 }
@@ -74,7 +74,7 @@
 
 .highlight {
   background-color: rgba(255, 215, 0, 0.35);
-  color: #ffd700;
+  color: var(--color-secondary);
   padding: 0 2px;
   border-radius: 2px;
   font-style: normal;

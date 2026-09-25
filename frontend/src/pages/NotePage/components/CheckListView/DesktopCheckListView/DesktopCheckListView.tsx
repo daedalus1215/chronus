@@ -283,7 +283,7 @@ export const DesktopCheckListView: React.FC<CheckListViewProps> = ({
                   className={styles.listItem}
                   sx={{
                     background: item.doneDate
-                      ? 'rgba(99,102,241,0.08)'
+                      ? 'var(--color-primary-light)'
                       : 'transparent',
                     borderBottom: '1px solid var(--border)',
                     py: 0.5,
