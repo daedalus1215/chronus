@@ -14,7 +14,13 @@ import { RegisterPage } from './pages/RegisterPage/RegisterPage';
 import { LandingPage } from './pages/LandingPage/LandingPage';
 import { NotePage } from './pages/NotePage/NotePage';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import { muiTheme } from './theme';
+import { useMemo } from 'react';
+import type { FC } from 'react';
+import {
+  ThemeModeProvider,
+  useThemeMode,
+} from './contexts/ThemeModeContext';
+import { createChronusTheme } from './theme';
 import { TagPage } from './pages/TagPage/TagPage';
 import { ActivityPage } from './pages/ActivityPage/ActivityPage';
 import { YearlyNotesPage } from './pages/YearlyNotesPage/YearlyNotesPage';
@@ -95,20 +101,33 @@ function AppRoutes() {
   );
 }
 
+const ThemedShell: FC = () => {
+  const { effectiveMode } = useThemeMode();
+  const theme = useMemo(() => createChronusTheme(effectiveMode), [
+    effectiveMode,
+  ]);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <SidebarProvider>
+          <AudioPlayerProvider>
+            <AppRoutes />
+            <PersistentAudioPlayer />
+          </AudioPlayerProvider>
+        </SidebarProvider>
+      </Router>
+    </ThemeProvider>
+  );
+};
+
 export function App() {
   return (
     <AuthProvider>
-      <ThemeProvider theme={muiTheme}>
-        <CssBaseline />
-        <Router>
-          <SidebarProvider>
-            <AudioPlayerProvider>
-              <AppRoutes />
-              <PersistentAudioPlayer />
-            </AudioPlayerProvider>
-          </SidebarProvider>
-        </Router>
-      </ThemeProvider>
+      <ThemeModeProvider>
+        <ThemedShell />
+      </ThemeModeProvider>
     </AuthProvider>
   );
 }
