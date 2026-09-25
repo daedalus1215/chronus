@@ -31,6 +31,7 @@ import {
   useMergeIntoNote,
   MergeIntoNoteData,
 } from '../../../hooks/useMergeIntoNote';
+import { usePinNote } from '../../../hooks/usePinNote';
 import { MergeSelectionDialog } from '../../MergeSelectionDialog/MergeSelectionDialog';
 import { ParsedMemo } from '../../ImportSelectionDialog/ImportSelectionDialog';
 import { MoveNoteDialog } from '../../../../../components/MoveNoteDialog/MoveNoteDialog';
@@ -42,6 +43,7 @@ type Note = {
   id: number;
   isMemo: number;
   folderId: number | null;
+  pinned: boolean;
 };
 
 interface NoteItemProps {
@@ -50,6 +52,8 @@ interface NoteItemProps {
   isSelected?: boolean;
   /** When true, uses smaller padding and font so more items fit on screen (e.g. desktop list). */
   compact?: boolean;
+  /** Applies an optimistic pin-state change to the owning list. */
+  onPinnedChange?: (noteId: number, pinned: boolean) => void;
 }
 
 export const NoteItem: React.FC<NoteItemProps> = ({
@@ -57,6 +61,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   onClick,
   isSelected,
   compact = false,
+  onPinnedChange,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -77,6 +82,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     error: createTimeTrackError,
   } = useCreateTimeTrack();
   const { archiveNote, isArchiving } = useArchiveNote();
+  const { pinNote, isPinning } = usePinNote();
   const { exportNote } = useExportNote();
   const {
     moveNote,
@@ -155,6 +161,19 @@ export const NoteItem: React.FC<NoteItemProps> = ({
 
   const handleShare = () => {
     setIsActionsOpen(false);
+  };
+  const handlePin = async () => {
+    const nextPinned = !note.pinned;
+    setIsActionsOpen(false);
+    onPinnedChange?.(note.id, nextPinned);
+    try {
+      await pinNote(note.id, nextPinned);
+    } catch (err) {
+      console.error('Failed to update pin state:', err);
+      onPinnedChange?.(note.id, !nextPinned);
+      setToastSeverity('error');
+      setToastMessage('Failed to update pin state');
+    }
   };
 
   const handleDelete = () => {
@@ -439,6 +458,8 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onViewBoard={handleViewBoard}
         onEdit={handleTimeTracking}
         onLabel={handleTimeTracking}
+        onPin={handlePin}
+        isPinned={note.pinned}
         onExport={handleExport}
         onImportIntoNote={handleImportIntoNote}
         onConvertToMemo={handleConvertToMemo}

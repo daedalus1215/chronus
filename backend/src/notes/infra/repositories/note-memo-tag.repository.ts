@@ -52,7 +52,13 @@ export class NoteMemoTagRepository {
     type?: 'memo' | 'checklist',
     tagId?: string
   ): Promise<
-    { name: string; id: number; isMemo: number; folderId: number | null }[]
+    {
+      name: string;
+      id: number;
+      isMemo: number;
+      folderId: number | null;
+      pinned: boolean;
+    }[]
   > {
     const qb = this.repository
       .createQueryBuilder('note')
@@ -63,6 +69,7 @@ export class NoteMemoTagRepository {
         'isMemo'
       )
       .addSelect('note.folder_id', 'folderId')
+      .addSelect('note.pinned', 'pinned')
       .where('note.user_id = :userId', { userId });
 
     if (query) {
@@ -85,7 +92,10 @@ export class NoteMemoTagRepository {
     }
 
     return await qb
-      .orderBy('note.updated_at', 'DESC')
+      .orderBy('note.pinned', 'DESC')
+      .addOrderBy('note.pinned_at', 'DESC', 'NULLS LAST')
+      .addOrderBy('note.updated_at', 'DESC')
+      .addOrderBy('note.id', 'DESC')
       .skip(cursor)
       .take(limit)
       .getRawMany();
@@ -95,7 +105,14 @@ export class NoteMemoTagRepository {
     userId: number,
     folderId?: string
   ): Promise<
-    { name: string; id: number; isMemo: number; folderId: number | null }[]
+    {
+      name: string;
+      id: number;
+      isMemo: number;
+      folderId: number | null;
+      sortOrder: number;
+      pinned: boolean;
+    }[]
   > {
     const qb = this.repository
       .createQueryBuilder('note')
@@ -107,6 +124,7 @@ export class NoteMemoTagRepository {
       )
       .addSelect('note.folder_id', 'folderId')
       .addSelect('note.sort_order', 'sortOrder')
+      .addSelect('note.pinned', 'pinned')
       .where('note.user_id = :userId', { userId });
 
     if (folderId === 'root') {
@@ -118,6 +136,26 @@ export class NoteMemoTagRepository {
     }
 
     return await qb.orderBy('note.sort_order', 'ASC').take(500).getRawMany();
+  }
+
+  async updatePinned(
+    noteId: number,
+    userId: number,
+    pinned: boolean
+  ): Promise<UpdateResult> {
+    return this.repository
+      .createQueryBuilder('note')
+      .update(Note)
+      .set({
+        pinned,
+        pinnedAt: pinned ? new Date() : null,
+        // Explicit no-op so pinning never bumps recency. TypeORM otherwise
+        // appends an updated_at refresh to every update().
+        updatedAt: () => 'updated_at',
+      })
+      .where('id = :id', { id: noteId })
+      .andWhere('user_id = :userId', { userId })
+      .execute();
   }
 
   async updateNoteTimestamp(id: number, userId: number): Promise<UpdateResult> {

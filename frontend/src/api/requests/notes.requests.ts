@@ -15,6 +15,12 @@ export const updateNoteTimestamp = async (noteId: number): Promise<void> => {
 export const deleteNote = async (noteId: number): Promise<void> => {
   await api.delete(`/notes/${noteId}`);
 };
+export const pinNote = async (
+  noteId: number,
+  pinned: boolean
+): Promise<void> => {
+  await api.patch(`/notes/${noteId}/pin`, { pinned });
+};
 
 export const archiveNote = async (noteId: number): Promise<NoteResponse> => {
   const response = await api.patch<NoteResponse>(`/notes/${noteId}/archive`);

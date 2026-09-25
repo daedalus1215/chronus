@@ -7,6 +7,7 @@ import { Tag } from '../api/dtos/tag.dtos';
 export type NoteSummary = {
   id: number;
   name: string;
+  pinned?: boolean;
 };
 
 export const useTagsWithNotes = () => {
@@ -28,7 +29,11 @@ export const useTagsWithNotes = () => {
         undefined,
         String(tagId)
       );
-      return response.notes.map(note => ({ id: note.id, name: note.name }));
+      return response.notes.map(note => ({
+        id: note.id,
+        name: note.name,
+        pinned: Boolean(note.pinned),
+      }));
     },
     []
   );

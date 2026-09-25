@@ -51,4 +51,10 @@ export class Note {
 
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
+
+  @Column({ name: 'pinned', type: 'boolean', default: false })
+  pinned: boolean;
+
+  @Column({ name: 'pinned_at', nullable: true, type: 'timestamptz' })
+  pinnedAt: Date | null;
 }

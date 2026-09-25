@@ -48,6 +48,13 @@ describe('NoteMemoTagRepository (integration)', () => {
     );
   };
 
+  const setPinnedAt = async (id: number, iso: string): Promise<void> => {
+    await dataSource.query(
+      `UPDATE "notes" SET "pinned" = true, "pinned_at" = $1 WHERE "id" = $2`,
+      [iso, id]
+    );
+  };
+
   describe('findById', () => {
     it('should return the note when it belongs to the user', async () => {
       // Arrange
@@ -146,6 +153,42 @@ describe('NoteMemoTagRepository (integration)', () => {
 
       // Assert
       expect(rows.map(r => r.name)).toEqual(['recent', 'middle', 'old']);
+    });
+
+    it('should order pinned notes first, most recently pinned first', async () => {
+      // Arrange
+      const pinnedOlder = await seedNote({ name: 'pinned-older' });
+      const pinnedNewer = await seedNote({ name: 'pinned-newer' });
+      const recent = await seedNote({ name: 'recent' });
+      const old = await seedNote({ name: 'old' });
+      const theirs = await seedNote({ name: 'theirs', userId: otherUserId });
+      await setUpdatedAt(pinnedOlder.id, '2026-09-18T10:00:01.000Z');
+      await setUpdatedAt(pinnedNewer.id, '2026-09-18T10:00:02.000Z');
+      await setUpdatedAt(recent.id, '2026-09-18T10:00:03.000Z');
+      await setUpdatedAt(old.id, '2026-09-18T10:00:04.000Z');
+      await setUpdatedAt(theirs.id, '2026-09-18T10:00:09.000Z');
+      await setPinnedAt(pinnedOlder.id, '2026-09-18T11:00:01.000Z');
+      await setPinnedAt(pinnedNewer.id, '2026-09-18T11:00:02.000Z');
+      await setPinnedAt(theirs.id, '2026-09-18T11:00:03.000Z');
+
+      // Act
+      const rows = await target.getNoteNamesByUserId(
+        ownerId,
+        0,
+        20,
+        undefined,
+        undefined,
+        undefined
+      );
+
+      // Assert: pinned block (pinned_at desc) then unpinned (updated_at desc)
+      expect(rows.map(r => r.name)).toEqual([
+        'pinned-newer',
+        'pinned-older',
+        'old',
+        'recent',
+      ]);
+      expect(rows.map(r => r.pinned)).toEqual([true, true, false, false]);
     });
 
     it('should filter case-insensitively by name', async () => {
@@ -358,6 +401,78 @@ describe('NoteMemoTagRepository (integration)', () => {
       expect(new Date(raw[0].updated_at).toISOString()).toBe(
         '2020-01-01T00:00:00.000Z'
       );
+    });
+  });
+
+  describe('updatePinned', () => {
+    it('should pin the note without bumping updated_at', async () => {
+      // Arrange
+      const note = await seedNote({ name: 'pin-me' });
+      await setUpdatedAt(note.id, '2020-01-01T00:00:00.000Z');
+      const before = await dataSource.query(
+        `SELECT "updated_at", "pinned", "pinned_at" FROM "notes" WHERE "id" = $1`,
+        [note.id]
+      );
+
+      // Act
+      const result = await target.updatePinned(note.id, ownerId, true);
+
+      // Assert
+      expect(result.affected).toBe(1);
+      const raw = await dataSource.query(
+        `SELECT "updated_at", "pinned", "pinned_at" FROM "notes" WHERE "id" = $1`,
+        [note.id]
+      );
+      expect(raw[0].pinned).toBe(true);
+      expect(new Date(raw[0].pinned_at).getTime()).toBeGreaterThan(
+        Date.now() - 60_000
+      );
+      expect(new Date(raw[0].updated_at).toISOString()).toBe(
+        new Date(before[0].updated_at).toISOString()
+      );
+    });
+
+    it('should unpin the note, clearing pinned_at, without bumping updated_at', async () => {
+      // Arrange
+      const note = await seedNote({ name: 'unpin-me' });
+      await setUpdatedAt(note.id, '2020-01-01T00:00:00.000Z');
+      await setPinnedAt(note.id, '2026-01-01T00:00:00.000Z');
+      const before = await dataSource.query(
+        `SELECT "updated_at" FROM "notes" WHERE "id" = $1`,
+        [note.id]
+      );
+
+      // Act
+      const result = await target.updatePinned(note.id, ownerId, false);
+
+      // Assert
+      expect(result.affected).toBe(1);
+      const raw = await dataSource.query(
+        `SELECT "updated_at", "pinned", "pinned_at" FROM "notes" WHERE "id" = $1`,
+        [note.id]
+      );
+      expect(raw[0].pinned).toBe(false);
+      expect(raw[0].pinned_at).toBeNull();
+      expect(new Date(raw[0].updated_at).toISOString()).toBe(
+        new Date(before[0].updated_at).toISOString()
+      );
+    });
+
+    it("should leave another user's note untouched", async () => {
+      // Arrange
+      const note = await seedNote({ name: 'not-mine', userId: otherUserId });
+
+      // Act
+      const result = await target.updatePinned(note.id, ownerId, true);
+
+      // Assert
+      expect(result.affected).toBe(0);
+      const raw = await dataSource.query(
+        `SELECT "pinned", "pinned_at" FROM "notes" WHERE "id" = $1`,
+        [note.id]
+      );
+      expect(raw[0].pinned).toBe(false);
+      expect(raw[0].pinned_at).toBeNull();
     });
   });
 

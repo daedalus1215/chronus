@@ -23,6 +23,7 @@ import { DeleteNoteTransactionScript } from 'src/notes/domain/transaction-script
 import { GetNoteVersionsTransactionScript } from 'src/notes/domain/transaction-scripts/get-note-versions-TS/get-note-versions.transaction.script';
 import { LoadNoteVersionTransactionScript } from 'src/notes/domain/transaction-scripts/load-note-version-TS/load-note-version.transaction.script';
 import { UpdateNoteTimestampTransactionScript } from 'src/notes/domain/transaction-scripts/update-note-timestamp-TS/update-note-timestamp.transaction.script';
+import { PinNoteTransactionScript } from 'src/notes/domain/transaction-scripts/pin-note-TS/pin-note.transaction.script';
 import { CheckItemsAggregator } from 'src/check-items/domain/aggregators/check-items.aggregator';
 import { DELETE_CHECK_ITEMS_BY_NOTE_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/check-items/delete-check-items-by-note.command';
 import { DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/tags/delete-note-tag-associations.command';
@@ -97,6 +98,7 @@ describe('NoteService', () => {
           provide: UpdateNoteTimestampTransactionScript,
           useValue: {},
         },
+        { provide: PinNoteTransactionScript, useValue: {} },
         {
           provide: CheckItemsAggregator,
           useValue: mockCheckItemsAggregator,

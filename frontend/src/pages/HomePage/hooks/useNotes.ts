@@ -5,7 +5,13 @@ import { NOTE_TYPES } from '../../../constant';
 
 export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
   const [notes, setNotes] = useState<
-    { name: string; id: number; isMemo: number; folderId: number | null }[]
+    {
+      name: string;
+      id: number;
+      isMemo: number;
+      folderId: number | null;
+      pinned: boolean;
+    }[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +28,6 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
         setError(null);
 
         const response = await getNamesOfNotes(cursor, 100, query, type, tagId);
-
         if (cursor > 0) {
           setNotes(prev => [...prev, ...response.notes]);
         } else {
@@ -56,15 +61,52 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
     }
   }, [hasMore, isLoading, nextCursor, fetchNotes, searchQuery]);
 
+  // Pinned notes keep their server-defined position (pinned_at order);
+  // click-to-top only reorders the unpinned section, inserting right below
+  // the pinned block.
   const moveNoteToTop = useCallback((noteId: number) => {
     setNotes(prevNotes => {
       const noteIndex = prevNotes.findIndex(note => note.id === noteId);
-      if (noteIndex === -1 || noteIndex === 0) {
+      if (noteIndex === -1) {
         return prevNotes;
       }
       const clickedNote = prevNotes[noteIndex];
+      if (clickedNote.pinned) {
+        return prevNotes;
+      }
+      const pinnedCount = prevNotes.filter(note => note.pinned).length;
+      if (pinnedCount === 0) {
+        if (noteIndex === 0) {
+          return prevNotes;
+        }
+        const otherNotes = prevNotes.filter(note => note.id !== noteId);
+        return [clickedNote, ...otherNotes];
+      }
+      if (noteIndex === pinnedCount) {
+        return prevNotes;
+      }
       const otherNotes = prevNotes.filter(note => note.id !== noteId);
-      return [clickedNote, ...otherNotes];
+      return [
+        ...otherNotes.slice(0, pinnedCount),
+        clickedNote,
+        ...otherNotes.slice(pinnedCount),
+      ];
+    });
+  }, []);
+
+  const setPinned = useCallback((noteId: number, pinned: boolean) => {
+    setNotes(prevNotes => {
+      const target = prevNotes.find(note => note.id === noteId);
+      if (!target) {
+        return prevNotes;
+      }
+      if (pinned) {
+        const otherNotes = prevNotes.filter(note => note.id !== noteId);
+        return [{ ...target, pinned: true }, ...otherNotes];
+      }
+      return prevNotes.map(note =>
+        note.id === noteId ? { ...note, pinned: false } : note
+      );
     });
   }, []);
 
@@ -85,5 +127,6 @@ export const useNotes = (type?: keyof typeof NOTE_TYPES, tagId?: string) => {
     clearSearch,
     searchQuery,
     moveNoteToTop,
+    setPinned,
   };
 };

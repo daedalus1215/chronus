@@ -45,6 +45,7 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
     clearSearch,
     searchQuery,
     moveNoteToTop,
+    setPinned,
   } = useNotes(type, tagId);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -158,6 +159,7 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
                   note={note}
                   onClick={() => handleNoteClick(note.id)}
                   isSelected={selectedNoteId === note.id}
+                  onPinnedChange={setPinned}
                   compact
                 />
               </div>

@@ -17,6 +17,8 @@ import {
   ViewKanbanOutlined,
   NoteAltOutlined,
   FileDownloadOutlined,
+  PushPin,
+  PushPinOutlined,
 } from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
 import { ActionButton } from '@/components/ActionButton/ActionButton';
@@ -31,6 +33,8 @@ type NoteActionsProps = {
   onDelete: () => void;
   onShare: () => void;
   onDuplicate: () => void;
+  onPin: () => void;
+  isPinned?: boolean;
   onMoveToFolder: () => void;
   onArchive: () => void;
   onTextToSpeech: () => void;
@@ -64,6 +68,8 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   onEdit,
   onTextToSpeech,
   onLabel,
+  onPin,
+  isPinned = false,
   onViewAudioHistory,
   onViewBoard,
   onConvertToMemo,
@@ -132,6 +138,16 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
 
       <ActionButton label="Label" onClick={onLabel}>
         <LabelOutlined className={styles.icon} />
+      </ActionButton>
+      <ActionButton
+        label={isPinned ? 'Unpin' : 'Pin'}
+        onClick={onPin}
+      >
+        {isPinned ? (
+          <PushPin className={styles.icon} />
+        ) : (
+          <PushPinOutlined className={styles.icon} />
+        )}
       </ActionButton>
 
       <ActionButton label="Archive" onClick={onArchive}>

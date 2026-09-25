@@ -30,7 +30,9 @@ describe('GetNoteNamesForExplorerTransactionScript', () => {
     it('should forward userId and folderId to the repository', async () => {
       // Arrange
       const userId = generateRandomNumbers();
-      const rows = [{ name: 'Note A', id: 1, isMemo: 1, folderId: 3 }];
+      const rows = [
+        { name: 'Note A', id: 1, isMemo: 1, folderId: 3, sortOrder: 0, pinned: false },
+      ];
       mockRepository.getNoteNamesForExplorer.mockResolvedValue(rows);
 
       // Act

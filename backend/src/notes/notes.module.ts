@@ -59,6 +59,8 @@ import { GetNoteVersionsResponder } from './apps/actions/notes/get-note-versions
 import { LoadNoteVersionAction } from './apps/actions/notes/load-note-version-action/load-note-version.action';
 import { LoadNoteVersionResponder } from './apps/actions/notes/load-note-version-action/load-note-version.responder';
 import { CreateNoteResponder } from './apps/actions/notes/create-note-action/create-note.responder';
+import { PinNoteTransactionScript } from './domain/transaction-scripts/pin-note-TS/pin-note.transaction.script';
+import { PinNoteAction } from './apps/actions/pin-note/pin-note.action';
 
 @Module({
   imports: [
@@ -75,6 +77,7 @@ import { CreateNoteResponder } from './apps/actions/notes/create-note-action/cre
     GetNoteByIdTransactionScript,
     UpdateNoteTransactionScript,
     UpdateNoteTitleTransactionScript,
+    PinNoteTransactionScript,
     ArchiveNoteTransactionScript,
     ConvertChecklistToMemoTransactionScript,
     UpdateNoteParamsToEntityConverter,
@@ -123,8 +126,8 @@ import { CreateNoteResponder } from './apps/actions/notes/create-note-action/cre
     UpdateNoteAction,
     UpdateNoteTimestampAction,
     UpdateNoteTitleAction,
-    DeleteNoteAction,
     ArchiveNoteAction,
+    PinNoteAction,
     ConvertChecklistToMemoAction,
     SearchNotesAction,
     MoveNoteToFolderAction,
