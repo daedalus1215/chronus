@@ -16,7 +16,7 @@
 }
 
 .playerCard {
-  background: rgba(17, 17, 17, 0.95) !important;
+  background: var(--glass-bg-strong) !important;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(99, 102, 241, 0.3);
   border-radius: 16px !important;
@@ -41,13 +41,13 @@
 }
 
 .seekBar :global(.MuiSlider-root) {
-  color: #6366f1;
+  color: var(--color-primary);
 }
 
 .seekBar :global(.MuiSlider-thumb) {
   width: 12px;
   height: 12px;
-  background-color: #6366f1;
+  background-color: var(--color-primary);
 }
 
 .seekBar :global(.MuiSlider-thumb:hover) {
@@ -55,7 +55,7 @@
 }
 
 .seekBar :global(.MuiSlider-rail) {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-overlay-stronger);
 }
 
 .volumeSlider {
@@ -63,7 +63,7 @@
 }
 
 .volumeSlider :global(.MuiSlider-root) {
-  color: #6366f1;
+  color: var(--color-primary);
 }
 
 .playingIndicator {
@@ -75,7 +75,7 @@
 
 .bar {
   width: 3px;
-  background-color: #6366f1;
+  background-color: var(--color-primary);
   border-radius: 1px;
   animation: soundBar 0.5s ease-in-out infinite alternate;
 }
