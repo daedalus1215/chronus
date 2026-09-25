@@ -101,7 +101,7 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
             startAdornment: (
               <InputAdornment position="start">
                 <SearchIcon
-                  sx={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }}
+                  sx={{ fontSize: 14, color: 'var(--color-text-muted)' }}
                 />
               </InputAdornment>
             ),
@@ -142,11 +142,11 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
               <Box className={styles.noteIcon}>
                 {note.isMemo ? (
                   <NoteIcon
-                    sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}
+                    sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
                   />
                 ) : (
                   <CheckBoxIcon
-                    sx={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}
+                    sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
                   />
                 )}
               </Box>
