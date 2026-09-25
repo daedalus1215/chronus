@@ -25,7 +25,7 @@
  * content/icon styling is applied via CustomTagTreeItem slotProps.
  */
 .treeWrapper :global(.MuiTreeItem-groupTransition) {
-  border-left: 1px solid rgba(156, 163, 175, 0.35);
+  border-left: 1px solid var(--color-border);
   margin-left: 4px;
   padding-left: 0;
   min-width: 0;
