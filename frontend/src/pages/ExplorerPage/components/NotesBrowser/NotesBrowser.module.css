@@ -20,7 +20,7 @@
 
 .breadcrumb {
   font-size: 11px !important;
-  color: rgba(255, 255, 255, 0.35) !important;
+  color: var(--color-text-muted) !important;
   letter-spacing: 0.02em;
   display: flex;
   align-items: center;
@@ -33,7 +33,7 @@
 }
 
 .breadcrumbCurrent {
-  color: rgba(255, 255, 255, 0.65) !important;
+  color: var(--color-text-secondary) !important;
   font-weight: 500;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .searchInput:hover fieldset {
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: var(--color-border-dark) !important;
 }
 
 /* ── File list ─────────────────────────────────────────────────── */
@@ -98,7 +98,7 @@
 
 .noteLabel {
   font-size: 13px !important;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--color-text-secondary);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -110,13 +110,13 @@
   opacity: 0 !important;
   padding: 2px !important;
   transition: opacity 0.1s;
-  color: rgba(255, 255, 255, 0.45) !important;
+  color: var(--color-text-muted) !important;
   border-radius: 3px !important;
   flex-shrink: 0;
 }
 
 .noteMenuBtn:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: var(--color-text) !important;
   background: var(--color-overlay-strong) !important;
 }
 
@@ -130,5 +130,5 @@
 
 .emptyText {
   font-size: 12px !important;
-  color: rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-text-muted) !important;
 }
