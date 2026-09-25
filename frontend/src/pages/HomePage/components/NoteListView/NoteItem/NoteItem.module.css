@@ -57,6 +57,19 @@
   flex: 1 1 auto;
 }
 
+.noteNameRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pinIcon {
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
 .noteName {
   color: var(--color-text);
   font-size: 1rem;
@@ -66,6 +79,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  min-width: 0;
 }
 
 .noteType {
@@ -134,6 +148,9 @@
 .noteListItem.compact .noteName {
   font-size: 0.8125rem;
   font-weight: 500;
+}
+.noteListItem.compact .pinIcon {
+  font-size: 0.75rem;
 }
 
 .noteListItem.compact .noteType {
