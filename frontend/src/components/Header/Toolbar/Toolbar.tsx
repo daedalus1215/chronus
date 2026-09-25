@@ -28,7 +28,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onSearch, onNewNote }) => {
         padding: 1,
         borderBottom: '1px solid',
         borderColor: 'divider',
-        backgroundColor: '#1a1a1a',
+        backgroundColor: 'background.paper',
       }}
     >
       {/* Search Bar */}
@@ -41,23 +41,23 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onSearch, onNewNote }) => {
           flex: 1,
           maxWidth: 300,
           '& .MuiOutlinedInput-root': {
-            backgroundColor: '#2a2a2a',
-            color: '#fff',
+            backgroundColor: 'var(--input-bg)',
+            color: 'text.primary',
             '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'rgba(255, 255, 255, 0.2)',
+              borderColor: 'var(--input-border-hover)',
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
               borderColor: 'primary.main',
             },
           },
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'var(--input-border)',
           },
         }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
+              <SearchIcon sx={{ color: 'text.secondary' }} />
             </InputAdornment>
           ),
         }}
@@ -79,16 +79,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onSearch, onNewNote }) => {
 
       {/* Formatting Tools */}
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <IconButton size="small" sx={{ color: '#fff' }}>
+        <IconButton size="small" sx={{ color: 'text.primary' }}>
           <FormatBold />
         </IconButton>
-        <IconButton size="small" sx={{ color: '#fff' }}>
+        <IconButton size="small" sx={{ color: 'text.primary' }}>
           <FormatItalic />
         </IconButton>
-        <IconButton size="small" sx={{ color: '#fff' }}>
+        <IconButton size="small" sx={{ color: 'text.primary' }}>
           <FormatListBulleted />
         </IconButton>
-        <IconButton size="small" sx={{ color: '#fff' }}>
+        <IconButton size="small" sx={{ color: 'text.primary' }}>
           <Code />
         </IconButton>
       </Box>
