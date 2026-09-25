@@ -151,6 +151,7 @@ If A uses B, and B uses C, then A depends only on B. B is a **blackbox** for A.
 ### 3.8 Frontend (React + MUI + modular CSS/SCSS)
 
 - **Styling**: MUI `sx` for layout/spacing; CSS Modules (`.module.css`) co-located with components for complex rules. Global tokens in `frontend/src/styles/global.scss`. **No Tailwind**.
+- **Theming**: Light/dark via `ThemeModeContext` (`'light' | 'dark' | 'system'`, persisted, `data-theme` on `<html>`); MUI theme built per mode by `createChronusTheme()` in `frontend/src/theme.ts`; token values live in `global.scss` (`:root` = light, `[data-theme='dark']` = dark). Consume tokens, never hardcoded colors.
 - **Events**: `handleClick`, `handleKeyDown`, etc.
 - **Accessibility**: keyboard support, labels, focus order.
 - **Components**: `const` arrow functions; props as `type` alias.
