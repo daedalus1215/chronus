@@ -8,6 +8,7 @@ import { useResizablePane } from '../../../../../hooks/useResizablePane';
 import { useSidebar } from '../../../../../hooks/useSidebar';
 import Fade from '@mui/material/Fade';
 import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
+import { STORAGE_KEYS } from '../../../../../constants/storage';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -55,7 +56,7 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
     handleKeyDown,
     handleDoubleClick,
   } = useResizablePane({
-    localStorageKey: 'noteListWidthPx',
+    localStorageKey: STORAGE_KEYS.NOTE_LIST.WIDTH_PX,
     min: 10, // allow thin rail
     max: 300, // do not expand beyond default width
     initial: 300,
