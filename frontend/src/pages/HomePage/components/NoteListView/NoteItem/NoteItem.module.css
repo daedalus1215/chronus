@@ -87,8 +87,8 @@
   padding: 0.2rem 0.55rem;
   border-radius: 9999px;
   background-color: var(--accent-soft);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  color: #b4b7ff;
+  border: 1px solid var(--color-primary-light-2);
+  color: var(--color-primary);
   font-weight: 500;
   letter-spacing: 0.02em;
   align-self: flex-start;
@@ -114,7 +114,7 @@
 
 .moreButton:hover {
   background-color: var(--accent-soft);
-  color: #fff;
+  color: var(--color-text);
   box-shadow: var(--glow-accent-soft);
   width: 60px;
   height: 60px;
@@ -122,7 +122,7 @@
 
 .moreButton:focus-visible {
   outline: none;
-  color: #fff;
+  color: var(--color-text);
   width: 60px;
   height: 60px;
   background-color: var(--accent-soft);
