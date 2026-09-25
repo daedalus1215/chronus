@@ -3,4 +3,5 @@ export type NoteNameRow = {
   id: number;
   isMemo: number;
   folderId: number | null;
+  pinned: boolean;
 };

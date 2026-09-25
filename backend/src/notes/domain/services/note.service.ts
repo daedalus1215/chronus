@@ -26,6 +26,7 @@ import { UpdateNoteTimestampTransactionScript } from '../transaction-scripts/upd
 import { UpdateNoteDto } from '../../apps/dtos/requests/update-note.dto';
 import { AuthUser } from 'src/shared-kernel/apps/decorators/get-auth-user.decorator';
 import { DeleteNoteTransactionScript } from '../transaction-scripts/delete-note-TS/delete-note.transaction.script';
+import { PinNoteTransactionScript } from '../transaction-scripts/pin-note-TS/pin-note.transaction.script';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DELETE_CHECK_ITEMS_BY_NOTE_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/check-items/delete-check-items-by-note.command';
 import { DELETE_NOTE_TAG_ASSOCIATIONS_COMMAND } from 'src/shared-kernel/domain/cross-domain-commands/tags/delete-note-tag-associations.command';
@@ -77,6 +78,7 @@ export class NoteService {
     private readonly getNoteVersionsTransactionScript: GetNoteVersionsTransactionScript,
     private readonly loadNoteVersionTransactionScript: LoadNoteVersionTransactionScript,
     private readonly updateNoteTimestampTransactionScript: UpdateNoteTimestampTransactionScript,
+    private readonly pinNoteTransactionScript: PinNoteTransactionScript,
     private readonly checkItemsAggregator: CheckItemsAggregator
   ) {}
 
@@ -156,6 +158,18 @@ export class NoteService {
     return await this.archiveNoteTransactionScript.apply(
       noteId,
       authUser.userId
+    );
+  }
+
+  async pinNote(
+    noteId: number,
+    authUser: AuthUser,
+    pinned: boolean
+  ): Promise<Note> {
+    return await this.pinNoteTransactionScript.apply(
+      noteId,
+      authUser.userId,
+      pinned
     );
   }
 

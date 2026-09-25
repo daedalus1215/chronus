@@ -37,6 +37,7 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
     clearSearch,
     searchQuery,
     moveNoteToTop,
+    setPinned,
   } = useNotes(type, tagId);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -120,6 +121,7 @@ export const MobileNoteListView: React.FC<NoteListViewProps> = ({
                 <NoteItem
                   note={note}
                   onClick={() => handleNoteClick(note.id)}
+                  onPinnedChange={setPinned}
                 />
               </div>
             </Fade>

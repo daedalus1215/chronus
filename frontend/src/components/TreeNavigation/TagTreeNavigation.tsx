@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
+import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ROUTES } from '../../constants/routes';
@@ -27,12 +28,44 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
 }) => {
   const navigate = useNavigate();
   const { tagId: routeTagId } = useParams<{ tagId: string }>();
-  const { treeItems, isLoading, error, loadNotesForTag } = useTagTreeItems();
+  const {
+    treeItems,
+    isLoading,
+    error,
+    loadNotesForTag,
+    refreshNotesForTag,
+  } = useTagTreeItems();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const filteredItems = useMemo(
     () => filterTagTreeItems(treeItems, searchQuery),
     [treeItems, searchQuery]
+  );
+  // The tree only passes label/id/itemId to the item slot, so pinned state
+  // is injected via a per-item lookup keyed by item id.
+  const pinnedByItemId = useMemo(() => {
+    const map: Record<string, boolean> = {};
+    for (const tag of treeItems) {
+      for (const child of tag.children ?? []) {
+        if (child.type === 'note') {
+          map[child.id] = Boolean(child.pinned);
+        }
+      }
+    }
+    return map;
+  }, [treeItems]);
+
+  const TreeItemWithPin = useCallback(
+    (itemProps: TreeItemProps) => (
+      <CustomTagTreeItem
+        {...itemProps}
+        pinned={pinnedByItemId[itemProps.itemId] ?? false}
+        onNotePinned={(_noteId: number, tagId: number) =>
+          refreshNotesForTag(tagId)
+        }
+      />
+    ),
+    [pinnedByItemId, refreshNotesForTag]
   );
 
   const handleItemClick = (_event: React.MouseEvent, itemId: string) => {
@@ -118,7 +151,7 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
           selectedItems={selectedItems}
           itemChildrenIndentation={0}
           slots={{
-            item: CustomTagTreeItem,
+            item: TreeItemWithPin,
           }}
         />
       </Box>

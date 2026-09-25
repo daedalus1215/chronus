@@ -33,6 +33,7 @@ import {
   updateNoteTimestamp,
 } from '../../api/requests/notes.requests';
 import { useArchiveNote } from '../../pages/HomePage/hooks/useArchiveNote';
+import { usePinNote } from '../../pages/HomePage/hooks/usePinNote';
 
 /** Font size to match DesktopNoteListView compact items. */
 const LIST_FONT_SIZE = '0.8125rem';
@@ -70,7 +71,17 @@ const CONTENT_DIVIDER_SX = {
  */
 export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
   (props, ref) => {
-    const { itemId, slotProps = {}, slots = {}, ...rest } = props;
+    const {
+      itemId,
+      slotProps = {},
+      slots = {},
+      pinned: isPinned = false,
+      onNotePinned,
+      ...rest
+    } = props as TreeItemProps & {
+      pinned?: boolean;
+      onNotePinned?: (noteId: number, tagId: number) => void;
+    };
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { tagId: routeTagId } = useParams<{ tagId: string }>();
@@ -101,6 +112,7 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
     );
 
     const { archiveNote, isArchiving } = useArchiveNote();
+    const { pinNote } = usePinNote();
     const {
       createTimeTrack,
       isCreating,
@@ -141,6 +153,20 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       setIsActionsOpen(false);
       setArchiveDialogOpen(true);
     }, []);
+    const handlePin = useCallback(async () => {
+      const nextPinned = !isPinned;
+      setIsActionsOpen(false);
+      try {
+        await pinNote(noteId, nextPinned);
+        if (tagId != null) {
+          onNotePinned?.(noteId, tagId);
+        }
+      } catch (err) {
+        console.error('Failed to update pin state:', err);
+        setToastSeverity('error');
+        setToastMessage('Failed to update pin state');
+      }
+    }, [isPinned, noteId, tagId, pinNote, onNotePinned]);
 
     const handleTimeTracking = useCallback(() => {
       setIsActionsOpen(false);
@@ -360,6 +386,8 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               onDownloadAudio={noop}
               onEdit={noop}
               onLabel={noop}
+              onPin={handlePin}
+              isPinned={isPinned}
               onExport={noop}
               onViewAudioHistory={function (): void {
                 throw new Error('Function not implemented.');

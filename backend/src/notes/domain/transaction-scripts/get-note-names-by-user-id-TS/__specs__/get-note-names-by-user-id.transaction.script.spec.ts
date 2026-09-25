@@ -31,8 +31,8 @@ describe('GetNoteNamesByUserIdTransactionScript', () => {
       // Arrange
       const userId = generateRandomNumbers();
       const rows = [
-        { name: 'Note A', id: 1, isMemo: 1, folderId: null },
-        { name: 'Note B', id: 2, isMemo: 0, folderId: 5 },
+        { name: 'Note A', id: 1, isMemo: 1, folderId: null, pinned: false },
+        { name: 'Note B', id: 2, isMemo: 0, folderId: 5, pinned: true },
       ];
       mockRepository.getNoteNamesByUserId.mockResolvedValue(rows);
 
@@ -55,7 +55,7 @@ describe('GetNoteNamesByUserIdTransactionScript', () => {
       // Arrange
       const userId = generateRandomNumbers();
       mockRepository.getNoteNamesByUserId.mockResolvedValue([
-        { name: 'Note A', id: 1, isMemo: 0, folderId: null },
+        { name: 'Note A', id: 1, isMemo: 0, folderId: null, pinned: false },
       ]);
 
       // Act

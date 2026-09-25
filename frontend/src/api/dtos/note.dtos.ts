@@ -3,6 +3,7 @@ export type NoteNameItem = {
   id: number;
   isMemo: number;
   folderId: number | null;
+  pinned: boolean;
 };
 
 export type NamesOfNotesResponse = {
@@ -17,6 +18,7 @@ export type ExplorerNoteItem = {
   isMemo: number;
   folderId: number | null;
   sortOrder: number;
+  pinned: boolean;
 };
 
 export type CheckItemResponse = {

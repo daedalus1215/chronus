@@ -3,6 +3,7 @@ export type TagTreeItem = {
   label: string;
   type: 'tag' | 'note';
   noteCount?: number;
+  pinned?: boolean;
   isLoadingPlaceholder?: boolean;
   children?: TagTreeItem[];
 };
@@ -13,6 +14,7 @@ export const NOTE_PREFIX = 'note-';
 export type NoteSummary = {
   id: number;
   name: string;
+  pinned?: boolean;
 };
 
 export type TagWithNoteCount = {
@@ -62,6 +64,7 @@ export const buildTagTreeItems = (
         id: `${NOTE_PREFIX}${note.id}-${tag.id}`,
         label: note.name,
         type: 'note' as const,
+        pinned: note.pinned,
         children: undefined,
       })),
     };
