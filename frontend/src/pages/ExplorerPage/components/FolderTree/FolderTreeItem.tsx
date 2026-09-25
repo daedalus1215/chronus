@@ -105,12 +105,12 @@ export const FolderTreeItem: React.FC<Props> = ({
             <FolderOpenIcon
               sx={{
                 fontSize: 14,
-                color: isSelected ? 'primary.light' : 'rgba(255,255,255,0.5)',
+                color: isSelected ? 'primary.light' : 'var(--color-text-muted)',
               }}
             />
           ) : (
             <FolderIcon
-              sx={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}
+              sx={{ fontSize: 14, color: 'var(--color-text-muted)' }}
             />
           )}
         </Box>
