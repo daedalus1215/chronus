@@ -173,11 +173,11 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
             sx={{
               border: 'none',
               '& .MuiDataGrid-cell': {
-                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                borderBottom: '1px solid var(--color-border-light)',
               },
               '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                backgroundColor: 'var(--color-overlay-light)',
+                borderBottom: '1px solid var(--color-border-light)',
               },
               '& .MuiDataGrid-columnHeaderTitle': {
                 fontWeight: 600,
