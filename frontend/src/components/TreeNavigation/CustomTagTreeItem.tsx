@@ -267,6 +267,13 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       setIsActionsOpen(false);
       navigate(ROUTES.KANBAN(noteId));
     }, [noteId, navigate]);
+
+    const handleLabel = useCallback(() => {
+      setIsActionsOpen(false);
+      const base = tagId != null ? ROUTES.TAG_NOTES(tagId) : ROUTES.HOME;
+      navigate(`${base}/notes/${noteId}?sidebar=tags`);
+    }, [noteId, tagId, navigate]);
+
     const handleMoveToFolder = useCallback(() => {
       clearMoveError();
       setIsActionsOpen(false);
@@ -397,7 +404,7 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               onTextToSpeech={noop}
               onDownloadAudio={noop}
               onEdit={noop}
-              onLabel={noop}
+              onLabel={handleLabel}
               onPin={handlePin}
               isPinned={isPinned}
               onExport={noop}
