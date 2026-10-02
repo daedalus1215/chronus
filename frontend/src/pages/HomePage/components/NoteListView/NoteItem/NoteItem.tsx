@@ -10,6 +10,7 @@ import { TimeTrackListView } from './TimeTrackListView/TimeTrackListView';
 import { useNoteTimeTracks } from '../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
 import { useAudioActions } from '../../../hooks/useAudioActions/useAudioActions';
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
+import { useIsMobile } from '../../../../../hooks/useIsMobile';
 import { AudioHistoryView } from './AudioHistoryView/AudioHistoryView';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -66,6 +67,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
   const mergeFileInputRef = React.useRef<HTMLInputElement>(null);
   const moreButtonRef = React.useRef<HTMLButtonElement>(null);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
@@ -279,6 +281,14 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     navigate(`/notes/${note.id}/kanban`);
   };
 
+  const handleLabel = () => {
+    setIsActionsOpen(false);
+    // Open the note (if needed) with the right sidebar on the Tags tab;
+    // NotePage consumes ?sidebar= and strips it.
+    const base = location.pathname.split('/notes/')[0] || '/';
+    navigate(`${base}notes/${note.id}?sidebar=tags`, { replace: !isMobile });
+  };
+
   const handleConvertToMemo = () => {
     setIsActionsOpen(false);
     setConvertDialogOpen(true);
@@ -463,7 +473,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onViewAudioHistory={handleViewAudioHistory}
         onViewBoard={handleViewBoard}
         onEdit={handleTimeTracking}
-        onLabel={handleTimeTracking}
+        onLabel={handleLabel}
         onPin={handlePin}
         isPinned={note.pinned}
         onExport={handleExport}
