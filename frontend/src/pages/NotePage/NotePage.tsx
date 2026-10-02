@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useNote } from './hooks/useNote/useNote';
 import { useTitle } from './hooks/useTitle';
 import Box from '@mui/material/Box';
@@ -81,6 +81,36 @@ export const NotePage: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.NOTE_PAGE.SIDEBAR_TAB, activeTab);
   }, [activeTab]);
+
+  // Deep links: ?sidebar=<tabId> opens the sidebar on that tab; ?edit=1
+  // opens the note in edit mode. Params are stripped so they don't linger.
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const requestedTab = searchParams.get('sidebar');
+    const wantsEdit = searchParams.get('edit') === '1';
+    const hasTab =
+      requestedTab !== null && sidebarTabs.some(t => t.id === requestedTab);
+    if (!hasTab && !wantsEdit) {
+      return;
+    }
+    if (hasTab) {
+      setActiveTab(requestedTab);
+      setIsSidebarOpen(true);
+      setIsTagsOpen(true);
+    }
+    if (wantsEdit) {
+      setIsEditMode(true);
+    }
+    const nextParams = new URLSearchParams(searchParams);
+    if (hasTab) {
+      nextParams.delete('sidebar');
+    }
+    if (wantsEdit) {
+      nextParams.delete('edit');
+    }
+    setSearchParams(nextParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const handleTabChange = (tabId: string): void => {
     setActiveTab(tabId);
@@ -297,7 +327,7 @@ export const NotePage: React.FC = () => {
             </Box>
           </Box>
         </Box>
-        {!isMobile && note?.isMemo && (
+        {!isMobile && note && (
           <RightSidebar
             isOpen={isSidebarOpen}
             title=""
@@ -327,7 +357,7 @@ export const NotePage: React.FC = () => {
             )}
           </RightSidebar>
         )}
-        {isMobile && note?.isMemo && (
+        {isMobile && note && (
           <MobileTagsView
             note={note}
             noteId={noteId}

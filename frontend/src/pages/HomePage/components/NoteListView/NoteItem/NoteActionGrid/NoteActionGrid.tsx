@@ -136,7 +136,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         <DriveFileMoveOutlined className={styles.icon} />
       </ActionButton>
 
-      <ActionButton label="Label" onClick={onLabel}>
+      <ActionButton label="Tags" onClick={onLabel}>
         <LabelOutlined className={styles.icon} />
       </ActionButton>
       <ActionButton
