@@ -292,6 +292,17 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     });
   };
 
+  const handleEdit = () => {
+    setIsActionsOpen(false);
+    // Open the note in edit mode; NotePage consumes ?edit=1 and strips it.
+    // Checklists have no edit mode — the param is a no-op there.
+    const basePath = location.pathname.split('/notes/')[0];
+    const targetPath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+    navigate(`${targetPath}notes/${note.id}?edit=1`, {
+      replace: !isMobile,
+    });
+  };
+
   const handleConvertToMemo = () => {
     setIsActionsOpen(false);
     setConvertDialogOpen(true);
@@ -475,7 +486,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         onDownloadAudio={handleDownloadAudio}
         onViewAudioHistory={handleViewAudioHistory}
         onViewBoard={handleViewBoard}
-        onEdit={handleTimeTracking}
+        onEdit={handleEdit}
         onLabel={handleLabel}
         onPin={handlePin}
         isPinned={note.pinned}

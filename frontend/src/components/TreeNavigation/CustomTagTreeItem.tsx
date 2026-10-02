@@ -274,6 +274,13 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       navigate(`${base}/notes/${noteId}?sidebar=tags`);
     }, [noteId, tagId, navigate]);
 
+    const handleEdit = useCallback(() => {
+      setIsActionsOpen(false);
+      // Open the note in edit mode; NotePage consumes ?edit=1 and strips it.
+      const base = tagId != null ? ROUTES.TAG_NOTES(tagId) : ROUTES.HOME;
+      navigate(`${base}/notes/${noteId}?edit=1`);
+    }, [noteId, tagId, navigate]);
+
     const handleMoveToFolder = useCallback(() => {
       clearMoveError();
       setIsActionsOpen(false);
@@ -403,7 +410,7 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               onMoveToFolder={handleMoveToFolder}
               onTextToSpeech={noop}
               onDownloadAudio={noop}
-              onEdit={noop}
+              onEdit={handleEdit}
               onLabel={handleLabel}
               onPin={handlePin}
               isPinned={isPinned}

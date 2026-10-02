@@ -82,20 +82,33 @@ export const NotePage: React.FC = () => {
     localStorage.setItem(STORAGE_KEYS.NOTE_PAGE.SIDEBAR_TAB, activeTab);
   }, [activeTab]);
 
-  // Deep link: ?sidebar=<tabId> opens the sidebar on that tab, then strips
-  // the param so it doesn't linger in the URL.
+  // Deep links: ?sidebar=<tabId> opens the sidebar on that tab; ?edit=1
+  // opens the note in edit mode. Params are stripped so they don't linger.
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     const requestedTab = searchParams.get('sidebar');
-    if (!requestedTab || !sidebarTabs.some(t => t.id === requestedTab)) {
+    const wantsEdit = searchParams.get('edit') === '1';
+    const hasTab =
+      requestedTab !== null && sidebarTabs.some(t => t.id === requestedTab);
+    if (!hasTab && !wantsEdit) {
       return;
     }
-    setActiveTab(requestedTab);
-    setIsSidebarOpen(true);
-    setIsTagsOpen(true);
+    if (hasTab) {
+      setActiveTab(requestedTab);
+      setIsSidebarOpen(true);
+      setIsTagsOpen(true);
+    }
+    if (wantsEdit) {
+      setIsEditMode(true);
+    }
     const nextParams = new URLSearchParams(searchParams);
-    nextParams.delete('sidebar');
+    if (hasTab) {
+      nextParams.delete('sidebar');
+    }
+    if (wantsEdit) {
+      nextParams.delete('edit');
+    }
     setSearchParams(nextParams, { replace: true });
   }, [searchParams, setSearchParams]);
 
