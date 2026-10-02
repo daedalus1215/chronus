@@ -397,8 +397,8 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               sx={[
                 TAG_LABEL_SX,
                 ...(isTagSelected
-                  ? { color: 'var(--color-primary)' }
-                  : {}),
+                  ? [{ color: 'var(--color-primary)' }]
+                  : []),
                 (labelProps.sx as object) ?? {},
                 { flex: 1, minWidth: 0 },
               ]}
