@@ -20,7 +20,6 @@ type TagActionPanelProps = {
   tag: Tag;
   isOpen: boolean;
   onClose: () => void;
-  onDeleted?: (tagId: number) => void;
 };
 
 const getApiErrorMessage = (err: unknown, fallback: string): string => {
@@ -49,7 +48,6 @@ export const TagActionPanel: React.FC<TagActionPanelProps> = ({
   tag,
   isOpen,
   onClose,
-  onDeleted,
 }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -98,7 +96,6 @@ export const TagActionPanel: React.FC<TagActionPanelProps> = ({
       queryClient.invalidateQueries({ queryKey: ['tag', tag.id] });
       setIsDeleteDialogOpen(false);
       onClose();
-      onDeleted?.(tag.id);
     } catch (err: unknown) {
       setDeleteError(getApiErrorMessage(err, 'Failed to delete tag'));
     } finally {

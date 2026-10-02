@@ -189,17 +189,6 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       setIsActionsOpen(true);
     }, []);
 
-    const handleTagDeleted = useCallback(
-      (_tagId: number) => {
-        // If the deleted tag is the one the user is currently viewing,
-        // fall back to the flat tag list so the UI stays coherent.
-        if (isTagSelected) {
-          navigate(ROUTES.TAGS);
-        }
-      },
-      [isTagSelected, navigate]
-    );
-
     const handleTimeTrackingSubmit = useCallback(
       async (data: TimeTrackingData) => {
         try {
@@ -614,7 +603,6 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
             tag={tagData}
             isOpen={isActionsOpen}
             onClose={() => setIsActionsOpen(false)}
-            onDeleted={handleTagDeleted}
           />
         )}
       </>
