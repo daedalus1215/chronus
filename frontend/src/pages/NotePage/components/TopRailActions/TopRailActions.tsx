@@ -37,32 +37,36 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
   onNavigateKanban,
   onToggleTags,
 }) => {
-  if (!note?.isMemo) return null;
+  if (!note) return null;
 
   return (
     <>
-      <IconButton
-        size="small"
-        title={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
-        onClick={onToggleEditMode}
-        aria-label={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
-        sx={{ color: 'primary.main' }}
-      >
-        {isEditMode ? (
-          <Create sx={{ fontSize: 16 }} />
-        ) : (
-          <MenuBook sx={{ fontSize: 16 }} />
-        )}
-      </IconButton>
-      <IconButton
-        size="small"
-        title="Kanban"
-        aria-label="Kanban"
-        onClick={onNavigateKanban}
-      >
-        <ViewKanban sx={{ fontSize: 16 }} />
-      </IconButton>
-      {isMobile && note?.isMemo && onToggleTags && (
+      {note.isMemo && (
+        <IconButton
+          size="small"
+          title={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
+          onClick={onToggleEditMode}
+          aria-label={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
+          sx={{ color: 'primary.main' }}
+        >
+          {isEditMode ? (
+            <Create sx={{ fontSize: 16 }} />
+          ) : (
+            <MenuBook sx={{ fontSize: 16 }} />
+          )}
+        </IconButton>
+      )}
+      {note.isMemo && (
+        <IconButton
+          size="small"
+          title="Kanban"
+          aria-label="Kanban"
+          onClick={onNavigateKanban}
+        >
+          <ViewKanban sx={{ fontSize: 16 }} />
+        </IconButton>
+      )}
+      {isMobile && onToggleTags && (
         <IconButton
           size="small"
           title="Open side panel"

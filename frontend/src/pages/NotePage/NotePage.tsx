@@ -314,7 +314,7 @@ export const NotePage: React.FC = () => {
             </Box>
           </Box>
         </Box>
-        {!isMobile && note?.isMemo && (
+        {!isMobile && note && (
           <RightSidebar
             isOpen={isSidebarOpen}
             title=""
@@ -344,7 +344,7 @@ export const NotePage: React.FC = () => {
             )}
           </RightSidebar>
         )}
-        {isMobile && note?.isMemo && (
+        {isMobile && note && (
           <MobileTagsView
             note={note}
             noteId={noteId}
