@@ -1,6 +1,6 @@
 # Spec — Note "Tags" Action Opens the Tags Sidebar
 
-**Status:** APPROVED (decisions confirmed with user, 2026-10-01)
+**Status:** APPROVED + VERIFIED (smoke-tested end-to-end in browser, 2026-10-02)
 **Author:** daedalus1215 + omp
 
 ## Why
@@ -62,11 +62,13 @@ opens the same time-entry form. Separate fix.
      `setActiveTab(tab)`, `setIsSidebarOpen(true)`, `setIsTagsOpen(true)`
      (mobile), then strip the param via `setSearchParams(next, { replace: true })`.
 2. **`pages/HomePage/.../NoteItem/NoteItem.tsx`**
-   - New `handleLabel`: close the menu, then
-     `navigate(\`${base}notes/${note.id}?sidebar=tags\`)` where `base =
-     location.pathname.split('/notes/')[0] || '/'` (the `|| '/'` guards the
-     `/notes/:id` case under the Home route), desktop `replace` / mobile
-     `push` (mirrors `HomePage.handleNoteSelect`).
+   - New `handleLabel`: close the menu, then navigate to the note under the
+     current list route with the sidebar param. Base is
+     `location.pathname.split('/notes/')[0]`, normalized to end in `/`
+     (mirrors `HomePage.handleNoteSelect`) so `/memo` → `/memo/notes/:id`,
+     `/` → `/notes/:id`. Without the trailing slash, `/memo` produced
+     `/memonotes/:id`, which the catch-all route silently redirected to Home
+     (found in smoke testing). Desktop `replace` / mobile `push`.
    - Wire `onLabel={handleLabel}` (replaces `handleTimeTracking`).
 3. **`pages/HomePage/.../NoteItem/NoteActionGrid/NoteActionGrid.tsx`**
    - Action label `"Label"` → `"Tags"` (icon unchanged).
@@ -104,9 +106,12 @@ Enable the right sidebar for checklist notes:
 2. `note: wire Tags action to open tags sidebar` — `NoteItem.tsx`
 3. `note: rename Label action to Tags` — `NoteActionGrid.tsx`
 4. `tag-tree: open tags sidebar from note row action` — `CustomTagTreeItem.tsx`
+5. `note: fix Tags action path for memo and checklist lists` — `NoteItem.tsx`
+   (slash-normalized base; without it `/memo` produced `/memonotes/:id` →
+   catch-all redirect to Home)
 
 Commit 2 depends on commit 1 for full behavior (without it, the action only
-navigates to the note). Commits 3–4 are independent.
+navigates to the note). Commits 3–5 are independent.
 
 ## Verification
 
@@ -124,3 +129,11 @@ navigates to the note). Commits 3–4 are independent.
     with the sidebar; mobile tag list same.
   - Refresh a note URL carrying `?sidebar=tags`: sidebar opens, param
     stripped from the URL.
+  - Memos page → ⋮ → **Tags**: note opens under `/memo/notes/:id` with the
+    sidebar (regression covered by commit 5).
+
+Verified (2026-10-02, live dev servers + headless browser): home / memo /
+tag-page flows, mobile bottom sheet + right drawer, deep link, tag
+add/remove via UI with API cross-check, sidebar close/reopen, mobile back
+button. `npm run build` passes; `npm run lint` crashes in this environment
+(pre-existing eslint/minimatch incompatibility, unrelated).
