@@ -1,6 +1,6 @@
 # Spec — Tag Editing and Deletion
 
-**Status:** IMPLEMENTED — duplicate-name rejection deferred (see Decisions)
+**Status:** IMPLEMENTED + smoke-verified (desktop tree, mobile list) — duplicate-name rejection deferred (see Decisions)
 **Author:** daedalus1215 + omp
 
 ## Why
@@ -28,7 +28,7 @@ partially broken:
 | Delete semantics | Delete the tag **and all of its note associations** (active and soft-archived). Notes are otherwise untouched. Confirm dialog states how many notes are affected. |
 | Name validation | Trim on save; reject empty-after-trim (`400`); `@MaxLength(255)` on the DTO. |
 | Duplicate-name policy | **Deferred** — duplicates remain allowed on both create and rename. The create path (`add-tag-to-note`) has always allowed them, so rejecting them only on rename would be inconsistent; revisit if duplicates become a real nuisance. |
-| Deleting the open tag | If the deleted tag is the currently open tag (`/tag-notes/:id`), navigate back to `/tags`. |
+| Deleting the open tag | If the deleted tag is the currently open tag (`/tag-notes/:id`), navigate back to `/tags`. Implemented as a single guard in `TagPage` (shared by desktop tree and mobile list) instead of per-surface callbacks. |
 | Scope | Name + description edit and delete from the tag page (desktop tree, mobile list). Out of scope: tag merging, tag colors, edit/delete from the note sidebar's tag list (sidebar stays assignment-only), bulk operations, Explorer page. |
 
 ## Backend changes
@@ -56,18 +56,25 @@ partially broken:
      delete flow with `deleteError`.
    - Renders: `TagActionGrid` (Edit / Delete), `TagForm`, delete confirm
      Dialog.
-   - Props: `tag { id, name, description?, noteCount }`, `isOpen`, `onClose`,
-     `onDeleted(tagId)`.
+   - Props: `tag { id, name, description?, noteCount }`, `isOpen`, `onClose`.
    - Invalidate `['tags']` + `['tag', id]` on success (the tree uses the same
      `['tags']` key, so it refreshes automatically).
    - Delete dialog copy: states the note count — "This tag is attached to N
      notes. They will keep everything else; the tag itself is removed."
-2. **`TagItem`** — slimmed to row + ⋮ button + `<TagActionPanel>`
-   (behavior unchanged, errors now visible).
+2. **`TagItem`** — slimmed to row + ⋮ button + `<TagActionPanel>`. The panel
+   is rendered as a **sibling of the row** (same pattern as `NoteItem` and the
+   tree rows): MUI Dialog/Drawer content is portaled to `body`, but React
+   events bubble through the *React* tree, so a portaled confirm-Dialog click
+   inside a row child would reach the row's `onClick` and navigate to the
+   tag's notes page (observed: tapping Cancel in the delete dialog opened the
+   tag's notes view). As a sibling, dialog clicks never reach the row.
 3. **`CustomTagTreeItem`** — tag rows get a hover ⋮ `IconButton` (same
-   pattern as note rows) opening the panel; `onDeleted` navigates to `/tags`
-   when the deleted tag is the currently selected tag.
-4. **`TagForm`** — accept an `error?: string | null` prop and render an
+   pattern as note rows) opening the panel.
+4. **`TagPage`** — deleted-tag navigation guard: if the route is
+   `/tag-notes/:tagId` and that tag disappears from the `['tags']` query
+   (deleted from the tree, mobile list, or any surface), `navigate('/tags',
+   { replace: true })`. Skipped while the tag list is still loading.
+5. **`TagForm`** — accept an `error?: string | null` prop and render an
    `Alert` when set (update failures currently vanish).
 
 ## Commits (small, per user preference)
@@ -78,8 +85,16 @@ partially broken:
 3. `tag-ui: extract shared tag action panel with error handling` —
    `TagActionPanel`, slimmed `TagItem`, `TagForm` error prop
 4. `tag-tree: add edit/delete actions to tag rows` — `CustomTagTreeItem`
+5. `tag-tree: fix selected label sx merge` — `CustomTagTreeItem`
+   (conditional color must be an array inside the `sx` array spread)
+6. `tag-ui: render action panel as sibling of tag row` — `TagItem`
+   (portaled Dialog clicks bubble through the React tree; as a sibling they
+   no longer trigger the row's `onClick` navigation)
+7. `tag: centralize deleted-tag navigation in TagPage` — `TagPage` guard;
+   drop the per-surface `onDeleted` prop from `TagActionPanel` and
+   `CustomTagTreeItem`
 
-Commits 1–2 are backend, 3–4 frontend; each is independently shippable, but
+Commits 1–2 are backend, 3–7 frontend; each is independently shippable, but
 the feature is only usable once 1 + 3 + 4 land (delete needs 1; the desktop
 ⋮ needs 4).
 
@@ -95,5 +110,7 @@ the feature is only usable once 1 + 3 + 4 land (delete needs 1; the desktop
   - ⋮ → **Delete** on a tag with notes → confirm shows note count → tag gone
     from tree; the notes still carry their other tags (UI +
     `GET /api/tags/note/:id` cross-check).
-  - Delete the currently open tag → returns to `/tags`.
-  - Mobile list: Edit and Delete work from the flat list too.
+  - Delete the currently open tag → returns to `/tags` (verified desktop
+    tree and mobile list; deleting a *different* tag stays on the page).
+  - Mobile list: Edit and Delete work from the flat list; Cancel in the
+    delete dialog stays on `/tags` (no accidental row navigation).
