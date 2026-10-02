@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useNote } from './hooks/useNote/useNote';
 import { useTitle } from './hooks/useTitle';
 import Box from '@mui/material/Box';
@@ -81,6 +81,23 @@ export const NotePage: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.NOTE_PAGE.SIDEBAR_TAB, activeTab);
   }, [activeTab]);
+
+  // Deep link: ?sidebar=<tabId> opens the sidebar on that tab, then strips
+  // the param so it doesn't linger in the URL.
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const requestedTab = searchParams.get('sidebar');
+    if (!requestedTab || !sidebarTabs.some(t => t.id === requestedTab)) {
+      return;
+    }
+    setActiveTab(requestedTab);
+    setIsSidebarOpen(true);
+    setIsTagsOpen(true);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('sidebar');
+    setSearchParams(nextParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const handleTabChange = (tabId: string): void => {
     setActiveTab(tabId);
