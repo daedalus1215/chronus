@@ -12,6 +12,9 @@ export class DeleteTagTransactionScript {
       throw new NotFoundException('Tag not found');
     }
 
+    // tag_notes.tag_id is ON DELETE NO ACTION — clear the associations first,
+    // otherwise the tag row delete fails with a foreign key violation.
+    await this.tagRepository.removeTagAssociations(tagId);
     await this.tagRepository.removeTag(tag);
   }
 }
