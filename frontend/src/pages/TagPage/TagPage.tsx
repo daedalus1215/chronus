@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MobileTagListView } from './components/TagListView/MobileTagListView/MobileTagListView';
 import { MobileTagNotesListView } from './components/TagListView/MobileTagNotesListView/MobileTagNotesListView';
 import { DesktopTagTreePanel } from './components/TagListView/DesktopTagTreePanel/DesktopTagTreePanel';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useResizablePane } from '../../hooks/useResizablePane';
-import { useParams, useMatch, Outlet } from 'react-router-dom';
+import { useParams, useMatch, useNavigate, Outlet } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { useSidebar } from '../../hooks/useSidebar';
+import { useTagsWithNotes } from '../../hooks/useTagsWithNotes';
+import { ROUTES } from '../../constants/routes';
 import styles from './TagPage.module.css';
 import { STORAGE_KEYS } from '../../constants/storage';
 
@@ -35,6 +37,19 @@ export const TagPage: React.FC = () => {
     snapPoints: [10, 48, 72, 96, 120, 160, 220, 300],
     snapThreshold: 10,
   });
+
+  const navigate = useNavigate();
+  const { tags, tagsLoading } = useTagsWithNotes();
+
+  // If the tag in the current route gets deleted (tree, mobile list, or any
+  // other surface), fall back to the tag list instead of sitting on a dead
+  // /tag-notes/:id page.
+  useEffect(() => {
+    if (routeTagId == null || tagsLoading) return;
+    if (!tags.some(tag => tag.id === Number(routeTagId))) {
+      navigate(ROUTES.TAGS, { replace: true });
+    }
+  }, [tags, tagsLoading, routeTagId, navigate]);
 
   return (
     <main className={styles.tagPage}>
