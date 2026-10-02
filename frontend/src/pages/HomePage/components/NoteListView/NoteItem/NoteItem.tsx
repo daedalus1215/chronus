@@ -285,8 +285,11 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     setIsActionsOpen(false);
     // Open the note (if needed) with the right sidebar on the Tags tab;
     // NotePage consumes ?sidebar= and strips it.
-    const base = location.pathname.split('/notes/')[0] || '/';
-    navigate(`${base}notes/${note.id}?sidebar=tags`, { replace: !isMobile });
+    const basePath = location.pathname.split('/notes/')[0];
+    const targetPath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+    navigate(`${targetPath}notes/${note.id}?sidebar=tags`, {
+      replace: !isMobile,
+    });
   };
 
   const handleConvertToMemo = () => {
