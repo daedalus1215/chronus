@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { TagRepository } from '../../../infra/repositories/tag-repository/tag.repository';
 import { UpdateTagDto } from '../../../apps/actions/update-tag-action/update-tag.dto';
 import { Tag } from '../../../domain/entities/tag.entity';
@@ -19,7 +19,11 @@ export class UpdateTagTransactionScript {
     }
 
     if (updateTagDto.name !== undefined && updateTagDto.name !== null) {
-      tag.name = updateTagDto.name;
+      const name = updateTagDto.name.trim();
+      if (name.length === 0) {
+        throw new BadRequestException('Tag name cannot be empty');
+      }
+      tag.name = name;
     }
 
     if (updateTagDto.description !== undefined) {

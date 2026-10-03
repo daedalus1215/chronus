@@ -13,6 +13,7 @@ describe('DeleteTagTransactionScript', () => {
   beforeEach(async () => {
     mockRepository = createMock<TagRepository>({
       findTagByIdAndUserId: jest.fn(),
+      removeTagAssociations: jest.fn(),
       removeTag: jest.fn(),
     });
 
@@ -38,6 +39,7 @@ describe('DeleteTagTransactionScript', () => {
     };
 
     mockRepository.findTagByIdAndUserId.mockResolvedValue(tag);
+    mockRepository.removeTagAssociations.mockResolvedValue(undefined);
     mockRepository.removeTag.mockResolvedValue(tag);
 
     // Act
@@ -48,7 +50,14 @@ describe('DeleteTagTransactionScript', () => {
       tagId,
       userId
     );
+    expect(mockRepository.removeTagAssociations).toHaveBeenCalledWith(tagId);
     expect(mockRepository.removeTag).toHaveBeenCalledWith(tag);
+    // associations must be cleared before the tag row is removed
+    expect(
+      mockRepository.removeTagAssociations.mock.invocationCallOrder[0]
+    ).toBeLessThan(
+      mockRepository.removeTag.mock.invocationCallOrder[0]
+    );
   });
 
   it('should throw NotFoundException when tag does not exist', async () => {
@@ -67,6 +76,7 @@ describe('DeleteTagTransactionScript', () => {
       userId
     );
     expect(mockRepository.removeTag).not.toHaveBeenCalled();
+    expect(mockRepository.removeTagAssociations).not.toHaveBeenCalled();
   });
 
   it('should throw NotFoundException when tag belongs to different user', async () => {
@@ -85,5 +95,6 @@ describe('DeleteTagTransactionScript', () => {
       userId
     );
     expect(mockRepository.removeTag).not.toHaveBeenCalled();
+    expect(mockRepository.removeTagAssociations).not.toHaveBeenCalled();
   });
 });

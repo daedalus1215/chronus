@@ -37,6 +37,14 @@ export class TagRepository {
     return this.tagRepository.remove(tag);
   }
 
+  /**
+   * Deletes every tag_notes row for the tag, including soft-archived ones.
+   * Must run before `removeTag` — tag_notes.tag_id is ON DELETE NO ACTION.
+   */
+  async removeTagAssociations(tagId: number): Promise<void> {
+    await this.tagNoteRepository.delete({ tagId });
+  }
+
   async getTagsByUserId(userId: number): Promise<GetTagsByUserIdProjection[]> {
     return await this.tagRepository
       .createQueryBuilder('tag')

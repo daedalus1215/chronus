@@ -257,4 +257,51 @@ describe('TagRepository (integration)', () => {
       ]);
     });
   });
+
+  describe('removeTagAssociations', () => {
+    it('should remove active and archived associations for the tag and leave other tags on the note untouched', async () => {
+      const tagA = await seedTag('tag-a');
+      const tagB = await seedTag('tag-b');
+      const note = await seedNote();
+      await target.addTagToNote(note.id, tagA.id);
+      await target.addTagToNote(note.id, tagB.id);
+      const archived = await dataSource
+        .getRepository(TagNote)
+        .findOne({ where: { tagId: tagA.id, noteId: note.id } });
+      await dataSource
+        .getRepository(TagNote)
+        .update({ id: archived.id }, { archivedDate: new Date() });
+
+      await target.removeTagAssociations(tagA.id);
+
+      const tagARows = await dataSource
+        .getRepository(TagNote)
+        .find({ where: { tagId: tagA.id } });
+      expect(tagARows).toHaveLength(0);
+
+      const noteRow = await dataSource
+        .getRepository(Note)
+        .findOne({ where: { id: note.id } });
+      expect(noteRow).not.toBeNull();
+
+      const survivingTags = await target.findTagsByNoteId(note.id);
+      expect(tagIds(survivingTags)).toEqual([tagB.id]);
+    });
+
+    it('should allow the tag row to be removed afterwards without a foreign key violation', async () => {
+      const tagA = await seedTag('tag-a');
+      const note = await seedNote();
+      await target.addTagToNote(note.id, tagA.id);
+
+      await target.removeTagAssociations(tagA.id);
+      const removed = await target.removeTag(tagA);
+
+      expect(removed.id).toBe(tagA.id);
+      const remaining = await target.findTagByIdAndUserId(
+        tagA.id,
+        ownerId
+      );
+      expect(remaining).toBeNull();
+    });
+  });
 });

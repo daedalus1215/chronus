@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Stack } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import { BottomSheet } from '@components/BottomSheet/BottomSheet';
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
   onSubmit: (data: FormInitialData) => void;
   initialData?: FormInitialData;
   isSubmitting?: boolean;
+  error?: string | null;
 };
 
 export type FormInitialData = {
@@ -24,6 +26,7 @@ export const TagForm: React.FC<Props> = ({
   onSubmit,
   initialData,
   isSubmitting,
+  error,
 }) => {
   const [formData, setFormData] = useState<FormInitialData>({
     name: '',
@@ -95,6 +98,15 @@ export const TagForm: React.FC<Props> = ({
             e.stopPropagation();
           }}
         />
+        {error && (
+          <Alert
+            severity="error"
+            onClick={e => e.stopPropagation()}
+            onMouseDown={e => e.stopPropagation()}
+          >
+            {error}
+          </Alert>
+        )}
         <Stack direction="row" spacing={2} justifyContent="flex-end">
           <Button
             type="button"
