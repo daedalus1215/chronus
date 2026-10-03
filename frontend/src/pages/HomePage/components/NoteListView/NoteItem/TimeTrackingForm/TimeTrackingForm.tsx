@@ -68,6 +68,7 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   const [anchorNow, setAnchorNow] = useState<Date | null>(null);
   const [autoMode, setAutoMode] = useState<boolean>(true);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noteTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const quickDurations = [
     { label: '15m', value: 15 },
@@ -115,6 +116,18 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
       setAnchorNow(null);
     }
   }, [isOpen]);
+
+  /* ── Auto-resize the note textarea as the user types (same pattern as the note
+       editor), capped at 40vh: past the cap it scrolls internally so the dialog
+       stays compact and the Save button remains in view ── */
+  useEffect(() => {
+    const textarea = noteTextareaRef.current;
+    if (textarea) {
+      const maxHeight = window.innerHeight * 0.4;
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+    }
+  }, [formData.note, isOpen]);
 
   /* ── Cleanup debounce timer on unmount / modal close ── */
   useEffect(() => {
@@ -296,6 +309,7 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
               fullWidth
               multiline
               rows={3}
+              inputRef={noteTextareaRef}
             />
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button
