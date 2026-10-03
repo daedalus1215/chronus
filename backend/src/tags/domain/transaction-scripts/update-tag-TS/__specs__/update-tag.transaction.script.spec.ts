@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { UpdateTagTransactionScript } from '../update-tag.transaction.script';
 import { TagRepository } from '../../../../infra/repositories/tag-repository/tag.repository';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { Tag } from '../../../../domain/entities/tag.entity';
 import { UpdateTagDto } from '../../../../apps/actions/update-tag-action/update-tag.dto';
 import { generateRandomNumbers } from 'src/shared-kernel/test-utils';
@@ -63,6 +63,74 @@ describe('UpdateTagTransactionScript', () => {
         name: updateTagDto.name,
       })
     );
+  });
+
+  it('should trim leading and trailing whitespace from the tag name before saving', async () => {
+    // Arrange
+    const tagId = generateRandomNumbers();
+    const userId = generateRandomNumbers();
+    const existingTag: Tag = {
+      id: tagId,
+      name: 'Old Name',
+      description: '',
+      userId,
+    };
+    const updateTagDto: UpdateTagDto = {
+      name: '  padded name  ',
+    };
+
+    mockRepository.findTagByIdAndUserId.mockResolvedValue(existingTag);
+    mockRepository.updateTag.mockResolvedValue({ ...existingTag });
+
+    // Act
+    await target.apply(tagId, userId, updateTagDto);
+
+    // Assert
+    expect(mockRepository.updateTag).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'padded name',
+      })
+    );
+  });
+
+  it('should throw BadRequestException when the tag name is an empty string', async () => {
+    // Arrange
+    const tagId = generateRandomNumbers();
+    const userId = generateRandomNumbers();
+    const existingTag: Tag = {
+      id: tagId,
+      name: 'Old Name',
+      description: '',
+      userId,
+    };
+
+    mockRepository.findTagByIdAndUserId.mockResolvedValue(existingTag);
+
+    // Act & Assert
+    await expect(
+      target.apply(tagId, userId, { name: '' })
+    ).rejects.toThrow(BadRequestException);
+    expect(mockRepository.updateTag).not.toHaveBeenCalled();
+  });
+
+  it('should throw BadRequestException when the tag name is only whitespace', async () => {
+    // Arrange
+    const tagId = generateRandomNumbers();
+    const userId = generateRandomNumbers();
+    const existingTag: Tag = {
+      id: tagId,
+      name: 'Old Name',
+      description: '',
+      userId,
+    };
+
+    mockRepository.findTagByIdAndUserId.mockResolvedValue(existingTag);
+
+    // Act & Assert
+    await expect(
+      target.apply(tagId, userId, { name: '   ' })
+    ).rejects.toThrow(BadRequestException);
+    expect(mockRepository.updateTag).not.toHaveBeenCalled();
   });
 
   it('should update tag description when provided', async () => {

@@ -55,17 +55,30 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
     return map;
   }, [treeItems]);
 
+  // Tag rows get their metadata (name, note count) via a per-item lookup,
+  // same pattern as pinned state above.
+  const tagMetaByItemId = useMemo(() => {
+    const map: Record<string, { name: string; noteCount: number }> = {};
+    for (const tag of treeItems) {
+      if (tag.type === 'tag') {
+        map[tag.id] = { name: tag.label, noteCount: tag.noteCount ?? 0 };
+      }
+    }
+    return map;
+  }, [treeItems]);
+
   const TreeItemWithPin = useCallback(
     (itemProps: TreeItemProps) => (
       <CustomTagTreeItem
         {...itemProps}
         pinned={pinnedByItemId[itemProps.itemId] ?? false}
+        tagMeta={tagMetaByItemId[itemProps.itemId]}
         onNotePinned={(_noteId: number, tagId: number) =>
           refreshNotesForTag(tagId)
         }
       />
     ),
-    [pinnedByItemId, refreshNotesForTag]
+    [pinnedByItemId, tagMetaByItemId, refreshNotesForTag]
   );
 
   const handleItemClick = (_event: React.MouseEvent, itemId: string) => {

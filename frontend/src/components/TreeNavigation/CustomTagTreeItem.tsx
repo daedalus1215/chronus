@@ -35,6 +35,8 @@ import {
 } from '../../api/requests/notes.requests';
 import { useArchiveNote } from '../../pages/HomePage/hooks/useArchiveNote';
 import { usePinNote } from '../../pages/HomePage/hooks/usePinNote';
+import { TagActionPanel } from '../../pages/TagPage/components/TagListView/TagItem/TagActionPanel/TagActionPanel';
+import type { Tag } from '../../api/dtos/tag.dtos';
 
 /** Font size to match DesktopNoteListView compact items. */
 const LIST_FONT_SIZE = '0.8125rem';
@@ -78,10 +80,12 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       slots = {},
       pinned: isPinned = false,
       onNotePinned,
+      tagMeta,
       ...rest
     } = props as TreeItemProps & {
       pinned?: boolean;
       onNotePinned?: (noteId: number, tagId: number) => void;
+      tagMeta?: { name: string; noteCount: number };
     };
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -177,6 +181,12 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
     const handleViewTimeEntries = useCallback(() => {
       setIsActionsOpen(false);
       setIsTimeTrackListOpen(true);
+    }, []);
+
+    const handleTagMoreClick = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      setIsActionsOpen(true);
     }, []);
 
     const handleTimeTrackingSubmit = useCallback(
@@ -358,6 +368,45 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
       [handleMoreClick, isPinned]
     );
 
+    const CustomTagLabel = useCallback(
+      (labelProps: Record<string, unknown>) => {
+        const { ...labelPropsForDom } = labelProps;
+
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              minWidth: 0,
+            }}
+          >
+            <Box
+              {...labelPropsForDom}
+              sx={[
+                TAG_LABEL_SX,
+                ...(isTagSelected
+                  ? [{ color: 'var(--color-primary)' }]
+                  : []),
+                (labelProps.sx as object) ?? {},
+                { flex: 1, minWidth: 0 },
+              ]}
+            />
+            <IconButton
+              size="small"
+              onClick={handleTagMoreClick}
+              onPointerDown={e => e.stopPropagation()}
+              aria-label="More options"
+              sx={{ flexShrink: 0, color: 'var(--color-text-secondary)' }}
+            >
+              <MoreVert fontSize="small" />
+            </IconButton>
+          </Box>
+        );
+      },
+      [handleTagMoreClick, isTagSelected]
+    );
+
     const tagLabelSx = {
       ...TAG_LABEL_SX,
       ...(isTagSelected ? { color: 'var(--color-primary)' } : {}),
@@ -385,7 +434,20 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
 
     const mergedSlots = isNote
       ? { ...slots, label: CustomNoteLabel }
-      : { ...slots, icon: LocalOffer };
+      : { ...slots, icon: LocalOffer, label: CustomTagLabel };
+
+    // Tag rows surface the shared tag management panel (edit form, delete
+    // dialog, ⋮ grid). The panel needs the full Tag DTO; the tree item only
+    // carries name/noteCount, so fetch-backed fields (description) are
+    // resolved by the panel's own query when the form opens.
+    const tagData: Tag | null =
+      !isNote && tagIdFromItem
+        ? {
+            id: Number(tagIdFromItem),
+            name: tagMeta?.name ?? '',
+            noteCount: tagMeta?.noteCount ?? 0,
+          }
+        : null;
 
     return (
       <>
@@ -534,6 +596,14 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
               </DialogActions>
             </Dialog>
           </>
+        )}
+
+        {tagData && (
+          <TagActionPanel
+            tag={tagData}
+            isOpen={isActionsOpen}
+            onClose={() => setIsActionsOpen(false)}
+          />
         )}
       </>
     );
