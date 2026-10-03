@@ -1,1 +1,1 @@
-  module.exports = { extends: 'nestjs', name: 'my-api', root: 'src' };
+  module.exports = { extends: 'nestjs', name: 'chronus', root: 'src' };
