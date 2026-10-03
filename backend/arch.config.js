@@ -1,4 +1,1 @@
-module.exports = {
-  extends: 'nestjs',
-  root: 'src',
-};
+module.exports = { extends: 'nestjs', name: 'chronus', root: 'src' };
