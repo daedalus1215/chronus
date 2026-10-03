@@ -1,6 +1,6 @@
 # Spec — Activity Scatter Plot
 
-**Branch:** `activity-scatter` · **Page:** ActivityPage · **Status:** draft — decisions pending
+**Branch:** `activity-scatter` · **Page:** ActivityPage · **Status:** implemented
 
 ## Goal
 
@@ -55,11 +55,12 @@ evening creep, etc.).
 - **Styling:** house pattern — `Paper` + `.module.css`
   (container/header/chartContainer), `#6366f1` accent family, fixed height
   (~360px), same margins as WeeklyTrendChart.
-- **Library:** `ScatterChart` from `@mui/x-charts` v8.9 (already installed;
-  Gauge and BarChart are already used on this page). No new dependencies.
-  - z-axis support for marker size: `zAxis` prop + `zAxisId` on the series
-    (model confirmed in the installed package).
-  - Band scale on the Y axis for dates.
+- **Rendering:** hand-rolled SVG (no new dependencies). `@mui/x-charts`
+  v8.9's ScatterChart cannot vary marker size per point — its z-axis
+  drives color mapping, not size, and the renderer slot is limited to
+  `svg-single`/`svg-batch` — so the agreed encoding (size = duration
+  *and* color = note) is drawn directly. Axes, day gridlines, legend,
+  and the hover tooltip (in-SVG foreignObject) are all local.
 
 ## Implementation plan (commit split)
 
@@ -67,10 +68,9 @@ evening creep, etc.).
    (tsx + module css), update TimeEntryPage import. Behavior unchanged.
 2. **`ActivityScatterChart` component** —
    `ActivityPage/components/ActivityScatterChart/` (+ module css):
-   props `{ tracks, from, to, loading }`; memoizes the series
-   (group tracks by note → `{ x: startMinutes, y: date, z: duration, id }`),
-   renders `ScatterChart` with axes/legend/custom tooltip, handles
-   loading/empty states.
+   props `{ tracks, from, to, loading }`; memoizes day-index and per-note
+   totals/colors, renders hand-rolled SVG (axes, day gridlines, points,
+   legend, hover tooltip), handles loading/empty states.
 3. **ActivityPage wiring** — range state (default 7d), fetch via
    `getTimeTracksByDateRange` on range change, render the range picker +
    new card in the chart section.
@@ -84,8 +84,10 @@ evening creep, etc.).
   empty state, loading state, and that TimeEntryPage's DateRangePicker still
   works after the move.
 
-## Open questions
+## Decisions (locked)
 
-1. Encoding as above (per-track, day × time-of-day)? Or a different shape?
-2. Range presets: keep TimeEntryPage's set (Today/3d/5d/7d) or add 30d?
-3. Color by note (legend) or single accent color?
+1. **Encoding:** per-track, day × time-of-day (X = time of day, Y = date row,
+   size = duration, color = note).
+2. **Range presets:** TimeEntryPage's set (Today/3d/5d/7d) + custom From/To,
+   default 7d — reused as-is after the move to shared.
+3. **Color:** per-note with legend (most-active-first palette assignment).
