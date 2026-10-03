@@ -134,6 +134,21 @@ export const ActivityScatterChart: React.FC<Props> = ({
     );
   }
 
+  const hasActivity = days.length > 0 && tracks.length > 0;
+
+  if (!hasActivity) {
+    return (
+      <Paper className={styles.container}>
+        <Typography variant="h6">Activity</Typography>
+        <Box className={styles.noData}>
+          <Typography color="textSecondary">
+            No activity in the selected range
+          </Typography>
+        </Box>
+      </Paper>
+    );
+  }
+
   const xScale = (minutes: number) =>
     MARGIN.left + (minutes / DAY_MINUTES) * INNER_W;
   const bandHeight = INNER_H / days.length;
