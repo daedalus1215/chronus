@@ -16,6 +16,9 @@ import {
   TimeTrackAggregationResponse,
   TimeTrackWithNoteResponse,
 } from '../../api/dtos/time-tracks.dtos';
+import { WeeklyTrendResponseDto } from '../../api/dtos/weekly-trend.dtos';
+import { StreakResponseDto } from '../../api/dtos/streak.dtos';
+import styles from './ActivityPage.module.css';
 import { Box, Paper, Typography } from '@mui/material';
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { WeeklyMostActiveNoteResponseDto } from '../../api/dtos/weekly-most-active-note.dtos';
