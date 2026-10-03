@@ -13,12 +13,12 @@ import {
   QuickAddRow,
   QuickAddFormData,
 } from './components/QuickAddRow/QuickAddRow';
-import { DateRangePicker } from './components/DateRangePicker/DateRangePicker';
+import { DateRangePicker } from '../../components/DateRangePicker/DateRangePicker';
 import { SummaryStats } from './components/SummaryStats/SummaryStats';
 import {
   useTimeTrackDateRange,
   DateRange,
-} from './hooks/useTimeTrackDateRange';
+} from '../../hooks/useTimeTrackDateRange';
 import {
   getTimeTracksByDateRange,
   createTimeTrack,
