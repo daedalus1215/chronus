@@ -126,6 +126,7 @@ import { PinNoteAction } from './apps/actions/pin-note/pin-note.action';
     UpdateNoteAction,
     UpdateNoteTimestampAction,
     UpdateNoteTitleAction,
+    DeleteNoteAction,
     ArchiveNoteAction,
     PinNoteAction,
     ConvertChecklistToMemoAction,
