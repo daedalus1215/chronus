@@ -101,6 +101,29 @@
   margin-bottom: 1.5rem;
 }
 
+.scatterSection {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  align-items: stretch;
+}
+
+.scatterPicker {
+  flex: 0 1 340px;
+  min-width: 280px;
+}
+
+.scatterChart {
+  flex: 1 1 520px;
+  min-width: 320px;
+}
+
+.scatterPicker > * {
+  width: 100%;
+  height: 100%;
+}
+
 .graphSection {
   background-color: var(--color-bg-elevated) !important;
   color: var(--color-text) !important;

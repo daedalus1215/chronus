@@ -2,16 +2,20 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { DailyTimeTracksDataGrid } from './components/DailyTimeTracksDataGrid/DailyTimeTracksDataGrid';
 import { DailyTimeTracksRadar } from './components/DailyTimeTracksRadar/DailyTimeTracksRadar';
 import { WeeklyTrendChart } from './components/WeeklyTrendChart/WeeklyTrendChart';
+import { ActivityScatterChart } from './components/ActivityScatterChart/ActivityScatterChart';
+import { DateRangePicker } from '../../components/DateRangePicker/DateRangePicker';
+import { useTimeTrackDateRange } from '../../hooks/useTimeTrackDateRange';
 import {
   getDailyTimeTracksAggregation,
   getWeeklyMostActiveNote,
   getWeeklyTrend,
   getStreak,
+  getTimeTracksByDateRange,
 } from '../../api/requests/time-tracks.requests';
-import { TimeTrackAggregationResponse } from '../../api/dtos/time-tracks.dtos';
-import { WeeklyTrendResponseDto } from '../../api/dtos/weekly-trend.dtos';
-import { StreakResponseDto } from '../../api/dtos/streak.dtos';
-import styles from './ActivityPage.module.css';
+import {
+  TimeTrackAggregationResponse,
+  TimeTrackWithNoteResponse,
+} from '../../api/dtos/time-tracks.dtos';
 import { Box, Paper, Typography } from '@mui/material';
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { WeeklyMostActiveNoteResponseDto } from '../../api/dtos/weekly-most-active-note.dtos';
@@ -102,6 +106,36 @@ export const ActivityPage: React.FC = () => {
   const handleDateChange = (date: string) => {
     setSelectedDate(date);
   };
+
+  /* ── Activity scatter (independent date range, defaults to last 7 days) ── */
+  const {
+    from: scatterFrom,
+    to: scatterTo,
+    setPreset: setScatterPreset,
+    setFrom: setScatterFrom,
+    setTo: setScatterTo,
+  } = useTimeTrackDateRange(7);
+  const [scatterTracks, setScatterTracks] = useState<TimeTrackWithNoteResponse[]>(
+    []
+  );
+  const [scatterLoading, setScatterLoading] = useState(false);
+
+  const fetchScatterTracks = async () => {
+    setScatterLoading(true);
+    try {
+      const data = await getTimeTracksByDateRange(scatterFrom, scatterTo);
+      setScatterTracks(data);
+    } catch (err) {
+      console.error('Error fetching scatter time tracks:', err);
+      setScatterTracks([]);
+    } finally {
+      setScatterLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchScatterTracks();
+  }, [scatterFrom, scatterTo]);
 
   const dailyTotal = useMemo(() => {
     return timeTracks.reduce((sum, track) => sum + track.dailyTimeMinutes, 0);
@@ -252,6 +286,27 @@ export const ActivityPage: React.FC = () => {
         {/* Weekly Trend Chart */}
         <div className={styles.chartSection}>
           <WeeklyTrendChart data={weeklyTrend} loading={weeklyTrendLoading} />
+        </div>
+
+        {/* Activity Scatter Section */}
+        <div className={styles.scatterSection}>
+          <div className={styles.scatterPicker}>
+            <DateRangePicker
+              from={scatterFrom}
+              to={scatterTo}
+              onPreset={setScatterPreset}
+              onFromChange={setScatterFrom}
+              onToChange={setScatterTo}
+            />
+          </div>
+          <div className={styles.scatterChart}>
+            <ActivityScatterChart
+              tracks={scatterTracks}
+              from={scatterFrom}
+              to={scatterTo}
+              loading={scatterLoading}
+            />
+          </div>
         </div>
 
         {/* Graph Section */}
