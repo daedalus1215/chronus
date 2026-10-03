@@ -117,12 +117,15 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
     }
   }, [isOpen]);
 
-  /* ── Auto-resize the note textarea as the user types (same pattern as the note editor) ── */
+  /* ── Auto-resize the note textarea as the user types (same pattern as the note
+       editor), capped at 40vh: past the cap it scrolls internally so the dialog
+       stays compact and the Save button remains in view ── */
   useEffect(() => {
     const textarea = noteTextareaRef.current;
     if (textarea) {
+      const maxHeight = window.innerHeight * 0.4;
       textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
     }
   }, [formData.note, isOpen]);
 
