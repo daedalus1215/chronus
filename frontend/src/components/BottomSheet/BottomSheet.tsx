@@ -1,6 +1,5 @@
 import React from 'react';
-import Drawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 
 type BottomSheetProps = {
   isOpen: boolean;
@@ -14,27 +13,19 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   onClose,
   children,
 }) => (
-  <Drawer
-    anchor="bottom"
+  <Sheet
     open={isOpen}
-    onClose={(_event, reason) => {
-      // This prevents the drawer from closing when typing in inputs or when focus changes
-      if (reason === 'escapeKeyDown' || reason === 'backdropClick') {
-        onClose();
-      }
-      // Explicitly ignore backdrop clicks and other reasons to prevent issues
-    }}
-    slotProps={{
-      paper: {
-        sx: {
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
-          maxHeight: '80vh',
-          margin: '10 auto',
-        },
-      },
+    onOpenChange={(open) => {
+      if (!open) onClose();
     }}
   >
-    <Box sx={{ p: 2 }}>{children}</Box>
-  </Drawer>
+    <SheetContent
+      side="bottom"
+      showCloseButton={false}
+      className="max-h-[80vh] gap-0 rounded-t-2xl p-0"
+    >
+      <SheetTitle className="sr-only">Details</SheetTitle>
+      <div className="p-4">{children}</div>
+    </SheetContent>
+  </Sheet>
 );

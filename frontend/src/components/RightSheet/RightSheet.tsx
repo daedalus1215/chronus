@@ -1,6 +1,5 @@
 import React from 'react';
-import Drawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 
 type RightSheetProps = {
   isOpen: boolean;
@@ -13,25 +12,19 @@ export const RightSheet: React.FC<RightSheetProps> = ({
   onClose,
   children,
 }) => (
-  <Drawer
-    anchor="right"
+  <Sheet
     open={isOpen}
-    onClose={onClose}
-    ModalProps={{
-      keepMounted: true,
+    onOpenChange={(open) => {
+      if (!open) onClose();
     }}
   >
-    <Box
-      sx={{
-        width: 320,
-        height: '100%',
-        p: 2,
-        overflowY: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+    <SheetContent
+      side="right"
+      showCloseButton={false}
+      className="w-80 gap-0 overflow-y-auto p-4 sm:max-w-80"
     >
+      <SheetTitle className="sr-only">Details</SheetTitle>
       {children}
-    </Box>
-  </Drawer>
+    </SheetContent>
+  </Sheet>
 );

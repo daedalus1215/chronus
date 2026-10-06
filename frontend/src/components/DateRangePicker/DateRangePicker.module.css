@@ -25,7 +25,8 @@
 
 .icon {
   color: var(--color-primary);
-  font-size: 20px !important;
+  width: 20px;
+  height: 20px;
 }
 
 .title {
@@ -90,10 +91,6 @@
   width: 140px;
 }
 
-.dateField :global(.MuiInputBase-root) {
-  font-size: 0.875rem;
-}
-
 .rangeSeparator {
   color: var(--color-text-secondary);
   font-size: 0.8125rem;
@@ -137,7 +134,8 @@
   }
 
   .icon {
-    font-size: 18px !important;
+    width: 18px;
+    height: 18px;
   }
 
   .title {

@@ -19,8 +19,8 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 - [ ] src/App.tsx (ThemeProvider/CssBaseline — stays until the last MUI
       consumer is gone)
-- [ ] src/components/BottomSheet/BottomSheet.tsx
-- [ ] src/components/DateRangePicker/DateRangePicker.tsx
+- [x] src/components/BottomSheet/BottomSheet.tsx
+- [x] src/components/DateRangePicker/DateRangePicker.tsx
 - [x] src/components/Header/Header.tsx
 - [x] src/components/Header/Sidebar/DesktopSidebar.tsx
 - [x] src/components/Header/Sidebar/MobileSidebar.tsx
@@ -32,9 +32,9 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/components/Layout/ResizablePanel.tsx
 - [ ] src/components/MoveNoteDialog/MoveNoteDialog.tsx
 - [ ] src/components/PersistentAudioPlayer/PersistentAudioPlayer.tsx
-- [ ] src/components/RightSheet/RightSheet.tsx
+- [x] src/components/RightSheet/RightSheet.tsx
 - [x] src/components/ThemeToggle/ThemeToggleButton.tsx
-- [ ] src/components/TopRail/TopRail.tsx
+- [x] src/components/TopRail/TopRail.tsx
 - [ ] src/components/TreeNavigation/CustomTagTreeItem.tsx (MUI x-tree-view —
       no shadcn equivalent, needs a hand-rolled tree)
 - [ ] src/components/TreeNavigation/TagTreeNavigation.tsx (same)
