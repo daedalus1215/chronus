@@ -1,7 +1,8 @@
 import React from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
-import { Box, IconButton, Tooltip } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { SidebarToggleIcon } from '../Header/Sidebar/SidebarToggleIcon';
 import { useSidebar } from '../../hooks/useSidebar';
 import { useTopRailActionsSlot } from '../../hooks/useTopRailActionsSlot';
@@ -31,44 +32,32 @@ export const TopRail: React.FC = () => {
   const leftButtonLabel = kanbanMatch ? 'Back to note' : leftButtonTooltip;
 
   return (
-    <Box
-      sx={{
-        height: TOP_RAIL_HEIGHT_PX,
-        flexShrink: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        px: 0.5,
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        backgroundColor: 'background.paper',
-        zIndex: 10,
-      }}
+    <div
+      className="z-10 flex shrink-0 items-center justify-between border-b border-border bg-card px-1"
+      style={{ height: TOP_RAIL_HEIGHT_PX }}
     >
-      <Tooltip title={leftButtonTooltip} placement="bottom" arrow>
-        <IconButton
-          onClick={handleLeftButtonClick}
-          size="small"
-          aria-label={leftButtonLabel}
-          sx={{
-            color: 'text.secondary',
-            borderRadius: 1,
-            '&:hover': { color: 'text.primary' },
-          }}
-        >
-          {kanbanMatch ? (
-            <ArrowBackIcon sx={{ fontSize: 18 }} />
-          ) : (
-            <SidebarToggleIcon isOpen={isNoteListOpen} size={18} />
-          )}
-        </IconButton>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            onClick={handleLeftButtonClick}
+            variant="ghost"
+            size="icon-sm"
+            aria-label={leftButtonLabel}
+            className="rounded-sm text-muted-foreground hover:text-foreground"
+          >
+            {kanbanMatch ? (
+              <ArrowLeft className="size-[18px]" />
+            ) : (
+              <SidebarToggleIcon isOpen={isNoteListOpen} size={18} />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{leftButtonTooltip}</TooltipContent>
       </Tooltip>
 
       {pageActions && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          {pageActions}
-        </Box>
+        <div className="flex items-center gap-1">{pageActions}</div>
       )}
-    </Box>
+    </div>
   );
 };

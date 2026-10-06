@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react';
-import { Box, Button, TextField, Paper, Typography } from '@mui/material';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { CalendarDays } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 import styles from './DateRangePicker.module.css';
 
 const PRESETS = [
@@ -45,53 +48,60 @@ export const DateRangePicker: React.FC<Props> = ({
   }, [from, to]);
 
   return (
-    <Paper className={styles.container} elevation={0}>
-      <Box className={styles.header}>
-        <CalendarTodayIcon className={styles.icon} />
-        <Typography className={styles.title}>Date Range</Typography>
-      </Box>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <CalendarDays className={styles.icon} />
+        <span className={styles.title}>Date Range</span>
+      </div>
 
-      <Box className={styles.content}>
-        <Box className={styles.presets}>
+      <div className={styles.content}>
+        <div className={styles.presets}>
           {PRESETS.map(p => (
             <Button
               key={p.days}
-              size="small"
-              variant={activePreset === p.days ? 'contained' : 'outlined'}
+              size="sm"
+              variant={activePreset === p.days ? 'default' : 'outline'}
               onClick={() => onPreset(p.days)}
-              className={`${styles.presetButton} ${
-                activePreset === p.days ? styles.presetButtonActive : ''
-              }`}
+              className={cn(
+                styles.presetButton,
+                activePreset === p.days && styles.presetButtonActive
+              )}
             >
               {p.label}
             </Button>
           ))}
-        </Box>
+        </div>
 
-        <Box className={styles.divider} />
+        <div className={styles.divider} />
 
-        <Box className={styles.customRange}>
-          <TextField
-            type="date"
-            label="From"
-            value={from}
-            onChange={e => onFromChange(e.target.value)}
-            size="small"
-            InputLabelProps={{ shrink: true }}
-            className={styles.dateField}
-          />
+        <div className={styles.customRange}>
+          <div className={styles.dateField}>
+            <Label htmlFor="date-range-from" className="mb-1 block text-xs text-muted-foreground">
+              From
+            </Label>
+            <Input
+              id="date-range-from"
+              type="date"
+              value={from}
+              onChange={e => onFromChange(e.target.value)}
+              className="h-8"
+            />
+          </div>
           <span className={styles.rangeSeparator}>to</span>
-          <TextField
-            type="date"
-            label="To"
-            value={to}
-            onChange={e => onToChange(e.target.value)}
-            size="small"
-            InputLabelProps={{ shrink: true }}
-            className={styles.dateField}
-          />
-        </Box>
-      </Box>
-    </Paper>
+          <div className={styles.dateField}>
+            <Label htmlFor="date-range-to" className="mb-1 block text-xs text-muted-foreground">
+              To
+            </Label>
+            <Input
+              id="date-range-to"
+              type="date"
+              value={to}
+              onChange={e => onToChange(e.target.value)}
+              className="h-8"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
