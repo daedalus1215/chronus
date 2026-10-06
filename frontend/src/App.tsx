@@ -21,6 +21,8 @@ import {
   useThemeMode,
 } from './contexts/ThemeModeContext';
 import { createChronusTheme } from './theme';
+import { TooltipProvider } from './components/ui/tooltip';
+import { Toaster } from './components/ui/sonner';
 import { TagPage } from './pages/TagPage/TagPage';
 import { ActivityPage } from './pages/ActivityPage/ActivityPage';
 import { YearlyNotesPage } from './pages/YearlyNotesPage/YearlyNotesPage';
@@ -110,14 +112,17 @@ const ThemedShell: FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <SidebarProvider>
-          <AudioPlayerProvider>
-            <AppRoutes />
-            <PersistentAudioPlayer />
-          </AudioPlayerProvider>
-        </SidebarProvider>
-      </Router>
+      <TooltipProvider delayDuration={200}>
+        <Router>
+          <SidebarProvider>
+            <AudioPlayerProvider>
+              <AppRoutes />
+              <PersistentAudioPlayer />
+            </AudioPlayerProvider>
+          </SidebarProvider>
+        </Router>
+        <Toaster />
+      </TooltipProvider>
     </ThemeProvider>
   );
 };
