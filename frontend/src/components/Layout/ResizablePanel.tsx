@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Paper } from '@mui/material';
 
 type ResizablePanelProps = {
   children: React.ReactNode;
@@ -65,39 +64,16 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   }, [handleMouseMove, handleMouseUp]);
 
   return (
-    <Box sx={{ position: 'relative', width, flexShrink: 0 }}>
-      <Paper
-        elevation={0}
-        sx={{
-          height: '100%',
-          backgroundColor: 'background.paper',
-          borderRight: '1px solid',
-          borderColor: 'divider',
-          overflow: 'hidden',
-        }}
-      >
+    <div className="relative shrink-0" style={{ width }}>
+      <div className="h-full overflow-hidden border-r border-border bg-card">
         {children}
-      </Paper>
+      </div>
 
       {/* Resize Handle */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          right: -4,
-          width: 8,
-          height: '100%',
-          cursor: 'col-resize',
-          backgroundColor: 'transparent',
-          '&:hover': {
-            backgroundColor: 'action.hover',
-          },
-          '&:active': {
-            backgroundColor: 'action.selected',
-          },
-        }}
+      <div
+        className="absolute inset-y-0 right-[-4px] w-2 cursor-col-resize bg-transparent hover:bg-accent active:bg-accent"
         onMouseDown={handleMouseDown}
       />
-    </Box>
+    </div>
   );
 };

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Box, Paper } from '@mui/material';
 import { Header, MOBILE_HEADER_HEIGHT_PX } from '../Header/Header';
 import { DesktopSidebar } from '../Header/Sidebar/DesktopSidebar';
 import { TopRail } from '../TopRail/TopRail';
@@ -36,39 +35,19 @@ export const AuthenticatedLayout: React.FC = () => {
       >
         {!isMobile && <TopRail />}
         {isMobile ? (
-          <Box
-            sx={{
-              flex: 1,
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: 0,
-            }}
-          >
+          <div className="relative flex min-h-0 flex-1 flex-col">
             <Outlet />
-          </Box>
+          </div>
         ) : (
-          <Box sx={{ display: 'flex', width: '100%', flex: 1, minHeight: 0 }}>
-            <Paper
-              elevation={0}
-              sx={{
-                flex: '0 0 auto',
-                borderRight: '1px solid',
-                borderColor: 'divider',
-                backgroundColor: 'background.paper',
-                height: '100%',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
+          <div className="flex min-h-0 w-full flex-1">
+            <div className="flex h-full shrink-0 flex-col overflow-hidden border-r border-border bg-card">
               <DesktopSidebar isOpen={true} />
-            </Paper>
+            </div>
 
-            <Box sx={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
+            <div className="min-w-0 flex-1 overflow-hidden">
               <Outlet />
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
       </main>
     </TopRailActionsProvider>
