@@ -1,7 +1,6 @@
 import React from 'react';
-import IconButton from '@mui/material/IconButton';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { Sun, Moon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useThemeMode } from '../../contexts/ThemeModeContext';
 
 /**
@@ -15,14 +14,15 @@ export const ThemeToggleButton: React.FC = () => {
   const label = toLight ? 'Switch to light theme' : 'Switch to dark theme';
 
   return (
-    <IconButton
+    <Button
       onClick={toggle}
       aria-label={label}
       title={label}
-      size="small"
-      sx={{ color: 'text.secondary' }}
+      variant="ghost"
+      size="icon-sm"
+      className="text-muted-foreground"
     >
-      {toLight ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
-    </IconButton>
+      {toLight ? <Sun className="size-4" /> : <Moon className="size-4" />}
+    </Button>
   );
 };
