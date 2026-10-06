@@ -1,13 +1,7 @@
 import React from 'react';
-import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
-import {
-  Search as SearchIcon,
-  Add as AddIcon,
-  FormatBold,
-  FormatItalic,
-  FormatListBulleted,
-  Code,
-} from '@mui/icons-material';
+import { Search, Plus, Bold, Italic, List, Code } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 type ToolbarProps = {
   onSearch?: (query: string) => void;
@@ -20,78 +14,37 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onSearch, onNewNote }) => {
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 2,
-        padding: 1,
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        backgroundColor: 'background.paper',
-      }}
-    >
+    <div className="flex items-center gap-2 border-b border-border bg-card p-1">
       {/* Search Bar */}
-      <TextField
-        size="small"
-        placeholder="Search notes..."
-        variant="outlined"
-        onChange={handleSearchChange}
-        sx={{
-          flex: 1,
-          maxWidth: 300,
-          '& .MuiOutlinedInput-root': {
-            backgroundColor: 'var(--input-bg)',
-            color: 'text.primary',
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'var(--input-border-hover)',
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'primary.main',
-            },
-          },
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'var(--input-border)',
-          },
-        }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon sx={{ color: 'text.secondary' }} />
-            </InputAdornment>
-          ),
-        }}
-      />
+      <div className="relative max-w-[300px] flex-1">
+        <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="Search notes..."
+          onChange={handleSearchChange}
+          className="h-8 pl-8"
+        />
+      </div>
 
       {/* New Note Button */}
-      <IconButton
-        onClick={onNewNote}
-        sx={{
-          color: '#fff',
-          backgroundColor: 'primary.main',
-          '&:hover': {
-            backgroundColor: 'primary.dark',
-          },
-        }}
-      >
-        <AddIcon />
-      </IconButton>
+      <Button onClick={onNewNote} size="icon">
+        <Plus />
+      </Button>
 
       {/* Formatting Tools */}
-      <Box sx={{ display: 'flex', gap: 1 }}>
-        <IconButton size="small" sx={{ color: 'text.primary' }}>
-          <FormatBold />
-        </IconButton>
-        <IconButton size="small" sx={{ color: 'text.primary' }}>
-          <FormatItalic />
-        </IconButton>
-        <IconButton size="small" sx={{ color: 'text.primary' }}>
-          <FormatListBulleted />
-        </IconButton>
-        <IconButton size="small" sx={{ color: 'text.primary' }}>
+      <div className="flex gap-1">
+        <Button variant="ghost" size="icon-sm">
+          <Bold />
+        </Button>
+        <Button variant="ghost" size="icon-sm">
+          <Italic />
+        </Button>
+        <Button variant="ghost" size="icon-sm">
+          <List />
+        </Button>
+        <Button variant="ghost" size="icon-sm">
           <Code />
-        </IconButton>
-      </Box>
-    </Box>
+        </Button>
+      </div>
+    </div>
   );
 };
