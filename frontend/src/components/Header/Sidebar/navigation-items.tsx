@@ -1,63 +1,65 @@
-import HomeIcon from '@mui/icons-material/Home';
-import NoteIcon from '@mui/icons-material/Note';
-import ChecklistIcon from '@mui/icons-material/CheckBox';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import MoreTimeIcon from '@mui/icons-material/MoreTime';
-import HistoryIcon from '@mui/icons-material/History';
-import SettingsIcon from '@mui/icons-material/Settings';
-import SearchIcon from '@mui/icons-material/Search';
-import FolderIcon from '@mui/icons-material/Folder';
+import {
+  Home,
+  StickyNote,
+  ListChecks,
+  Tag,
+  Activity,
+  Timer,
+  History,
+  Settings,
+  Search,
+  Folder,
+} from 'lucide-react';
 
 export const navigationItems = [
   {
     label: 'Home',
     path: '/',
-    icon: HomeIcon,
+    icon: Home,
   },
   {
     label: 'Memos',
     path: '/memo',
-    icon: NoteIcon,
+    icon: StickyNote,
   },
   {
     label: 'CheckLists',
     path: '/checklist',
-    icon: ChecklistIcon,
+    icon: ListChecks,
   },
   {
     label: 'Tags',
     path: '/tags',
-    icon: LocalOfferIcon,
+    icon: Tag,
   },
   {
     label: 'Activity',
     path: '/activity',
-    icon: TimelineIcon,
+    icon: Activity,
   },
   {
     label: 'Quick Log',
     path: '/time-entry',
-    icon: MoreTimeIcon,
+    icon: Timer,
   },
   {
     label: 'Yearly Notes',
     path: '/yearly-notes',
-    icon: HistoryIcon,
+    icon: History,
   },
   {
     label: 'Search',
     path: '/search',
-    icon: SearchIcon,
+    icon: Search,
   },
   {
     label: 'Explorer',
     path: '/explorer',
-    icon: FolderIcon,
+    icon: Folder,
   },
   {
     label: 'Settings',
     path: '/settings',
-    icon: SettingsIcon,
+    icon: Settings,
   },
 ];

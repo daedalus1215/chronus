@@ -1,14 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import {
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  Tooltip,
-} from '@mui/material';
-import Fade from '@mui/material/Fade';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import { navigationItems } from './navigation-items';
 import styles from './DesktopSidebar.module.css';
 
@@ -18,20 +11,10 @@ type DesktopSidebarProps = {
 
 export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
   const location = useLocation();
-  const fixedWidth = 52;
 
   return (
-    <Box
-      className={styles.sidebar}
-      sx={{
-        position: 'relative',
-        width: `${fixedWidth}px`,
-        flex: '0 0 auto',
-        minWidth: 0,
-        padding: '0.25rem',
-      }}
-    >
-      <List className={styles.nav}>
+    <div className={cn(styles.sidebar, 'relative w-[52px] shrink-0 min-w-0 p-1')}>
+      <ul className={styles.nav}>
         {navigationItems.map((item, index) => {
           const pathname = location.pathname;
           let isActive = false;
@@ -56,49 +39,39 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
           }
 
           return (
-            <Fade
+            <li
               key={item.path}
-              in={true}
-              timeout={300}
-              style={{
-                transitionDelay: `${Math.min(index * 50, 300)}ms`,
-              }}
+              className="animate-in fade-in list-none duration-300"
+              style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
             >
-              <ListItem disablePadding>
-                <Tooltip title={item.label} placement="right" arrow>
-                  <ListItemButton
-                    component={Link}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
                     to={item.path}
-                    className={`${styles.navItem} ${isActive ? styles.active : ''}`}
-                    sx={{
-                      justifyContent: 'center',
-                      backgroundColor: isActive
-                        ? 'action.selected'
-                        : 'transparent',
-                      '&:hover': {
-                        backgroundColor: isActive
-                          ? 'action.selected'
-                          : 'action.hover',
-                      },
-                    }}
+                    className={cn(
+                      styles.navItem,
+                      isActive && styles.active,
+                      'flex items-center justify-center rounded-md',
+                      isActive ? 'bg-sidebar-accent' : 'hover:bg-sidebar-accent'
+                    )}
                   >
-                    <ListItemIcon
-                      className={styles.navIcon}
-                      sx={{
-                        minWidth: 0,
-                        justifyContent: 'center',
-                        color: isActive ? 'primary.main' : 'text.secondary',
-                      }}
+                    <span
+                      className={cn(
+                        styles.navIcon,
+                        'flex min-w-0 items-center justify-center',
+                        isActive ? 'text-sidebar-primary' : 'text-muted-foreground'
+                      )}
                     >
-                      <item.icon sx={{ fontSize: 18 }} />
-                    </ListItemIcon>
-                  </ListItemButton>
-                </Tooltip>
-              </ListItem>
-            </Fade>
+                      <item.icon size={18} />
+                    </span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{item.label}</TooltipContent>
+              </Tooltip>
+            </li>
           );
         })}
-      </List>
-    </Box>
+      </ul>
+    </div>
   );
 };
