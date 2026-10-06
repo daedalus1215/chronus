@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import { Paper } from '@mui/material';
 import { DesktopSidebar } from '../Header/Sidebar/DesktopSidebar';
 import { Toolbar } from '../Header/Toolbar/Toolbar';
 import { ResizablePanel } from './ResizablePanel';
@@ -21,54 +19,21 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
   const [noteListWidth, setNoteListWidth] = useState(300);
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        height: '100vh',
-        backgroundColor: 'background.paper',
-        color: 'text.primary',
-      }}
-    >
+    <div className="flex h-screen bg-card text-foreground">
       {/* Navigation Sidebar */}
-      <Paper
-        elevation={0}
-        sx={{
-          flex: '0 0 auto',
-          borderRight: '1px solid',
-          borderColor: 'divider',
-          backgroundColor: 'background.paper',
-          height: '100vh',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <div className="flex h-screen shrink-0 flex-col overflow-hidden border-r border-border bg-card">
         <DesktopSidebar isOpen={true} />
-      </Paper>
+      </div>
 
       {/* Main Content Area */}
-      <Box
-        sx={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Toolbar */}
-        <Paper
-          elevation={0}
-          sx={{
-            flexShrink: 0,
-            backgroundColor: 'background.paper',
-            zIndex: 1200,
-          }}
-        >
+        <div className="z-[1200] shrink-0 bg-card">
           <Toolbar onSearch={onSearch} onNewNote={onNewNote} />
-        </Paper>
+        </div>
 
         {/* Content Area */}
-        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <div className="flex flex-1 overflow-hidden">
           {/* Note List Panel */}
           <ResizablePanel
             defaultWidth={noteListWidth}
@@ -80,20 +45,11 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({
           </ResizablePanel>
 
           {/* Note Content Panel */}
-          <Paper
-            elevation={0}
-            sx={{
-              flex: 1,
-              backgroundColor: 'background.paper',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
+          <div className="flex flex-1 flex-col overflow-hidden bg-card">
             {noteContent}
-          </Paper>
-        </Box>
-      </Box>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

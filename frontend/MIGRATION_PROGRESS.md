@@ -27,9 +27,10 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/components/Header/Sidebar/MobileSidebar.tsx
 - [x] src/components/Header/Sidebar/navigation-items.tsx
 - [x] src/components/Header/Toolbar/Toolbar.tsx
-- [ ] src/components/Layout/AuthenticatedLayout.tsx
-- [ ] src/components/Layout/DesktopLayout.tsx
-- [ ] src/components/Layout/ResizablePanel.tsx
+- [x] src/components/Layout/AuthenticatedLayout.tsx
+- [x] src/components/Layout/DesktopLayout.tsx (dead code — unused anywhere;
+      migrated anyway for consistency rather than deleting out-of-scope)
+- [x] src/components/Layout/ResizablePanel.tsx
 - [ ] src/components/MoveNoteDialog/MoveNoteDialog.tsx
 - [ ] src/components/PersistentAudioPlayer/PersistentAudioPlayer.tsx
 - [ ] src/components/RightSheet/RightSheet.tsx
