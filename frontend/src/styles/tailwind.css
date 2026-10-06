@@ -1,0 +1,60 @@
+/* Tailwind v4 entry point + shadcn/ui theme mapping.
+ *
+ * Design tokens themselves (the actual light/dark values) live in
+ * `global.scss` as plain CSS custom properties, switched by `[data-theme]`
+ * on <html>. This file only maps Tailwind's `--color-*` namespace onto
+ * those existing variables, so `bg-background`, `text-foreground`, etc.
+ * resolve to the same tokens MUI and CSS Modules already consume. It does
+ * not define any new light/dark values itself.
+ */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* The app toggles theme via `data-theme="dark"` on <html> (see
+   ThemeModeContext + the pre-paint script in index.html), not Tailwind's
+   default `.dark` class convention. Map the `dark:` variant to that. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  /* shadcn's "accent" is a subtle hover/selected surface (menus, select
+     items). It is distinct from the existing `--accent` token, which is
+     the vivid brand purple already consumed by ~15 CSS Modules — so it
+     gets its own alias (`--ui-accent`, defined in global.scss) instead of
+     overloading that name. */
+  --color-accent: var(--ui-accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
