@@ -1,16 +1,11 @@
 import React from 'react';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import IconButton from '@mui/material/IconButton';
-import { SidebarToggleIcon } from './SidebarToggleIcon';
-import Logout from '@mui/icons-material/Logout';
-import Divider from '@mui/material/Divider';
-import Fade from '@mui/material/Fade';
+import { LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { SidebarToggleIcon } from './SidebarToggleIcon';
 import { Logo } from '../../Logo/Logo';
 import { navigationItems } from './navigation-items';
 import styles from './MobileSidebar.module.css';
@@ -66,156 +61,117 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
   );
 
   return (
-    <Drawer
-      anchor="left"
-      open={isOpen}
-      onClose={onClose}
-      variant="temporary"
-      sx={{
-        '& .MuiDrawer-paper': {
-          width: 240,
-          boxSizing: 'border-box',
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent
+        side="left"
+        showCloseButton={false}
+        className="w-60 gap-0 p-0"
+        style={{
           backgroundColor: 'var(--glass-bg-strong)',
           backdropFilter: 'var(--glass-blur)',
           WebkitBackdropFilter: 'var(--glass-blur)',
           borderRight: '1px solid var(--glass-border)',
           backgroundImage: 'none',
-        },
-      }}
-    >
-      <div
-        className={styles.header}
-        style={{ display: 'flex', alignItems: 'center', padding: '1rem' }}
+        }}
       >
-        <Link
-          to="/"
-          className={styles.brand}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            textDecoration: 'none',
-            color: 'inherit',
-            flexGrow: 1,
-          }}
-          onClick={onClose}
-        >
-          <Logo />
-          <span
-            className={styles.name}
-            style={{ marginLeft: 8, fontWeight: 600, fontSize: '1.2rem' }}
+        <SheetTitle className="sr-only">Navigation</SheetTitle>
+        <div className={styles.header} style={{ display: 'flex', alignItems: 'center', padding: '1rem' }}>
+          <Link
+            to="/"
+            className={styles.brand}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              color: 'inherit',
+              flexGrow: 1,
+            }}
+            onClick={onClose}
           >
-            Chronus
-          </span>
-        </Link>
-        <IconButton onClick={onClose} aria-label="Close sidebar">
-          <SidebarToggleIcon isOpen={true} size={20} />
-        </IconButton>
-      </div>
-      <List>
-        {navigationItems.map((item, index) => {
-          const Icon = item.icon;
-          const isActive = isRouteActive(item.path);
-
-          return (
-            <Fade
-              key={item.path}
-              in={isOpen}
-              timeout={300}
-              style={{
-                transitionDelay: `${Math.min(index * 50, 300)}ms`,
-              }}
+            <Logo />
+            <span
+              className={styles.name}
+              style={{ marginLeft: 8, fontWeight: 600, fontSize: '1.2rem' }}
             >
-              <ListItem disablePadding>
-                <ListItemButton
-                  component={Link}
+              Chronus
+            </span>
+          </Link>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={onClose}
+            aria-label="Close sidebar"
+          >
+            <SidebarToggleIcon isOpen={true} size={20} />
+          </Button>
+        </div>
+        <ul>
+          {navigationItems.map((item, index) => {
+            const Icon = item.icon;
+            const isActive = isRouteActive(item.path);
+
+            return (
+              <li
+                key={item.path}
+                className="animate-in fade-in list-none duration-300"
+                style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
+              >
+                <Link
                   to={item.path}
                   onClick={onClose}
-                  selected={isActive}
-                  sx={{
-                    position: 'relative',
-                    background: isActive ? 'var(--accent-soft)' : 'transparent',
-                    boxShadow: isActive ? 'var(--glow-accent-soft)' : 'none',
-                    '&:hover': {
-                      background: isActive
-                        ? 'var(--accent-soft-2)'
-                        : 'var(--accent-soft)',
-                    },
-                    // Gradient accent bar on the active item (matches desktop).
-                    '&::before': isActive
-                      ? {
-                          content: '""',
-                          position: 'absolute',
-                          left: 0,
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          width: '3px',
-                          height: '60%',
-                          borderRadius: '9999px',
-                          background: 'var(--accent-gradient)',
-                          boxShadow: '0 0 8px rgba(99, 102, 241, 0.7)',
-                        }
-                      : undefined,
-                    borderRadius: '8px',
-                    margin: '0 8px',
-                    padding: '8px 16px',
-                  }}
+                  className={cn(
+                    'relative mx-2 flex items-center gap-3 rounded-md px-4 py-2',
+                    isActive
+                      ? [
+                          'bg-[var(--accent-soft)] shadow-[var(--glow-accent-soft)]',
+                          "before:absolute before:left-0 before:top-1/2 before:h-3/5 before:w-[3px] before:-translate-y-1/2 before:rounded-full before:content-['']",
+                          'before:[background:var(--accent-gradient)] before:[box-shadow:0_0_8px_rgba(99,102,241,0.7)]',
+                        ]
+                      : 'hover:bg-[var(--accent-soft)]'
+                  )}
                 >
-                  <ListItemIcon
-                    sx={{
-                      color: isActive ? 'primary.main' : 'text.secondary',
-                    }}
+                  <span className={isActive ? 'text-sidebar-primary' : 'text-muted-foreground'}>
+                    <Icon className="size-5" />
+                  </span>
+                  <span
+                    className={cn(
+                      isActive
+                        ? 'font-semibold text-sidebar-primary'
+                        : 'font-normal text-foreground'
+                    )}
                   >
-                    <Icon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: isActive ? 600 : 400,
-                      color: isActive ? 'primary.main' : 'text.primary',
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </Fade>
-          );
-        })}
-      </List>
-      {onSignOut != null && (
-        <>
-          <Divider />
-          <List>
-            {username != null && (
-              <ListItem sx={{ py: 0, px: 2 }}>
-                <ListItemText
-                  secondary={username}
-                  secondaryTypographyProps={{
-                    sx: { fontSize: '0.75rem' },
-                    color: 'text.secondary',
+                    {item.label}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        {onSignOut != null && (
+          <>
+            <Separator />
+            <ul>
+              {username != null && (
+                <li className="list-none px-4 py-0">
+                  <span className="text-xs text-muted-foreground">{username}</span>
+                </li>
+              )}
+              <li className="list-none">
+                <button
+                  onClick={() => {
+                    onClose();
+                    onSignOut();
                   }}
-                />
-              </ListItem>
-            )}
-            <ListItem disablePadding>
-              <ListItemButton
-                onClick={() => {
-                  onClose();
-                  onSignOut();
-                }}
-                sx={{
-                  borderRadius: '8px',
-                  margin: '0 8px',
-                  padding: '8px 16px',
-                }}
-              >
-                <ListItemIcon sx={{ color: 'text.secondary' }}>
-                  <Logout />
-                </ListItemIcon>
-                <ListItemText primary="Sign Out" />
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </>
-      )}
-    </Drawer>
+                  className="mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-md px-4 py-2 text-left hover:bg-[var(--accent-soft)]"
+                >
+                  <LogOut className="size-5 text-muted-foreground" />
+                  <span>Sign Out</span>
+                </button>
+              </li>
+            </ul>
+          </>
+        )}
+      </SheetContent>
+    </Sheet>
   );
 };

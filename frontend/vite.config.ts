@@ -56,7 +56,12 @@ export default defineConfig({
         navigateFallbackAllowlist: [/^\/(?!api\/).*$/],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: true
+        skipWaiting: true,
+        // MUI and shadcn/Tailwind/Radix both ship in the bundle during the
+        // shadcn migration (see MIGRATION_PROGRESS.md), pushing the main
+        // chunk past Workbox's 2 MiB default. Revisit/lower this once MUI
+        // is removed in the migration's final cleanup step.
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
       }
     })
   ],
