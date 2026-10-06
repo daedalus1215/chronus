@@ -53,6 +53,12 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --color-primary: #6366f1;
   --color-primary-dark: #4f46e5;
+  /* shadcn's "accent" token (subtle hover/selected surface in menus,
+     selects, etc.) — kept distinct from --accent above, which is the
+     vivid brand purple already used throughout CSS Modules. Aliases
+     --muted so it tracks light/dark automatically without its own
+     [data-theme='dark'] override. */
+  --ui-accent: var(--muted);
   /* Black-alpha darkening overlays work in both modes. */
   --color-overlay-dark: rgba(0, 0, 0, 0.05);
   --color-overlay-dark-strong: rgba(0, 0, 0, 0.1);
