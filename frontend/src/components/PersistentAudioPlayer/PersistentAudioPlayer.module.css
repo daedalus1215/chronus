@@ -40,30 +40,8 @@
   padding: 0 8px;
 }
 
-.seekBar :global(.MuiSlider-root) {
-  color: var(--color-primary);
-}
-
-.seekBar :global(.MuiSlider-thumb) {
-  width: 12px;
-  height: 12px;
-  background-color: var(--color-primary);
-}
-
-.seekBar :global(.MuiSlider-thumb:hover) {
-  box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.16);
-}
-
-.seekBar :global(.MuiSlider-rail) {
-  background-color: var(--color-overlay-stronger);
-}
-
 .volumeSlider {
   width: 80px;
-}
-
-.volumeSlider :global(.MuiSlider-root) {
-  color: var(--color-primary);
 }
 
 .playingIndicator {

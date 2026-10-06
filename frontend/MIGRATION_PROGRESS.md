@@ -31,8 +31,8 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/components/Layout/DesktopLayout.tsx (dead code — unused anywhere;
       migrated anyway for consistency rather than deleting out-of-scope)
 - [x] src/components/Layout/ResizablePanel.tsx
-- [ ] src/components/MoveNoteDialog/MoveNoteDialog.tsx
-- [ ] src/components/PersistentAudioPlayer/PersistentAudioPlayer.tsx
+- [x] src/components/MoveNoteDialog/MoveNoteDialog.tsx
+- [x] src/components/PersistentAudioPlayer/PersistentAudioPlayer.tsx
 - [x] src/components/RightSheet/RightSheet.tsx
 - [x] src/components/ThemeToggle/ThemeToggleButton.tsx
 - [x] src/components/TopRail/TopRail.tsx

@@ -1,23 +1,16 @@
 import React from 'react';
 import {
-  Fab,
-  Card,
-  CardContent,
-  IconButton,
-  Slider,
-  Typography,
-  Box,
-  CircularProgress,
-  Tooltip,
-} from '@mui/material';
-import {
-  PlayArrow,
+  Play,
   Pause,
-  Close,
-  VolumeUp,
-  VolumeOff,
-  GraphicEq,
-} from '@mui/icons-material';
+  X,
+  Volume2,
+  VolumeX,
+  AudioLines,
+  Loader2,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import styles from './PersistentAudioPlayer.module.css';
 import { useAudioPlayer } from '@/contexts/useAudioPlayer';
 
@@ -53,22 +46,25 @@ export const PersistentAudioPlayer: React.FC = () => {
   if (!isExpanded) {
     return (
       <div className={styles.playerWidget}>
-        <Tooltip
-          title={`${currentTrack.fileName} ${isPlaying ? '(Playing)' : '(Paused)'}`}
-        >
-          <Fab
-            size="small"
-            className={styles.fabButton}
-            onClick={toggleExpanded}
-          >
-            {isLoading ? (
-              <CircularProgress size={20} sx={{ color: 'white' }} />
-            ) : isPlaying ? (
-              <GraphicEq sx={{ color: 'white' }} />
-            ) : (
-              <PlayArrow sx={{ color: 'white' }} />
-            )}
-          </Fab>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              className={`${styles.fabButton} rounded-full`}
+              onClick={toggleExpanded}
+            >
+              {isLoading ? (
+                <Loader2 className="size-5 animate-spin text-white" />
+              ) : isPlaying ? (
+                <AudioLines className="text-white" />
+              ) : (
+                <Play className="text-white" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {currentTrack.fileName} {isPlaying ? '(Playing)' : '(Paused)'}
+          </TooltipContent>
         </Tooltip>
       </div>
     );
@@ -77,150 +73,95 @@ export const PersistentAudioPlayer: React.FC = () => {
   // Expanded state - full mini player
   return (
     <div className={styles.playerWidget}>
-      <Card className={styles.playerCard} sx={{ width: 320 }}>
-        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+      <div className={`${styles.playerCard} w-80`}>
+        <div className="p-4">
           {/* Header with filename and close */}
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            mb={1}
-          >
-            <Box
-              display="flex"
-              alignItems="center"
-              gap={1}
-              flex={1}
-              minWidth={0}
-            >
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex min-w-0 flex-1 items-center gap-2">
               {isPlaying && (
-                <Box className={styles.playingIndicator}>
+                <div className={styles.playingIndicator}>
                   <div className={styles.bar} />
                   <div className={styles.bar} />
                   <div className={styles.bar} />
                   <div className={styles.bar} />
-                </Box>
+                </div>
               )}
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                noWrap
-                sx={{ flex: 1, fontSize: '0.75rem' }}
-              >
+              <span className="flex-1 truncate text-xs text-muted-foreground">
                 {currentTrack.fileName}
-              </Typography>
-            </Box>
-            <IconButton size="small" onClick={close} sx={{ p: 0.5, ml: 1 }}>
-              <Close fontSize="small" />
-            </IconButton>
-          </Box>
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={close}
+              className="ml-1"
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
 
           {/* Seek bar */}
-          <Box className={styles.seekBar} mb={1}>
+          <div className={`${styles.seekBar} mb-1`}>
             <Slider
-              size="small"
-              value={currentTime}
+              value={[currentTime]}
               max={duration || 100}
-              onChange={(_, value) => seek(value as number)}
+              onValueChange={([value]) => seek(value)}
               disabled={isLoading}
-              sx={{
-                color: 'primary.main',
-                '& .MuiSlider-thumb': {
-                  width: 12,
-                  height: 12,
-                  backgroundColor: 'primary.main',
-                  '&:hover': {
-                    boxShadow: '0 0 0 8px rgba(99, 102, 241, 0.16)',
-                  },
-                },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'action.hover',
-                },
-              }}
+              className="[&_[data-slot=slider-thumb]]:size-3"
             />
-            <Box display="flex" justifyContent="space-between" mt={0.5}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontSize="0.7rem"
-              >
+            <div className="mt-0.5 flex justify-between">
+              <span className="text-[0.7rem] text-muted-foreground">
                 {formatTime(currentTime)}
-              </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontSize="0.7rem"
-              >
+              </span>
+              <span className="text-[0.7rem] text-muted-foreground">
                 {formatTime(duration)}
-              </Typography>
-            </Box>
-          </Box>
+              </span>
+            </div>
+          </div>
 
           {/* Controls */}
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Box display="flex" alignItems="center" gap={0.5}>
-              <IconButton
-                size="small"
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => setVolume(volume === 0 ? 1 : 0)}
-                sx={{ p: 0.5 }}
               >
                 {volume === 0 ? (
-                  <VolumeOff fontSize="small" />
+                  <VolumeX className="size-4" />
                 ) : (
-                  <VolumeUp fontSize="small" />
+                  <Volume2 className="size-4" />
                 )}
-              </IconButton>
+              </Button>
               <Slider
-                size="small"
-                value={volume}
+                value={[volume]}
                 max={1}
                 step={0.1}
-                onChange={(_, value) => setVolume(value as number)}
-                className={styles.volumeSlider}
-                sx={{
-                  color: 'primary.main',
-                  width: 60,
-                  '& .MuiSlider-thumb': {
-                    width: 10,
-                    height: 10,
-                  },
-                }}
+                onValueChange={([value]) => setVolume(value)}
+                className={`${styles.volumeSlider} [&_[data-slot=slider-thumb]]:size-2.5`}
               />
-            </Box>
+            </div>
 
-            <IconButton
-              size="medium"
+            <Button
+              size="icon"
               onClick={togglePlay}
               disabled={isLoading}
-              sx={{
-                backgroundColor: 'primary.main',
-                color: 'white',
-                '&:hover': {
-                  backgroundColor: 'primary.dark',
-                },
-                '&.Mui-disabled': {
-                  backgroundColor: 'rgba(99, 102, 241, 0.3)',
-                },
-              }}
+              className="rounded-full disabled:opacity-30"
             >
               {isLoading ? (
-                <CircularProgress size={24} sx={{ color: 'white' }} />
+                <Loader2 className="size-5 animate-spin text-white" />
               ) : isPlaying ? (
-                <Pause />
+                <Pause className="text-white" />
               ) : (
-                <PlayArrow />
+                <Play className="text-white" />
               )}
-            </IconButton>
+            </Button>
 
             {/* Spacer to balance layout */}
-            <Box width={60} />
-          </Box>
-        </CardContent>
-      </Card>
+            <div className="w-[60px]" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
