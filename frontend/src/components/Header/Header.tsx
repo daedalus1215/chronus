@@ -4,8 +4,7 @@ import { useAuth } from '../../auth/useAuth';
 import { Sidebar } from './Sidebar/Sidebar';
 import { Logo } from '../Logo/Logo';
 import { useSidebar } from '../../hooks/useSidebar';
-import IconButton from '@mui/material/IconButton';
-import Box from '@mui/material/Box';
+import { Button } from '@/components/ui/button';
 import { SidebarToggleIcon } from './Sidebar/SidebarToggleIcon';
 import { useTopRailActionsSlot } from '../../hooks/useTopRailActionsSlot';
 import { ThemeToggleButton } from '../ThemeToggle/ThemeToggleButton';
@@ -39,26 +38,20 @@ export const Header: React.FC<HeaderProps> = ({ actionsOnly = false }) => {
         >
           <div className={styles.container}>
             {!actionsOnly && (
-              <IconButton
+              <Button
                 onClick={toggleSidebar}
                 aria-label="Open menu"
-                size="small"
-                sx={{ color: 'text.primary' }}
+                variant="ghost"
+                size="icon-sm"
+                className="text-foreground"
               >
                 <SidebarToggleIcon isOpen={false} size={20} />
-              </IconButton>
+              </Button>
             )}
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                ml: 'auto',
-              }}
-            >
+            <div className="ml-auto flex items-center gap-1">
               <ThemeToggleButton />
               {pageActions}
-            </Box>
+            </div>
           </div>
         </header>
         {!actionsOnly && (

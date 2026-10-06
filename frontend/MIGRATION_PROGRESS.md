@@ -21,11 +21,11 @@ gone. Group commits by directory/feature, not necessarily one file each.
       consumer is gone)
 - [ ] src/components/BottomSheet/BottomSheet.tsx
 - [ ] src/components/DateRangePicker/DateRangePicker.tsx
-- [ ] src/components/Header/Header.tsx
+- [x] src/components/Header/Header.tsx
 - [ ] src/components/Header/Sidebar/DesktopSidebar.tsx
 - [ ] src/components/Header/Sidebar/MobileSidebar.tsx
 - [ ] src/components/Header/Sidebar/navigation-items.tsx
-- [ ] src/components/Header/Toolbar/Toolbar.tsx
+- [x] src/components/Header/Toolbar/Toolbar.tsx
 - [ ] src/components/Layout/AuthenticatedLayout.tsx
 - [ ] src/components/Layout/DesktopLayout.tsx
 - [ ] src/components/Layout/ResizablePanel.tsx
