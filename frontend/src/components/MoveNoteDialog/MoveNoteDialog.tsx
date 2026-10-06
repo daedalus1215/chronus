@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { Folder, Inbox, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
   Dialog,
-  DialogActions,
   DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from '@mui/material';
-import FolderIcon from '@mui/icons-material/Folder';
-import AllInboxIcon from '@mui/icons-material/AllInbox';
+} from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { fetchFolders } from '../../api/requests/folders.requests';
 import {
   buildFolderTree,
@@ -92,78 +86,74 @@ export const MoveNoteDialog: React.FC<Props> = ({
   const shownHelperText = derivedHelperText ?? helperText;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{dialogTitle}</DialogTitle>
-      {shownHelperText ? (
-        <Box sx={{ px: 3, pb: 0 }}>
-          <Typography variant="caption" color="text.secondary">
-            {shownHelperText}
-          </Typography>
-        </Box>
-      ) : null}
-      <DialogContent dividers sx={{ p: 0, minHeight: 200 }}>
-        {loading ? (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 200,
+    <Dialog open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
+      <DialogContent className="gap-0 p-0 sm:max-w-sm">
+        <DialogHeader className="gap-1 p-6 pb-2">
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          {shownHelperText ? (
+            <p className="text-xs text-muted-foreground">{shownHelperText}</p>
+          ) : null}
+        </DialogHeader>
+        <div className="min-h-[200px] border-y border-border">
+          {loading ? (
+            <div className="flex h-[200px] items-center justify-center">
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <div className="py-1">
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className={cn(
+                  'flex w-full items-center gap-2 px-4 py-1.5 text-left text-sm hover:bg-accent',
+                  selected === null && 'bg-accent'
+                )}
+              >
+                <Inbox className="size-4 text-muted-foreground" />
+                Root (no folder)
+              </button>
+              {tree.map(node => (
+                <FolderPickerItem
+                  key={node.id}
+                  node={node}
+                  depth={0}
+                  selected={selected}
+                  disabledFolderIds={disabled}
+                  onSelect={setSelected}
+                />
+              ))}
+              {tree.length === 0 && (
+                <p className="px-4 py-4 text-xs text-muted-foreground">
+                  No folders yet
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+        {error ? (
+          <div className="px-6 pt-4">
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </div>
+        ) : null}
+        <DialogFooter className="p-6 pt-4">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            disabled={
+              selected === undefined ||
+              (selected !== null && disabled.has(selected.id))
+            }
+            onClick={() => {
+              if (selected !== undefined) onConfirm(selected);
             }}
           >
-            <CircularProgress size={24} />
-          </Box>
-        ) : (
-          <List dense disablePadding>
-            <ListItemButton
-              selected={selected === null}
-              onClick={() => setSelected(null)}
-            >
-              <ListItemIcon sx={{ minWidth: 32 }}>
-                <AllInboxIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Root (no folder)" />
-            </ListItemButton>
-            {tree.map(node => (
-              <FolderPickerItem
-                key={node.id}
-                node={node}
-                depth={0}
-                selected={selected}
-                disabledFolderIds={disabled}
-                onSelect={setSelected}
-              />
-            ))}
-            {tree.length === 0 && (
-              <Box sx={{ px: 2, py: 2 }}>
-                <Typography variant="caption" color="text.secondary">
-                  No folders yet
-                </Typography>
-              </Box>
-            )}
-          </List>
-        )}
+            Move here
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      {error ? (
-        <Box sx={{ px: 3 }}>
-          <Alert severity="error">{error}</Alert>
-        </Box>
-      ) : null}
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          variant="contained"
-          disabled={
-            selected === undefined ||
-            (selected !== null && disabled.has(selected.id))
-          }
-          onClick={() => {
-            if (selected !== undefined) onConfirm(selected);
-          }}
-        >
-          Move here
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
@@ -184,21 +174,24 @@ const FolderPickerItem: React.FC<PickerItemProps> = ({
   onSelect,
 }) => {
   const isDisabled = disabledFolderIds.has(node.id);
+  const isSelected = selected?.id === node.id;
   return (
     <>
-      <ListItemButton
-        selected={selected?.id === node.id}
+      <button
+        type="button"
         disabled={isDisabled}
         onClick={() => {
           if (!isDisabled) onSelect(node);
         }}
-        sx={{ pl: `${1 + depth * 1.5}rem` }}
+        style={{ paddingLeft: `${1 + depth * 1.5}rem` }}
+        className={cn(
+          'flex w-full items-center gap-2 py-1.5 pr-4 text-left text-sm hover:bg-accent disabled:pointer-events-none disabled:opacity-50',
+          isSelected && 'bg-accent'
+        )}
       >
-        <ListItemIcon sx={{ minWidth: 32 }}>
-          <FolderIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText primary={node.name} />
-      </ListItemButton>
+        <Folder className="size-4 text-muted-foreground" />
+        {node.name}
+      </button>
       {node.children.map(child => (
         <FolderPickerItem
           key={child.id}
