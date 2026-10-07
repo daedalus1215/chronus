@@ -97,7 +97,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### NotePage
 
-- [ ] src/pages/NotePage/NotePage.tsx
+- [x] src/pages/NotePage/NotePage.tsx
 - [x] src/pages/NotePage/components/AddTagForm/AddTagForm.tsx
 - [x] src/pages/NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog.tsx
 - [x] src/pages/NotePage/components/CheckListView/components/CheckItemFilterBar/CheckItemFilterBar.tsx
