@@ -6,17 +6,15 @@ import {
   TimeTrackingForm,
   TimeTrackingData,
 } from '../TimeTrackingForm/TimeTrackingForm';
-import DialogTitle from '@mui/material/DialogTitle';
+import { Button } from '@/components/ui/button';
 import {
-  Button,
-  DialogContent,
-  DialogActions,
   Dialog,
-  IconButton,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Trash2, Pencil, Clock } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import styles from './TimeTrackListView.module.css';
 import { TimeTrack } from '../../../../hooks/useNoteTimeTracks/useNoteTimeTracks';
@@ -146,7 +144,7 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
         </div>
         {timeTracks.length === 0 ? (
           <div className={styles.empty}>
-            <AccessTimeIcon className={styles.emptyIcon} />
+            <Clock className={styles.emptyIcon} />
             <p>No time entries found</p>
             <p className={styles.emptySubtext}>
               Start a timer to track time spent on this note
@@ -164,25 +162,25 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
                     {formatDuration(track.durationMinutes)}
                   </div>
                   <div className={styles.actionButtons}>
-                    <IconButton
+                    <button
+                      type="button"
                       aria-label="Edit time entry"
-                      size="small"
                       onClick={() => handleEditStart(track)}
                       className={styles.editButton}
                     >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      type="button"
                       aria-label="Delete time entry"
-                      size="small"
                       onClick={() => {
                         setDeleteTargetId(track.id);
                         setDeleteDialogOpen(true);
                       }}
                       className={styles.deleteButton}
                     >
-                      <DeleteIcon fontSize="small" color="error" />
-                    </IconButton>
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
                 <div className={styles.timeTrackTime}>
@@ -197,31 +195,33 @@ export const TimeTrackListView: React.FC<TimeTrackListProps> = ({
         )}
         <Dialog
           open={deleteDialogOpen}
-          onClose={() => setDeleteDialogOpen(false)}
-          aria-labelledby="delete-time-track-dialog-title"
+          onOpenChange={(open) => !open && setDeleteDialogOpen(false)}
         >
-          <DialogTitle id="delete-time-track-dialog-title">
-            Delete Time Entry?
-          </DialogTitle>
-          <DialogContent>
-            Are you sure you want to delete this time entry? This action cannot
-            be undone.
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Delete Time Entry?</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to delete this time entry? This action
+              cannot be undone.
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  if (deleteTargetId != null) {
+                    mutateDeleteTimeTrack(deleteTargetId);
+                  }
+                }}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </DialogFooter>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                if (deleteTargetId != null) {
-                  mutateDeleteTimeTrack(deleteTargetId);
-                }
-              }}
-              color="error"
-              variant="contained"
-              disabled={isDeleting}
-            >
-              {isDeleting ? 'Deleting...' : 'Delete'}
-            </Button>
-          </DialogActions>
         </Dialog>
         <TimeTrackingForm
           isOpen={editDialogOpen}

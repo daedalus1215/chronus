@@ -40,7 +40,8 @@
 }
 
 .emptyIcon {
-  font-size: 48px;
+  width: 48px;
+  height: 48px;
   color: var(--color-text-secondary);
   margin-bottom: 16px;
 }
@@ -115,14 +116,31 @@
   margin-left: 8px;
 }
 
+.editButton,
+.deleteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
 .editButton {
   color: var(--color-text-secondary);
 }
 
 .editButton:hover {
   color: var(--primary);
+  background: var(--color-overlay-light);
 }
 
 .deleteButton {
   color: var(--destructive);
+}
+
+.deleteButton:hover {
+  background: var(--color-destructive-light);
 }

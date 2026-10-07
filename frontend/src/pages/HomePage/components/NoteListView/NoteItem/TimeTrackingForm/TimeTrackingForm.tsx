@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert';
-import Typography from '@mui/material/Typography';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
-  FormControl,
   Dialog,
-  DialogTitle,
   DialogContent,
-  Stack,
-  Chip,
-} from '@mui/material';
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   getDateString,
   getTimeString,
@@ -181,94 +180,90 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={handleClose}
-      maxWidth="sm"
-      fullWidth
-      aria-labelledby="time-tracking-dialog-title"
-    >
-      <DialogTitle id="time-tracking-dialog-title">Track Time</DialogTitle>
-      <DialogContent>
-        <Box sx={{ pt: 1 }}>
-          <Stack spacing={2} component="form" onSubmit={handleSubmit}>
-            {hasPendingTracks && (
-              <Alert severity="warning" sx={{ mb: 2 }}>
+    <Dialog open={isOpen} onOpenChange={(next) => !next && handleClose()}>
+      <DialogContent className="flex max-h-[85vh] flex-col gap-0 p-0 sm:max-w-md">
+        <DialogHeader className="p-6 pb-2">
+          <DialogTitle>Track Time</DialogTitle>
+        </DialogHeader>
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 space-y-4 overflow-y-auto px-6 py-2"
+        >
+          {hasPendingTracks && (
+            <Alert>
+              <AlertDescription>
                 You have time tracks pending sync. They will be uploaded when
                 you're back online.
-              </Alert>
-            )}
-            {!autoMode && (
-              <Typography
-                component="span"
-                color="primary"
-                sx={{
-                  cursor: 'pointer',
-                  fontSize: '0.75rem',
-                  mb: 1,
-                  display: 'block',
-                }}
-                onClick={handleResetToNow}
-              >
-                Reset to now
-              </Typography>
-            )}
-            <TextField
-              label="Date"
+              </AlertDescription>
+            </Alert>
+          )}
+          {!autoMode && (
+            <button
+              type="button"
+              className="block border-0 bg-transparent p-0 text-xs text-primary"
+              onClick={handleResetToNow}
+            >
+              Reset to now
+            </button>
+          )}
+          <div className="space-y-1.5">
+            <Label htmlFor="time-tracking-date">Date</Label>
+            <Input
+              id="time-tracking-date"
               type="date"
               value={formData.date}
               onChange={e => {
                 setAutoMode(false);
                 setFormData({ ...formData, date: e.target.value });
               }}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
             />
-            <TextField
-              label="Start Time"
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="time-tracking-start">Start Time</Label>
+            <Input
+              id="time-tracking-start"
               type="time"
               value={formData.startTime}
               onChange={e => {
                 setAutoMode(false);
                 setFormData({ ...formData, startTime: e.target.value });
               }}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
             />
-            <FormControl fullWidth size="small"></FormControl>
-            <Stack
-              direction="row"
-              spacing={1}
-              flexWrap="wrap"
-              justifyContent="space-evenly"
+          </div>
+          <div className="flex flex-wrap justify-evenly gap-2">
+            {quickDurations.map(opt => (
+              <Badge
+                key={opt.value}
+                variant={
+                  formData.durationMinutes === opt.value && !customMode
+                    ? 'default'
+                    : 'outline'
+                }
+                className="cursor-pointer"
+                onClick={() => {
+                  setCustomMode(false);
+                  handleDurationChange(opt.value);
+                }}
+              >
+                {opt.label}
+              </Badge>
+            ))}
+            <Badge
+              variant={customMode ? 'default' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => setCustomMode(true)}
+              aria-label="Enter custom duration"
             >
-              {quickDurations.map(opt => (
-                <Chip
-                  key={opt.value}
-                  label={opt.label}
-                  color={
-                    formData.durationMinutes === opt.value && !customMode
-                      ? 'primary'
-                      : 'default'
-                  }
-                  onClick={() => {
-                    setCustomMode(false);
-                    handleDurationChange(opt.value);
-                  }}
-                  clickable
-                />
-              ))}
-              <Chip
-                label="Custom"
-                color={customMode ? 'primary' : 'default'}
-                onClick={() => setCustomMode(true)}
-                clickable
-                aria-label="Enter custom duration"
-              />
-            </Stack>
-            {customMode && (
-              <TextField
-                label="Custom duration (minutes)"
+              Custom
+            </Badge>
+          </div>
+          {customMode && (
+            <div className="space-y-1.5">
+              <Label htmlFor="time-tracking-custom-duration">
+                Custom duration (minutes)
+              </Label>
+              <Input
+                id="time-tracking-custom-duration"
                 type="number"
                 value={formData.durationMinutes ?? ''}
                 onChange={e => {
@@ -296,41 +291,31 @@ export const TimeTrackingForm: React.FC<TimeTrackingFormProps> = ({
                     }, DEBOUNCE_MS);
                   }
                 }}
-                inputProps={{ min: 1, max: 1440, step: 1 }}
-                size="small"
-                fullWidth
-                sx={{ mt: 1 }}
+                min={1}
+                max={1440}
+                step={1}
               />
-            )}
-            <TextField
-              label="Note (optional)"
+            </div>
+          )}
+          <div className="space-y-1.5">
+            <Label htmlFor="time-tracking-note">Note (optional)</Label>
+            <Textarea
+              id="time-tracking-note"
               value={formData.note}
               onChange={e => setFormData({ ...formData, note: e.target.value })}
-              fullWidth
-              multiline
+              ref={noteTextareaRef}
               rows={3}
-              inputRef={noteTextareaRef}
             />
-            <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button
-                type="button"
-                onClick={handleClose}
-                variant="outlined"
-                color="secondary"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Saving...' : 'Save'}
-              </Button>
-            </Stack>
-          </Stack>
-        </Box>
+          </div>
+          <div className="flex justify-end gap-3 pb-4">
+            <Button type="button" onClick={handleClose} variant="outline">
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
