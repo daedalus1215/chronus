@@ -6,4 +6,11 @@
   overflow-y: scroll;
   scrollbar-width: none;
   width: 100%;
+  background-color: var(--card);
+  border-radius: 4px;
+  box-shadow: var(--elevation-2);
+}
+
+.container::-webkit-scrollbar {
+  display: none;
 }

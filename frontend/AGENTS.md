@@ -1,4 +1,4 @@
-# Frontend — React + MUI + modular CSS/SCSS hints
+# Frontend — React + Tailwind v4 + shadcn/ui
 
 ## Commands
 
@@ -11,21 +11,42 @@ npm run preview      # preview production build locally
 
 ## Styling rules
 
-1. **MUI `sx` prop** for quick layout and spacing (flex, gap, padding, margin, colors from theme).
-2. **CSS Modules** (`.module.css`) co-located with the component for reusable or complex rules.
-3. **Global tokens** live in `src/styles/global.scss` (CSS custom properties like `--color-bg`, `--color-text`).
-4. **No Tailwind** — the project removed it. Use `clsx` (via the `cn` helper in `src/lib/utils.ts`) only for merging CSS module class names.
+The app was fully migrated off MUI to **Tailwind v4 + shadcn/ui** (see
+`MIGRATION_PROGRESS.md` for the migration history if you need the "why" behind
+a particular pattern).
+
+1. **Tailwind utility classes** for layout, spacing, flex/grid, and one-off
+   styling directly in JSX (`className="flex items-center gap-2 px-3 py-2"`).
+2. **shadcn/ui primitives** from `src/components/ui/` (Button, Dialog, Input,
+   Checkbox, Alert, Tooltip, ToggleGroup, DropdownMenu, Textarea, Select,
+   etc.) for interactive components — don't hand-roll a primitive shadcn
+   already provides. Add a new one with `npx shadcn@latest add <component>`;
+   it lands in `src/components/ui/` and is yours to edit freely.
+3. **CSS Modules** (`.module.css`) co-located with the component, kept only
+   for rules Tailwind utilities don't comfortably express: scrollbar
+   hiding/theming, `:global()` overrides, custom `@keyframes`, or styling a
+   raw native element (e.g. an autosizing `<textarea>`) that a bare className
+   list would make unreadable. Prefer Tailwind first; reach for a CSS Module
+   when the alternative is a wall of arbitrary-value utility classes.
+4. **`cn()`** (from `src/lib/utils.ts`, backed by `clsx` + `tailwind-merge`)
+   for conditionally merging Tailwind classes, and for combining a CSS
+   Module class with a Tailwind className on the same element.
+5. **Icons**: `lucide-react`. Size via `className="size-4"` etc., not a
+   `fontSize` prop.
+6. Don't mix MUI patterns back in — there is no MUI left in the app
+   (`@mui/*`, `@emotion/*` are not installed). If you're reaching for `sx`,
+   `Box`, or `Typography`, you want a `<div>`/Tailwind classes instead.
 
 ## Theme
 
-Light and dark modes.
+Light and dark modes, independent of Tailwind's own dark-mode story — this
+app does NOT use Tailwind's `dark:` variant; theme switching is driven by a
+`data-theme` attribute instead.
 
 - `src/contexts/ThemeModeContext.tsx` — `ThemeModeProvider` + `useThemeMode()`. Modes: `'light' | 'dark' | 'system'` (system follows `prefers-color-scheme`, live). The selection persists under `STORAGE_KEYS.APPEARANCE.THEME_MODE`; the resolved mode is applied as `data-theme` on `<html>`. A pre-paint script in `index.html` applies the saved mode before React mounts (no flash).
-- `src/theme.ts` — `createChronusTheme(mode)` builds the MUI theme per palette mode; `App.tsx` memoizes it from the context.
-- `src/styles/global.scss` — design tokens. `:root` holds light-mode values, `[data-theme='dark']` holds dark-mode values. Always consume tokens (`var(--color-*)`, `var(--glass-*)`, `var(--elevation-*)`, …) — never hardcode hex/rgba in CSS or `sx`.
+- `src/styles/global.scss` — design tokens as CSS custom properties (OKLCH-based, shadcn "new-york" convention): `:root` holds light-mode values, `[data-theme='dark']` holds dark-mode values. Always consume tokens (`var(--background)`, `var(--primary)`, `var(--glass-*)`, `var(--elevation-*)`, …) — never hardcode hex/rgba in CSS or Tailwind arbitrary values.
+- `src/styles/tailwind.css` — maps those same CSS vars into Tailwind's `--color-*` namespace via `@theme inline`, so `bg-background`, `text-primary`, `border-border`, etc. all resolve to the tokens above. One token is split on purpose: `--accent` (the app's vivid brand purple, consumed by many CSS Modules) stays distinct from shadcn's `--color-accent` (a subtle hover surface), which is aliased to `--ui-accent` instead — don't collapse the two.
 - Entry points: `ThemeToggleButton` in the app header (quick switch) and Settings → Appearance (Light / Dark / System).
-
-Use `theme.palette.*` via `sx` or `useTheme()` for MUI colors — don't hardcode hex unless matching a design token.
 
 ## Routing
 
@@ -50,13 +71,16 @@ export const useMyData = () => {
 
 API request functions live in `src/api/requests/`. The Axios instance with interceptors is in `src/api/axios.interceptor.ts` (auto-prefixes `/api`, attaches JWT from `localStorage`).
 
-## Worked example: a page with CSS Module
+## Worked example 1: a page with a CSS Module
+
+Use a CSS Module when a page's chrome needs responsive rules (here, a
+`max-width` breakpoint) that would otherwise be a long arbitrary-value
+Tailwind class list.
 
 ### Page component (`src/pages/YearlyNotesPage/YearlyNotesPage.tsx`)
 
 ```tsx
 import React from 'react';
-import { Box, Typography } from '@mui/material';
 import { YearlyNotesTimeline } from './components/YearlyNotesTimeline/YearlyNotesTimeline';
 import { useNotesByYear } from './hooks/useNotesByYear';
 import styles from './YearlyNotesPage.module.css';
@@ -66,17 +90,21 @@ export const YearlyNotesPage: React.FC = () => {
 
   return (
     <div className={styles.yearlyNotesPage}>
-      <Box className={styles.header}>
-        <Typography className={styles.title}>Yearly Notes</Typography>
-        <Typography className={styles.subtitle}>
+      <div className={styles.header}>
+        <div className={styles.title}>Yearly Notes</div>
+        <div className={styles.subtitle}>
           View notes you've worked on organized by year
-        </Typography>
-      </Box>
-      <Box className={styles.content}>
-        <div className={styles.timelinePaper}>
-          <YearlyNotesTimeline data={data} isLoading={isLoading} error={error} />
         </div>
-      </Box>
+      </div>
+      <div className={styles.content}>
+        <div className={styles.timelinePaper}>
+          <YearlyNotesTimeline
+            data={data}
+            isLoading={isLoading}
+            error={error}
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -112,6 +140,62 @@ export const YearlyNotesPage: React.FC = () => {
   .content { padding: 0.5rem 0.75rem; }
 }
 ```
+
+## Worked example 2: a dialog built from shadcn primitives
+
+Most interactive components need no CSS Module at all — compose shadcn
+primitives and style them with Tailwind utility classNames directly.
+
+### `src/pages/NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog.tsx`
+
+```tsx
+import React from 'react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
+type AddCheckItemDialogProps = {
+  isOpen: boolean;
+  value: string;
+  onChange: (value: string) => void;
+  onSave: () => void;
+  onClose: () => void;
+};
+
+export const AddCheckItemDialog: React.FC<AddCheckItemDialogProps> = ({
+  isOpen,
+  value,
+  onChange,
+  onSave,
+  onClose,
+}) => (
+  <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
+    <DialogContent className="sm:max-w-sm" showCloseButton={false}>
+      <DialogTitle className="sr-only">New Check Item</DialogTitle>
+      <Input
+        placeholder="New Check Item"
+        value={value}
+        autoComplete="off"
+        onChange={e => onChange(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            onSave();
+          }
+        }}
+        enterKeyHint="done"
+        autoFocus
+      />
+      <Button onClick={onSave} className="float-right mt-4">
+        Create
+      </Button>
+    </DialogContent>
+  </Dialog>
+);
+```
+
+Note the `sr-only` `DialogTitle` — Radix's `Dialog` requires one for
+accessibility even when the design doesn't show a visible heading.
 
 ## Component conventions
 

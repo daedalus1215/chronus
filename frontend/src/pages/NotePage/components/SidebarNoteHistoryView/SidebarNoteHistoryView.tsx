@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
-import HistoryIcon from '@mui/icons-material/History';
+import { History, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { cn } from '@/lib/utils';
 import { useNoteVersions } from '../../hooks/useNoteVersions/useNoteVersions';
 import { NoteVersion } from '../../hooks/useNoteVersions/useNoteVersions';
 import styles from './SidebarNoteHistoryView.module.css';
@@ -54,137 +50,64 @@ export const SidebarNoteHistoryView: React.FC<
   };
 
   return (
-    <Box className={styles.sidebarHistory}>
+    <div className={styles.sidebarHistory}>
       {/* Header with version count */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          px: 1.5,
-          py: 1,
-          borderBottom: '1px solid var(--color-overlay-stronger)',
-        }}
-      >
-        <Box
-          component="span"
-          sx={{
-            fontSize: '0.8125rem',
-            fontWeight: 600,
-            color: 'text.primary',
-          }}
-        >
+      <div className="flex items-center justify-between border-b border-[var(--color-overlay-stronger)] px-3 py-2">
+        <span className="text-[0.8125rem] font-semibold text-foreground">
           {total} / {maxVersions} versions
-        </Box>
-      </Box>
+        </span>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mx: 2, mt: 2 }}>
-          {error.message}
+        <Alert variant="destructive" className="mx-4 mt-4 w-auto">
+          <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
 
       {isLoading ? (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            py: 4,
-          }}
-        >
-          <CircularProgress size={24} />
-        </Box>
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
       ) : versions.length === 0 ? (
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            gap: 0.5,
-            px: 2,
-            py: 4,
-            color: 'text.secondary',
-          }}
-        >
-          <HistoryIcon sx={{ fontSize: 40, opacity: 0.5 }} />
-          <p style={{ margin: 0, fontSize: '0.875rem' }}>
-            No versions yet
-          </p>
-          <p
-            style={{
-              margin: 0,
-              fontSize: '0.8125rem',
-              opacity: 0.7,
-            }}
-          >
+        <div className="flex flex-col items-center justify-center gap-1 px-4 py-8 text-center text-muted-foreground">
+          <History className="size-10 opacity-50" />
+          <p className="m-0 text-sm">No versions yet</p>
+          <p className="m-0 text-[0.8125rem] opacity-70">
             Versions are created on each save
           </p>
-        </Box>
+        </div>
       ) : (
-        <List
-          className={styles.list}
-          sx={{
-            flex: 1,
-            overflowY: 'auto',
-            minHeight: 0,
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
-          }}
-        >
+        <ul className={cn(styles.list, 'min-h-0 flex-1 list-none overflow-y-auto p-0')}>
           {versions.map(version => {
             const isLoaded = version.versionNum === loadedFromVersion;
 
             return (
-              <ListItem
+              <li
                 key={version.id}
-                disableGutters
                 onClick={() => handleLoadVersion(version)}
-                sx={{
-                  borderBottom: '1px solid var(--color-overlay-stronger)',
-                  py: 0.5,
-                  px: 2,
-                  cursor: 'pointer',
-                  backgroundColor: isLoaded
-                    ? 'var(--color-primary-light)'
-                    : 'transparent',
-                  '&:hover': {
-                    backgroundColor: isLoaded
-                      ? 'var(--accent-soft)'
-                      : 'action.hover',
-                  },
+                className="cursor-pointer border-b border-[var(--color-overlay-stronger)] px-4 py-1 hover:bg-[var(--accent-soft)]"
+                style={{
+                  backgroundColor: isLoaded ? 'var(--color-primary-light)' : 'transparent',
                 }}
               >
-                <ListItemText
-                  primary={`v${version.versionNum} — ${formatDate(
-                    version.createdAt
-                  )}`}
-                  secondary={
-                    version.description
-                      ? truncate(version.description)
-                      : '(empty)'
-                  }
-                  sx={{
-                    flex: 1,
-                    '& .MuiListItemText-primary': {
-                      fontSize: '0.8125rem',
-                      fontWeight: isLoaded ? 600 : 400,
-                    },
-                    '& .MuiListItemText-secondary': {
-                      fontSize: '0.75rem',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    },
-                  }}
-                />
-              </ListItem>
+                <div className="flex-1">
+                  <div
+                    className={cn(
+                      'text-[0.8125rem]',
+                      isLoaded ? 'font-semibold' : 'font-normal'
+                    )}
+                  >
+                    v{version.versionNum} — {formatDate(version.createdAt)}
+                  </div>
+                  <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-muted-foreground">
+                    {version.description ? truncate(version.description) : '(empty)'}
+                  </div>
+                </div>
+              </li>
             );
           })}
-        </List>
+        </ul>
       )}
-    </Box>
+    </div>
   );
 };

@@ -1,13 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Fab,
-  Tooltip,
-  CircularProgress,
-  Alert,
-  Snackbar,
-  Badge,
-} from '@mui/material';
-import { Mic, Stop } from '@mui/icons-material';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Mic, Square, Loader2 } from 'lucide-react';
 import { useTranscriptionWebSocket } from '../../hooks/useTranscriptionWebSocket/useTranscriptionWebSocket';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder/useAudioRecorder';
 
@@ -34,11 +29,6 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
 }) => {
   const [micAvailable, setMicAvailable] = useState<boolean | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'warning'>(
-    'error'
-  );
 
   const {
     isConnected,
@@ -73,9 +63,7 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
       const result = await checkMicrophoneAvailability();
       setMicAvailable(result.available);
       if (!result.available) {
-        setSnackbarMessage(result.error ?? 'Microphone not available');
-        setSnackbarSeverity('warning');
-        setSnackbarOpen(true);
+        toast.warning(result.error ?? 'Microphone not available');
       }
     };
     checkMic();
@@ -83,9 +71,7 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
 
   useEffect(() => {
     if (error) {
-      setSnackbarMessage(error);
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      toast.error(error);
     }
   }, [error]);
 
@@ -103,9 +89,7 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
         setMicAvailable(availability.available);
 
         if (!availability.available) {
-          setSnackbarMessage(availability.error ?? 'Microphone not available');
-          setSnackbarSeverity('warning');
-          setSnackbarOpen(true);
+          toast.warning(availability.error ?? 'Microphone not available');
           return;
         }
 
@@ -138,10 +122,6 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
     return 'Idle - Click to start recording';
   }, [error, isConnected, isInitializing, isRecording, micAvailable]);
 
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
-
   useEffect(() => {
     if (!onControllerReady) {
       return;
@@ -163,67 +143,34 @@ export const TranscriptionRecorder: React.FC<TranscriptionRecorderProps> = ({
     onControllerReady,
   ]);
 
-  return (
-    <>
-      {useOwnFab && (
-        <Tooltip title={getStatusText()} arrow placement="left">
-          <Fab
-            color={isRecording ? 'error' : 'primary'}
-            onClick={handleToggleRecording}
-            disabled={micAvailable === false || isInitializing}
-            aria-label={isRecording ? 'Stop recording' : 'Start recording'}
-            sx={{
-              position: 'fixed',
-              bottom: 24,
-              right: 24,
-              zIndex: 1000,
-            }}
-          >
-            <Badge
-              badgeContent=" "
-              color="error"
-              invisible={!isRecording}
-              sx={{
-                '& .MuiBadge-badge': {
-                  animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                },
-                '@keyframes pulse': {
-                  '0%, 100%': {
-                    opacity: 1,
-                  },
-                  '50%': {
-                    opacity: 0.5,
-                  },
-                },
-              }}
-            >
-              {isInitializing ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : isRecording ? (
-                <Stop />
-              ) : (
-                <Mic />
-              )}
-            </Badge>
-          </Fab>
-        </Tooltip>
-      )}
+  if (!useOwnFab) return null;
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbarSeverity}
-          variant="filled"
-          sx={{ width: '100%' }}
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          size="icon"
+          variant={isRecording ? 'destructive' : 'default'}
+          onClick={handleToggleRecording}
+          disabled={micAvailable === false || isInitializing}
+          aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+          className="fixed bottom-6 right-6 z-[1000] rounded-full"
         >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </>
+          <span className="relative inline-flex">
+            {isInitializing ? (
+              <Loader2 className="size-5 animate-spin" />
+            ) : isRecording ? (
+              <Square className="size-5" />
+            ) : (
+              <Mic className="size-5" />
+            )}
+            {isRecording && (
+              <span className="absolute -right-1 -top-1 size-2 animate-pulse rounded-full bg-white" />
+            )}
+          </span>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="left">{getStatusText()}</TooltipContent>
+    </Tooltip>
   );
 };

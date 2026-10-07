@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import { Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import api from '../../../../api/axios.interceptor';
-import { Stack, Tooltip, Typography } from '@mui/material';
 import Fuse from 'fuse.js';
 
 export type Tag = { id: string; name: string };
@@ -179,34 +180,22 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
   };
 
   return (
-    <Box
-      component="form"
+    <form
       onSubmit={handleAddTag}
       aria-label="Add tag to note"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        minHeight: 0,
-      }}
+      className="flex min-h-0 flex-1 flex-col"
     >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          mb: 2,
-        }}
-      >
-        <TextField
-          inputRef={inputRef}
+      <div className="mb-4 flex items-center gap-2">
+        <Label htmlFor="add-tag-name" className="sr-only">
+          New tag name
+        </Label>
+        <Input
+          id="add-tag-name"
+          ref={inputRef}
           value={newTagName}
           onChange={handleInputChange}
-          label="New Tag"
           placeholder="Enter tag name or use ↑↓ to navigate"
-          variant="outlined"
-          size="small"
-          sx={{ flex: 1 }}
+          className="flex-1"
           autoFocus
           aria-label="New tag name"
           disabled={isLoading}
@@ -214,101 +203,83 @@ export const AddTagForm: React.FC<AddTagFormProps> = ({
         />
         <Button
           type="submit"
-          variant="contained"
-          color="primary"
           disabled={isLoading || !newTagName.trim()}
           aria-label="Add tag"
         >
-          {isLoading ? <CircularProgress size={20} /> : 'Add'}
+          {isLoading ? <Loader2 className="size-4 animate-spin" /> : 'Add'}
         </Button>
         {onClose && (
           <Button
+            type="button"
             onClick={onClose}
-            variant="text"
-            color="secondary"
+            variant="ghost"
             aria-label="Close add tag form"
           >
             Close
           </Button>
         )}
-      </Box>
+      </div>
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      <Box sx={{ overflowY: 'auto', flex: 1 }} aria-label="Tag list">
+      <div className="flex-1 overflow-y-auto" aria-label="Tag list">
         {filteredTags.length === 0 ? (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              py: 4,
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
+          <div className="flex flex-col items-center justify-center py-8">
+            <span className="text-sm text-muted-foreground">
               {newTagName.trim()
                 ? `No tags found matching "${newTagName}"`
                 : 'No tags available'}
-            </Typography>
+            </span>
             {newTagName.trim() && (
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ mt: 1 }}
-              >
+              <span className="mt-1 text-xs text-muted-foreground">
                 Press "Add" to create a new tag
-              </Typography>
+              </span>
             )}
-          </Box>
+          </div>
         ) : (
-          <Stack
+          <div
             role="list"
-            direction="row"
-            flexWrap="wrap"
-            spacing={1}
-            sx={{ py: 1 }}
+            className="flex flex-row flex-wrap gap-2 py-2"
             aria-label="Available tags"
           >
             {filteredTags.map((tag, index) => (
-              <Tooltip title={tag.name} key={tag.id}>
-                <Box
-                  ref={(el: HTMLDivElement | null) => {
-                    tagRefs.current[index] = el;
-                  }}
-                >
-                  <Chip
-                    role="listitem"
-                    label={tag.name}
-                    color={selectedIndex === index ? 'secondary' : 'primary'}
-                    variant={selectedIndex === index ? 'filled' : 'outlined'}
-                    tabIndex={0}
-                    aria-label={`Add tag: ${tag.name}`}
-                    aria-selected={selectedIndex === index}
-                    onClick={() => handleAddExistingTag(tag.id)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ')
-                        handleAddExistingTag(tag.id);
+              <Tooltip key={tag.id}>
+                <TooltipTrigger asChild>
+                  <div
+                    ref={(el: HTMLDivElement | null) => {
+                      tagRefs.current[index] = el;
                     }}
-                    disabled={isLoading}
-                    sx={{
-                      cursor: 'pointer',
-                      ...(selectedIndex === index
-                        ? {
-                            transform: 'scale(1.05)',
-                            transition: 'all 0.2s ease',
-                          }
-                        : {}),
-                    }}
-                  />
-                </Box>
+                  >
+                    <Badge
+                      role="listitem"
+                      variant={selectedIndex === index ? 'default' : 'outline'}
+                      tabIndex={0}
+                      aria-label={`Add tag: ${tag.name}`}
+                      aria-selected={selectedIndex === index}
+                      onClick={() => !isLoading && handleAddExistingTag(tag.id)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ')
+                          handleAddExistingTag(tag.id);
+                      }}
+                      className={cn(
+                        'cursor-pointer border-primary text-primary',
+                        selectedIndex === index &&
+                          'scale-105 border-primary bg-primary text-primary-foreground transition-all',
+                        isLoading && 'pointer-events-none opacity-50'
+                      )}
+                    >
+                      {tag.name}
+                    </Badge>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>{tag.name}</TooltipContent>
               </Tooltip>
             ))}
-          </Stack>
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </form>
   );
 };

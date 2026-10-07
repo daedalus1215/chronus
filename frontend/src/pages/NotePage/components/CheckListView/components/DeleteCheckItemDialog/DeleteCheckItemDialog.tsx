@@ -1,10 +1,13 @@
 import React from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 type DeleteCheckItemDialogProps = {
   isOpen: boolean;
@@ -21,35 +24,28 @@ export const DeleteCheckItemDialog: React.FC<DeleteCheckItemDialogProps> = ({
   onCancel,
   onConfirm,
 }) => (
-  <Dialog
-    open={isOpen}
-    onClose={onCancel}
-    aria-labelledby="delete-checkitem-dialog-title"
-  >
-    <DialogTitle id="delete-checkitem-dialog-title">
-      Delete Check Item?
-    </DialogTitle>
-    <DialogContent>
-      Are you sure you want to delete this check item? This action cannot be
-      undone.
+  <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+    <DialogContent className="sm:max-w-sm">
+      <DialogHeader>
+        <DialogTitle>Delete Check Item?</DialogTitle>
+      </DialogHeader>
+      <p className="text-sm text-muted-foreground">
+        Are you sure you want to delete this check item? This action cannot be
+        undone.
+      </p>
       {error && (
-        <Alert severity="error" sx={{ mt: 2 }}>
-          {error}
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
+      <DialogFooter>
+        <Button variant="outline" onClick={onCancel} disabled={isDeleting}>
+          Cancel
+        </Button>
+        <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </Button>
+      </DialogFooter>
     </DialogContent>
-    <DialogActions>
-      <Button onClick={onCancel} disabled={isDeleting}>
-        Cancel
-      </Button>
-      <Button
-        onClick={onConfirm}
-        color="error"
-        variant="contained"
-        disabled={isDeleting}
-      >
-        {isDeleting ? 'Deleting...' : 'Delete'}
-      </Button>
-    </DialogActions>
   </Dialog>
 );

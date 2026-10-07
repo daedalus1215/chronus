@@ -1,6 +1,5 @@
 import React from 'react';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import styles from './RightSidebar.module.css';
 
 type Tab = {
@@ -31,46 +30,24 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       role="complementary"
     >
       {tabs && activeTab && onTabChange && (
-        <ToggleButtonGroup
+        <ToggleGroup
+          type="single"
           value={activeTab}
-          exclusive
-          onChange={(_, value) => {
+          onValueChange={value => {
             if (value) onTabChange(value);
           }}
-          sx={{
-            borderBottom: '1px solid var(--color-overlay-stronger)',
-            '& .MuiToggleButtonGroup-grouped': {
-              margin: 0,
-              border: 0,
-              borderRadius: 0,
-            },
-            '& .MuiToggleButtonGroup-grouped:not(:first-of-type)': {
-              borderLeft: '1px solid var(--color-overlay-stronger)',
-            },
-            '& .MuiToggleButtonGroup-grouped:hover': {
-              borderLeftColor: 'var(--color-overlay-stronger)',
-            },
-            '& .Mui-selected': {
-              backgroundColor: 'var(--accent-soft)',
-              color: 'primary.main',
-            },
-          }}
+          className="w-full border-b border-[var(--color-overlay-stronger)] [&>*:not(:first-child)]:border-l [&>*:not(:first-child)]:border-[var(--color-overlay-stronger)]"
         >
           {tabs.map(tab => (
-            <ToggleButton
+            <ToggleGroupItem
               key={tab.id}
               value={tab.id}
-              sx={{
-                fontSize: '0.8125rem',
-                textTransform: 'none',
-                py: 0.75,
-                px: 1.5,
-              }}
+              className="rounded-none border-0 px-3 py-1.5 text-[0.8125rem] data-[state=on]:bg-[var(--accent-soft)] data-[state=on]:text-primary"
             >
               {tab.icon}
-            </ToggleButton>
+            </ToggleGroupItem>
           ))}
-        </ToggleButtonGroup>
+        </ToggleGroup>
       )}
       <div className={styles.content}>{children}</div>
     </aside>

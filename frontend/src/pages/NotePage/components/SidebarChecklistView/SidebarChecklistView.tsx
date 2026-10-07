@@ -1,12 +1,8 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import Alert from '@mui/material/Alert';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import AddIcon from '@mui/icons-material/Add';
+import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Note } from '../../api/responses';
 import { CheckItem } from '../../api/responses';
 import {
@@ -130,28 +126,20 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
     }
   };
   return (
-    <Box className={styles.sidebarChecklist}>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          px: 1.5,
-          py: 1,
-          borderBottom: '1px solid var(--color-overlay-stronger)',
-        }}
-      >
-        <IconButton
-          size="small"
+    <div className={styles.sidebarChecklist}>
+      <div className="flex items-center justify-between border-b border-[var(--color-overlay-stronger)] px-3 py-2">
+        <Button
+          variant="ghost"
+          size="icon-sm"
           aria-label="Add checklist item"
           onClick={openAddDialog}
         >
-          <AddIcon fontSize="small" />
-        </IconButton>
-      </Box>
+          <Plus className="size-4" />
+        </Button>
+      </div>
       {checkItemsError && (
-        <Alert severity="error" sx={{ mx: 2, mt: 2 }}>
-          {checkItemsError.message}
+        <Alert variant="destructive" className="mx-4 mt-4">
+          <AlertDescription>{checkItemsError.message}</AlertDescription>
         </Alert>
       )}
       {isAddDialogOpen && (
@@ -172,19 +160,7 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
           onClose={closeEditDialog}
         />
       )}
-      <List
-        className={styles.list}
-        sx={{
-          overflowY: 'auto',
-          flex: 1,
-          minHeight: 0,
-          scrollbarWidth: 'none',
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
-          touchAction: 'pan-y',
-        }}
-      >
+      <ul className={`${styles.list} min-h-0 flex-1 list-none overflow-y-auto p-0`}>
         <DraggableCheckItemList
           checkItems={checkItems}
           onReorder={handleReorder}
@@ -194,69 +170,34 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
               onFlipNode={registerFlipNode}
               item={item}
               className={styles.listItem}
-              sx={{
+              style={{
                 background: item.doneDate
                   ? 'var(--color-primary-light)'
                   : 'transparent',
-                borderBottom: '1px solid var(--color-overlay-stronger)',
-                py: 0.5,
-                px: 0,
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
               }}
-              disablePadding
               dragHandle={
-                <IconButton
-                  size="small"
+                <button
+                  type="button"
                   aria-label="drag to reorder"
-                  sx={{
-                    color: 'text.secondary',
-                    padding: '8px',
-                    marginLeft: '-4px',
-                    cursor: 'grab',
-                    '&:active': {
-                      cursor: 'grabbing',
-                    },
-                  }}
+                  className="-ml-1 cursor-grab p-2 text-muted-foreground active:cursor-grabbing"
                 >
-                  <DragIndicatorIcon fontSize="small" />
-                </IconButton>
+                  <GripVertical className="size-4" />
+                </button>
               }
             >
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  flex: 1,
-                  pr: 6,
-                  ml: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    backgroundColor: getStatusColor(item.status),
-                    marginRight: '8px',
-                  }}
+              <div className="ml-1 flex flex-1 items-center pr-12">
+                <span
+                  className="mr-2 size-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: getStatusColor(item.status) }}
                   aria-label={`Status: ${item.status || 'ready'}`}
                 />
                 <Checkbox
                   checked={!!item.doneDate}
-                  onChange={() => handleToggle(item.id)}
-                  color="primary"
+                  onCheckedChange={() => handleToggle(item.id)}
                   onClick={e => e.stopPropagation()}
                 />
-                <Box
-                  sx={{
-                    flex: 1,
-                    background: 'transparent',
-                    padding: '4px 0',
-                    cursor: 'pointer',
-                  }}
+                <div
+                  className="ml-2 flex-1 cursor-pointer bg-transparent py-1"
                   role="button"
                   tabIndex={0}
                   aria-label="Edit check item"
@@ -272,48 +213,34 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
                     }
                   }}
                 >
-                  <Box
-                    component="span"
-                    sx={{
-                      display: 'block',
-                      overflowWrap: 'break-word',
-                      whiteSpace: 'pre-wrap',
-                    }}
+                  <span
+                    className="block whitespace-pre-wrap break-words"
                     style={{
-                      textDecoration: item.doneDate
-                        ? 'line-through'
-                        : undefined,
+                      textDecoration: item.doneDate ? 'line-through' : undefined,
                       color: item.doneDate
                         ? 'var(--color-text-secondary)'
                         : 'var(--color-text)',
                     }}
                   >
                     {item.name}
-                  </Box>
-                </Box>
-              </Box>
-              <IconButton
-                edge="end"
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
                 aria-label="delete"
                 onClick={e => {
                   e.stopPropagation();
                   handleDeleteClick(item.id);
                 }}
-                sx={{
-                  position: 'absolute',
-                  right: 0,
-                  top: '50%',
-                  marginRight: '8px',
-                  marginLeft: '8px',
-                  transform: 'translateY(-50%)',
-                }}
+                className="absolute right-0 top-1/2 mx-2 -translate-y-1/2 p-2 text-destructive"
               >
-                <DeleteIcon color="error" />
-              </IconButton>
+                <Trash2 className="size-5" />
+              </button>
             </DraggableCheckItem>
           )}
         />
-      </List>
+      </ul>
       <DeleteCheckItemDialog
         isOpen={isDeleteDialogOpen}
         isDeleting={isDeleting}
@@ -321,6 +248,6 @@ export const SidebarChecklistView: React.FC<SidebarChecklistViewProps> = ({
         onCancel={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
       />
-    </Box>
+    </div>
   );
 };

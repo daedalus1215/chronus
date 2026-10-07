@@ -1,12 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
+import { Trash2, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useNoteTags } from '../../hooks/useNoteTags';
 import { useAllTags } from '../../hooks/useAllTags';
 import { AddTagForm } from '../AddTagForm/AddTagForm';
@@ -54,10 +49,10 @@ export const SidebarTagsView: React.FC<SidebarTagsViewProps> = ({ noteId }) => {
   };
 
   return (
-    <Box className={styles.sidebarTags}>
+    <div className={styles.sidebarTags}>
       {error && (
-        <Alert severity="error" sx={{ mx: 2, mt: 2 }}>
-          {error.message}
+        <Alert variant="destructive" className="mx-4 mt-4 w-auto">
+          <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
 
@@ -70,68 +65,38 @@ export const SidebarTagsView: React.FC<SidebarTagsViewProps> = ({ noteId }) => {
             onClose={() => setShowAddForm(false)}
           />
         ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              px: 1.5,
-              py: 1,
-              borderBottom: '1px solid var(--color-overlay-stronger)',
-            }}
-          >
-            <IconButton
-              size="small"
+          <div className="flex items-center justify-between border-b border-[var(--color-overlay-stronger)] px-3 py-2">
+            <Button
+              variant="ghost"
+              size="icon-sm"
               aria-label="Add tag"
               onClick={() => setShowAddForm(true)}
             >
-              <AddIcon fontSize="small" />
-            </IconButton>
-          </Box>
+              <Plus className="size-4" />
+            </Button>
+          </div>
         )}
       </div>
 
-      <List
-        className={styles.tagList}
-        sx={{
-          flex: 1,
-          overflowY: 'auto',
-          minHeight: 0,
-          scrollbarWidth: 'none',
-          '&::-webkit-scrollbar': { display: 'none' },
-        }}
-      >
+      <ul className={`${styles.tagList} min-h-0 flex-1 list-none overflow-y-auto p-0`}>
         {tags.map(tag => (
-          <ListItem
+          <li
             key={tag.id}
-            disableGutters
-            sx={{
-              borderBottom: '1px solid var(--color-overlay-stronger)',
-              py: 0.5,
-              px: 2,
-            }}
+            className="flex items-center justify-between border-b border-[var(--color-overlay-stronger)] px-4 py-1"
           >
-            <ListItemText
-              primary={tag.name}
-              sx={{
-                flex: 1,
-                '& .MuiListItemText-primary': {
-                  fontSize: '0.875rem',
-                },
-              }}
-            />
-            <IconButton
-              edge="end"
-              size="small"
+            <span className="flex-1 text-sm">{tag.name}</span>
+            <Button
+              variant="ghost"
+              size="icon-sm"
               aria-label={`Remove tag: ${tag.name}`}
               onClick={() => handleRemoveTag(tag.id)}
-              sx={{ color: 'text.secondary' }}
+              className="text-muted-foreground"
             >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </ListItem>
+              <Trash2 className="size-4" />
+            </Button>
+          </li>
         ))}
-      </List>
-    </Box>
+      </ul>
+    </div>
   );
 };

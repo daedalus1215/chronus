@@ -1,13 +1,6 @@
 import React from 'react';
-import { IconButton } from '@mui/material';
-import {
-  ViewKanban,
-  Mic,
-  Stop,
-  Create,
-  MenuBook,
-  LocalOffer,
-} from '@mui/icons-material';
+import { Button } from '@/components/ui/button';
+import { Kanban, Mic, Square, Pencil, BookOpen, Tag } from 'lucide-react';
 import { SidebarToggleIcon } from '@components/Header/Sidebar/SidebarToggleIcon';
 import { Note } from '../../api/responses';
 
@@ -42,43 +35,47 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
   return (
     <>
       {note.isMemo && (
-        <IconButton
-          size="small"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           title={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
           onClick={onToggleEditMode}
           aria-label={isEditMode ? 'Switch to read mode' : 'Switch to edit mode'}
-          sx={{ color: 'primary.main' }}
+          className="text-primary"
         >
           {isEditMode ? (
-            <Create sx={{ fontSize: 16 }} />
+            <Pencil className="size-4" />
           ) : (
-            <MenuBook sx={{ fontSize: 16 }} />
+            <BookOpen className="size-4" />
           )}
-        </IconButton>
+        </Button>
       )}
       {note.isMemo && (
-        <IconButton
-          size="small"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           title="Kanban"
           aria-label="Kanban"
           onClick={onNavigateKanban}
         >
-          <ViewKanban sx={{ fontSize: 16 }} />
-        </IconButton>
+          <Kanban className="size-4" />
+        </Button>
       )}
       {isMobile && onToggleTags && (
-        <IconButton
-          size="small"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           title="Open side panel"
           aria-label="Open side panel"
           onClick={onToggleTags}
         >
-          <LocalOffer sx={{ fontSize: 16 }} />
-        </IconButton>
+          <Tag className="size-4" />
+        </Button>
       )}
       {note.isMemo && isEditMode && (
-        <IconButton
-          size="small"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           title={
             transcriptionController?.isRecording
               ? 'Stop recording'
@@ -93,21 +90,22 @@ export const TopRailActions: React.FC<TopRailActionsProps> = ({
           disabled={!transcriptionController}
         >
           {transcriptionController?.isRecording ? (
-            <Stop sx={{ fontSize: 16 }} />
+            <Square className="size-4" />
           ) : (
-            <Mic sx={{ fontSize: 16 }} />
+            <Mic className="size-4" />
           )}
-        </IconButton>
+        </Button>
       )}
       {!isMobile && (
-        <IconButton
-          size="small"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           title={isSidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
           aria-label={isSidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
           onClick={onToggleSidebar}
         >
           <SidebarToggleIcon inverted isOpen={isSidebarOpen} size={16} />
-        </IconButton>
+        </Button>
       )}
     </>
   );

@@ -1,15 +1,23 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useNote } from './hooks/useNote/useNote';
 import { useTitle } from './hooks/useTitle';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import HeadsetMicOutlined from '@mui/icons-material/HeadsetMicOutlined';
-import HistoryOutlined from '@mui/icons-material/HistoryOutlined';
-import AccessTimeOutlined from '@mui/icons-material/AccessTimeOutlined';
+import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  ListChecks,
+  Tag,
+  Folder,
+  Headphones,
+  History,
+  Clock,
+} from 'lucide-react';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useTopRailActions } from '../../hooks/useTopRailActions';
 import { TopRailActions } from './components/TopRailActions/TopRailActions';
@@ -27,20 +35,18 @@ import { SidebarFolderView } from './components/SidebarFolderView/SidebarFolderV
 import { SidebarTagsView } from './components/SidebarTagsView/SidebarTagsView';
 import { MobileTagsView } from './components/MobileTagsView/MobileTagsView';
 import styles from './NotePage.module.css';
-import { ChecklistOutlined } from '@mui/icons-material';
-import FolderOutlined from '@mui/icons-material/FolderOutlined';
 import { SidebarAudioHistoryView } from './components/SidebarAudioHistoryView/SidebarAudioHistoryView';
 import { TimeTrackHistoryView } from './components/TimeTrackHistoryView/TimeTrackHistoryView';
 import { SidebarNoteHistoryView } from './components/SidebarNoteHistoryView/SidebarNoteHistoryView';
 import { STORAGE_KEYS } from '../../constants/storage';
 
 const sidebarTabs = [
-  { id: 'checklist', icon: <ChecklistOutlined /> },
-  { id: 'tags', icon: <LocalOfferIcon /> },
-  { id: 'folder', icon: <FolderOutlined /> },
-  { id: 'audio', icon: <HeadsetMicOutlined /> },
-  { id: 'time', icon: <AccessTimeOutlined /> },
-  { id: 'history', icon: <HistoryOutlined /> },
+  { id: 'checklist', icon: <ListChecks className="size-4" /> },
+  { id: 'tags', icon: <Tag className="size-4" /> },
+  { id: 'folder', icon: <Folder className="size-4" /> },
+  { id: 'audio', icon: <Headphones className="size-4" /> },
+  { id: 'time', icon: <Clock className="size-4" /> },
+  { id: 'history', icon: <History className="size-4" /> },
 ];
 
 export const NotePage: React.FC = () => {
@@ -182,12 +188,21 @@ export const NotePage: React.FC = () => {
     };
   }, [note, pendingVersionContent]);
 
+  const titleRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [title]);
+
   if (isLoading) {
     return (
-      <Box className={styles.loadingContainer}>
-        <CircularProgress color="primary" />
+      <div className={styles.loadingContainer}>
+        <Loader2 className="size-6 animate-spin text-primary" />
         Loading note...
-      </Box>
+      </div>
     );
   }
 
@@ -204,91 +219,41 @@ export const NotePage: React.FC = () => {
 
   return (
     <main className={styles.main}>
-      <Box
-        sx={{
-          display: 'flex',
-          height: '100%',
-          minHeight: 0,
-          overflowX: 'auto',
-          minWidth: 0,
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-            minWidth: 280,
-            minHeight: 0,
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 1,
-              mb: note?.isMemo && !isEditMode ? 0 : 1,
-            }}
+      <div className="flex h-full min-h-0 min-w-0 overflow-x-auto">
+        <div className="flex min-h-0 min-w-[280px] flex-1 flex-col">
+          <div
+            className={`flex items-start gap-2 ${note?.isMemo && !isEditMode ? '' : 'mb-2'}`}
           >
-            <TextField
+            <textarea
+              ref={titleRef}
               value={title}
               onChange={e => setTitle(e.target.value)}
               className={styles.titleInput}
               placeholder="Note title"
               aria-label="Note title"
               disabled={titleLoading}
-              variant="standard"
-              fullWidth
-              multiline
-              minRows={1}
-              maxRows={4}
+              rows={1}
             />
             {loadedFromVersion !== null && (
-              <Box
-                sx={{
-                  fontSize: '0.75rem',
-                  color: 'text.secondary',
-                  alignSelf: 'flex-start',
-                  mt: 0.5,
-                  px: 1,
-                  py: 0.25,
-                  borderRadius: 1,
-                  backgroundColor: 'var(--color-primary-light)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
+              <span className="mt-1 shrink-0 whitespace-nowrap rounded px-2 py-0.5 text-xs text-muted-foreground" style={{ backgroundColor: 'var(--color-primary-light)' }}>
                 Loaded from v{loadedFromVersion}
-              </Box>
+              </span>
             )}
-          </Box>
+          </div>
           {titleError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {titleError}
+            <Alert variant="destructive" className="mb-2">
+              <AlertDescription>{titleError}</AlertDescription>
             </Alert>
           )}
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              Error loading note
+            <Alert variant="destructive" className="mb-2">
+              <AlertDescription>Error loading note</AlertDescription>
             </Alert>
           )}
-          <Box
-            sx={{
-              flex: 1,
-              minHeight: 0,
-              minWidth: 0,
-              display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
-            }}
+          <div
+            className={`flex min-h-0 min-w-0 flex-1 ${isMobile ? 'flex-col' : 'flex-row'}`}
           >
-            <Box
-              sx={{
-                flex: 1,
-                minHeight: 0,
-                minWidth: 0,
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
               {displayNote?.isMemo ? (
                 <>
                   {isEditMode && (
@@ -324,9 +289,9 @@ export const NotePage: React.FC = () => {
               ) : (
                 <DesktopCheckListView note={displayNote} />
               )}
-            </Box>
-          </Box>
-        </Box>
+            </div>
+          </div>
+        </div>
         {!isMobile && note && (
           <RightSidebar
             isOpen={isSidebarOpen}
@@ -370,7 +335,7 @@ export const NotePage: React.FC = () => {
             onVersionLoaded={handleVersionLoaded}
           />
         )}
-      </Box>
+      </div>
     </main>
   );
 };

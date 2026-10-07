@@ -13,14 +13,8 @@ import { LoginPage } from './pages/LoginPage/LoginPage';
 import { RegisterPage } from './pages/RegisterPage/RegisterPage';
 import { LandingPage } from './pages/LandingPage/LandingPage';
 import { NotePage } from './pages/NotePage/NotePage';
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import { useMemo } from 'react';
 import type { FC } from 'react';
-import {
-  ThemeModeProvider,
-  useThemeMode,
-} from './contexts/ThemeModeContext';
-import { createChronusTheme } from './theme';
+import { ThemeModeProvider } from './contexts/ThemeModeContext';
 import { TooltipProvider } from './components/ui/tooltip';
 import { Toaster } from './components/ui/sonner';
 import { TagPage } from './pages/TagPage/TagPage';
@@ -104,26 +98,18 @@ function AppRoutes() {
 }
 
 const ThemedShell: FC = () => {
-  const { effectiveMode } = useThemeMode();
-  const theme = useMemo(() => createChronusTheme(effectiveMode), [
-    effectiveMode,
-  ]);
-
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <TooltipProvider delayDuration={200}>
-        <Router>
-          <SidebarProvider>
-            <AudioPlayerProvider>
-              <AppRoutes />
-              <PersistentAudioPlayer />
-            </AudioPlayerProvider>
-          </SidebarProvider>
-        </Router>
-        <Toaster />
-      </TooltipProvider>
-    </ThemeProvider>
+    <TooltipProvider delayDuration={200}>
+      <Router>
+        <SidebarProvider>
+          <AudioPlayerProvider>
+            <AppRoutes />
+            <PersistentAudioPlayer />
+          </AudioPlayerProvider>
+        </SidebarProvider>
+      </Router>
+      <Toaster />
+    </TooltipProvider>
   );
 };
 

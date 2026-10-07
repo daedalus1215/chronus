@@ -1,15 +1,9 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import Collapse from '@mui/material/Collapse';
+import { Search, X, ListFilter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 import { StatusFilter, FilterState } from '../hooks/useCheckItemFilters';
 
 type CheckItemFilterBarProps = {
@@ -33,6 +27,47 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string; color: string }[] =
     { value: 'done', label: 'Done', color: '#22c55e' },
   ];
 
+const statusBadgeStyle = (
+  opt: { value: StatusFilter; color: string },
+  active: boolean
+): React.CSSProperties => ({
+  borderColor: opt.color,
+  backgroundColor: active ? opt.color : 'transparent',
+  color: active
+    ? opt.value === 'in_progress' || opt.value === 'review'
+      ? '#000'
+      : '#fff'
+    : opt.color,
+  fontWeight: active ? 600 : 400,
+  cursor: 'pointer',
+});
+
+const SearchInput: React.FC<{
+  value: string;
+  onChange: (v: string) => void;
+  onClear: () => void;
+}> = ({ value, onChange, onClear }) => (
+  <div className="relative flex-1">
+    <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    <input
+      placeholder="Search items..."
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      className="h-9 w-full rounded-md border border-input bg-transparent pl-8 pr-8 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+    />
+    {value && (
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        onClick={onClear}
+        className="absolute right-1 top-1/2 -translate-y-1/2"
+      >
+        <X className="size-4" />
+      </Button>
+    )}
+  </div>
+);
+
 export const CheckItemFilterBar: React.FC<CheckItemFilterBarProps> = ({
   filters,
   setSearchText,
@@ -48,159 +83,90 @@ export const CheckItemFilterBar: React.FC<CheckItemFilterBarProps> = ({
 
   if (compact) {
     return (
-      <Box sx={{ mb: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton
-            size="small"
+      <div className="mb-2">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => setExpanded(v => !v)}
-            color={hasActiveFilters ? 'primary' : 'default'}
-            sx={{
-              backgroundColor: hasActiveFilters
-                ? 'primary.lighter'
-                : 'transparent',
-            }}
+            className={hasActiveFilters ? 'bg-primary/10 text-primary' : undefined}
           >
-            <FilterListIcon fontSize="small" />
-          </IconButton>
+            <ListFilter className="size-4" />
+          </Button>
           {hasActiveFilters && (
-            <Chip
-              size="small"
-              label={`${matchCount} of ${totalCount}`}
-              onDelete={clearFilters}
-              sx={{ height: 22, fontSize: '0.7rem' }}
-            />
+            <Badge
+              variant="outline"
+              className="h-[22px] cursor-pointer gap-1 text-[0.7rem]"
+              onClick={clearFilters}
+            >
+              {matchCount} of {totalCount}
+              <X className="size-3" />
+            </Badge>
           )}
-        </Box>
-        <Collapse in={expanded}>
-          <Box sx={{ p: 1, pt: 0 }}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search items..."
+        </div>
+        {expanded && (
+          <div className="p-2 pt-0">
+            <SearchInput
               value={filters.searchText}
-              onChange={e => setSearchText(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: filters.searchText ? (
-                  <InputAdornment position="end">
-                    <IconButton size="small" edge="end" onClick={clearSearch}>
-                      <ClearIcon fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                ) : undefined,
-              }}
+              onChange={setSearchText}
+              onClear={clearSearch}
             />
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+            <div className="mt-2 flex flex-wrap gap-1.5">
               {STATUS_OPTIONS.map(opt => (
-                <Chip
+                <Badge
                   key={opt.value}
-                  size="small"
-                  label={opt.label}
+                  variant="outline"
+                  style={statusBadgeStyle(opt, filters.statusFilter === opt.value)}
                   onClick={() => setStatusFilter(opt.value)}
-                  sx={{
-                    borderColor: opt.color,
-                    backgroundColor:
-                      filters.statusFilter === opt.value
-                        ? opt.color
-                        : 'transparent',
-                    color:
-                      filters.statusFilter === opt.value
-                        ? opt.value === 'in_progress' || opt.value === 'review'
-                          ? '#000'
-                          : '#fff'
-                        : opt.color,
-                    fontWeight: filters.statusFilter === opt.value ? 600 : 400,
-                  }}
-                  variant={
-                    filters.statusFilter === opt.value ? 'filled' : 'outlined'
-                  }
-                />
+                >
+                  {opt.label}
+                </Badge>
               ))}
-            </Box>
-          </Box>
-        </Collapse>
-      </Box>
+            </div>
+          </div>
+        )}
+      </div>
     );
   }
 
   return (
-    <Box sx={{ mb: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-        <TextField
-          fullWidth
-          size="small"
-          placeholder="Search items..."
+    <div className="mb-4">
+      <div className="mb-2 flex items-center gap-2">
+        <SearchInput
           value={filters.searchText}
-          onChange={e => setSearchText(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
-            endAdornment: filters.searchText ? (
-              <InputAdornment position="end">
-                <IconButton size="small" edge="end" onClick={clearSearch}>
-                  <ClearIcon fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ) : undefined,
-          }}
+          onChange={setSearchText}
+          onClear={clearSearch}
         />
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.5,
-          flexWrap: 'wrap',
-        }}
-      >
-        <Typography variant="caption" sx={{ mr: 0.5, color: 'text.secondary' }}>
-          Status:
-        </Typography>
+      </div>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="mr-1 text-xs text-muted-foreground">Status:</span>
         {STATUS_OPTIONS.map(opt => (
-          <Chip
+          <Badge
             key={opt.value}
-            size="small"
-            label={opt.label}
+            variant="outline"
+            style={statusBadgeStyle(opt, filters.statusFilter === opt.value)}
             onClick={() => setStatusFilter(opt.value)}
-            sx={{
-              borderColor: opt.color,
-              backgroundColor:
-                filters.statusFilter === opt.value ? opt.color : 'transparent',
-              color:
-                filters.statusFilter === opt.value
-                  ? opt.value === 'in_progress' || opt.value === 'review'
-                    ? '#000'
-                    : '#fff'
-                  : opt.color,
-              fontWeight: filters.statusFilter === opt.value ? 600 : 400,
-            }}
-            variant={filters.statusFilter === opt.value ? 'filled' : 'outlined'}
-          />
+          >
+            {opt.label}
+          </Badge>
         ))}
         {hasActiveFilters && (
           <>
-            <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            <Separator orientation="vertical" className="mx-2 h-4" />
+            <span className="text-xs text-muted-foreground">
               {matchCount} of {totalCount} item{matchCount !== 1 ? 's' : ''}{' '}
               match
-            </Typography>
-            <Chip
-              size="small"
-              label="Clear all"
+            </span>
+            <Badge
+              variant="outline"
+              className={cn('h-[22px] cursor-pointer text-[0.7rem]')}
               onClick={clearFilters}
-              variant="outlined"
-              sx={{ height: 22, fontSize: '0.7rem' }}
-            />
+            >
+              Clear all
+            </Badge>
           </>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };

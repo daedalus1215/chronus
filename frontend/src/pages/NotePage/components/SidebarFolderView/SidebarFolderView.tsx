@@ -1,12 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  Button,
-  Snackbar,
-  SnackbarContent,
-  Typography,
-} from '@mui/material';
-import FolderIcon from '@mui/icons-material/FolderOutlined';
+import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { FolderOutput } from 'lucide-react';
 import { MoveNoteDialog } from '../../../../components/MoveNoteDialog/MoveNoteDialog';
 import { useFolders } from '../../../../hooks/useFolders/useFolders';
 import { useMoveNoteToFolder } from '../../hooks/useMoveNoteToFolder/useMoveNoteToFolder';
@@ -32,6 +27,13 @@ export const SidebarFolderView: React.FC<SidebarFolderViewProps> = ({
     closeSnackbar,
   } = useMoveNoteToFolder(noteId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (snackbarMessage !== null) {
+      toast.success(snackbarMessage);
+      closeSnackbar();
+    }
+  }, [snackbarMessage, closeSnackbar]);
 
   const currentFolder = useMemo(
     () => folders?.find(f => f.id === folderId) ?? null,
@@ -68,16 +70,14 @@ export const SidebarFolderView: React.FC<SidebarFolderViewProps> = ({
 
   return (
     <div className={styles.sidebarFolder}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-        <FolderIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
-        <Typography variant="body2" color="text.secondary">
-          {statusText}
-        </Typography>
-      </Box>
+      <div className="mb-4 flex items-center gap-2">
+        <FolderOutput className="size-4 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">{statusText}</span>
+      </div>
       <Button
-        variant="outlined"
-        size="small"
-        fullWidth
+        variant="outline"
+        size="sm"
+        className="w-full"
         disabled={isPending}
         onClick={handleOpenDialog}
       >
@@ -90,13 +90,6 @@ export const SidebarFolderView: React.FC<SidebarFolderViewProps> = ({
         currentFolderId={folderId}
         error={error}
       />
-      <Snackbar
-        open={snackbarMessage !== null}
-        autoHideDuration={4000}
-        onClose={closeSnackbar}
-      >
-        <SnackbarContent message={snackbarMessage ?? ''} />
-      </Snackbar>
     </div>
   );
 };
