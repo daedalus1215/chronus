@@ -16,7 +16,8 @@
 }
 
 .icon {
-  font-size: 24px !important; /* Override Material-UI default size */
+  width: 24px;
+  height: 24px;
 }
 
 /* Make grid responsive */

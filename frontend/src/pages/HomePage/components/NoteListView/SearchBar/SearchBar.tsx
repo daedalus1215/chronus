@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { InputAdornment, IconButton, TextField } from '@mui/material';
-import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
+import { Search, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import styles from './SearchBar.module.css';
 
 type SearchBarProps = {
@@ -51,39 +51,28 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div className={styles.searchBar}>
-      <TextField
-        fullWidth
-        inputRef={inputRef}
-        placeholder={placeholder}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon color="action" />
-            </InputAdornment>
-          ),
-          endAdornment: value ? (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="clear search"
-                onClick={onClear}
-                edge="end"
-                size="small"
-              >
-                <ClearIcon />
-              </IconButton>
-            </InputAdornment>
-          ) : null,
-        }}
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            height: '40px',
-            marginBottom: '10px',
-            backgroundColor: 'background.paper',
-          },
-        }}
-      />
+      <div className="relative mb-2.5 h-10">
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+        <input
+          ref={inputRef}
+          placeholder={placeholder}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          className="h-10 w-full rounded-md border border-input bg-card pl-10 pr-10 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        />
+        {value ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="clear search"
+            onClick={onClear}
+            className="absolute right-1 top-1/2 -translate-y-1/2"
+          >
+            <X className="size-4" />
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 };
