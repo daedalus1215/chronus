@@ -162,5 +162,10 @@ gone. Group commits by directory/feature, not necessarily one file each.
       in `src/App.tsx` (also converted `src/hooks/useIsMobile.ts` off
       MUI's `useTheme`/`useMediaQuery` to a plain `matchMedia` hook,
       since it was the last non-theme MUI consumer in `src/hooks`)
-- [ ] Rewrite the `frontend/AGENTS.md` styling sections to describe the
+- [x] Rewrite the `frontend/AGENTS.md` styling sections to describe the
       finished Tailwind + shadcn convention
+
+## Migration complete
+
+Every box above is checked. The app is fully on Tailwind v4 + shadcn/ui;
+no MUI or Emotion packages remain in `package.json`.
