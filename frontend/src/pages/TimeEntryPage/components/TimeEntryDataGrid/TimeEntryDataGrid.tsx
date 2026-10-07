@@ -9,6 +9,9 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
 } from 'lucide-react';
 import {
   Table,
@@ -77,6 +80,17 @@ interface EditDialogState {
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
+type SortField = 'noteName' | 'date' | 'startTime' | 'durationMinutes' | 'note';
+type SortDirection = 'asc' | 'desc';
+
+const SORTABLE_COLUMNS: { field: SortField; header: string }[] = [
+  { field: 'noteName', header: 'Note' },
+  { field: 'date', header: 'Date' },
+  { field: 'startTime', header: 'Start' },
+  { field: 'durationMinutes', header: 'Duration' },
+  { field: 'note', header: 'Memo' },
+];
+
 export const TimeEntryDataGrid: React.FC<Props> = ({
   rows,
   loading,
@@ -94,17 +108,55 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
   });
   const [pageSize, setPageSize] = useState(25);
   const [pageIndex, setPageIndex] = useState(0);
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+  const handleSort = (field: SortField) => {
+    if (field !== sortField) {
+      setSortField(field);
+      setSortDirection('asc');
+    } else if (sortDirection === 'asc') {
+      setSortDirection('desc');
+    } else {
+      // Third click returns to the natural (API) order, matching MUI
+      // DataGrid's default asc -> desc -> none cycle.
+      setSortField(null);
+    }
+    setPageIndex(0);
+  };
+
+  const sortedRows = useMemo(() => {
+    if (!sortField) return rows;
+    const sorted = [...rows].sort((a, b) => {
+      const av = a[sortField];
+      const bv = b[sortField];
+      const cmp =
+        typeof av === 'number' && typeof bv === 'number'
+          ? av - bv
+          : String(av ?? '').localeCompare(String(bv ?? ''));
+      return sortDirection === 'asc' ? cmp : -cmp;
+    });
+    return sorted;
+  }, [rows, sortField, sortDirection]);
+
+  const pageCount = Math.max(1, Math.ceil(sortedRows.length / pageSize));
   const clampedPageIndex = Math.min(pageIndex, pageCount - 1);
   const pagedRows = useMemo(
     () =>
-      rows.slice(
+      sortedRows.slice(
         clampedPageIndex * pageSize,
         clampedPageIndex * pageSize + pageSize
       ),
-    [rows, clampedPageIndex, pageSize]
+    [sortedRows, clampedPageIndex, pageSize]
   );
+
+  const renderSortIcon = (field: SortField) => {
+    if (field !== sortField) {
+      return <ArrowUpDown className={styles.sortIcon} />;
+    }
+    const Icon = sortDirection === 'asc' ? ArrowUp : ArrowDown;
+    return <Icon className={`${styles.sortIcon} ${styles.sortIconActive}`} />;
+  };
 
   const handleDelete = async (id: number) => {
     onRowDeleted(id);
@@ -330,11 +382,18 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
             <Table>
               <TableHeader>
                 <TableRow className={styles.headerRow}>
-                  <TableHead className={styles.headerCell}>Note</TableHead>
-                  <TableHead className={styles.headerCell}>Date</TableHead>
-                  <TableHead className={styles.headerCell}>Start</TableHead>
-                  <TableHead className={styles.headerCell}>Duration</TableHead>
-                  <TableHead className={styles.headerCell}>Memo</TableHead>
+                  {SORTABLE_COLUMNS.map(col => (
+                    <TableHead key={col.field} className={styles.headerCell}>
+                      <button
+                        type="button"
+                        className={styles.sortHeader}
+                        onClick={() => handleSort(col.field)}
+                      >
+                        {col.header}
+                        {renderSortIcon(col.field)}
+                      </button>
+                    </TableHead>
+                  ))}
                   <TableHead className={styles.headerCell} />
                 </TableRow>
               </TableHeader>
