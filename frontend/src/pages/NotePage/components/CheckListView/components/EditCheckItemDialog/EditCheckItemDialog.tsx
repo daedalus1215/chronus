@@ -1,8 +1,7 @@
 import React from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 type EditCheckItemDialogProps = {
   isOpen: boolean;
@@ -19,15 +18,11 @@ export const EditCheckItemDialog: React.FC<EditCheckItemDialogProps> = ({
   onSave,
   onClose,
 }) => (
-  <Dialog
-    open={isOpen}
-    onClose={onClose}
-    aria-labelledby="edit-checkitem-dialog-title"
-    autoFocus
-  >
-    <DialogContent>
-      <TextField
-        label="Edit Check Item"
+  <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <DialogContent className="sm:max-w-sm" showCloseButton={false}>
+      <DialogTitle className="sr-only">Edit Check Item</DialogTitle>
+      <Input
+        placeholder="Edit Check Item"
         value={value}
         autoComplete="off"
         onChange={e => onChange(e.target.value)}
@@ -37,17 +32,10 @@ export const EditCheckItemDialog: React.FC<EditCheckItemDialogProps> = ({
             onSave();
           }
         }}
-        fullWidth
-        variant="standard"
         enterKeyHint="done"
         autoFocus
       />
-      <Button
-        onClick={onSave}
-        variant="contained"
-        color="primary"
-        sx={{ mt: 2, float: 'right' }}
-      >
+      <Button onClick={onSave} className="float-right mt-4">
         Save
       </Button>
     </DialogContent>

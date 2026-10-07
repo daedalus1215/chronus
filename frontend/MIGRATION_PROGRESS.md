@@ -99,11 +99,11 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 - [ ] src/pages/NotePage/NotePage.tsx
 - [ ] src/pages/NotePage/components/AddTagForm/AddTagForm.tsx
-- [ ] src/pages/NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog.tsx
+- [x] src/pages/NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog.tsx
 - [ ] src/pages/NotePage/components/CheckListView/components/CheckItemFilterBar/CheckItemFilterBar.tsx
-- [ ] src/pages/NotePage/components/CheckListView/components/DeleteCheckItemDialog/DeleteCheckItemDialog.tsx
+- [x] src/pages/NotePage/components/CheckListView/components/DeleteCheckItemDialog/DeleteCheckItemDialog.tsx
 - [ ] src/pages/NotePage/components/CheckListView/components/DraggableCheckItem/DraggableCheckItem.tsx
-- [ ] src/pages/NotePage/components/CheckListView/components/EditCheckItemDialog/EditCheckItemDialog.tsx
+- [x] src/pages/NotePage/components/CheckListView/components/EditCheckItemDialog/EditCheckItemDialog.tsx
 - [ ] src/pages/NotePage/components/CheckListView/DesktopCheckListView/DesktopCheckListView.tsx
 - [ ] src/pages/NotePage/components/CheckListView/MobileCheckListView/MobileCheckListView.tsx
 - [ ] src/pages/NotePage/components/MobileTagsView/MobileTagsView.tsx
