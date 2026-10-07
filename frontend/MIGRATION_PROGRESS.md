@@ -82,10 +82,10 @@ gone. Group commits by directory/feature, not necessarily one file each.
 ### KanbanBoardPage
 
 - [ ] src/pages/KanbanBoardPage/KanbanBoardPage.tsx
-- [ ] src/pages/KanbanBoardPage/components/CardDetailsDialog/CardDetailsDialog.tsx
-- [ ] src/pages/KanbanBoardPage/components/KanbanCard/KanbanCard.tsx
-- [ ] src/pages/KanbanBoardPage/components/KanbanColumn/KanbanColumn.tsx
-- [ ] src/pages/KanbanBoardPage/components/MobileKanbanBoard/MobileKanbanBoard.tsx
+- [x] src/pages/KanbanBoardPage/components/CardDetailsDialog/CardDetailsDialog.tsx
+- [x] src/pages/KanbanBoardPage/components/KanbanCard/KanbanCard.tsx
+- [x] src/pages/KanbanBoardPage/components/KanbanColumn/KanbanColumn.tsx
+- [x] src/pages/KanbanBoardPage/components/MobileKanbanBoard/MobileKanbanBoard.tsx
 
 ### Auth pages
 

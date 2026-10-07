@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import EditIcon from '@mui/icons-material/Edit';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { CheckCircle, Pencil, MoreVertical } from 'lucide-react';
 import { CheckItem } from '../../../NotePage/api/responses';
 import styles from './KanbanCard.module.css';
 
@@ -34,7 +31,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
     transition,
     isDragging,
   } = useSortable({ id: item.id });
-  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -46,22 +43,13 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
     setNodeRef(node);
   };
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setMenuAnchor(event.currentTarget);
-  };
-
-  const closeMenu = () => {
-    setMenuAnchor(null);
-  };
-
   const handleViewDetailsClick = () => {
-    closeMenu();
+    setMenuOpen(false);
     onViewDetails(item);
   };
 
   return (
-    <Card
+    <div
       ref={handleCardRef}
       style={style}
       className={`${styles.card} ${isDragging ? styles.cardDragging : ''}`}
@@ -69,7 +57,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
       tabIndex={0}
       aria-label={`Kanban card: ${item.name}`}
     >
-      <CardContent className={styles.cardContent}>
+      <div className={styles.cardContent}>
         <div className={styles.dragHandle} {...attributes} {...listeners}>
           <span
             className={styles.statusDot}
@@ -80,39 +68,32 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
         </div>
         <div className={styles.cardActions}>
           {item.status === 'done' && (
-            <CheckCircleIcon
+            <CheckCircle
               className={styles.doneIcon}
-              fontSize="small"
+              size={20}
               aria-label="Done"
             />
           )}
-          <IconButton
-            size="small"
-            onClick={handleMenuClick}
-            className={styles.moreButton}
-            aria-label="More options"
-          >
-            <MoreVertIcon fontSize="small" />
-          </IconButton>
+          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                onClick={e => e.stopPropagation()}
+                className={styles.moreButton}
+                aria-label="More options"
+              >
+                <MoreVertical size={16} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" aria-label="Card actions">
+              <DropdownMenuItem onClick={handleViewDetailsClick}>
+                <Pencil className="size-4" />
+                Edit Details
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </CardContent>
-      <Menu
-        anchorEl={menuAnchor}
-        open={Boolean(menuAnchor)}
-        onClose={closeMenu}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        MenuListProps={{
-          'aria-label': 'Card actions',
-        }}
-      >
-        <MenuItem onClick={handleViewDetailsClick}>
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Edit Details</ListItemText>
-        </MenuItem>
-      </Menu>
-    </Card>
+      </div>
+    </div>
   );
 };

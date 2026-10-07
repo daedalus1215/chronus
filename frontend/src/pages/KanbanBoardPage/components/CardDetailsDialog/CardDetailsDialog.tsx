@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
-  TextField,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import {
   Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  SelectChangeEvent,
-} from '@mui/material';
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { CheckItem } from '../../../NotePage/api/responses';
 import { CheckItemStatus } from '../../hooks/useUpdateCheckItemStatus';
 
@@ -49,20 +54,6 @@ export const CardDetailsDialog: React.FC<CardDetailsDialogProps> = ({
     }
   }, [item, isOpen]);
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
-
-  const handleDescriptionChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setDescription(event.target.value);
-  };
-
-  const handleStatusChange = (event: SelectChangeEvent<CheckItemStatus>) => {
-    setStatus(event.target.value as CheckItemStatus);
-  };
-
   const handleSave = () => {
     if (item && name.trim()) {
       onSave(item.id, name.trim(), description.trim() || undefined, status);
@@ -74,62 +65,56 @@ export const CardDetailsDialog: React.FC<CardDetailsDialogProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Edit Card Details</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Name"
-          type="text"
-          fullWidth
-          required
-          value={name}
-          onChange={handleNameChange}
-          sx={{ marginBottom: 2 }}
-        />
-        <TextField
-          margin="dense"
-          id="description"
-          label="Description"
-          type="text"
-          fullWidth
-          multiline
-          rows={4}
-          value={description}
-          onChange={handleDescriptionChange}
-          sx={{ marginBottom: 2 }}
-        />
-        <FormControl fullWidth>
-          <InputLabel id="status-label">Status</InputLabel>
-          <Select
-            labelId="status-label"
-            id="status"
-            value={status}
-            label="Status"
-            onChange={handleStatusChange}
-          >
-            <MenuItem value="ready">Ready for Work</MenuItem>
-            <MenuItem value="in_progress">In Progress</MenuItem>
-            <MenuItem value="review">Ready for Review</MenuItem>
-            <MenuItem value="done">Done</MenuItem>
-          </Select>
-        </FormControl>
+    <Dialog open={isOpen} onOpenChange={(next) => !next && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Edit Card Details</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              autoFocus
+              id="name"
+              type="text"
+              required
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              rows={4}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="status">Status</Label>
+            <Select value={status} onValueChange={v => setStatus(v as CheckItemStatus)}>
+              <SelectTrigger id="status" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ready">Ready for Work</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="review">Ready for Review</SelectItem>
+                <SelectItem value="done">Done</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={!name.trim()}>
+            Save
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCancel} color="inherit">
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSave}
-          variant="contained"
-          color="primary"
-          disabled={!name.trim()}
-        >
-          Save
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
