@@ -149,9 +149,9 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### YearlyNotesPage
 
-- [ ] src/pages/YearlyNotesPage/YearlyNotesPage.tsx
-- [ ] src/pages/YearlyNotesPage/components/YearlyNoteItem/YearlyNoteItem.tsx
-- [ ] src/pages/YearlyNotesPage/components/YearlyNotesTimeline/YearlyNotesTimeline.tsx
+- [x] src/pages/YearlyNotesPage/YearlyNotesPage.tsx
+- [x] src/pages/YearlyNotesPage/components/YearlyNoteItem/YearlyNoteItem.tsx
+- [x] src/pages/YearlyNotesPage/components/YearlyNotesTimeline/YearlyNotesTimeline.tsx
 
 ## Final cleanup (only after every box above is checked)
 

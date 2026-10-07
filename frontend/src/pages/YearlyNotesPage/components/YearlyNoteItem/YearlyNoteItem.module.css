@@ -67,6 +67,15 @@
 
 .tagChip {
   cursor: pointer;
+  height: 20px;
+  font-size: 0.6875rem;
+  border-color: var(--color-primary, #6366f1);
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+.tagChip:hover {
+  background-color: var(--color-primary-light, rgba(99, 102, 241, 0.1));
+  border-color: var(--color-primary, #6366f1);
 }
 
 .time {
