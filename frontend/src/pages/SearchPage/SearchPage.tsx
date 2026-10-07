@@ -1,22 +1,10 @@
 import React, { useState, useCallback, useRef } from 'react';
-import {
-  Box,
-  TextField,
-  Typography,
-  List,
-  ListItemButton,
-  Chip,
-  CircularProgress,
-  InputAdornment,
-  IconButton,
-  Paper,
-  Switch,
-  FormControlLabel,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
-import NoteIcon from '@mui/icons-material/Note';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { Search, X, StickyNote, SquareCheck, Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { searchNotes } from '../../api/requests/notes.requests';
 import { SearchResult } from '../../api/dtos/note.dtos';
@@ -35,11 +23,13 @@ const STATUS_LABELS: Record<string, string> = {
   done: 'Done',
 };
 
-const STATUS_COLORS: Record<string, 'default' | 'primary' | 'warning' | 'success'> = {
-  ready: 'default',
-  in_progress: 'primary',
-  review: 'warning',
-  done: 'success',
+/** Tailwind classes layered onto the outline Badge per status; shadcn has
+ * no built-in color variants beyond default/destructive. */
+const STATUS_BADGE_CLASSES: Record<string, string> = {
+  ready: '',
+  in_progress: 'border-primary/50 text-primary',
+  review: 'border-[var(--color-warning)] text-[var(--color-warning-dark)]',
+  done: 'border-green-600/50 text-green-700 dark:text-green-400',
 };
 
 const DEBOUNCE_MS = 400;
@@ -79,8 +69,7 @@ export const SearchPage: React.FC = () => {
     debounceRef.current = setTimeout(() => runSearch(val), DEBOUNCE_MS);
   };
 
-  const handleArchiveToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
+  const handleArchiveToggle = (checked: boolean) => {
     setIncludeArchived(checked);
     if (query.trim().length >= 2) {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -100,126 +89,106 @@ export const SearchPage: React.FC = () => {
   };
 
   return (
-    <Box className={styles.page}>
-      <Box className={styles.searchBar}>
-        <TextField
-          fullWidth
-          autoFocus
-          placeholder="Search memos and checklists..."
-          value={query}
-          onChange={handleChange}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-            endAdornment: query ? (
-              <InputAdornment position="end">
-                {loading ? (
-                  <CircularProgress size={18} />
-                ) : (
-                  <IconButton size="small" onClick={handleClear}>
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                )}
-              </InputAdornment>
-            ) : null,
-          }}
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              checked={includeArchived}
-              onChange={handleArchiveToggle}
-            />
-          }
-          label="Include archived"
-        />
-      </Box>
+    <div className={styles.page}>
+      <div className={cn(styles.searchBar, 'flex items-center gap-4')}>
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            autoFocus
+            placeholder="Search memos and checklists..."
+            value={query}
+            onChange={handleChange}
+            className="h-9 w-full rounded-md border border-input bg-transparent pl-9 pr-9 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          />
+          {query ? (
+            <div className="absolute right-1 top-1/2 -translate-y-1/2">
+              {loading ? (
+                <Loader2 className="m-1.5 size-[18px] animate-spin text-muted-foreground" />
+              ) : (
+                <Button variant="ghost" size="icon-sm" onClick={handleClear}>
+                  <X className="size-4" />
+                </Button>
+              )}
+            </div>
+          ) : null}
+        </div>
+        <Label className="flex shrink-0 items-center gap-2 font-normal">
+          <Switch checked={includeArchived} onCheckedChange={handleArchiveToggle} />
+          Include archived
+        </Label>
+      </div>
 
       {!searched && !loading && (
-        <Box className={styles.emptyState}>
-          <SearchIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
-          <Typography color="text.secondary">
+        <div className={styles.emptyState}>
+          <Search className="mb-1 size-12 text-muted-foreground/60" />
+          <span className="text-muted-foreground">
             Type at least 2 characters to search
-          </Typography>
-        </Box>
+          </span>
+        </div>
       )}
 
       {searched && results.length === 0 && !loading && (
-        <Box className={styles.emptyState}>
-          <Typography color="text.secondary">
+        <div className={styles.emptyState}>
+          <span className="text-muted-foreground">
             No results for "{query}"
-          </Typography>
-        </Box>
+          </span>
+        </div>
       )}
 
       {results.length > 0 && (
-        <List disablePadding className={styles.resultList}>
+        <div className={styles.resultList}>
           {results.map((result, idx) => (
-            <Paper
+            <div
               key={`${result.noteId}-${result.matchType}-${idx}`}
-              elevation={0}
               className={styles.resultItem}
             >
-              <ListItemButton
+              <button
+                type="button"
                 onClick={() => handleClick(result.noteId)}
                 className={styles.resultButton}
               >
-                <Box className={styles.resultContent}>
-                  <Box className={styles.resultHeader}>
+                <div className={styles.resultContent}>
+                  <div className={styles.resultHeader}>
                     {result.isMemo ? (
-                      <NoteIcon
-                        fontSize="small"
-                        sx={{ color: 'primary.main' }}
-                      />
+                      <StickyNote className="size-4 text-primary" />
                     ) : (
-                      <CheckBoxIcon
-                        fontSize="small"
-                        sx={{ color: 'secondary.main' }}
-                      />
+                      <SquareCheck className="size-4" style={{ color: 'var(--accent-2)' }} />
                     )}
-                    <Typography
-                      variant="subtitle2"
-                      className={styles.noteName}
-                      sx={
-                        result.checkItemIsArchived
-                          ? { textDecoration: 'line-through', color: 'text.disabled' }
-                          : {}
-                      }
+                    <span
+                      className={cn(
+                        styles.noteName,
+                        result.checkItemIsArchived &&
+                          'text-muted-foreground line-through'
+                      )}
                     >
                       {result.noteName}
-                    </Typography>
-                    <Chip
-                      label={MATCH_TYPE_LABELS[result.matchType]}
-                      size="small"
-                      variant="outlined"
-                      className={styles.matchChip}
-                    />
+                    </span>
+                    <Badge variant="outline" className={styles.matchChip}>
+                      {MATCH_TYPE_LABELS[result.matchType]}
+                    </Badge>
                     {result.matchType === 'check_item' &&
                       result.checkItemStatus && (
-                        <Chip
-                          label={STATUS_LABELS[result.checkItemStatus]}
-                          size="small"
-                          color={STATUS_COLORS[result.checkItemStatus] ?? 'default'}
-                          variant="outlined"
-                          className={styles.matchChip}
-                        />
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            styles.matchChip,
+                            STATUS_BADGE_CLASSES[result.checkItemStatus]
+                          )}
+                        >
+                          {STATUS_LABELS[result.checkItemStatus]}
+                        </Badge>
                       )}
                     {result.matchType === 'check_item' &&
                       result.checkItemIsArchived && (
-                        <Chip
-                          label="Archived"
-                          size="small"
-                          variant="outlined"
-                          sx={{ color: 'text.disabled' }}
-                          className={styles.matchChip}
-                        />
+                        <Badge
+                          variant="outline"
+                          className={cn(styles.matchChip, 'text-muted-foreground')}
+                        >
+                          Archived
+                        </Badge>
                       )}
-                  </Box>
-                  <Typography variant="body2" className={styles.context}>
+                  </div>
+                  <p className={styles.context}>
                     <span className={styles.contextText}>
                       {result.contextBefore}
                     </span>
@@ -227,23 +196,19 @@ export const SearchPage: React.FC = () => {
                     <span className={styles.contextText}>
                       {result.contextAfter}
                     </span>
-                  </Typography>
+                  </p>
                   {result.matchType === 'check_item' &&
                     result.checkItemDescriptionSnippet && (
-                      <Typography
-                        variant="caption"
-                        className={styles.descriptionSnippet}
-                        sx={{ color: 'text.secondary' }}
-                      >
+                      <p className={cn(styles.descriptionSnippet, 'text-muted-foreground')}>
                         {result.checkItemDescriptionSnippet}
-                      </Typography>
+                      </p>
                     )}
-                </Box>
-              </ListItemButton>
-            </Paper>
+                </div>
+              </button>
+            </div>
           ))}
-        </List>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };

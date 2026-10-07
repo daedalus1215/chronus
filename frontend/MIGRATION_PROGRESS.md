@@ -126,7 +126,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### SearchPage
 
-- [ ] src/pages/SearchPage/SearchPage.tsx
+- [x] src/pages/SearchPage/SearchPage.tsx
 
 ### TagPage
 
