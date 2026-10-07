@@ -6,7 +6,6 @@ import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './DesktopNoteListView.module.css';
 import { useResizablePane } from '../../../../../hooks/useResizablePane';
 import { useSidebar } from '../../../../../hooks/useSidebar';
-import Fade from '@mui/material/Fade';
 import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests';
 import { STORAGE_KEYS } from '../../../../../constants/storage';
 
@@ -146,24 +145,19 @@ export const DesktopNoteListView: React.FC<NoteListViewProps> = ({
           className={styles.noteListScrollContainer}
         >
           {notes.map((note, index) => (
-            <Fade
+            <div
               key={tagId !== undefined ? `${tagId}-${note.id}` : note.id}
-              in={true}
-              timeout={300}
-              style={{
-                transitionDelay: `${Math.min(index * 50, 300)}ms`,
-              }}
+              className="animate-in fade-in duration-300"
+              style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
             >
-              <div>
-                <NoteItem
-                  note={note}
-                  onClick={() => handleNoteClick(note.id)}
-                  isSelected={selectedNoteId === note.id}
-                  onPinnedChange={setPinned}
-                  compact
-                />
-              </div>
-            </Fade>
+              <NoteItem
+                note={note}
+                onClick={() => handleNoteClick(note.id)}
+                isSelected={selectedNoteId === note.id}
+                onPinnedChange={setPinned}
+                compact
+              />
+            </div>
           ))}
           {isLoading && <LoadingSpinner />}
           {!hasMore && <NoMoreNotes />}
