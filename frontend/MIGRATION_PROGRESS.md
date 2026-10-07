@@ -134,10 +134,10 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [ ] src/pages/TagPage/components/TagListView/DesktopTagListView/DesktopTagListView.tsx
 - [ ] src/pages/TagPage/components/TagListView/MobileTagListView/MobileTagListView.tsx
 - [ ] src/pages/TagPage/components/TagListView/MobileTagNotesListView/MobileTagNotesListView.tsx
-- [ ] src/pages/TagPage/components/TagListView/SearchBar/SearchBar.tsx
-- [ ] src/pages/TagPage/components/TagListView/TagItem/TagActionGrid/TagActionGrid.tsx
-- [ ] src/pages/TagPage/components/TagListView/TagItem/TagActionGrid/TagForm/TagForm.tsx
-- [ ] src/pages/TagPage/components/TagListView/TagItem/TagActionPanel/TagActionPanel.tsx
+- [x] src/pages/TagPage/components/TagListView/SearchBar/SearchBar.tsx
+- [x] src/pages/TagPage/components/TagListView/TagItem/TagActionGrid/TagActionGrid.tsx
+- [x] src/pages/TagPage/components/TagListView/TagItem/TagActionGrid/TagForm/TagForm.tsx
+- [x] src/pages/TagPage/components/TagListView/TagItem/TagActionPanel/TagActionPanel.tsx
 
 ### TimeEntryPage
 

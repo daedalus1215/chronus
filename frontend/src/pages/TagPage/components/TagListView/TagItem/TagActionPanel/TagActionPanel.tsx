@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Alert from '@mui/material/Alert';
-import Typography from '@mui/material/Typography';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tag } from '@/api/dtos/tag.dtos';
 import {
   fetchTagById,
@@ -144,42 +146,45 @@ export const TagActionPanel: React.FC<TagActionPanelProps> = ({
 
       <Dialog
         open={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        aria-labelledby="tag-delete-dialog-title"
+        onOpenChange={(open) => !open && setIsDeleteDialogOpen(false)}
       >
-        <DialogTitle id="tag-delete-dialog-title">Delete Tag?</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this tag? This action cannot be
-          undone.
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Tag?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete this tag? This action cannot be
+            undone.
+          </p>
           {tag.noteCount > 0 && (
-            <Typography variant="body2" sx={{ mt: 1 }}>
+            <p className="text-sm text-muted-foreground">
               This tag is attached to {tag.noteCount}{' '}
               {tag.noteCount === 1 ? 'note' : 'notes'} — they keep everything
               else, only the tag is removed.
-            </Typography>
+            </p>
           )}
           {deleteError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {deleteError}
+            <Alert variant="destructive">
+              <AlertDescription>{deleteError}</AlertDescription>
             </Alert>
           )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setIsDeleteDialogOpen(false)}
-            disabled={isDeleting}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={confirmDelete}
-            color="error"
-            variant="contained"
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
       </Dialog>
     </>
   );

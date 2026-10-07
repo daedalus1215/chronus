@@ -1,6 +1,6 @@
 import React from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
-import { DeleteOutlineOutlined, EditOutlined } from '@mui/icons-material';
+import { Trash2, Pencil } from 'lucide-react';
 import styles from './TagActionGrid.module.css';
 import { ActionButton } from '@/components/ActionButton/ActionButton';
 
@@ -21,11 +21,11 @@ export const TagActionGrid: React.FC<Props> = ({
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <div className={styles.actionGrid}>
         <ActionButton onClick={onEdit} label="Edit">
-          <EditOutlined className={styles.icon} />
+          <Pencil className={styles.icon} />
         </ActionButton>
 
         <ActionButton onClick={onDelete} label="Delete" danger={true}>
-          <DeleteOutlineOutlined className={styles.icon} />
+          <Trash2 className={styles.icon} />
         </ActionButton>
       </div>
     </BottomSheet>
