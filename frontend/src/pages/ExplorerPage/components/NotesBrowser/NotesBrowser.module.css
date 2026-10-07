@@ -37,19 +37,30 @@
   font-weight: 500;
 }
 
-/* ── Search input override ─────────────────────────────────────── */
-.searchInput input {
-  font-size: 12px !important;
-  padding: 5px 8px !important;
+/* ── Search input ──────────────────────────────────────────────── */
+.searchInput {
+  width: 100%;
+  font-size: 12px;
+  padding: 5px 22px 5px 26px;
   height: 22px;
+  box-sizing: border-box;
+  background: none;
+  border-radius: 4px;
+  border: 1px solid var(--color-overlay-stronger);
+  outline: none;
+  color: var(--color-text-secondary);
 }
 
-.searchInput fieldset {
-  border-color: var(--color-overlay-stronger) !important;
+.searchInput:hover {
+  border-color: var(--color-border-dark);
 }
 
-.searchInput:hover fieldset {
-  border-color: var(--color-border-dark) !important;
+.searchInput:focus {
+  border-color: var(--accent);
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-muted);
 }
 
 /* ── File list ─────────────────────────────────────────────────── */
@@ -83,11 +94,6 @@
 
 .noteRow:hover .noteMenuBtn {
   opacity: 1;
-}
-
-.noteRow.Mui-selected {
-  background-color: var(--color-bg-elevated) !important;
-  border-left-color: var(--color-primary);
 }
 
 .noteIcon {

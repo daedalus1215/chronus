@@ -44,7 +44,8 @@
 }
 
 .emptyIcon {
-  font-size: 56px !important;
+  width: 56px;
+  height: 56px;
   color: var(--accent);
   opacity: 0.55;
   filter: drop-shadow(0 4px 16px rgba(99, 102, 241, 0.45));

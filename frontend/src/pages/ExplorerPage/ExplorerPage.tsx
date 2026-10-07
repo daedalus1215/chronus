@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+import { Waypoints } from 'lucide-react';
 import { Outlet, useMatch } from 'react-router-dom';
 import { ExplorerTree } from './components/ExplorerTree/ExplorerTree';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -36,33 +35,25 @@ export const ExplorerPage: React.FC = () => {
 
   if (isMobile) {
     return (
-      <Box className={styles.page}>
+      <div className={styles.page}>
         {hasNoteOpen ? <Outlet /> : <ExplorerTree />}
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Box className={styles.page}>
+    <div className={styles.page}>
       {/* left: unified file tree */}
-      <Box
-        sx={{
-          overflow: 'hidden',
-          flexShrink: 0,
+      <div
+        className="shrink-0 overflow-hidden"
+        style={{
           maxWidth: isNoteListOpen ? '450px' : '0px',
           transition: 'max-width 0.2s ease',
         }}
       >
-        <Box
-          sx={{
-            position: 'relative',
-            width: `${treeWidth}px`,
-            flex: '0 0 auto',
-            borderRight: '1px solid',
-            borderColor: 'divider',
-            height: '100%',
-            overflow: 'hidden',
-          }}
+        <div
+          className="relative h-full shrink-0 grow-0 overflow-hidden border-r border-border"
+          style={{ width: `${treeWidth}px` }}
         >
           <ExplorerTree />
           <div
@@ -76,36 +67,25 @@ export const ExplorerPage: React.FC = () => {
             onKeyDown={handleKeyDown}
             onDoubleClick={handleDoubleClick}
           />
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* right: note detail or empty state */}
-      <Box
-        sx={{
-          flex: 1,
-          height: '100%',
-          minWidth: 0,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden" style={{ height: '100%' }}>
         {hasNoteOpen ? (
           <Outlet />
         ) : (
-          <Box className={styles.emptyPane}>
+          <div className={styles.emptyPane}>
             <div className={styles.emptyInner}>
-              <AccountTreeOutlinedIcon className={styles.emptyIcon} />
-              <Typography className={styles.emptyText}>
-                Select a note to open it
-              </Typography>
-              <Typography className={styles.emptyHint}>
+              <Waypoints className={styles.emptyIcon} />
+              <span className={styles.emptyText}>Select a note to open it</span>
+              <span className={styles.emptyHint}>
                 Browse folders on the left, or create a new note
-              </Typography>
+              </span>
             </div>
-          </Box>
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
