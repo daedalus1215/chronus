@@ -100,7 +100,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [ ] src/pages/NotePage/NotePage.tsx
 - [ ] src/pages/NotePage/components/AddTagForm/AddTagForm.tsx
 - [x] src/pages/NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog.tsx
-- [ ] src/pages/NotePage/components/CheckListView/components/CheckItemFilterBar/CheckItemFilterBar.tsx
+- [x] src/pages/NotePage/components/CheckListView/components/CheckItemFilterBar/CheckItemFilterBar.tsx
 - [x] src/pages/NotePage/components/CheckListView/components/DeleteCheckItemDialog/DeleteCheckItemDialog.tsx
 - [ ] src/pages/NotePage/components/CheckListView/components/DraggableCheckItem/DraggableCheckItem.tsx
 - [x] src/pages/NotePage/components/CheckListView/components/EditCheckItemDialog/EditCheckItemDialog.tsx
@@ -111,8 +111,8 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [ ] src/pages/NotePage/components/SidebarAudioHistoryView/SidebarAudioHistoryView.tsx
 - [ ] src/pages/NotePage/components/SidebarChecklistView/SidebarChecklistView.tsx
 - [x] src/pages/NotePage/components/SidebarFolderView/SidebarFolderView.tsx
-- [ ] src/pages/NotePage/components/SidebarNoteHistoryView/SidebarNoteHistoryView.tsx
-- [ ] src/pages/NotePage/components/SidebarTagsView/SidebarTagsView.tsx
+- [x] src/pages/NotePage/components/SidebarNoteHistoryView/SidebarNoteHistoryView.tsx
+- [x] src/pages/NotePage/components/SidebarTagsView/SidebarTagsView.tsx
 - [ ] src/pages/NotePage/components/TimeTrackHistoryView/TimeTrackHistoryView.tsx
 - [x] src/pages/NotePage/components/TopRailActions/TopRailActions.tsx
 - [ ] src/pages/NotePage/components/TranscriptionRecorder/TranscriptionRecorder.tsx
