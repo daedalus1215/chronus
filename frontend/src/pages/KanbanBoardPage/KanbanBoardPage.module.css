@@ -1,0 +1,17 @@
+.columnsRow {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.columnsRow::-webkit-scrollbar {
+  height: 4px;
+}
+
+.columnsRow::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.columnsRow::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}

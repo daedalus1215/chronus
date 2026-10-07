@@ -81,7 +81,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### KanbanBoardPage
 
-- [ ] src/pages/KanbanBoardPage/KanbanBoardPage.tsx
+- [x] src/pages/KanbanBoardPage/KanbanBoardPage.tsx
 - [x] src/pages/KanbanBoardPage/components/CardDetailsDialog/CardDetailsDialog.tsx
 - [x] src/pages/KanbanBoardPage/components/KanbanCard/KanbanCard.tsx
 - [x] src/pages/KanbanBoardPage/components/KanbanColumn/KanbanColumn.tsx

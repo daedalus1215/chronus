@@ -13,11 +13,9 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import AddIcon from '@mui/icons-material/Add';
-import Fab from '@mui/material/Fab';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
+import { Plus, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useNote } from '../NotePage/hooks/useNote/useNote';
 import { CheckItem } from '../NotePage/api/responses';
 import {
@@ -36,8 +34,7 @@ import {
 } from './hooks/useUpdateCheckItemStatus';
 import { checkItemKeys } from '../NotePage/components/CheckListView/hooks/useCheckItems';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import styles from './KanbanBoardPage.module.css';
 
 type KanbanColumnConfig = {
   id: CheckItemStatus;
@@ -301,51 +298,18 @@ export const KanbanBoardPage: React.FC = () => {
 
   if (!noteId || Number.isNaN(noteId)) {
     return (
-      <Box
-        component="main"
-        sx={{
-          display: 'flex',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '0.875rem',
-          color: 'var(--color-text-secondary)',
-        }}
-      >
+      <main className="flex h-full items-center justify-center text-sm text-muted-foreground">
         Missing note information.
-      </Box>
+      </main>
     );
   }
 
   return (
-    <Box
-      component="main"
-      sx={{
-        backgroundColor: 'var(--color-bg)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-        height: '100%',
-        p: 2,
-        color: 'var(--color-text)',
-      }}
-    >
-      <Box
-        component="header"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 0.75,
-          py: 1,
-        }}
-      >
-        <Box
-          component="span"
-          sx={{
-            fontSize: '1.25rem',
-            fontWeight: 700,
-            letterSpacing: '-0.01em',
+    <main className="flex h-full flex-col gap-4 bg-[var(--color-bg)] p-4 text-[var(--color-text)]">
+      <header className="flex flex-col items-center gap-2 py-1">
+        <span
+          className="text-xl font-bold tracking-tight"
+          style={{
             background: 'var(--accent-gradient)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -353,57 +317,38 @@ export const KanbanBoardPage: React.FC = () => {
           }}
         >
           {note?.name || 'Kanban Board'}
-        </Box>
+        </span>
         {items.length > 0 && (
-          <Box
-            component="span"
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.75,
-              px: 1.25,
-              py: 0.25,
-              borderRadius: '999px',
-              fontSize: '0.72rem',
-              fontWeight: 600,
-              color: 'var(--color-text-secondary)',
+          <span
+            className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold text-muted-foreground"
+            style={{
               background: 'var(--glass-bg)',
-              border: '1px solid var(--glass-border)',
+              borderColor: 'var(--glass-border)',
             }}
           >
-            <Box
-              component="span"
-              sx={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                backgroundColor: '#22c55e',
-                boxShadow: '0 0 8px #22c55e88',
-              }}
+            <span
+              className="size-1.5 rounded-full"
+              style={{ backgroundColor: '#22c55e', boxShadow: '0 0 8px #22c55e88' }}
             />
             {itemsByStatus.done.length} / {items.length} done
-          </Box>
+          </span>
         )}
-      </Box>
+      </header>
 
       {(isNoteLoading || isCheckItemsLoading) && (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            fontSize: '0.875rem',
-            color: 'var(--color-text-secondary)',
-          }}
-        >
-          <CircularProgress size={18} /> Loading board...
-        </Box>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="size-[18px] animate-spin" /> Loading board...
+        </div>
       )}
       {noteError && (
-        <Alert severity="error">Failed to load note information.</Alert>
+        <Alert variant="destructive">
+          <AlertDescription>Failed to load note information.</AlertDescription>
+        </Alert>
       )}
       {checkItemsError && (
-        <Alert severity="error">Failed to load check items.</Alert>
+        <Alert variant="destructive">
+          <AlertDescription>Failed to load check items.</AlertDescription>
+        </Alert>
       )}
 
       {isMobile ? (
@@ -426,25 +371,7 @@ export const KanbanBoardPage: React.FC = () => {
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          <Box
-            component="section"
-            sx={{
-              display: 'flex',
-              flex: 1,
-              gap: 2,
-              width: '100%',
-              overflowX: 'auto',
-              paddingBottom: 2,
-              scrollbarWidth: 'thin',
-              scrollbarColor: 'var(--color-border) transparent',
-              '&::-webkit-scrollbar': { height: 4 },
-              '&::-webkit-scrollbar-track': { background: 'transparent' },
-              '&::-webkit-scrollbar-thumb': {
-                background: 'var(--color-border)',
-                borderRadius: 2,
-              },
-            }}
-          >
+          <section className={`flex flex-1 gap-4 w-full overflow-x-auto pb-4 ${styles.columnsRow}`}>
             {KANBAN_COLUMNS.map(column => (
               <KanbanColumn
                 key={column.id}
@@ -456,10 +383,10 @@ export const KanbanBoardPage: React.FC = () => {
                 onViewItemDetails={handleViewItemDetails}
               />
             ))}
-          </Box>
+          </section>
           <DragOverlay>
             {activeItem ? (
-              <Card
+              <div
                 className={`${cardStyles.card} ${cardStyles.cardDragging}`}
                 style={
                   {
@@ -467,15 +394,15 @@ export const KanbanBoardPage: React.FC = () => {
                   } as React.CSSProperties
                 }
               >
-                <CardContent className={cardStyles.cardContent}>
+                <div className={cardStyles.cardContent}>
                   <span
                     className={cardStyles.statusDot}
                     style={{ backgroundColor: getStatusDotColor(activeItem) }}
                     aria-hidden="true"
                   />
                   <span className={cardStyles.cardText}>{activeItem.name}</span>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ) : null}
           </DragOverlay>
         </DndContext>
@@ -498,18 +425,14 @@ export const KanbanBoardPage: React.FC = () => {
         onSave={handleSaveDetails}
       />
 
-      <Fab
-        color="primary"
+      <Button
+        size="icon"
         aria-label="Add card"
         onClick={openAddDialog}
-        sx={{
-          position: 'fixed',
-          bottom: '2rem',
-          right: '2rem',
-        }}
+        className="fixed bottom-8 right-8 rounded-full"
       >
-        <AddIcon />
-      </Fab>
-    </Box>
+        <Plus />
+      </Button>
+    </main>
   );
 };
