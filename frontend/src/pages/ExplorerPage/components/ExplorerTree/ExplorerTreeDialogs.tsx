@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  Button,
   Dialog,
-  DialogActions,
   DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
-  TextField,
-  Typography,
-} from '@mui/material';
+} from '@/components/ui/dialog';
 import { FolderDto } from '../../../../api/dtos/folder.dtos';
 import { MoveNoteDialog } from '@components/MoveNoteDialog/MoveNoteDialog';
 
@@ -54,60 +55,57 @@ export const ExplorerTreeDialogs: React.FC<ExplorerTreeDialogsProps> = ({
       {/* New folder dialog */}
       <Dialog
         open={newFolderParentId !== undefined}
-        onClose={() => setNewFolderParentId(undefined)}
-        maxWidth="xs"
-        fullWidth
+        onOpenChange={(open) => !open && setNewFolderParentId(undefined)}
       >
-        <DialogTitle>New Folder</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            fullWidth
-            label="Folder name"
-            value={folderName}
-            onChange={e => setFolderName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleCreateFolder(folderName)}
-            size="small"
-            sx={{ mt: 1 }}
-          />
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>New Folder</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label htmlFor="explorer-new-folder-name">Folder name</Label>
+            <Input
+              id="explorer-new-folder-name"
+              autoFocus
+              value={folderName}
+              onChange={e => setFolderName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleCreateFolder(folderName)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNewFolderParentId(undefined)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={!folderName.trim()}
+              onClick={() => handleCreateFolder(folderName)}
+            >
+              Create
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setNewFolderParentId(undefined)}>
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            disabled={!folderName.trim()}
-            onClick={() => handleCreateFolder(folderName)}
-          >
-            Create
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Delete confirmation dialog */}
       <Dialog
         open={deleteConfirmId !== null}
-        onClose={() => setDeleteConfirmId(null)}
-        maxWidth="xs"
-        fullWidth
+        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogTitle>Delete Folder</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2">
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Folder</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
             Deletes this folder and all subfolders. Notes inside return to root.
-          </Typography>
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteFolder}>
+              Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeleteFolder}
-          >
-            Delete
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Move to folder dialog */}

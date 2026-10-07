@@ -1,5 +1,4 @@
 import React from 'react';
-import { Collapse } from '@mui/material';
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -23,12 +22,16 @@ type FolderSubtreeProps = {
   onRenameChange: (v: string) => void;
   onRenameCommit: () => void;
   onRenameCancel: () => void;
-  onFolderMenu: (anchor: HTMLElement, id: number) => void;
+  onRename: (id: number, currentName: string) => void;
   onFolderRowClick: (e: React.MouseEvent, folderId: number) => void;
   onChevronClick: (id: number) => void;
   onNoteOpen: (id: number) => void;
-  onNoteMenu: (anchor: HTMLElement, id: number) => void;
+  onNoteOpenBoard: (id: number) => void;
+  onNoteMoveToFolder: (id: number) => void;
   onNewSubfolder: (parentId: number) => void;
+  onNewMemoInFolder: (id: number) => void;
+  onFolderMoveToFolder: (id: number) => void;
+  onDeleteFolder: (id: number) => void;
   selectedFolderIds: Set<number>;
   selectedNoteIds: Set<number>;
   onNoteRowClick: (
@@ -60,12 +63,16 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(
     onRenameChange,
     onRenameCommit,
     onRenameCancel,
-    onFolderMenu,
+    onRename,
     onFolderRowClick,
     onChevronClick,
     onNoteOpen,
-    onNoteMenu,
+    onNoteOpenBoard,
+    onNoteMoveToFolder,
     onNewSubfolder,
+    onNewMemoInFolder,
+    onFolderMoveToFolder,
+    onDeleteFolder,
     selectedFolderIds,
     selectedNoteIds,
     onNoteRowClick,
@@ -109,12 +116,16 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(
             onRenameChange={onRenameChange}
             onRenameCommit={onRenameCommit}
             onRenameCancel={onRenameCancel}
-            onFolderMenu={onFolderMenu}
+            onRename={onRename}
             onFolderRowClick={onFolderRowClick}
             onChevronClick={onChevronClick}
             onNoteOpen={onNoteOpen}
-            onNoteMenu={onNoteMenu}
+            onNoteOpenBoard={onNoteOpenBoard}
+            onNoteMoveToFolder={onNoteMoveToFolder}
             onNewSubfolder={onNewSubfolder}
+            onNewMemoInFolder={onNewMemoInFolder}
+            onFolderMoveToFolder={onFolderMoveToFolder}
+            onDeleteFolder={onDeleteFolder}
             selectedFolderIds={selectedFolderIds}
             selectedNoteIds={selectedNoteIds}
             onNoteRowClick={onNoteRowClick}
@@ -139,7 +150,8 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(
             dragMode={dragMode}
             onOpen={onNoteOpen}
             onRowClick={onNoteRowClick}
-            onMenuOpen={onNoteMenu}
+            onOpenBoard={onNoteOpenBoard}
+            onMoveToFolder={onNoteMoveToFolder}
             onTogglePick={() => toggleNoteInSelection(note.id)}
             isMatch={noteMatches.has(note.id)}
             filterActive={filterActive}
@@ -164,16 +176,22 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(
           onRenameChange={onRenameChange}
           onRenameCommit={onRenameCommit}
           onRenameCancel={onRenameCancel}
-          onFolderMenu={onFolderMenu}
+          onRename={onRename}
           onFolderRowClick={onFolderRowClick}
           onChevronClick={onChevronClick}
           onNewSubfolder={onNewSubfolder}
+          onNewMemoInFolder={onNewMemoInFolder}
+          onMoveToFolder={onFolderMoveToFolder}
+          onDelete={onDeleteFolder}
           onTogglePick={toggleFolderInSelection}
           dimmed={folderDimmed}
         />
 
-        <Collapse in={isOpen} timeout={150} unmountOnExit>
-          {dragMode === 'on' ? (
+        {/* No expand/collapse animation (dropped MUI Collapse) — consistent
+            with FolderTree.tsx and TagTreeNavigation, which plainly
+            conditionally render their children too. */}
+        {isOpen &&
+          (dragMode === 'on' ? (
             <SortableContext
               items={sortableItems}
               strategy={verticalListSortingStrategy}
@@ -182,8 +200,7 @@ export const FolderSubtree: React.FC<FolderSubtreeProps> = React.memo(
             </SortableContext>
           ) : (
             children
-          )}
-        </Collapse>
+          ))}
       </>
     );
   }
