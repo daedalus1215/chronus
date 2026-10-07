@@ -9,6 +9,25 @@
   scrollbar-width: none;
 }
 
+.tagListHeader {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tagListTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
 .tagListContent {
   flex: 1;
   display: flex;

@@ -5,7 +5,6 @@ import { DesktopTagTreePanel } from './components/TagListView/DesktopTagTreePane
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useResizablePane } from '../../hooks/useResizablePane';
 import { useParams, useMatch, useNavigate, Outlet } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
 import { useSidebar } from '../../hooks/useSidebar';
 import { useTagsWithNotes } from '../../hooks/useTagsWithNotes';
 import { ROUTES } from '../../constants/routes';
@@ -53,74 +52,35 @@ export const TagPage: React.FC = () => {
 
   return (
     <main className={styles.tagPage}>
-      <Box sx={{ display: 'flex', height: '100%', minHeight: 0 }}>
+      <div className="flex h-full min-h-0">
         {isMobile ? (
-          <Box
-            sx={{
-              height: '100%',
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Box
-              sx={{
-                display: isTagRoute ? 'none' : 'block',
-                flex: 1,
-              }}
-            >
+          <div className="relative flex h-full flex-col">
+            <div className={isTagRoute ? 'hidden' : 'flex-1'}>
               <MobileTagListView />
-            </Box>
+            </div>
             {isTagRoute && !hasNoteOpen && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'background.paper',
-                  zIndex: 1,
-                }}
-              >
+              <div className="absolute inset-0 z-[1] bg-card">
                 <MobileTagNotesListView />
-              </Box>
+              </div>
             )}
             {isTagRoute && hasNoteOpen && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'background.paper',
-                  zIndex: 1,
-                }}
-              >
+              <div className="absolute inset-0 z-[1] bg-card">
                 <Outlet />
-              </Box>
+              </div>
             )}
-          </Box>
+          </div>
         ) : (
-          <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
-            <Box
-              sx={{
-                overflow: 'hidden',
-                flexShrink: 0,
+          <div className="flex h-full w-full">
+            <div
+              className="shrink-0 overflow-hidden"
+              style={{
                 maxWidth: isNoteListOpen ? '350px' : '0px',
                 transition: 'max-width 0.2s ease',
               }}
             >
-              <Box
-                sx={{
-                  position: 'relative',
-                  width: `${treeWidth}px`,
-                  flex: '0 0 auto',
-                  borderRight: '1px solid',
-                  borderColor: 'divider',
-                  height: '100%',
-                }}
+              <div
+                className="relative h-full shrink-0 grow-0 border-r border-border"
+                style={{ width: `${treeWidth}px` }}
               >
                 <DesktopTagTreePanel />
                 <div
@@ -134,54 +94,26 @@ export const TagPage: React.FC = () => {
                   onKeyDown={handleKeyDown}
                   onDoubleClick={handleDoubleClick}
                 />
-              </Box>
-            </Box>
-            <Box
-              sx={{
-                flex: 1,
-                height: '100%',
-                minWidth: 0,
-                minHeight: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-              }}
-            >
+              </div>
+            </div>
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden" style={{ height: '100%' }}>
               {hasNoteOpen ? (
-                <Box
-                  sx={{
-                    flex: 1,
-                    minHeight: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden',
-                  }}
-                >
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                   <Outlet />
-                </Box>
+                </div>
               ) : (
-                <Box
-                  sx={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'text.secondary',
-                    margin: 'auto',
-                    minHeight: 0,
-                  }}
-                >
+                <div className="m-auto flex min-h-0 flex-1 items-center justify-center text-muted-foreground">
                   <div className={styles.noNotesSelectedText}>
-                    <Typography variant="body2">
+                    <span className="text-sm">
                       Select a tag or note from the tree
-                    </Typography>
+                    </span>
                   </div>
-                </Box>
+                </div>
               )}
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
-      </Box>
+      </div>
     </main>
   );
 };

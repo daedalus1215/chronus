@@ -6,10 +6,8 @@ import { updateNoteTimestamp } from '../../../../../api/requests/notes.requests'
 import { useNotesForTag } from '../../../hooks/useNotesForTag';
 import { NoteItem } from '../../../../HomePage/components/NoteListView/NoteItem/NoteItem';
 import { ROUTES } from '../../../../../constants/routes';
-import IconButton from '@mui/material/IconButton';
-import ArrowBack from '@mui/icons-material/ArrowBack';
-import Typography from '@mui/material/Typography';
-import Fade from '@mui/material/Fade';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import styles from './MobileTagNotesListView.module.css';
 
 const LoadingSpinner: React.FC = () => (
@@ -88,23 +86,19 @@ export const MobileTagNotesListView: React.FC = () => {
   return (
     <div className={styles.notesList}>
       <header className={styles.header}>
-        <IconButton
+        <Button
+          variant="ghost"
+          size="icon-sm"
           className={styles.backButton}
           onClick={handleBack}
           onKeyDown={e => e.key === 'Enter' && handleBack()}
           aria-label="Back to tags"
-          size="small"
         >
-          <ArrowBack />
-        </IconButton>
-        <Typography
-          component="span"
-          className={styles.title}
-          variant="body1"
-          aria-live="polite"
-        >
+          <ArrowLeft />
+        </Button>
+        <span className={styles.title} aria-live="polite">
           {tagLoading ? '…' : (tag?.name ?? `Tag ${tagId}`)}
-        </Typography>
+        </span>
       </header>
       <div className={styles.notesListContent}>
         <div
@@ -112,19 +106,13 @@ export const MobileTagNotesListView: React.FC = () => {
           className={styles.notesListScrollContainer}
         >
           {notes.map((note, index) => (
-            <Fade
+            <div
               key={note.id}
-              in
-              timeout={300}
-              style={{ transitionDelay: `${Math.min(index * 50, 300)}ms` }}
+              className="animate-in fade-in duration-300"
+              style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
             >
-              <div>
-                <NoteItem
-                  note={note}
-                  onClick={() => handleNoteClick(note.id)}
-                />
-              </div>
-            </Fade>
+              <NoteItem note={note} onClick={() => handleNoteClick(note.id)} />
+            </div>
           ))}
           {isLoading && <LoadingSpinner />}
           {!hasMore && notes.length > 0 && <NoMoreNotes />}
