@@ -1,20 +1,16 @@
 import React, { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Chip,
-  Stack,
-  Typography,
-  Divider,
-  Box,
-  List,
-  ListItem,
-} from '@mui/material';
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { ImportNoteData } from '../../hooks/useImportNote';
 
 export type ParsedMemo = Omit<ImportNoteData, 'version'>;
@@ -111,214 +107,148 @@ export const ImportSelectionDialog: React.FC<ImportSelectionDialogProps> = ({
   const allTimeTracksSelected =
     timeTracks.length > 0 && selectedTimeTracks.every(Boolean);
 
+  const selectAllState = (
+    all: boolean,
+    some: boolean[]
+  ): boolean | 'indeterminate' => (all ? true : some.some(Boolean) ? 'indeterminate' : false);
+
   return (
-    <Dialog
-      open={open}
-      onClose={onCancel}
-      maxWidth="sm"
-      fullWidth
-      aria-labelledby="import-selection-dialog-title"
-    >
-      <DialogTitle id="import-selection-dialog-title">
-        Import “{memo.name}”
-      </DialogTitle>
-      <DialogContent dividers>
-        <Stack spacing={2}>
+    <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
+      <DialogContent className="flex max-h-[85vh] flex-col gap-0 p-0 sm:max-w-md">
+        <DialogHeader className="p-6 pb-4">
+          <DialogTitle>Import &ldquo;{memo.name}&rdquo;</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex-1 space-y-4 overflow-y-auto border-y border-border px-6 py-4">
           {/* Title & description */}
-          <Box>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={includeDescription}
-                  disabled={!hasDescription}
-                  onChange={e => setIncludeDescription(e.target.checked)}
-                />
-              }
-              label={
-                hasDescription
-                  ? 'Title & description'
-                  : 'Title (no description in file)'
-              }
+          <Label className="flex items-center gap-2 font-normal">
+            <Checkbox
+              checked={includeDescription}
+              disabled={!hasDescription}
+              onCheckedChange={(checked) => setIncludeDescription(checked === true)}
             />
-          </Box>
+            {hasDescription
+              ? 'Title & description'
+              : 'Title (no description in file)'}
+          </Label>
 
           {/* Tags */}
           {tags.length > 0 && (
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography variant="subtitle2">
-                  Tags ({tags.length})
-                </Typography>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={allTagsSelected}
-                      indeterminate={
-                        !allTagsSelected && selectedTags.some(Boolean)
-                      }
-                      onChange={e =>
-                        setAll(setSelectedTags, tags.length, e.target.checked)
-                      }
-                    />
-                  }
-                  label="Select all"
-                />
-              </Stack>
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                {tags.map((tag, i) => (
-                  <Chip
-                    key={`${tag}-${i}`}
-                    label={tag}
-                    color={selectedTags[i] ? 'primary' : 'default'}
-                    variant={selectedTags[i] ? 'filled' : 'outlined'}
-                    onClick={() => toggleAt(setSelectedTags, i)}
-                    clickable
+            <div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">Tags ({tags.length})</p>
+                <Label className="flex items-center gap-2 text-sm font-normal">
+                  <Checkbox
+                    checked={selectAllState(allTagsSelected, selectedTags)}
+                    onCheckedChange={(checked) =>
+                      setAll(setSelectedTags, tags.length, checked === true)
+                    }
                   />
+                  Select all
+                </Label>
+              </div>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {tags.map((tag, i) => (
+                  <Badge
+                    key={`${tag}-${i}`}
+                    variant={selectedTags[i] ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => toggleAt(setSelectedTags, i)}
+                  >
+                    {tag}
+                  </Badge>
                 ))}
-              </Stack>
-            </Box>
+              </div>
+            </div>
           )}
 
           {/* Checklists */}
           {checkItems.length > 0 && (
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography variant="subtitle2">
+            <div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">
                   Checklists ({checkItems.length})
-                </Typography>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={allCheckItemsSelected}
-                      indeterminate={
-                        !allCheckItemsSelected &&
-                        selectedCheckItems.some(Boolean)
-                      }
-                      onChange={e =>
-                        setAll(
-                          setSelectedCheckItems,
-                          checkItems.length,
-                          e.target.checked
-                        )
-                      }
-                    />
-                  }
-                  label="Select all"
-                />
-              </Stack>
-              <List dense disablePadding>
+                </p>
+                <Label className="flex items-center gap-2 text-sm font-normal">
+                  <Checkbox
+                    checked={selectAllState(allCheckItemsSelected, selectedCheckItems)}
+                    onCheckedChange={(checked) =>
+                      setAll(setSelectedCheckItems, checkItems.length, checked === true)
+                    }
+                  />
+                  Select all
+                </Label>
+              </div>
+              <div className="mt-1">
                 {checkItems.map((item, i) => (
-                  <ListItem key={i} disableGutters sx={{ py: 0 }}>
-                    <FormControlLabel
-                      sx={{ flex: 1 }}
-                      control={
-                        <Checkbox
-                          size="small"
-                          checked={selectedCheckItems[i]}
-                          onChange={() => toggleAt(setSelectedCheckItems, i)}
-                        />
-                      }
-                      label={
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          spacing={1}
-                          sx={{ width: '100%' }}
-                        >
-                          <Typography variant="body2">{item.name}</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {statusLabels[item.status] ?? item.status}
-                          </Typography>
-                        </Stack>
-                      }
+                  <Label
+                    key={i}
+                    className="flex items-center gap-2 py-0.5 font-normal"
+                  >
+                    <Checkbox
+                      checked={selectedCheckItems[i]}
+                      onCheckedChange={() => toggleAt(setSelectedCheckItems, i)}
                     />
-                  </ListItem>
+                    <span className="flex items-center gap-2 text-sm">
+                      <span>{item.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {statusLabels[item.status] ?? item.status}
+                      </span>
+                    </span>
+                  </Label>
                 ))}
-              </List>
-            </Box>
+              </div>
+            </div>
           )}
 
           {/* Time logs */}
           {timeTracks.length > 0 && (
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography variant="subtitle2">
+            <div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">
                   Time logs ({timeTracks.length})
-                </Typography>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={allTimeTracksSelected}
-                      indeterminate={
-                        !allTimeTracksSelected &&
-                        selectedTimeTracks.some(Boolean)
-                      }
-                      onChange={e =>
-                        setAll(
-                          setSelectedTimeTracks,
-                          timeTracks.length,
-                          e.target.checked
-                        )
-                      }
-                    />
-                  }
-                  label="Select all"
-                />
-              </Stack>
-              <List dense disablePadding>
+                </p>
+                <Label className="flex items-center gap-2 text-sm font-normal">
+                  <Checkbox
+                    checked={selectAllState(allTimeTracksSelected, selectedTimeTracks)}
+                    onCheckedChange={(checked) =>
+                      setAll(setSelectedTimeTracks, timeTracks.length, checked === true)
+                    }
+                  />
+                  Select all
+                </Label>
+              </div>
+              <div className="mt-1">
                 {timeTracks.map((track, i) => (
-                  <ListItem key={i} disableGutters sx={{ py: 0 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          size="small"
-                          checked={selectedTimeTracks[i]}
-                          onChange={() => toggleAt(setSelectedTimeTracks, i)}
-                        />
-                      }
-                      label={
-                        <Typography variant="body2">
-                          {track.date} &nbsp; {track.startTime} &nbsp;{' '}
-                          {track.durationMinutes}m
-                        </Typography>
-                      }
+                  <Label
+                    key={i}
+                    className="flex items-center gap-2 py-0.5 font-normal"
+                  >
+                    <Checkbox
+                      checked={selectedTimeTracks[i]}
+                      onCheckedChange={() => toggleAt(setSelectedTimeTracks, i)}
                     />
-                  </ListItem>
+                    <span className="text-sm">
+                      {track.date} &nbsp; {track.startTime} &nbsp;{' '}
+                      {track.durationMinutes}m
+                    </span>
+                  </Label>
                 ))}
-              </List>
-            </Box>
+              </div>
+            </div>
           )}
-        </Stack>
-        <Divider sx={{ mt: 2 }} />
+          <Separator className="mt-2" />
+        </div>
+
+        <DialogFooter className="p-6 pt-4">
+          <Button variant="outline" onClick={onCancel} disabled={isImporting}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} disabled={isImporting}>
+            {isImporting ? 'Importing…' : 'Import selected'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel} color="secondary" disabled={isImporting}>
-          Cancel
-        </Button>
-        <Button
-          onClick={handleConfirm}
-          variant="contained"
-          color="primary"
-          disabled={isImporting}
-        >
-          {isImporting ? 'Importing…' : 'Import selected'}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
