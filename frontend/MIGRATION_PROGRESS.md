@@ -153,9 +153,9 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ## Final cleanup (only after every box above is checked)
 
-- [ ] Remove `@mui/material`, `@mui/icons-material`, `@mui/styled-engine`,
+- [x] Remove `@mui/material`, `@mui/icons-material`, `@mui/styled-engine`,
       `@emotion/react`, `@emotion/styled` from package.json
-- [ ] Remove `@mui/x-charts`, `@mui/x-data-grid`, `@mui/x-tree-view` once
+- [x] Remove `@mui/x-charts`, `@mui/x-data-grid`, `@mui/x-tree-view` once
       their replacements (Recharts / TanStack Table / hand-rolled tree)
       are in and verified
 - [x] Delete `src/theme.ts` and the `ThemeProvider`/`CssBaseline` wrapping
