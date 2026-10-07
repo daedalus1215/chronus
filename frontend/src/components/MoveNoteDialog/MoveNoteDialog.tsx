@@ -105,7 +105,7 @@ export const MoveNoteDialog: React.FC<Props> = ({
                 type="button"
                 onClick={() => setSelected(null)}
                 className={cn(
-                  'flex w-full items-center gap-2 px-4 py-1.5 text-left text-sm hover:bg-accent',
+                  'flex w-full items-center gap-2 border-0 bg-transparent px-4 py-1.5 text-left text-sm hover:bg-accent',
                   selected === null && 'bg-accent'
                 )}
               >
@@ -185,7 +185,7 @@ const FolderPickerItem: React.FC<PickerItemProps> = ({
         }}
         style={{ paddingLeft: `${1 + depth * 1.5}rem` }}
         className={cn(
-          'flex w-full items-center gap-2 py-1.5 pr-4 text-left text-sm hover:bg-accent disabled:pointer-events-none disabled:opacity-50',
+          'flex w-full items-center gap-2 border-0 bg-transparent py-1.5 pr-4 text-left text-sm hover:bg-accent disabled:pointer-events-none disabled:opacity-50',
           isSelected && 'bg-accent'
         )}
       >
