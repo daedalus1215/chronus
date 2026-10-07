@@ -17,8 +17,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### components/ (shared)
 
-- [ ] src/App.tsx (ThemeProvider/CssBaseline — stays until the last MUI
-      consumer is gone)
+- [x] src/App.tsx (ThemeProvider/CssBaseline removed; theme.ts deleted)
 - [x] src/components/BottomSheet/BottomSheet.tsx
 - [x] src/components/DateRangePicker/DateRangePicker.tsx
 - [x] src/components/Header/Header.tsx
@@ -159,7 +158,9 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [ ] Remove `@mui/x-charts`, `@mui/x-data-grid`, `@mui/x-tree-view` once
       their replacements (Recharts / TanStack Table / hand-rolled tree)
       are in and verified
-- [ ] Delete `src/theme.ts` and the `ThemeProvider`/`CssBaseline` wrapping
-      in `src/App.tsx`
+- [x] Delete `src/theme.ts` and the `ThemeProvider`/`CssBaseline` wrapping
+      in `src/App.tsx` (also converted `src/hooks/useIsMobile.ts` off
+      MUI's `useTheme`/`useMediaQuery` to a plain `matchMedia` hook,
+      since it was the last non-theme MUI consumer in `src/hooks`)
 - [ ] Rewrite the `frontend/AGENTS.md` styling sections to describe the
       finished Tailwind + shadcn convention
