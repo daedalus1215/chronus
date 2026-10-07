@@ -1,20 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { Inbox, FolderPlus, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  Box,
-  CircularProgress,
   Dialog,
-  DialogActions,
   DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
-  IconButton,
-  List,
-  ListItemButton,
-  Button,
-  TextField,
-  Typography,
-} from '@mui/material';
-import AllInboxIcon from '@mui/icons-material/AllInbox';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+} from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import {
   buildFolderTree,
   FolderDto,
@@ -86,52 +82,57 @@ export const FolderTree: React.FC<Props> = ({ selectedId, onSelect }) => {
   const tree: FolderTreeNode[] = buildFolderTree(folders);
 
   return (
-    <Box className={styles.tree}>
-      <Box className={styles.treeHeader}>
-        <Typography variant="overline" className={styles.heading}>
-          Folders
-        </Typography>
-        <IconButton
-          size="small"
+    <div className={styles.tree}>
+      <div className={styles.treeHeader}>
+        <span className={styles.heading}>Folders</span>
+        <button
+          type="button"
           onClick={() => handleCreateOpen(null)}
           title="New folder"
           className={styles.headerBtn}
         >
-          <CreateNewFolderIcon sx={{ fontSize: 16 }} />
-        </IconButton>
-      </Box>
+          <FolderPlus size={16} />
+        </button>
+      </div>
 
       {loading ? (
-        <Box className={styles.loading}>
-          <CircularProgress size={20} />
-        </Box>
+        <div className={styles.loading}>
+          <Loader2 className="size-5 animate-spin text-muted-foreground" />
+        </div>
       ) : (
-        <List disablePadding dense>
-          <ListItemButton
-            disableRipple
-            selected={selectedId === null}
+        <div>
+          <div
+            role="button"
+            tabIndex={0}
+            aria-selected={selectedId === null}
             onClick={() => onSelect(null, 'All Notes')}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelect(null, 'All Notes');
+              }
+            }}
             className={styles.item}
-            sx={{ pl: '10px' }}
+            style={{ paddingLeft: '10px' }}
           >
-            <Box component="span" className={styles.chevron} />
-            <Box component="span" className={styles.icon}>
-              <AllInboxIcon
-                sx={{
-                  fontSize: 14,
-                  color:
-                    selectedId === null
-                      ? 'primary.light'
-                      : 'var(--color-text-muted)',
-                }}
+            <span className={styles.chevron} />
+            <span className={styles.icon}>
+              <Inbox
+                size={14}
+                className={selectedId === null ? 'text-primary' : undefined}
+                style={
+                  selectedId !== null
+                    ? { color: 'var(--color-text-muted)' }
+                    : undefined
+                }
               />
-            </Box>
+            </span>
             <span
-              className={`${styles.label} ${selectedId === null ? styles.labelSelected : ''}`}
+              className={cn(styles.label, selectedId === null && styles.labelSelected)}
             >
               All Notes
             </span>
-          </ListItemButton>
+          </div>
 
           {tree.map(node => (
             <FolderTreeItem
@@ -147,76 +148,69 @@ export const FolderTree: React.FC<Props> = ({ selectedId, onSelect }) => {
           ))}
 
           {tree.length === 0 && (
-            <Box sx={{ px: 2, py: 1 }}>
-              <Typography variant="caption" color="text.secondary">
-                No folders yet
-              </Typography>
-            </Box>
+            <div className="px-4 py-2">
+              <span className="text-xs text-muted-foreground">No folders yet</span>
+            </div>
           )}
-        </List>
+        </div>
       )}
 
       {/* New folder dialog */}
       <Dialog
         open={newFolderDialog.open}
-        onClose={() => setNewFolderDialog({ open: false, parentId: null })}
-        maxWidth="xs"
-        fullWidth
+        onOpenChange={(open) => !open && setNewFolderDialog({ open: false, parentId: null })}
       >
-        <DialogTitle>New Folder</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            fullWidth
-            label="Folder name"
-            value={newFolderName}
-            onChange={e => setNewFolderName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleCreateConfirm()}
-            size="small"
-            sx={{ mt: 1 }}
-          />
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>New Folder</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-folder-name">Folder name</Label>
+            <Input
+              id="new-folder-name"
+              autoFocus
+              value={newFolderName}
+              onChange={e => setNewFolderName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleCreateConfirm()}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setNewFolderDialog({ open: false, parentId: null })}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleCreateConfirm} disabled={!newFolderName.trim()}>
+              Create
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setNewFolderDialog({ open: false, parentId: null })}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleCreateConfirm}
-            variant="contained"
-            disabled={!newFolderName.trim()}
-          >
-            Create
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Delete confirmation dialog */}
       <Dialog
         open={deleteConfirm !== null}
-        onClose={() => setDeleteConfirm(null)}
-        maxWidth="xs"
-        fullWidth
+        onOpenChange={(open) => !open && setDeleteConfirm(null)}
       >
-        <DialogTitle>Delete Folder</DialogTitle>
-        <DialogContent>
-          <Typography>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Folder</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
             This will delete the folder and all subfolders. Notes inside will
             move to root. Continue?
-          </Typography>
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteConfirm(null)}>Cancel</Button>
-          <Button
-            onClick={handleDeleteConfirm}
-            variant="contained"
-            color="error"
-          >
-            Delete
-          </Button>
-        </DialogActions>
       </Dialog>
-    </Box>
+    </div>
   );
 };

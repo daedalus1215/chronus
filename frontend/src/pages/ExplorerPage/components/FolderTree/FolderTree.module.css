@@ -69,15 +69,14 @@
   opacity: 1;
 }
 
-/* MUI selected state override */
-.item.Mui-selected,
+/* Selected state */
 .item[aria-selected='true'] {
   background-color: var(--color-bg-elevated) !important;
   border-left-color: var(--color-primary);
   color: var(--color-text) !important;
 }
 
-.item.Mui-selected:hover {
+.item[aria-selected='true']:hover {
   background-color: var(--color-bg-elevated-3) !important;
 }
 
