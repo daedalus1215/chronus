@@ -1,20 +1,16 @@
 import React, { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Chip,
-  Stack,
-  Typography,
-  Box,
-  List,
-  ListItem,
-  Tooltip,
-} from '@mui/material';
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { ParsedMemo } from '../ImportSelectionDialog/ImportSelectionDialog';
 import { MergeIntoNoteData } from '../../hooks/useMergeIntoNote';
 
@@ -135,229 +131,171 @@ export const MergeSelectionDialog: React.FC<MergeSelectionDialogProps> = ({
     !selectedCheckItems.some(Boolean) &&
     !selectedTimeTracks.some(Boolean);
 
+  const selectAllState = (
+    all: boolean,
+    some: boolean[]
+  ): boolean | 'indeterminate' => (all ? true : some.some(Boolean) ? 'indeterminate' : false);
+
   return (
-    <Dialog
-      open={open}
-      onClose={onCancel}
-      maxWidth="sm"
-      fullWidth
-      aria-labelledby="merge-selection-dialog-title"
-    >
-      <DialogTitle id="merge-selection-dialog-title">
-        Import “{memo.name}” into this memo
-      </DialogTitle>
-      <DialogContent dividers>
-        <Stack spacing={2}>
+    <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
+      <DialogContent className="flex max-h-[85vh] flex-col gap-0 p-0 sm:max-w-md">
+        <DialogHeader className="p-6 pb-4">
+          <DialogTitle>Import &ldquo;{memo.name}&rdquo; into this memo</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex-1 space-y-4 overflow-y-auto border-y border-border px-6 py-4">
           {/* Description (replace) */}
           {hasDescription && (
-            <Box>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={replaceDescription}
-                    onChange={e => setReplaceDescription(e.target.checked)}
-                  />
-                }
-                label="Replace description"
-              />
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: 'block', ml: 4 }}
-              >
-                Overwrites this memo’s current description.
-              </Typography>
-            </Box>
+            <div>
+              <Label className="flex items-center gap-2 font-normal">
+                <Checkbox
+                  checked={replaceDescription}
+                  onCheckedChange={(checked) => setReplaceDescription(checked === true)}
+                />
+                Replace description
+              </Label>
+              <p className="ml-6 text-xs text-muted-foreground">
+                Overwrites this memo&rsquo;s current description.
+              </p>
+            </div>
           )}
 
           {/* Tags */}
           {tags.length > 0 && (
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography variant="subtitle2">
-                  Tags ({tags.length})
-                </Typography>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={allTagsSelected}
-                      indeterminate={
-                        !allTagsSelected && selectedTags.some(Boolean)
-                      }
-                      onChange={e =>
-                        setAll(setSelectedTags, tags.length, e.target.checked)
-                      }
-                    />
-                  }
-                  label="Select all"
-                />
-              </Stack>
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                {tags.map((tag, i) => (
-                  <Chip
-                    key={`${tag}-${i}`}
-                    label={tag}
-                    color={selectedTags[i] ? 'primary' : 'default'}
-                    variant={selectedTags[i] ? 'filled' : 'outlined'}
-                    onClick={() => toggleAt(setSelectedTags, i)}
-                    clickable
+            <div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">Tags ({tags.length})</p>
+                <Label className="flex items-center gap-2 text-sm font-normal">
+                  <Checkbox
+                    checked={selectAllState(allTagsSelected, selectedTags)}
+                    onCheckedChange={(checked) =>
+                      setAll(setSelectedTags, tags.length, checked === true)
+                    }
                   />
+                  Select all
+                </Label>
+              </div>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {tags.map((tag, i) => (
+                  <Badge
+                    key={`${tag}-${i}`}
+                    variant={selectedTags[i] ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => toggleAt(setSelectedTags, i)}
+                  >
+                    {tag}
+                  </Badge>
                 ))}
-              </Stack>
-            </Box>
+              </div>
+            </div>
           )}
 
           {/* Checklists */}
           {checkItems.length > 0 && (
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography variant="subtitle2">
+            <div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">
                   Checklists ({checkItems.length})
-                </Typography>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={allCheckItemsSelected}
-                      indeterminate={
-                        !allCheckItemsSelected &&
-                        selectedCheckItems.some(Boolean)
-                      }
-                      onChange={e =>
-                        setAll(
-                          setSelectedCheckItems,
-                          checkItems.length,
-                          e.target.checked
-                        )
-                      }
-                    />
-                  }
-                  label="Select all"
-                />
-              </Stack>
-              <List dense disablePadding>
+                </p>
+                <Label className="flex items-center gap-2 text-sm font-normal">
+                  <Checkbox
+                    checked={selectAllState(allCheckItemsSelected, selectedCheckItems)}
+                    onCheckedChange={(checked) =>
+                      setAll(setSelectedCheckItems, checkItems.length, checked === true)
+                    }
+                  />
+                  Select all
+                </Label>
+              </div>
+              <div className="mt-1">
                 {checkItems.map((item, i) => (
-                  <ListItem key={i} disableGutters sx={{ py: 0 }}>
-                    <FormControlLabel
-                      sx={{ flex: 1 }}
-                      control={
-                        <Checkbox
-                          size="small"
-                          checked={selectedCheckItems[i]}
-                          onChange={() => toggleAt(setSelectedCheckItems, i)}
-                        />
-                      }
-                      label={
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          spacing={1}
-                          sx={{ width: '100%' }}
-                        >
-                          <Typography variant="body2">{item.name}</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {statusLabels[item.status] ?? item.status}
-                          </Typography>
-                        </Stack>
-                      }
+                  <Label
+                    key={i}
+                    className="flex items-center gap-2 py-0.5 font-normal"
+                  >
+                    <Checkbox
+                      checked={selectedCheckItems[i]}
+                      onCheckedChange={() => toggleAt(setSelectedCheckItems, i)}
                     />
-                  </ListItem>
+                    <span className="flex items-center gap-2 text-sm">
+                      <span>{item.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {statusLabels[item.status] ?? item.status}
+                      </span>
+                    </span>
+                  </Label>
                 ))}
-              </List>
-            </Box>
+              </div>
+            </div>
           )}
 
           {/* Time logs */}
           {timeTracks.length > 0 && (
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Typography variant="subtitle2">
+            <div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">
                   Time logs ({timeTracks.length})
-                </Typography>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={allTimeTracksSelected}
-                      indeterminate={
-                        !allTimeTracksSelected &&
-                        selectedTimeTracks.some(Boolean)
-                      }
-                      onChange={e =>
-                        setAll(
-                          setSelectedTimeTracks,
-                          timeTracks.length,
-                          e.target.checked
-                        )
-                      }
-                    />
-                  }
-                  label="Select all"
-                />
-              </Stack>
-              <List dense disablePadding>
+                </p>
+                <Label className="flex items-center gap-2 text-sm font-normal">
+                  <Checkbox
+                    checked={selectAllState(allTimeTracksSelected, selectedTimeTracks)}
+                    onCheckedChange={(checked) =>
+                      setAll(setSelectedTimeTracks, timeTracks.length, checked === true)
+                    }
+                  />
+                  Select all
+                </Label>
+              </div>
+              <div className="mt-1">
                 {timeTracks.map((track, i) => (
-                  <ListItem key={i} disableGutters sx={{ py: 0 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          size="small"
-                          checked={selectedTimeTracks[i]}
-                          onChange={() => toggleAt(setSelectedTimeTracks, i)}
-                        />
-                      }
-                      label={
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <Typography variant="body2">
-                            {track.date} &nbsp; {track.startTime} &nbsp;{' '}
-                            {track.durationMinutes}m
-                          </Typography>
-                          {duplicateFlags[i] && (
-                            <Tooltip title="A matching log already exists on this memo">
-                              <Chip
-                                label="possible duplicate"
-                                size="small"
-                                color="warning"
-                                variant="outlined"
-                              />
-                            </Tooltip>
-                          )}
-                        </Stack>
-                      }
+                  <Label
+                    key={i}
+                    className="flex items-center gap-2 py-0.5 font-normal"
+                  >
+                    <Checkbox
+                      checked={selectedTimeTracks[i]}
+                      onCheckedChange={() => toggleAt(setSelectedTimeTracks, i)}
                     />
-                  </ListItem>
+                    <span className="flex items-center gap-2 text-sm">
+                      <span>
+                        {track.date} &nbsp; {track.startTime} &nbsp;{' '}
+                        {track.durationMinutes}m
+                      </span>
+                      {duplicateFlags[i] && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="border-[var(--color-warning)] text-[var(--color-warning-dark)]"
+                            >
+                              possible duplicate
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            A matching log already exists on this memo
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </span>
+                  </Label>
                 ))}
-              </List>
-            </Box>
+              </div>
+            </div>
           )}
-        </Stack>
+        </div>
+
+        <DialogFooter className="p-6 pt-4">
+          <Button variant="outline" onClick={onCancel} disabled={isMerging}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirm}
+            disabled={isMerging || nothingSelected}
+          >
+            {isMerging ? 'Importing…' : 'Import selected'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel} color="secondary" disabled={isMerging}>
-          Cancel
-        </Button>
-        <Button
-          onClick={handleConfirm}
-          variant="contained"
-          color="primary"
-          disabled={isMerging || nothingSelected}
-        >
-          {isMerging ? 'Importing…' : 'Import selected'}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
