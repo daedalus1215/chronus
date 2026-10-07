@@ -142,8 +142,8 @@ gone. Group commits by directory/feature, not necessarily one file each.
 ### TimeEntryPage
 
 - [ ] src/pages/TimeEntryPage/TimeEntryPage.tsx
-- [ ] src/pages/TimeEntryPage/components/QuickAddRow/QuickAddRow.tsx
-- [ ] src/pages/TimeEntryPage/components/SummaryStats/SummaryStats.tsx
+- [x] src/pages/TimeEntryPage/components/QuickAddRow/QuickAddRow.tsx
+- [x] src/pages/TimeEntryPage/components/SummaryStats/SummaryStats.tsx
 - [ ] src/pages/TimeEntryPage/components/TimeEntryDataGrid/TimeEntryDataGrid.tsx (MUI x-data-grid → TanStack Table + shadcn table)
 
 ### YearlyNotesPage

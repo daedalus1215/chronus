@@ -1,8 +1,5 @@
 import React from 'react';
-import { Paper, Typography, Box } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import TimerIcon from '@mui/icons-material/Timer';
+import { Clock, ListOrdered, Timer } from 'lucide-react';
 import styles from './SummaryStats.module.css';
 
 interface SummaryStatsProps {
@@ -27,33 +24,33 @@ export const SummaryStats: React.FC<SummaryStatsProps> = ({
 
   const stats = [
     {
-      icon: <AccessTimeIcon className={styles.icon} />,
+      icon: <Clock className={styles.icon} />,
       label: 'Total Time',
       value: formatDuration(totalMinutes),
     },
     {
-      icon: <FormatListNumberedIcon className={styles.icon} />,
+      icon: <ListOrdered className={styles.icon} />,
       label: 'Entries',
       value: entryCount.toString(),
     },
     {
-      icon: <TimerIcon className={styles.icon} />,
+      icon: <Timer className={styles.icon} />,
       label: 'Average',
       value: formatDuration(averageMinutes),
     },
   ];
 
   return (
-    <Box className={styles.container}>
+    <div className={styles.container}>
       {stats.map(stat => (
-        <Paper key={stat.label} className={styles.card}>
-          <Box className={styles.iconWrapper}>{stat.icon}</Box>
-          <Box className={styles.content}>
-            <Typography className={styles.label}>{stat.label}</Typography>
-            <Typography className={styles.value}>{stat.value}</Typography>
-          </Box>
-        </Paper>
+        <div key={stat.label} className={styles.card}>
+          <div className={styles.iconWrapper}>{stat.icon}</div>
+          <div className={styles.content}>
+            <span className={styles.label}>{stat.label}</span>
+            <span className={styles.value}>{stat.value}</span>
+          </div>
+        </div>
       ))}
-    </Box>
+    </div>
   );
 };
