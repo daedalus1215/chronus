@@ -1,16 +1,12 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 import styles from './TagTreeNavigation.module.css';
 import { CustomTagTreeItem } from './CustomTagTreeItem';
 import {
   TAG_PREFIX,
   filterTagTreeItems,
-  getTagTreeItemLabel,
   parseNoteId,
   type TagTreeItem,
 } from './tagTreeItems';
@@ -27,7 +23,6 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
   searchQuery = '',
 }) => {
   const navigate = useNavigate();
-  const { tagId: routeTagId } = useParams<{ tagId: string }>();
   const {
     treeItems,
     isLoading,
@@ -41,8 +36,8 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
     () => filterTagTreeItems(treeItems, searchQuery),
     [treeItems, searchQuery]
   );
-  // The tree only passes label/id/itemId to the item slot, so pinned state
-  // is injected via a per-item lookup keyed by item id.
+  // Pinned state is injected via a per-item lookup keyed by item id, since
+  // it lives one level up from the note node itself in the source data.
   const pinnedByItemId = useMemo(() => {
     const map: Record<string, boolean> = {};
     for (const tag of treeItems) {
@@ -67,29 +62,19 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
     return map;
   }, [treeItems]);
 
-  const TreeItemWithPin = useCallback(
-    (itemProps: TreeItemProps) => (
-      <CustomTagTreeItem
-        {...itemProps}
-        pinned={pinnedByItemId[itemProps.itemId] ?? false}
-        tagMeta={tagMetaByItemId[itemProps.itemId]}
-        onNotePinned={(_noteId: number, tagId: number) =>
-          refreshNotesForTag(tagId)
-        }
-      />
-    ),
-    [pinnedByItemId, tagMetaByItemId, refreshNotesForTag]
-  );
+  const toggleExpanded = (itemId: string) => {
+    const isExpanding = !expandedItems.includes(itemId);
+    setExpandedItems(prev =>
+      isExpanding ? [...prev, itemId] : prev.filter(id => id !== itemId)
+    );
+    if (isExpanding && itemId.startsWith(TAG_PREFIX)) {
+      loadNotesForTag(Number(itemId.slice(TAG_PREFIX.length)));
+    }
+  };
 
-  const handleItemClick = (_event: React.MouseEvent, itemId: string) => {
+  const handleItemClick = (itemId: string) => {
     if (itemId.startsWith(TAG_PREFIX)) {
-      const isExpanding = !expandedItems.includes(itemId);
-      setExpandedItems(prev =>
-        isExpanding ? [...prev, itemId] : prev.filter(id => id !== itemId)
-      );
-      if (isExpanding) {
-        loadNotesForTag(Number(itemId.slice(TAG_PREFIX.length)));
-      }
+      toggleExpanded(itemId);
       const tagId = itemId.slice(TAG_PREFIX.length);
       navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
       return;
@@ -102,72 +87,53 @@ export const TagTreeNavigation: React.FC<TagTreeNavigationProps> = ({
     }
   };
 
-  const handleExpandedItemsChange = (
-    _event: React.SyntheticEvent | null,
-    itemIds: string[]
-  ) => {
-    itemIds
-      .filter(id => id.startsWith(TAG_PREFIX) && !expandedItems.includes(id))
-      .forEach(id => loadNotesForTag(Number(id.slice(TAG_PREFIX.length))));
-    setExpandedItems(itemIds);
-  };
-
-  const selectedItems = useMemo((): string | null => {
-    if (routeTagId) {
-      return `${TAG_PREFIX}${routeTagId}`;
-    }
-    return null;
-  }, [routeTagId]);
+  const renderItems = (items: TagTreeItem[], depth: number): React.ReactNode => (
+    <ul role={depth === 0 ? 'tree' : 'group'} className={depth > 0 ? styles.childrenGroup : undefined}>
+      {items.map(item => (
+        <li key={item.id} role="none">
+          <CustomTagTreeItem
+            item={item}
+            isExpanded={expandedItems.includes(item.id)}
+            pinned={pinnedByItemId[item.id] ?? false}
+            tagMeta={tagMetaByItemId[item.id]}
+            onClick={() => handleItemClick(item.id)}
+            onNotePinned={(_noteId: number, tagId: number) =>
+              refreshNotesForTag(tagId)
+            }
+          />
+          {item.children && item.children.length > 0 && expandedItems.includes(item.id)
+            ? renderItems(item.children, depth + 1)
+            : null}
+        </li>
+      ))}
+    </ul>
+  );
 
   if (isLoading) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          py: 3,
-        }}
-      >
-        <CircularProgress size={24} />
-      </Box>
+      <div className="flex items-center justify-center py-6">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   if (error) {
-    return <Box sx={{ p: 2, color: 'error.main' }}>{error}</Box>;
+    return <div className="p-4 text-destructive">{error}</div>;
   }
 
   if (treeItems.length === 0) {
-    return <Box sx={{ p: 2, color: 'text.secondary' }}>No tags yet</Box>;
+    return <div className="p-4 text-muted-foreground">No tags yet</div>;
   }
 
   if (filteredItems.length === 0) {
     return (
-      <Box sx={{ p: 2, color: 'text.secondary' }}>
-        No matching tags or notes
-      </Box>
+      <div className="p-4 text-muted-foreground">No matching tags or notes</div>
     );
   }
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.treeWrapper}>
-        <RichTreeView<TagTreeItem>
-          items={filteredItems}
-          getItemId={item => item.id}
-          getItemLabel={getTagTreeItemLabel}
-          getItemChildren={item => item.children ?? []}
-          onItemClick={handleItemClick}
-          expandedItems={expandedItems}
-          onExpandedItemsChange={handleExpandedItemsChange}
-          selectedItems={selectedItems}
-          itemChildrenIndentation={0}
-          slots={{
-            item: TreeItemWithPin,
-          }}
-        />
-      </Box>
-    </Box>
+    <div className={styles.root}>
+      <div className={styles.treeWrapper}>{renderItems(filteredItems, 0)}</div>
+    </div>
   );
 };
