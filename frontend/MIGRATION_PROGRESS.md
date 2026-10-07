@@ -67,7 +67,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### HomePage
 
-- [ ] src/pages/HomePage/HomePage.tsx
+- [x] src/pages/HomePage/HomePage.tsx
 - [x] src/pages/HomePage/components/ImportSelectionDialog/ImportSelectionDialog.tsx
 - [x] src/pages/HomePage/components/MergeSelectionDialog/MergeSelectionDialog.tsx
 - [x] src/pages/HomePage/components/NoteListView/DesktopNoteListView/DesktopNoteListView.tsx
