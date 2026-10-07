@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { Stack } from '@mui/material';
-import Alert from '@mui/material/Alert';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BottomSheet } from '@components/BottomSheet/BottomSheet';
 
 type Props = {
@@ -54,10 +54,9 @@ export const TagForm: React.FC<Props> = ({
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <Stack
-        spacing={2}
-        component="form"
+      <form
         onSubmit={handleSubmit}
+        className="space-y-4 p-4"
         onClick={e => {
           // Prevent clicks inside the form from propagating
           e.stopPropagation();
@@ -67,62 +66,58 @@ export const TagForm: React.FC<Props> = ({
           e.stopPropagation();
         }}
       >
-        <Box>
-          <h3>Edit Tag</h3>
-        </Box>
-        <TextField
-          label="Title"
-          type="text"
-          value={formData.name}
-          onChange={e => setFormData({ ...formData, name: e.target.value })}
-          fullWidth
-          InputLabelProps={{ shrink: true }}
-          required
-        />
-        <TextField
-          label="Description"
-          value={formData.description}
-          onChange={e =>
-            setFormData({ ...formData, description: e.target.value })
-          }
-          fullWidth
-          multiline
-          rows={3}
-          InputLabelProps={{ shrink: true }}
-          onClick={e => {
-            // Prevent clicks on the text field from propagating
-            e.stopPropagation();
-          }}
-          onMouseDown={e => {
-            // Prevent mouse down on the text field from propagating
-            e.stopPropagation();
-          }}
-        />
+        <h3 className="text-lg font-semibold">Edit Tag</h3>
+        <div className="space-y-1.5">
+          <Label htmlFor="tag-form-title">Title</Label>
+          <Input
+            id="tag-form-title"
+            type="text"
+            value={formData.name}
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
+            required
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="tag-form-description">Description</Label>
+          <Textarea
+            id="tag-form-description"
+            value={formData.description}
+            onChange={e =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            rows={3}
+            onClick={e => {
+              // Prevent clicks on the text field from propagating
+              e.stopPropagation();
+            }}
+            onMouseDown={e => {
+              // Prevent mouse down on the text field from propagating
+              e.stopPropagation();
+            }}
+          />
+        </div>
         {error && (
           <Alert
-            severity="error"
+            variant="destructive"
             onClick={e => e.stopPropagation()}
             onMouseDown={e => e.stopPropagation()}
           >
-            {error}
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
+        <div className="flex justify-end gap-3">
           <Button
             type="button"
             onClick={e => {
               e.stopPropagation();
               onClose();
             }}
-            variant="outlined"
-            color="secondary"
+            variant="outline"
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            variant="contained"
-            color="primary"
             disabled={isSubmitting}
             onClick={e => {
               e.stopPropagation();
@@ -130,8 +125,8 @@ export const TagForm: React.FC<Props> = ({
           >
             {isSubmitting ? 'Saving...' : 'Save'}
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </form>
     </BottomSheet>
   );
 };
