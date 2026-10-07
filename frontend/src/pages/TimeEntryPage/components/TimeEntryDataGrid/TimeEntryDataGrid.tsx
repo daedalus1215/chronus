@@ -1,32 +1,46 @@
-import React, { useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  DataGrid,
-  GridColDef,
-  GridRowsProp,
-  GridRenderCellParams,
-} from '@mui/x-data-grid';
+  Trash2,
+  MoreVertical,
+  CalendarDays,
+  Clock,
+  Timer,
+  FileText,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import {
-  Box,
-  IconButton,
-  TextField,
-  Typography,
-  Link,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import TimerIcon from '@mui/icons-material/Timer';
-import NotesIcon from '@mui/icons-material/Notes';
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
 import { TimeTrackWithNoteResponse } from '../../../../api/dtos/time-tracks.dtos';
 import { ROUTES } from '../../../../constants/routes';
@@ -34,6 +48,7 @@ import {
   deleteTimeTrack,
   updateTimeTrack,
 } from '../../../../api/requests/time-tracks.requests';
+import { useIsMobile } from '../../../../hooks/useIsMobile';
 import styles from './TimeEntryDataGrid.module.css';
 
 const formatDuration = (minutes: number): string => {
@@ -60,6 +75,8 @@ interface EditDialogState {
   value: string;
 }
 
+const PAGE_SIZE_OPTIONS = [10, 25, 50];
+
 export const TimeEntryDataGrid: React.FC<Props> = ({
   rows,
   loading,
@@ -67,42 +84,39 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
   onRowUpdated,
 }) => {
   const navigate = useNavigate();
-  const [menuAnchor, setMenuAnchor] = useState<{
-    el: HTMLElement | null;
-    rowId: number | null;
-  }>({ el: null, rowId: null });
+  const isMobile = useIsMobile();
+  const [openMenuRowId, setOpenMenuRowId] = useState<number | null>(null);
   const [editDialog, setEditDialog] = useState<EditDialogState>({
     open: false,
     row: null,
     field: null,
     value: '',
   });
+  const [pageSize, setPageSize] = useState(25);
+  const [pageIndex, setPageIndex] = useState(0);
 
-  const handleDelete = useCallback(
-    async (id: number) => {
-      onRowDeleted(id);
-      try {
-        await deleteTimeTrack(id);
-      } catch {
-        console.error('Failed to delete time track');
-      }
-    },
-    [onRowDeleted]
+  const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+  const clampedPageIndex = Math.min(pageIndex, pageCount - 1);
+  const pagedRows = useMemo(
+    () =>
+      rows.slice(
+        clampedPageIndex * pageSize,
+        clampedPageIndex * pageSize + pageSize
+      ),
+    [rows, clampedPageIndex, pageSize]
   );
 
-  const handleMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-    rowId: number
-  ) => {
-    setMenuAnchor({ el: event.currentTarget, rowId });
+  const handleDelete = async (id: number) => {
+    onRowDeleted(id);
+    try {
+      await deleteTimeTrack(id);
+    } catch {
+      console.error('Failed to delete time track');
+    }
   };
 
-  const handleMenuClose = () => {
-    setMenuAnchor({ el: null, rowId: null });
-  };
-
-  const handleEditClick = (field: EditField) => {
-    const row = rows.find(r => r.id === menuAnchor.rowId);
+  const handleEditClick = (rowId: number, field: EditField) => {
+    const row = rows.find(r => r.id === rowId);
     if (!row) return;
 
     let value = '';
@@ -121,13 +135,8 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
         break;
     }
 
-    setEditDialog({
-      open: true,
-      row,
-      field,
-      value,
-    });
-    handleMenuClose();
+    setEditDialog({ open: true, row, field, value });
+    setOpenMenuRowId(null);
   };
 
   const handleSaveEdit = async () => {
@@ -181,9 +190,8 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
     switch (editDialog.field) {
       case 'date':
         return (
-          <TextField
+          <Input
             type="date"
-            fullWidth
             value={editDialog.value}
             onChange={e =>
               setEditDialog(prev => ({ ...prev, value: e.target.value }))
@@ -192,9 +200,8 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
         );
       case 'startTime':
         return (
-          <TextField
+          <Input
             type="time"
-            fullWidth
             value={editDialog.value}
             onChange={e =>
               setEditDialog(prev => ({ ...prev, value: e.target.value }))
@@ -203,28 +210,24 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
         );
       case 'durationMinutes':
         return (
-          <TextField
+          <Input
             type="number"
-            fullWidth
-            label="Duration (minutes)"
             value={editDialog.value}
             onChange={e =>
               setEditDialog(prev => ({ ...prev, value: e.target.value }))
             }
-            inputProps={{ min: 1, max: 1440 }}
+            min={1}
+            max={1440}
           />
         );
       case 'note':
         return (
-          <TextField
-            fullWidth
-            multiline
-            rows={2}
-            label="Note"
+          <Textarea
             value={editDialog.value}
             onChange={e =>
               setEditDialog(prev => ({ ...prev, value: e.target.value }))
             }
+            rows={2}
           />
         );
       default:
@@ -232,183 +235,213 @@ export const TimeEntryDataGrid: React.FC<Props> = ({
     }
   };
 
-  const columns: GridColDef[] = [
-    {
-      field: 'noteName',
-      headerName: 'Note',
-      flex: 1,
-      minWidth: 160,
-      renderCell: (params: GridRenderCellParams) => (
-        <Link
-          component="button"
-          onClick={() => navigate(ROUTES.NOTE(params.row.noteId))}
-          className={styles.noteLink}
-          underline="hover"
-        >
-          {params.value as string}
-        </Link>
-      ),
-    },
-    {
-      field: 'date',
-      headerName: 'Date',
-      width: 110,
-      renderCell: (params: GridRenderCellParams) => (
-        <span className={styles.cellText}>{params.value as string}</span>
-      ),
-    },
-    {
-      field: 'startTime',
-      headerName: 'Start',
-      width: 90,
-      renderCell: (params: GridRenderCellParams) => (
-        <span className={styles.cellText}>{params.value as string}</span>
-      ),
-    },
-    {
-      field: 'durationMinutes',
-      headerName: 'Duration',
-      width: 110,
-      valueFormatter: (value: number) => formatDuration(value),
-      renderCell: (params: GridRenderCellParams) => (
-        <span className={styles.durationCell}>
-          {formatDuration(params.value as number)}
-        </span>
-      ),
-    },
-    {
-      field: 'note',
-      headerName: 'Memo',
-      flex: 0.5,
-      minWidth: 100,
-      renderCell: (params: GridRenderCellParams) => (
-        <span className={`${styles.cellText} ${styles.noteText}`}>
-          {(params.value as string) || '—'}
-        </span>
-      ),
-    },
-    {
-      field: 'actions',
-      headerName: '',
-      width: 90,
-      sortable: false,
-      filterable: false,
-      renderCell: (params: GridRenderCellParams) => (
-        <Box className={styles.actionButtons}>
-          <IconButton
-            size="small"
-            onClick={e => handleMenuOpen(e, params.id as number)}
-            className={styles.actionButton}
-          >
-            <MoreVertIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            color="error"
-            onClick={() => handleDelete(params.id as number)}
-            className={styles.actionButton}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      ),
-    },
-  ];
+  const renderActions = (row: TimeTrackWithNoteResponse) => (
+    <>
+      <DropdownMenu
+        open={openMenuRowId === row.id}
+        onOpenChange={open => setOpenMenuRowId(open ? row.id : null)}
+      >
+        <DropdownMenuTrigger asChild>
+          <button type="button" className={styles.actionButton}>
+            <MoreVertical size={16} />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => handleEditClick(row.id, 'date')}>
+            <CalendarDays className="size-4" /> Edit Date
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleEditClick(row.id, 'startTime')}>
+            <Clock className="size-4" /> Edit Start Time
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleEditClick(row.id, 'durationMinutes')}>
+            <Timer className="size-4" /> Edit Duration
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleEditClick(row.id, 'note')}>
+            <FileText className="size-4" /> Edit Memo
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <button
+        type="button"
+        className={`${styles.actionButton} ${styles.deleteButton}`}
+        onClick={() => handleDelete(row.id)}
+      >
+        <Trash2 size={16} />
+      </button>
+    </>
+  );
 
-  const gridRows: GridRowsProp = rows.map(row => ({
-    ...row,
-  }));
+  const renderNoteLink = (row: TimeTrackWithNoteResponse) => (
+    <button
+      type="button"
+      onClick={() => navigate(ROUTES.NOTE(row.noteId))}
+      className={styles.noteLink}
+    >
+      {row.noteName}
+    </button>
+  );
 
   return (
     <>
-      <Box className={styles.gridContainer}>
-        <DataGrid
-          rows={gridRows}
-          columns={columns}
-          loading={loading}
-          pageSizeOptions={[10, 25, 50]}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 25 },
-            },
-          }}
-          autoHeight
-          disableColumnMenu
-          disableRowSelectionOnClick
-          columnHeaderHeight={44}
-          getRowHeight={() => 'auto'}
-          className={styles.dataGrid}
-          slots={{
-            noRowsOverlay: () => (
-              <Box className={styles.emptyState}>
-                <Typography className={styles.emptyStateText}>
-                  No time tracks for this period.
-                  <br />
-                  Use the Quick Add section above to add one.
-                </Typography>
-              </Box>
-            ),
-          }}
-        />
-      </Box>
+      <div className={styles.gridContainer}>
+        {loading ? (
+          <div className={styles.loadingState}>
+            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : rows.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyStateText}>
+              No time tracks for this period.
+              <br />
+              Use the Quick Add section above to add one.
+            </span>
+          </div>
+        ) : isMobile ? (
+          <div className={styles.mobileList}>
+            {pagedRows.map(row => (
+              <div key={row.id} className={styles.mobileCard}>
+                <div className={styles.mobileCardTop}>{renderNoteLink(row)}</div>
+                <div className={styles.mobileCardActions}>{renderActions(row)}</div>
+                <div className={styles.mobileCardField}>
+                  <span className={styles.mobileCardFieldLabel}>Date</span>
+                  <span className={styles.cellText}>{row.date}</span>
+                </div>
+                <div className={styles.mobileCardField}>
+                  <span className={styles.mobileCardFieldLabel}>Start</span>
+                  <span className={styles.cellText}>{row.startTime}</span>
+                </div>
+                <div className={styles.mobileCardField}>
+                  <span className={styles.mobileCardFieldLabel}>Duration</span>
+                  <span className={styles.durationCell}>
+                    {formatDuration(row.durationMinutes)}
+                  </span>
+                </div>
+                <div className={styles.mobileCardField}>
+                  <span className={styles.mobileCardFieldLabel}>Memo</span>
+                  <span className={`${styles.cellText} ${styles.noteText}`}>
+                    {row.note || '—'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.tableWrapper}>
+            <Table>
+              <TableHeader>
+                <TableRow className={styles.headerRow}>
+                  <TableHead className={styles.headerCell}>Note</TableHead>
+                  <TableHead className={styles.headerCell}>Date</TableHead>
+                  <TableHead className={styles.headerCell}>Start</TableHead>
+                  <TableHead className={styles.headerCell}>Duration</TableHead>
+                  <TableHead className={styles.headerCell}>Memo</TableHead>
+                  <TableHead className={styles.headerCell} />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pagedRows.map(row => (
+                  <TableRow key={row.id} className={styles.row}>
+                    <TableCell className={styles.cell}>{renderNoteLink(row)}</TableCell>
+                    <TableCell className={styles.cell}>
+                      <span className={styles.cellText}>{row.date}</span>
+                    </TableCell>
+                    <TableCell className={styles.cell}>
+                      <span className={styles.cellText}>{row.startTime}</span>
+                    </TableCell>
+                    <TableCell className={styles.cell}>
+                      <span className={styles.durationCell}>
+                        {formatDuration(row.durationMinutes)}
+                      </span>
+                    </TableCell>
+                    <TableCell className={styles.cell}>
+                      <span className={`${styles.cellText} ${styles.noteText}`}>
+                        {row.note || '—'}
+                      </span>
+                    </TableCell>
+                    <TableCell className={styles.cell}>
+                      <div className={styles.actionButtons}>{renderActions(row)}</div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
 
-      {/* Edit Menu */}
-      <Menu
-        anchorEl={menuAnchor.el}
-        open={Boolean(menuAnchor.el)}
-        onClose={handleMenuClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <MenuItem onClick={() => handleEditClick('date')}>
-          <ListItemIcon>
-            <CalendarTodayIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Edit Date</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={() => handleEditClick('startTime')}>
-          <ListItemIcon>
-            <AccessTimeIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Edit Start Time</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={() => handleEditClick('durationMinutes')}>
-          <ListItemIcon>
-            <TimerIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Edit Duration</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={() => handleEditClick('note')}>
-          <ListItemIcon>
-            <NotesIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Edit Memo</ListItemText>
-        </MenuItem>
-      </Menu>
+        {!loading && rows.length > 0 && (
+          <div className={styles.pagination}>
+            <div className={styles.pageSizeGroup}>
+              <span>Rows per page</span>
+              <Select
+                value={String(pageSize)}
+                onValueChange={v => {
+                  setPageSize(Number(v));
+                  setPageIndex(0);
+                }}
+              >
+                <SelectTrigger className="h-8 w-16">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_SIZE_OPTIONS.map(size => (
+                    <SelectItem key={size} value={String(size)}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className={styles.pageInfo}>
+              <span>
+                {clampedPageIndex * pageSize + 1}–
+                {Math.min((clampedPageIndex + 1) * pageSize, rows.length)} of{' '}
+                {rows.length}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                disabled={clampedPageIndex === 0}
+                onClick={() => setPageIndex(p => Math.max(0, p - 1))}
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                disabled={clampedPageIndex >= pageCount - 1}
+                onClick={() => setPageIndex(p => Math.min(pageCount - 1, p + 1))}
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Edit Dialog */}
       <Dialog
         open={editDialog.open}
-        onClose={() =>
-          setEditDialog({ open: false, row: null, field: null, value: '' })
+        onOpenChange={(open) =>
+          !open && setEditDialog({ open: false, row: null, field: null, value: '' })
         }
-        maxWidth="xs"
-        fullWidth
       >
-        <DialogTitle>{getEditDialogTitle()}</DialogTitle>
-        <DialogContent>{getEditDialogInput()}</DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() =>
-              setEditDialog({ open: false, row: null, field: null, value: '' })
-            }
-          >
-            Cancel
-          </Button>
-          <Button onClick={handleSaveEdit} variant="contained">
-            Save
-          </Button>
-        </DialogActions>
+        <DialogContent className="sm:max-w-xs">
+          <DialogHeader>
+            <DialogTitle>{getEditDialogTitle()}</DialogTitle>
+          </DialogHeader>
+          {getEditDialogInput()}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() =>
+                setEditDialog({ open: false, row: null, field: null, value: '' })
+              }
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </>
   );
