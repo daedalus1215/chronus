@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 type DateTimePickerProps = {
   isOpen: boolean;
@@ -27,34 +25,23 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          Schedule Note
-        </Typography>
+      <div className="p-4">
+        <h3 className="mb-4 text-lg font-semibold">Schedule Note</h3>
         <form onSubmit={handleSubmit}>
-          <TextField
+          <Input
             type="datetime-local"
             value={selectedDate.toISOString().slice(0, 16)}
             onChange={e => setSelectedDate(new Date(e.target.value))}
-            fullWidth
-            sx={{ mb: 3 }}
-            InputLabelProps={{ shrink: true }}
+            className="mb-6 w-full"
           />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="outlined"
-              color="secondary"
-            >
+          <div className="flex justify-end gap-2">
+            <Button type="button" onClick={onClose} variant="outline">
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary">
-              Set Schedule
-            </Button>
-          </Box>
+            <Button type="submit">Set Schedule</Button>
+          </div>
         </form>
-      </Box>
+      </div>
     </BottomSheet>
   );
 };

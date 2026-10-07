@@ -1,25 +1,23 @@
 import React from 'react';
-import Popover from '@mui/material/Popover';
-import Box from '@mui/material/Box';
+import {
+  Timer,
+  Mic,
+  FolderInput,
+  Archive,
+  Trash2,
+  Upload,
+  Headphones,
+  Pencil,
+  Tag,
+  Clock,
+  Kanban,
+  NotebookPen,
+  Download,
+  Pin,
+} from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import {
-  TimerOutlined,
-  RecordVoiceOverOutlined,
-  DriveFileMoveOutlined,
-  ArchiveOutlined,
-  DeleteOutlineOutlined,
-  FileUploadOutlined,
-  HeadphonesOutlined,
-  EditOutlined,
-  LabelOutlined,
-  AccessTimeOutlined,
-  ViewKanbanOutlined,
-  NoteAltOutlined,
-  FileDownloadOutlined,
-  PushPin,
-  PushPinOutlined,
-} from '@mui/icons-material';
 import styles from './NoteActionGrid.module.css';
 import { ActionButton } from '@/components/ActionButton/ActionButton';
 
@@ -56,7 +54,6 @@ type NoteActionsProps = {
 export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   isOpen,
   onClose,
-  anchorEl,
   onTimeTracking,
   onViewTimeEntries,
   onDelete,
@@ -84,24 +81,24 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
   const content = (
     <div className={styles.actionGrid}>
       <ActionButton label="Time Entry" onClick={onTimeTracking}>
-        <TimerOutlined className={styles.icon} />
+        <Timer className={styles.icon} />
       </ActionButton>
 
       <ActionButton label="View Times" onClick={onViewTimeEntries}>
-        <AccessTimeOutlined className={styles.icon} />
+        <Clock className={styles.icon} />
       </ActionButton>
 
       <ActionButton label="Edit" onClick={onEdit}>
-        <EditOutlined className={styles.icon} />
+        <Pencil className={styles.icon} />
       </ActionButton>
 
       <ActionButton label="Board" onClick={onViewBoard}>
-        <ViewKanbanOutlined className={styles.icon} />
+        <Kanban className={styles.icon} />
       </ActionButton>
 
       {!isMemo && onConvertToMemo && (
         <ActionButton label="Convert to Memo" onClick={onConvertToMemo}>
-          <NoteAltOutlined className={styles.icon} />
+          <NotebookPen className={styles.icon} />
         </ActionButton>
       )}
 
@@ -110,7 +107,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         onClick={onTextToSpeech}
         disabled={isConverting || isDownloading}
       >
-        <RecordVoiceOverOutlined className={styles.icon} />
+        <Mic className={styles.icon} />
         {isConverting ? 'Converting...' : ''}
       </ActionButton>
 
@@ -119,7 +116,7 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         onClick={onDownloadAudio}
         disabled={isDownloading || isConverting}
       >
-        <HeadphonesOutlined className={styles.icon} />
+        <Headphones className={styles.icon} />
         {isDownloading ? 'Downloading...' : ''}
       </ActionButton>
 
@@ -127,45 +124,41 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
         label={`Audio History ${audioCount > 0 ? `(${audioCount})` : ''}`}
         onClick={onViewAudioHistory}
       >
-        <RecordVoiceOverOutlined className={styles.icon} />
+        <Mic className={styles.icon} />
       </ActionButton>
 
       {audioError && <div className={styles.errorMessage}>{audioError}</div>}
 
       <ActionButton label="Move to Folder" onClick={onMoveToFolder}>
-        <DriveFileMoveOutlined className={styles.icon} />
+        <FolderInput className={styles.icon} />
       </ActionButton>
 
       <ActionButton label="Tags" onClick={onLabel}>
-        <LabelOutlined className={styles.icon} />
+        <Tag className={styles.icon} />
       </ActionButton>
       <ActionButton
         label={isPinned ? 'Unpin' : 'Pin'}
         onClick={onPin}
       >
-        {isPinned ? (
-          <PushPin className={styles.icon} />
-        ) : (
-          <PushPinOutlined className={styles.icon} />
-        )}
+        <Pin className={styles.icon} fill={isPinned ? 'currentColor' : 'none'} />
       </ActionButton>
 
       <ActionButton label="Archive" onClick={onArchive}>
-        <ArchiveOutlined className={styles.icon} />
+        <Archive className={styles.icon} />
       </ActionButton>
 
       <ActionButton label="Export" onClick={onExport}>
-        <FileUploadOutlined className={styles.icon} />
+        <Upload className={styles.icon} />
       </ActionButton>
 
       {onImportIntoNote && (
         <ActionButton label="Import Into" onClick={onImportIntoNote}>
-          <FileDownloadOutlined className={styles.icon} />
+          <Download className={styles.icon} />
         </ActionButton>
       )}
 
       <ActionButton label="Delete" onClick={onDelete} danger={true}>
-        <DeleteOutlineOutlined className={styles.icon} />
+        <Trash2 className={styles.icon} />
       </ActionButton>
     </div>
   );
@@ -178,20 +171,16 @@ export const NoteActionsGrid: React.FC<NoteActionsProps> = ({
     );
   }
 
+  // Desktop previously rendered this in an MUI Popover anchored to the ⋮
+  // button via `anchorEl` — but no caller ever actually passes anchorEl,
+  // so it always rendered anchorless anyway. A centered Dialog is the
+  // honest equivalent rather than reproducing an anchor that never worked.
   return (
-    <Popover
-      open={isOpen}
-      anchorEl={anchorEl}
-      onClose={onClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      slotProps={{
-        paper: {
-          sx: { borderRadius: 2, width: 420, maxWidth: '90vw' },
-        },
-      }}
-    >
-      <Box sx={{ p: 1 }}>{content}</Box>
-    </Popover>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="w-[420px] max-w-[90vw] gap-0 p-1">
+        <DialogTitle className="sr-only">Note actions</DialogTitle>
+        {content}
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -73,12 +73,12 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [ ] src/pages/HomePage/components/NoteListView/DesktopNoteListView/DesktopNoteListView.tsx
 - [ ] src/pages/HomePage/components/NoteListView/MobileNoteListVIew/MobileNoteListView.tsx
 - [ ] src/pages/HomePage/components/NoteListView/NoteItem/AudioHistoryView/AudioHistoryView.tsx
-- [ ] src/pages/HomePage/components/NoteListView/NoteItem/DateTimePicker/DateTimePicker.tsx
-- [ ] src/pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid.tsx
+- [x] src/pages/HomePage/components/NoteListView/NoteItem/DateTimePicker/DateTimePicker.tsx
+- [x] src/pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid.tsx
 - [ ] src/pages/HomePage/components/NoteListView/NoteItem/NoteItem.tsx
 - [ ] src/pages/HomePage/components/NoteListView/NoteItem/TimeTrackingForm/TimeTrackingForm.tsx
 - [ ] src/pages/HomePage/components/NoteListView/NoteItem/TimeTrackListView/TimeTrackListView.tsx
-- [ ] src/pages/HomePage/components/NoteListView/SearchBar/SearchBar.tsx
+- [x] src/pages/HomePage/components/NoteListView/SearchBar/SearchBar.tsx
 
 ### KanbanBoardPage
 
