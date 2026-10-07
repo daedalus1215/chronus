@@ -131,10 +131,10 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### TagPage
 
-- [ ] src/pages/TagPage/TagPage.tsx
-- [ ] src/pages/TagPage/components/TagListView/DesktopTagListView/DesktopTagListView.tsx
-- [ ] src/pages/TagPage/components/TagListView/MobileTagListView/MobileTagListView.tsx
-- [ ] src/pages/TagPage/components/TagListView/MobileTagNotesListView/MobileTagNotesListView.tsx
+- [x] src/pages/TagPage/TagPage.tsx
+- [x] src/pages/TagPage/components/TagListView/DesktopTagListView/DesktopTagListView.tsx
+- [x] src/pages/TagPage/components/TagListView/MobileTagListView/MobileTagListView.tsx
+- [x] src/pages/TagPage/components/TagListView/MobileTagNotesListView/MobileTagNotesListView.tsx
 - [x] src/pages/TagPage/components/TagListView/SearchBar/SearchBar.tsx
 - [x] src/pages/TagPage/components/TagListView/TagItem/TagActionGrid/TagActionGrid.tsx
 - [x] src/pages/TagPage/components/TagListView/TagItem/TagActionGrid/TagForm/TagForm.tsx

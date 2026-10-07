@@ -6,8 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { TagItem } from '../TagItem/TagItem';
 import { SearchBar } from '../SearchBar/SearchBar';
 import styles from './MobileTagListView.module.css';
-import Fade from '@mui/material/Fade';
-import { Typography } from '@mui/material';
 
 const LoadingSpinner: React.FC = () => (
   <div className={styles.loadingSpinner}>Loading...</div>
@@ -80,13 +78,7 @@ export const MobileTagListView: React.FC<TagListViewProps> = () => {
   return (
     <div className={styles.tagList}>
       <div className={styles.tagListHeader}>
-        <Typography
-          variant="h6"
-          component="div"
-          className={styles.tagListTitle}
-        >
-          Chronus
-        </Typography>
+        <div className={styles.tagListTitle}>Chronus</div>
       </div>
 
       <SearchBar
@@ -97,21 +89,16 @@ export const MobileTagListView: React.FC<TagListViewProps> = () => {
       <div className={styles.tagListContent}>
         <div ref={scrollContainerRef} className={styles.tagListScrollContainer}>
           {filteredTags.map((tag, index) => (
-            <Fade
+            <div
               key={tag.id}
-              in={true}
-              timeout={300}
-              style={{
-                transitionDelay: `${Math.min(index * 50, 300)}ms`,
-              }}
+              className="animate-in fade-in duration-300"
+              style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
             >
-              <div>
-                <TagItem
-                  tag={tag}
-                  onClick={() => navigate(`/tag-notes/${tag.id}`)}
-                />
-              </div>
-            </Fade>
+              <TagItem
+                tag={tag}
+                onClick={() => navigate(`/tag-notes/${tag.id}`)}
+              />
+            </div>
           ))}
           {tagsLoading && <LoadingSpinner />}
           {!tagsLoading && filteredTags.length === 0 && <NoMoreTags />}
