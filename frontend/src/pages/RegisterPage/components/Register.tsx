@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Alert,
-  Stack,
-  Box,
-  Typography,
-} from '@mui/material';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Logo } from '../../../components/Logo/Logo';
 
 interface RegisterProps {
@@ -22,6 +17,8 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const passwordsMismatch = confirmPassword !== '' && password !== confirmPassword;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,112 +44,79 @@ export const Register: React.FC<RegisterProps> = ({ onRegister }) => {
   };
 
   return (
-    <Card
-      elevation={3}
-      sx={{
-        maxWidth: 400,
-        width: '100%',
-        mx: 'auto',
-      }}
-    >
-      <CardContent sx={{ p: 4 }}>
-        <Stack spacing={3} component="form" onSubmit={handleSubmit}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 2,
-              mb: 1,
-            }}
-          >
+    <Card className="mx-auto w-full max-w-sm shadow-lg">
+      <CardContent className="p-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="mb-1 flex flex-col items-center gap-4">
             <Logo height={75} />
-            <Typography variant="h4" component="h1" fontWeight={600}>
-              Register
-            </Typography>
-          </Box>
+            <h1 className="text-3xl font-semibold">Register</h1>
+          </div>
 
           {error && (
-            <Alert severity="error" sx={{ width: '100%' }}>
-              {error}
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
-          <TextField
-            label="Username"
-            type="text"
-            id="username"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            required
-            disabled={isSubmitting}
-            fullWidth
-            autoComplete="username"
-          />
+          <div className="space-y-1.5">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              required
+              disabled={isSubmitting}
+              autoComplete="username"
+            />
+          </div>
 
-          <TextField
-            label="Password"
-            type="password"
-            id="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            disabled={isSubmitting}
-            fullWidth
-            autoComplete="new-password"
-          />
+          <div className="space-y-1.5">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              disabled={isSubmitting}
+              autoComplete="new-password"
+            />
+          </div>
 
-          <TextField
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            required
-            disabled={isSubmitting}
-            fullWidth
-            autoComplete="new-password"
-            error={confirmPassword !== '' && password !== confirmPassword}
-            helperText={
-              confirmPassword !== '' && password !== confirmPassword
-                ? 'Passwords do not match'
-                : ''
-            }
-          />
+          <div className="space-y-1.5">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              required
+              disabled={isSubmitting}
+              autoComplete="new-password"
+              aria-invalid={passwordsMismatch}
+            />
+            {passwordsMismatch && (
+              <p className="text-sm text-destructive">Passwords do not match</p>
+            )}
+          </div>
 
           <Button
             type="submit"
-            variant="contained"
-            size="large"
+            size="lg"
             disabled={isSubmitting}
-            fullWidth
-            sx={{
-              py: 1.5,
-              borderRadius: '9999px',
-              textTransform: 'none',
-              fontSize: '1rem',
-              fontWeight: 600,
-            }}
+            className="w-full rounded-full py-6 text-base font-semibold"
           >
             {isSubmitting ? 'Registering...' : 'Register'}
           </Button>
 
-          <Box sx={{ textAlign: 'center', mt: 1 }}>
-            <Typography variant="body2">
-              Already have an account?{' '}
-              <Link
-                to="/login"
-                style={{
-                  color: 'var(--color-primary)',
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                }}
-              >
-                Login here
-              </Link>
-            </Typography>
-          </Box>
-        </Stack>
+          <p className="mt-1 text-center text-sm">
+            Already have an account?{' '}
+            <Link to="/login" className="font-medium text-primary">
+              Login here
+            </Link>
+          </p>
+        </form>
       </CardContent>
     </Card>
   );

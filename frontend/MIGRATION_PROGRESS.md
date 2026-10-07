@@ -89,11 +89,11 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### Auth pages
 
-- [ ] src/pages/LandingPage/LandingPage.tsx
-- [ ] src/pages/LoginPage/LoginPage.tsx
-- [ ] src/pages/LoginPage/components/Login.tsx
-- [ ] src/pages/RegisterPage/RegisterPage.tsx
-- [ ] src/pages/RegisterPage/components/Register.tsx
+- [x] src/pages/LandingPage/LandingPage.tsx
+- [x] src/pages/LoginPage/LoginPage.tsx
+- [x] src/pages/LoginPage/components/Login.tsx
+- [x] src/pages/RegisterPage/RegisterPage.tsx
+- [x] src/pages/RegisterPage/components/Register.tsx
 
 ### NotePage
 

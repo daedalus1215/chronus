@@ -1,138 +1,63 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Box,
-  Typography,
-  Button,
-  Stack,
-  Divider,
-} from '@mui/material';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { Logo } from '../../components/Logo/Logo';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        py: 4,
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          alignItems: 'center',
-          gap: { xs: 4, md: 8 },
-          width: '100%',
-        }}
-      >
+    <div className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-8">
+      <div className="flex w-full flex-col items-center gap-8 md:flex-row">
         {/* Logo Section */}
-        <Box
-          sx={{
-            flex: { xs: '0 0 auto', md: '1 1 50%' },
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+        <div className="flex flex-none items-center justify-center md:flex-1">
           <Logo height={300} />
-        </Box>
+        </div>
 
         {/* Action Section */}
-        <Box
-          sx={{
-            flex: { xs: '0 0 auto', md: '1 1 50%' },
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 3,
-            maxWidth: { xs: '100%', md: '500px' },
-          }}
-        >
-          <Box>
-            <Typography
-              variant="h2"
-              component="h1"
-              fontWeight={700}
-              sx={{
-                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
-                lineHeight: 1.2,
-                mb: 2,
-              }}
-            >
+        <div className="flex max-w-full flex-1 flex-col gap-6 md:max-w-[500px]">
+          <div>
+            <h1 className="mb-2 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
               Chronus
-            </Typography>
-            <Typography
-              variant="h5"
-              component="p"
-              color="text.secondary"
-              sx={{
-                fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                fontWeight: 400,
-                lineHeight: 1.6,
-              }}
-            >
+            </h1>
+            <p className="text-lg font-normal leading-relaxed text-muted-foreground sm:text-xl">
               Your personal time tracking and note-taking companion. Organize
               your thoughts, track your time, and stay productive.
-            </Typography>
-          </Box>
+            </p>
+          </div>
 
-          <Stack spacing={2} sx={{ mt: 2 }}>
+          <div className="mt-2 space-y-4">
             <Button
-              variant="contained"
-              size="large"
+              size="lg"
               onClick={() => navigate('/register')}
-              fullWidth
-              sx={{
-                py: 1.5,
-                borderRadius: '9999px',
-                textTransform: 'none',
-                fontSize: '1rem',
-                fontWeight: 600,
-              }}
+              className="w-full rounded-full py-6 text-base font-semibold"
             >
               Create account
             </Button>
 
-            <Divider sx={{ my: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                or
-              </Typography>
-            </Divider>
+            <div className="flex items-center gap-3 py-1">
+              <Separator className="flex-1" />
+              <span className="text-sm text-muted-foreground">or</span>
+              <Separator className="flex-1" />
+            </div>
 
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            <div className="text-center">
+              <p className="mb-2 text-sm text-muted-foreground">
                 Already have an account?
-              </Typography>
+              </p>
               <Button
-                component={Link}
-                to="/login"
-                variant="outlined"
-                size="large"
-                fullWidth
-                sx={{
-                  py: 1.5,
-                  borderRadius: '9999px',
-                  textTransform: 'none',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  borderWidth: 2,
-                  '&:hover': {
-                    borderWidth: 2,
-                  },
-                }}
+                asChild
+                variant="outline"
+                size="lg"
+                className="w-full rounded-full border-2 py-6 text-base font-semibold hover:border-2"
               >
-                Sign in
+                <Link to="/login">Sign in</Link>
               </Button>
-            </Box>
-          </Stack>
-        </Box>
-      </Box>
-    </Container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Login } from './components/Login';
 import { useAuth } from '../../auth/useAuth';
-import { Container, Box } from '@mui/material';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -30,18 +29,10 @@ export const LoginPage: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Box sx={{ width: '100%' }}>
+    <div className="mx-auto flex min-h-screen max-w-sm items-center justify-center px-4">
+      <div className="w-full">
         <Login onLogin={handleLogin} />
-      </Box>
-    </Container>
+      </div>
+    </div>
   );
 };
