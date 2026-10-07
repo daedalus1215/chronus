@@ -1,16 +1,16 @@
 import React, { useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import ListItem from '@mui/material/ListItem';
+import { cn } from '@/lib/utils';
 import { CheckItem } from '../../../../api/responses';
+import styles from './DraggableCheckItem.module.css';
 
 type DraggableCheckItemProps = {
   item: CheckItem;
   children: React.ReactNode;
   dragHandle?: React.ReactNode;
   className?: string;
-  sx?: Record<string, unknown>;
-  disablePadding?: boolean;
+  style?: React.CSSProperties;
   onFlipNode?: (id: number, node: HTMLElement | null) => void;
 };
 
@@ -19,8 +19,7 @@ export const DraggableCheckItem: React.FC<DraggableCheckItemProps> = ({
   children,
   dragHandle,
   className,
-  sx,
-  disablePadding,
+  style,
   onFlipNode,
 }) => {
   const {
@@ -39,19 +38,17 @@ export const DraggableCheckItem: React.FC<DraggableCheckItemProps> = ({
     },
     [setNodeRef, onFlipNode, item.id]
   );
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
 
   return (
-    <ListItem
+    <li
       ref={setRefs}
-      style={style}
-      className={className}
-      sx={sx}
-      disablePadding={disablePadding}
+      style={{
+        ...style,
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+      }}
+      className={cn(styles.draggableItem, className)}
       {...attributes}
     >
       {dragHandle && (
@@ -68,6 +65,6 @@ export const DraggableCheckItem: React.FC<DraggableCheckItemProps> = ({
         </div>
       )}
       {children}
-    </ListItem>
+    </li>
   );
 };

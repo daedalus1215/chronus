@@ -102,10 +102,10 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/pages/NotePage/components/CheckListView/components/AddCheckItemDialog/AddCheckItemDialog.tsx
 - [x] src/pages/NotePage/components/CheckListView/components/CheckItemFilterBar/CheckItemFilterBar.tsx
 - [x] src/pages/NotePage/components/CheckListView/components/DeleteCheckItemDialog/DeleteCheckItemDialog.tsx
-- [ ] src/pages/NotePage/components/CheckListView/components/DraggableCheckItem/DraggableCheckItem.tsx
+- [x] src/pages/NotePage/components/CheckListView/components/DraggableCheckItem/DraggableCheckItem.tsx
 - [x] src/pages/NotePage/components/CheckListView/components/EditCheckItemDialog/EditCheckItemDialog.tsx
-- [ ] src/pages/NotePage/components/CheckListView/DesktopCheckListView/DesktopCheckListView.tsx
-- [ ] src/pages/NotePage/components/CheckListView/MobileCheckListView/MobileCheckListView.tsx
+- [x] src/pages/NotePage/components/CheckListView/DesktopCheckListView/DesktopCheckListView.tsx
+- [x] src/pages/NotePage/components/CheckListView/MobileCheckListView/MobileCheckListView.tsx
 - [x] src/pages/NotePage/components/MobileTagsView/MobileTagsView.tsx
 - [x] src/pages/NotePage/components/RightSidebar/RightSidebar.tsx
 - [x] src/pages/NotePage/components/SidebarAudioHistoryView/SidebarAudioHistoryView.tsx
