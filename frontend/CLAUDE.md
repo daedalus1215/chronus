@@ -15,12 +15,23 @@ npm run lint       # eslint
 npm run typecheck  # tsc --noEmit
 ```
 
-## Styling rules (non-negotiable)
+## Styling rules — migration in progress
 
-1. **MUI `sx` prop** for quick layout and spacing (flex, gap, padding, margin, colors from theme).
-2. **CSS Modules** (`.module.css`) co-located with the component for reusable or complex rules.
-3. **Global tokens** live in `src/styles/global.scss` (CSS custom properties like `--color-bg`, `--color-text`).
-4. **No Tailwind** — the project removed it. Use `clsx` (via the `cn` helper in `src/lib/utils.ts`) only for merging CSS module class names.
+**The project is migrating from MUI + CSS Modules to Tailwind v4 + shadcn/ui.**
+This section is stale and will be rewritten once the migration finishes; until
+then treat both approaches as valid depending on whether a given file has
+been migrated yet.
+
+- New/migrated components: Tailwind utility classes, shadcn/ui primitives
+  from `src/components/ui/`, `cn()` from `src/lib/utils.ts` (now backed by
+  `tailwind-merge`) for conditional/merged classes.
+- Not-yet-migrated components: still MUI `sx` + CSS Modules — do not mix the
+  two systems within one component during a partial migration.
+- **Global tokens** live in `src/styles/global.scss` as CSS custom properties
+  (`--background`, `--foreground`, `--primary`, etc., OKLCH-based, shadcn
+  "new-york" convention) and are mapped into Tailwind's theme via
+  `src/styles/tailwind.css` (`@theme inline`). Both MUI's `theme.ts` and
+  Tailwind read from the same variables — don't hardcode hex.
 
 ## Theme
 
