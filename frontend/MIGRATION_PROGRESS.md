@@ -49,7 +49,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### ExplorerPage
 
-- [ ] src/pages/ExplorerPage/ExplorerPage.tsx
+- [x] src/pages/ExplorerPage/ExplorerPage.tsx
 - [x] src/pages/ExplorerPage/components/ExplorerTree/DragGhostRow.tsx
 - [x] src/pages/ExplorerPage/components/ExplorerTree/ExplorerFilterBar.tsx
 - [x] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTreeDialogs.tsx
@@ -61,8 +61,8 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/pages/ExplorerPage/components/ExplorerTree/NoteRow.tsx
 - [x] src/pages/ExplorerPage/components/FolderTree/FolderTreeItem.tsx
 - [x] src/pages/ExplorerPage/components/FolderTree/FolderTree.tsx
-- [ ] src/pages/ExplorerPage/components/MergeNotesDialog/MergeNotesDialog.tsx
-- [ ] src/pages/ExplorerPage/components/NotesBrowser/NotesBrowser.tsx
+- [x] src/pages/ExplorerPage/components/MergeNotesDialog/MergeNotesDialog.tsx
+- [x] src/pages/ExplorerPage/components/NotesBrowser/NotesBrowser.tsx
 
 ### HomePage
 

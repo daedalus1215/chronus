@@ -1,22 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Box,
-  TextField,
-  List,
-  ListItemButton,
-  Typography,
-  InputAdornment,
-  IconButton,
-  CircularProgress,
-  Menu,
-  MenuItem,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
-import NoteIcon from '@mui/icons-material/StickyNote2';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+  Search,
+  X,
+  StickyNote,
+  SquareCheck,
+  MoreHorizontal,
+  ChevronRight,
+  Loader2,
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useNavigate } from 'react-router-dom';
 import {
   getNotesForExplorer,
@@ -56,21 +53,13 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
       !searchQuery || n.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const [menuState, setMenuState] = useState<{
-    anchor: HTMLElement;
-    noteId: number;
-  } | null>(null);
+  const [openMenuNoteId, setOpenMenuNoteId] = useState<number | null>(null);
   const [moveDialogNoteId, setMoveDialogNoteId] = useState<number | null>(null);
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value),
     []
   );
-
-  const handleMenuOpen = (e: React.MouseEvent<HTMLElement>, noteId: number) => {
-    e.stopPropagation();
-    setMenuState({ anchor: e.currentTarget, noteId });
-  };
 
   const handleMoveConfirm = async (folder: FolderDto | null) => {
     if (moveDialogNoteId === null) return;
@@ -80,114 +69,102 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
   };
 
   return (
-    <Box className={styles.browser}>
+    <div className={styles.browser}>
       {/* top bar */}
-      <Box className={styles.topBar}>
-        <Typography className={styles.breadcrumb} component="div">
-          <ChevronRightIcon
-            sx={{ fontSize: 11 }}
-            className={styles.breadcrumbSep}
-          />
+      <div className={styles.topBar}>
+        <div className={styles.breadcrumb}>
+          <ChevronRight size={11} className={styles.breadcrumbSep} />
           <span className={styles.breadcrumbCurrent}>{folderLabel}</span>
-        </Typography>
-        <TextField
-          size="small"
-          fullWidth
-          placeholder="Filter notes…"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          className={styles.searchInput}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon
-                  sx={{ fontSize: 14, color: 'var(--color-text-muted)' }}
-                />
-              </InputAdornment>
-            ),
-            endAdornment: searchQuery ? (
-              <InputAdornment position="end">
-                <IconButton
-                  size="small"
-                  onClick={() => setSearchQuery('')}
-                  sx={{ p: '2px' }}
-                >
-                  <ClearIcon sx={{ fontSize: 13 }} />
-                </IconButton>
-              </InputAdornment>
-            ) : null,
-          }}
-        />
-      </Box>
+        </div>
+        <div className="relative">
+          <Search
+            size={14}
+            className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2"
+            style={{ color: 'var(--color-text-muted)' }}
+          />
+          <input
+            placeholder="Filter notes…"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className={styles.searchInput}
+          />
+          {searchQuery ? (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              <X size={13} />
+            </button>
+          ) : null}
+        </div>
+      </div>
 
       {isLoading ? (
-        <Box className={styles.center}>
-          <CircularProgress size={18} thickness={3} />
-        </Box>
+        <div className={styles.center}>
+          <Loader2 className="size-[18px] animate-spin text-muted-foreground" />
+        </div>
       ) : notes.length === 0 ? (
-        <Box className={styles.center}>
-          <Typography className={styles.emptyText}>
+        <div className={styles.center}>
+          <span className={styles.emptyText}>
             {searchQuery ? `No results for "${searchQuery}"` : 'Empty folder'}
-          </Typography>
-        </Box>
+          </span>
+        </div>
       ) : (
-        <List disablePadding className={styles.list}>
+        <div className={styles.list}>
           {notes.map(note => (
-            <ListItemButton
+            <div
               key={note.id}
-              disableRipple
+              role="button"
+              tabIndex={0}
               onClick={() => navigate(`/notes/${note.id}`)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(`/notes/${note.id}`);
+                }
+              }}
               className={styles.noteRow}
             >
-              <Box className={styles.noteIcon}>
+              <span className={styles.noteIcon}>
                 {note.isMemo ? (
-                  <NoteIcon
-                    sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
-                  />
+                  <StickyNote size={13} style={{ color: 'var(--color-text-muted)' }} />
                 ) : (
-                  <CheckBoxIcon
-                    sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
-                  />
+                  <SquareCheck size={13} style={{ color: 'var(--color-text-muted)' }} />
                 )}
-              </Box>
+              </span>
               <span className={styles.noteLabel}>{note.name}</span>
-              <IconButton
-                size="small"
-                className={styles.noteMenuBtn}
-                onClick={e => handleMenuOpen(e, note.id)}
+              <DropdownMenu
+                open={openMenuNoteId === note.id}
+                onOpenChange={open => setOpenMenuNoteId(open ? note.id : null)}
               >
-                <MoreHorizIcon sx={{ fontSize: 13 }} />
-              </IconButton>
-            </ListItemButton>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className={styles.noteMenuBtn}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <MoreHorizontal size={13} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="min-w-[150px]"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <DropdownMenuItem onClick={() => setMoveDialogNoteId(note.id)}>
+                    Move to folder…
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate(`/notes/${note.id}`)}>
+                    Open
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ))}
-        </List>
+        </div>
       )}
-
-      <Menu
-        anchorEl={menuState?.anchor}
-        open={Boolean(menuState)}
-        onClose={() => setMenuState(null)}
-        slotProps={{ paper: { sx: { minWidth: 150 } } }}
-      >
-        <MenuItem
-          dense
-          onClick={() => {
-            if (menuState) setMoveDialogNoteId(menuState.noteId);
-            setMenuState(null);
-          }}
-        >
-          Move to folder…
-        </MenuItem>
-        <MenuItem
-          dense
-          onClick={() => {
-            if (menuState) navigate(`/notes/${menuState.noteId}`);
-            setMenuState(null);
-          }}
-        >
-          Open
-        </MenuItem>
-      </Menu>
 
       {moveDialogNoteId !== null && (
         <MoveNoteDialog
@@ -196,6 +173,6 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
           onConfirm={handleMoveConfirm}
         />
       )}
-    </Box>
+    </div>
   );
 };

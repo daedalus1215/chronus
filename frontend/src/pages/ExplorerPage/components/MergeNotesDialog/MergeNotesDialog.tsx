@@ -1,25 +1,18 @@
 import React, { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Chip,
-  Stack,
-  Typography,
-  Box,
-  List,
-  ListItem,
-  Tooltip,
-  Radio,
-  RadioGroup,
-  FormControl,
-  FormLabel,
-  Alert,
-} from '@mui/material';
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { SourceNoteSelection } from '../../hooks/useMergeNotes';
 
 export type NoteToMerge = {
@@ -213,277 +206,182 @@ export const MergeNotesDialog: React.FC<MergeNotesDialogProps> = ({
   });
 
   return (
-    <Dialog
-      open={open}
-      onClose={onCancel}
-      maxWidth="md"
-      fullWidth
-      aria-labelledby="merge-notes-dialog-title"
-    >
-      <DialogTitle id="merge-notes-dialog-title">
-        Merge {notes.length} Notes
-      </DialogTitle>
-      <DialogContent dividers>
-        <Stack spacing={3}>
+    <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
+      <DialogContent className="flex max-h-[85vh] flex-col gap-0 p-0 sm:max-w-3xl">
+        <DialogHeader className="p-6 pb-4">
+          <DialogTitle>Merge {notes.length} Notes</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex-1 space-y-6 overflow-y-auto border-y border-border px-6 py-4">
           {/* Target selection */}
-          <Box>
-            <FormControl component="fieldset" fullWidth>
-              <FormLabel component="legend">
-                Select Primary Note (target)
-              </FormLabel>
-              <RadioGroup
-                value={targetNoteId}
-                onChange={e => setTargetNoteId(Number(e.target.value))}
-              >
-                {notes.map(note => (
-                  <FormControlLabel
-                    key={note.id}
-                    value={note.id}
-                    control={<Radio />}
-                    label={
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <Typography>{note.name}</Typography>
-                        <Chip
-                          size="small"
-                          label={note.isMemo ? 'memo' : 'checklist'}
-                          variant="outlined"
-                        />
-                      </Stack>
-                    }
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mt: 1, display: 'block' }}
+          <div>
+            <Label className="mb-2 block text-sm font-medium">
+              Select Primary Note (target)
+            </Label>
+            <RadioGroup
+              value={String(targetNoteId)}
+              onValueChange={v => setTargetNoteId(Number(v))}
             >
+              {notes.map(note => (
+                <Label
+                  key={note.id}
+                  htmlFor={`merge-target-${note.id}`}
+                  className="flex items-center gap-2 font-normal"
+                >
+                  <RadioGroupItem value={String(note.id)} id={`merge-target-${note.id}`} />
+                  <span className="flex items-center gap-2">
+                    <span>{note.name}</span>
+                    <Badge variant="outline">{note.isMemo ? 'memo' : 'checklist'}</Badge>
+                  </span>
+                </Label>
+              ))}
+            </RadioGroup>
+            <p className="mt-1 text-xs text-muted-foreground">
               The primary note keeps its title, folder, and creation date. Other
               notes will be archived.
-            </Typography>
-          </Box>
+            </p>
+          </div>
 
           {/* Warning about audio deletion */}
-          <Alert severity="info" sx={{ fontSize: 13 }}>
-            Audio files from source notes will be deleted (not moved to the
-            target).
+          <Alert>
+            <AlertDescription>
+              Audio files from source notes will be deleted (not moved to the
+              target).
+            </AlertDescription>
           </Alert>
 
           {/* Error display */}
           {error && (
-            <Alert severity="error" sx={{ fontSize: 13 }}>
-              {error}
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           {/* Source content selection */}
           {sourceNotes.length > 0 && (
-            <Box>
-              <Typography variant="subtitle1" gutterBottom>
+            <div>
+              <p className="mb-2 text-sm font-semibold">
                 Select content to merge from each note
-              </Typography>
-              <Stack spacing={2}>
+              </p>
+              <div className="space-y-4">
                 {sourceNotes.map(note => (
-                  <Box
-                    key={note.id}
-                    sx={{
-                      border: 1,
-                      borderColor: 'divider',
-                      borderRadius: 1,
-                      p: 2,
-                    }}
-                  >
-                    <Typography variant="subtitle2" gutterBottom>
-                      {note.name}
-                    </Typography>
+                  <div key={note.id} className="rounded-md border border-border p-4">
+                    <p className="mb-2 text-sm font-semibold">{note.name}</p>
 
                     {/* Description */}
                     {note.description?.trim() && (
-                      <Box sx={{ mb: 2 }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={selectedDescriptions.has(note.id)}
-                              onChange={() => handleToggleDescription(note.id)}
-                            />
-                          }
-                          label="Description"
-                        />
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{
-                            display: 'block',
-                            ml: 4,
-                            maxHeight: 60,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
+                      <div className="mb-4">
+                        <Label className="flex items-center gap-2 font-normal">
+                          <Checkbox
+                            checked={selectedDescriptions.has(note.id)}
+                            onCheckedChange={() => handleToggleDescription(note.id)}
+                          />
+                          Description
+                        </Label>
+                        <p className="ml-6 max-h-[60px] overflow-hidden text-ellipsis text-xs text-muted-foreground">
                           {note.description.substring(0, 150)}
                           {note.description.length > 150 ? '...' : ''}
-                        </Typography>
-                      </Box>
+                        </p>
+                      </div>
                     )}
 
                     {/* Tags */}
                     {note.tags.length > 0 && (
-                      <Box sx={{ mb: 2 }}>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ display: 'block', mb: 0.5 }}
-                        >
+                      <div className="mb-4">
+                        <p className="mb-1 text-xs text-muted-foreground">
                           Tags ({note.tags.length})
-                        </Typography>
-                        <Stack
-                          direction="row"
-                          spacing={1}
-                          flexWrap="wrap"
-                          useFlexGap
-                        >
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
                           {note.tags.map(tag => (
-                            <Chip
+                            <Badge
                               key={tag}
-                              label={tag}
-                              size="small"
-                              color={
-                                selectedTags.get(note.id)?.has(tag)
-                                  ? 'primary'
-                                  : 'default'
-                              }
-                              variant={
-                                selectedTags.get(note.id)?.has(tag)
-                                  ? 'filled'
-                                  : 'outlined'
-                              }
+                              variant={selectedTags.get(note.id)?.has(tag) ? 'default' : 'outline'}
+                              className="cursor-pointer"
                               onClick={() => handleToggleTag(note.id, tag)}
-                              clickable
-                            />
+                            >
+                              {tag}
+                            </Badge>
                           ))}
-                        </Stack>
-                      </Box>
+                        </div>
+                      </div>
                     )}
 
                     {/* Check items */}
                     {note.checkItems.length > 0 && (
-                      <Box sx={{ mb: 2 }}>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ display: 'block', mb: 0.5 }}
-                        >
+                      <div className="mb-4">
+                        <p className="mb-1 text-xs text-muted-foreground">
                           Check items ({note.checkItems.length})
-                        </Typography>
-                        <List dense disablePadding>
+                        </p>
+                        <div>
                           {note.checkItems.map((item, i) => (
-                            <ListItem key={i} disableGutters sx={{ py: 0 }}>
-                              <FormControlLabel
-                                sx={{ flex: 1 }}
-                                control={
-                                  <Checkbox
-                                    size="small"
-                                    checked={
-                                      selectedCheckItems.get(note.id)?.has(i) ??
-                                      false
-                                    }
-                                    onChange={() =>
-                                      handleToggleCheckItem(note.id, i)
-                                    }
-                                  />
-                                }
-                                label={
-                                  <Stack
-                                    direction="row"
-                                    alignItems="center"
-                                    spacing={1}
-                                  >
-                                    <Typography variant="body2">
-                                      {item.name}
-                                    </Typography>
-                                    <Typography
-                                      variant="caption"
-                                      color="text.secondary"
-                                    >
-                                      {statusLabels[item.status]}
-                                    </Typography>
-                                  </Stack>
-                                }
+                            <Label
+                              key={i}
+                              className="flex items-center gap-2 py-0.5 font-normal"
+                            >
+                              <Checkbox
+                                checked={selectedCheckItems.get(note.id)?.has(i) ?? false}
+                                onCheckedChange={() => handleToggleCheckItem(note.id, i)}
                               />
-                            </ListItem>
+                              <span className="flex items-center gap-2 text-sm">
+                                <span>{item.name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {statusLabels[item.status]}
+                                </span>
+                              </span>
+                            </Label>
                           ))}
-                        </List>
-                      </Box>
+                        </div>
+                      </div>
                     )}
 
                     {/* Time tracks */}
                     {note.timeTracks.length > 0 && (
-                      <Box>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ display: 'block', mb: 0.5 }}
-                        >
+                      <div>
+                        <p className="mb-1 text-xs text-muted-foreground">
                           Time tracks ({note.timeTracks.length})
-                        </Typography>
-                        <List dense disablePadding>
+                        </p>
+                        <div>
                           {note.timeTracks.map((track, i) => (
-                            <ListItem key={i} disableGutters sx={{ py: 0 }}>
-                              <FormControlLabel
-                                control={
-                                  <Checkbox
-                                    size="small"
-                                    checked={
-                                      selectedTimeTracks.get(note.id)?.has(i) ??
-                                      false
-                                    }
-                                    onChange={() =>
-                                      handleToggleTimeTrack(note.id, i)
-                                    }
-                                  />
-                                }
-                                label={
-                                  <Typography variant="body2">
-                                    {track.date} {track.startTime}{' '}
-                                    {track.durationMinutes}m
-                                    {track.note && (
-                                      <Tooltip title={track.note}>
-                                        <Chip
-                                          label="note"
-                                          size="small"
-                                          sx={{ ml: 1 }}
-                                        />
-                                      </Tooltip>
-                                    )}
-                                  </Typography>
-                                }
+                            <Label
+                              key={i}
+                              className="flex items-center gap-2 py-0.5 font-normal"
+                            >
+                              <Checkbox
+                                checked={selectedTimeTracks.get(note.id)?.has(i) ?? false}
+                                onCheckedChange={() => handleToggleTimeTrack(note.id, i)}
                               />
-                            </ListItem>
+                              <span className="text-sm">
+                                {track.date} {track.startTime} {track.durationMinutes}m
+                                {track.note && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Badge className="ml-2">note</Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent>{track.note}</TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </span>
+                            </Label>
                           ))}
-                        </List>
-                      </Box>
+                        </div>
+                      </div>
                     )}
-                  </Box>
+                  </div>
                 ))}
-              </Stack>
-            </Box>
+              </div>
+            </div>
           )}
-        </Stack>
+        </div>
+
+        <DialogFooter className="p-6 pt-4">
+          <Button variant="outline" onClick={onCancel} disabled={isMerging}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} disabled={isMerging || !hasSelection}>
+            {isMerging ? 'Merging…' : 'Merge notes'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel} color="secondary" disabled={isMerging}>
-          Cancel
-        </Button>
-        <Button
-          onClick={handleConfirm}
-          variant="contained"
-          color="primary"
-          disabled={isMerging || !hasSelection}
-        >
-          {isMerging ? 'Merging…' : 'Merge notes'}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
