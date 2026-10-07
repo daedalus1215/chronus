@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
-import { Fab, CircularProgress, Box, Snackbar, Alert } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { toast } from 'sonner';
+import { Plus, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { useAuth } from '../../auth/useAuth';
 import { DesktopNoteListView } from './components/NoteListView/DesktopNoteListView/DesktopNoteListView';
 import { useCreateNote } from './hooks/useCreateNote';
@@ -56,6 +58,13 @@ export const HomePage: React.FC = () => {
       setSelectedNoteId(null);
     }
   }, [routeNoteId, location.pathname]);
+
+  useEffect(() => {
+    if (importError) {
+      toast.error(importError);
+      setImportError(null);
+    }
+  }, [importError]);
 
   if (!user) {
     return null;
@@ -139,122 +148,66 @@ export const HomePage: React.FC = () => {
     >
       <ParticleField />
       {isMobile ? (
-        <Box
-          sx={{
-            height: '100%',
-            position: 'relative',
-            zIndex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <Box
-            sx={{
-              display: isNoteRoute ? 'none' : 'block',
-              flex: 1,
-            }}
-          >
+        <div className="relative z-[1] flex h-full flex-col">
+          <div className={cn('flex-1', isNoteRoute && 'hidden')}>
             <MobileNoteListView type={noteTypeParam} tagId={tagId} />
-          </Box>
+          </div>
           {isNoteRoute && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'background.paper',
-                zIndex: 1,
-              }}
-            >
+            <div className="absolute inset-0 z-[1] bg-card">
               <Outlet />
-            </Box>
+            </div>
           )}
-        </Box>
+        </div>
       ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            minWidth: 0,
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
+        <div className="relative z-[1] flex h-full min-w-0 w-full">
           {/* Note list and content */}
-          <Box
-            sx={{ display: 'flex', flex: 1, overflow: 'hidden', minWidth: 0 }}
-          >
-            <Box
-              sx={{
-                overflow: 'hidden',
-                flexShrink: 0,
+          <div className="flex min-w-0 flex-1 overflow-hidden">
+            <div
+              className="shrink-0 overflow-hidden"
+              style={{
                 maxWidth: isNoteListOpen ? '350px' : '0px',
                 transition: 'max-width 0.2s ease',
               }}
             >
-              <Box sx={{ borderRight: '1px solid', borderColor: 'divider' }}>
+              <div className="border-r border-border">
                 <DesktopNoteListView
                   type={noteTypeParam}
                   tagId={tagId}
                   onNoteSelect={handleNoteSelect}
                   selectedNoteId={selectedNoteId}
                 />
-              </Box>
-            </Box>
-            <Box
-              sx={{
-                flex: 1,
-                height: '100%',
-                minWidth: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-              }}
-            >
+              </div>
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col overflow-hidden" style={{ height: '100%' }}>
               {selectedNoteId && (
-                <Box
-                  sx={{
-                    p: 2,
-                    flex: 1,
-                    minHeight: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden',
-                  }}
-                >
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4">
                   <Outlet />
-                </Box>
+                </div>
               )}
-            </Box>
-          </Box>
-        </Box>
+            </div>
+          </div>
+        </div>
       )}
       {!isNoteRoute && (
-        <Fab
-          color="primary"
+        <Button
+          size="icon"
           aria-label="Create new note"
           onClick={() => setShowMenu(true)}
           disabled={isCreating}
-          sx={{
-            position: 'fixed',
-            bottom: '2rem',
-            right: '2rem',
-          }}
+          className="fixed bottom-8 right-8 rounded-full"
         >
           {isCreating ? (
-            <CircularProgress size={24} color="inherit" />
+            <Loader2 className="size-6 animate-spin" />
           ) : (
-            <AddIcon
-              sx={{
-                transition: 'transform 0.28s var(--ease-spring, ease)',
+            <Plus
+              className="transition-transform duration-[280ms]"
+              style={{
+                transitionTimingFunction: 'var(--ease-spring, ease)',
                 transform: showMenu ? 'rotate(135deg)' : 'none',
               }}
             />
           )}
-        </Fab>
+        </Button>
       )}
       {showMenu && (
         <CreateNoteMenu
@@ -273,20 +226,6 @@ export const HomePage: React.FC = () => {
           onConfirm={handleConfirmImport}
         />
       )}
-      <Snackbar
-        open={!!importError}
-        autoHideDuration={6000}
-        onClose={() => setImportError(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity="error"
-          onClose={() => setImportError(null)}
-          sx={{ width: '100%' }}
-        >
-          {importError}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };
