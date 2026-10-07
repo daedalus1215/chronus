@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import PullToRefresh from 'react-pull-to-refresh';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import Badge from '@mui/material/Badge';
-import Chip from '@mui/material/Chip';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import {
   DndContext,
   DragEndEvent,
@@ -83,10 +80,6 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
     { ready: [], in_progress: [], review: [], done: [] }
   );
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
       if (activeTab < KANBAN_COLUMNS.length - 1) {
@@ -109,40 +102,32 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
       : null;
 
   return (
-    <Box className={styles.mobileContainer} {...swipeHandlers}>
-      <Tabs
-        value={activeTab}
-        onChange={handleTabChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        className={styles.tabs}
-        TabIndicatorProps={{
-          style: { backgroundColor: activeColumn.statusColor },
-        }}
-      >
-        {KANBAN_COLUMNS.map(column => (
-          <Tab
-            key={column.id}
-            label={
+    <div className={styles.mobileContainer} {...swipeHandlers}>
+      <Tabs value={String(activeTab)} onValueChange={v => setActiveTab(Number(v))}>
+        <TabsList
+          variant="line"
+          className={`${styles.tabs} w-full justify-start overflow-x-auto rounded-none bg-[var(--color-bg-elevated)]`}
+        >
+          {KANBAN_COLUMNS.map((column, index) => (
+            <TabsTrigger
+              key={column.id}
+              value={String(index)}
+              style={{ ['--tab-color' as string]: column.statusColor }}
+              className={`${styles.tab} flex-none shrink-0 after:bg-[var(--tab-color)]`}
+            >
+              <span className="mr-2">{column.title}</span>
               <Badge
-                badgeContent={itemsByStatus[column.id].length}
-                color="default"
-                sx={{
-                  '& .MuiBadge-badge': {
-                    backgroundColor: column.statusColor,
-                    color: column.id === 'in_progress' ? '#000' : '#fff',
-                    fontSize: '10px',
-                    minWidth: '16px',
-                    height: '16px',
-                  },
+                className="h-4 min-w-4 px-1 text-[10px]"
+                style={{
+                  backgroundColor: column.statusColor,
+                  color: column.id === 'in_progress' ? '#000' : '#fff',
                 }}
               >
-                <span style={{ marginRight: '20px' }}>{column.title}</span>
+                {itemsByStatus[column.id].length}
               </Badge>
-            }
-            className={styles.tab}
-          />
-        ))}
+            </TabsTrigger>
+          ))}
+        </TabsList>
       </Tabs>
 
       <PullToRefresh onRefresh={onRefresh} className={styles.pullToRefresh}>
@@ -153,14 +138,14 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
           onDragEnd={onDragEnd}
           onDragCancel={onDragCancel}
         >
-          <Box className={styles.columnContainer}>
+          <div className={styles.columnContainer}>
             <SortableContext
               items={currentItems.map(item => item.id)}
               strategy={verticalListSortingStrategy}
             >
-              <Box className={styles.cardsContainer}>
+              <div className={styles.cardsContainer}>
                 {currentItems.map(item => (
-                  <Box key={item.id} className={styles.cardWrapper}>
+                  <div key={item.id} className={styles.cardWrapper}>
                     <KanbanCard
                       item={item}
                       statusColor={activeColumn.statusColor}
@@ -168,48 +153,42 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
                       onViewDetails={onViewItemDetails}
                     />
                     {(prevColumn || nextColumn) && (
-                      <Box className={styles.columnNav}>
+                      <div className={styles.columnNav}>
                         {prevColumn ? (
-                          <Chip
-                            label={`← ${prevColumn.title}`}
-                            size="small"
-                            onClick={() =>
-                              onMoveToStatus(item.id, prevColumn.id)
-                            }
-                            sx={{
+                          <Badge
+                            variant="outline"
+                            className="h-[22px] cursor-pointer text-[0.65rem]"
+                            style={{
                               borderColor: prevColumn.statusColor,
                               color: prevColumn.statusColor,
-                              fontSize: '0.65rem',
-                              height: 22,
                             }}
-                            variant="outlined"
-                          />
+                            onClick={() => onMoveToStatus(item.id, prevColumn.id)}
+                          >
+                            ← {prevColumn.title}
+                          </Badge>
                         ) : (
                           <span />
                         )}
                         {nextColumn && (
-                          <Chip
-                            label={`${nextColumn.title} →`}
-                            size="small"
-                            onClick={() =>
-                              onMoveToStatus(item.id, nextColumn.id)
-                            }
-                            sx={{
+                          <Badge
+                            variant="outline"
+                            className="h-[22px] cursor-pointer text-[0.65rem]"
+                            style={{
                               borderColor: nextColumn.statusColor,
                               color: nextColumn.statusColor,
-                              fontSize: '0.65rem',
-                              height: 22,
                             }}
-                            variant="outlined"
-                          />
+                            onClick={() => onMoveToStatus(item.id, nextColumn.id)}
+                          >
+                            {nextColumn.title} →
+                          </Badge>
                         )}
-                      </Box>
+                      </div>
                     )}
-                  </Box>
+                  </div>
                 ))}
-              </Box>
+              </div>
             </SortableContext>
-          </Box>
+          </div>
           <DragOverlay>
             {activeItem ? (
               <div className={styles.dragOverlay}>
@@ -224,6 +203,6 @@ export const MobileKanbanBoard: React.FC<MobileKanbanBoardProps> = ({
           </DragOverlay>
         </DndContext>
       </PullToRefresh>
-    </Box>
+    </div>
   );
 };
