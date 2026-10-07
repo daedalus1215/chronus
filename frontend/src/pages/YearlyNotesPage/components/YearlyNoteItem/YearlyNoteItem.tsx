@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Typography, Box, Chip } from '@mui/material';
+import { Badge } from '@/components/ui/badge';
 import { NotesByYearResponseDto } from '../../../../api/dtos/time-tracks.dtos';
 import { ROUTES } from '../../../../constants/routes';
 import { formatDateForDisplay } from '../../../../utils/dateUtils';
@@ -44,49 +44,38 @@ export const YearlyNoteItem: React.FC<YearlyNoteItemProps> = ({ note }) => {
 
   return (
     <div className={styles.noteItem} onClick={handleNoteClick}>
-      <Box className={styles.noteContent}>
-        <Typography className={styles.noteName}>{note.noteName}</Typography>
-        <Box className={styles.noteDetails}>
-          <Box className={styles.topRow}>
-            <Typography className={styles.dateRange}>
+      <div className={styles.noteContent}>
+        <span className={styles.noteName}>{note.noteName}</span>
+        <div className={styles.noteDetails}>
+          <div className={styles.topRow}>
+            <span className={styles.dateRange}>
               {firstDateFormatted} - {lastDateFormatted}
-            </Typography>
-            <Box className={styles.metrics}>
-              <Typography className={styles.time}>
+            </span>
+            <div className={styles.metrics}>
+              <span className={styles.time}>
                 {formatTime(note.totalTimeMinutes)}
-              </Typography>
-              <Typography className={styles.dateCount}>
+              </span>
+              <span className={styles.dateCount}>
                 {note.dateCount} {note.dateCount === 1 ? 'day' : 'days'}
-              </Typography>
-            </Box>
-          </Box>
+              </span>
+            </div>
+          </div>
           {note.tags && note.tags.length > 0 && (
-            <Box className={styles.tagsContainer}>
+            <div className={styles.tagsContainer}>
               {note.tags.map(tag => (
-                <Chip
+                <Badge
                   key={tag.id}
-                  label={tag.name}
-                  size="small"
-                  variant="outlined"
+                  variant="outline"
                   className={styles.tagChip}
                   onClick={e => handleTagClick(e, tag.id)}
-                  sx={{
-                    height: '20px',
-                    fontSize: '0.6875rem',
-                    borderColor: 'var(--color-primary, #6366f1)',
-                    color: 'var(--color-text-secondary, #9ca3af)',
-                    '&:hover': {
-                      backgroundColor:
-                        'var(--color-primary-light, rgba(99, 102, 241, 0.1))',
-                      borderColor: 'var(--color-primary, #6366f1)',
-                    },
-                  }}
-                />
+                >
+                  {tag.name}
+                </Badge>
               ))}
-            </Box>
+            </div>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </div>
   );
 };
