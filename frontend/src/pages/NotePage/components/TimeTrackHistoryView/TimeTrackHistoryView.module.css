@@ -19,6 +19,14 @@
   color: var(--color-text-secondary, #9ca3af);
 }
 
+.list {
+  scrollbar-width: none;
+}
+
+.list::-webkit-scrollbar {
+  display: none;
+}
+
 .centeredState {
   display: flex;
   justify-content: center;

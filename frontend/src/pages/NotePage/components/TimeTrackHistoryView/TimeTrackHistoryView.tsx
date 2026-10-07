@@ -1,25 +1,21 @@
 import React, { useMemo, useState } from 'react';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import TextField from '@mui/material/TextField';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded';
-import EditOutlined from '@mui/icons-material/EditOutlined';
+import { Plus, Trash2, Pencil, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   TimeTrackingForm,
   TimeTrackingData,
@@ -105,12 +101,9 @@ export const TimeTrackHistoryView: React.FC<TimeTrackHistoryViewProps> = ({
       timeTrack => timeTrack.note && timeTrack.note.trim().length > 0
     );
   }, [sortedTimeTracks]);
-  const handleViewModeChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    nextMode: ViewMode | null
-  ): void => {
+  const handleViewModeChange = (nextMode: string): void => {
     if (nextMode) {
-      setViewMode(nextMode);
+      setViewMode(nextMode as ViewMode);
     }
   };
   const handleEditStart = (timeTrack: TimeTrack): void => {
@@ -171,257 +164,197 @@ export const TimeTrackHistoryView: React.FC<TimeTrackHistoryViewProps> = ({
   };
   const isLoading = isLoadingTimeTracks || isLoadingTotal;
   return (
-    <Box className={styles.timeTrackHistoryContainer}>
-      <Box className={styles.header}>
-        <Typography variant="body2" className={styles.totalTime}>
+    <div className={styles.timeTrackHistoryContainer}>
+      <div className={styles.header}>
+        <span className={styles.totalTime}>
           {isLoadingTotal
             ? 'Loading total…'
             : totalTimeData
               ? `Total: ${formatDurationMinutes(totalTimeData.totalMinutes)}`
               : 'Total: —'}
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <ToggleButtonGroup
-            size="small"
-            exclusive
+        </span>
+        <div className="flex items-center gap-1">
+          <ToggleGroup
+            type="single"
+            size="sm"
             value={viewMode}
-            onChange={handleViewModeChange}
+            onValueChange={handleViewModeChange}
             aria-label="Time track view mode"
-            sx={{
-              '& .MuiToggleButton-root': {
-                py: 0.25,
-                px: 1,
-                fontSize: '0.7rem',
-                textTransform: 'none',
-                lineHeight: 1.4,
-              },
-            }}
+            className="[&>*:not(:first-child)]:border-l [&>*:not(:first-child)]:border-[var(--color-overlay-stronger)]"
           >
-            <ToggleButton value="history" aria-label="History view">
+            <ToggleGroupItem
+              value="history"
+              aria-label="History view"
+              className="rounded-none border-0 px-2 py-0.5 text-[0.7rem]"
+            >
               History
-            </ToggleButton>
-            <ToggleButton value="worklog" aria-label="Worklog view">
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="worklog"
+              aria-label="Worklog view"
+              className="rounded-none border-0 px-2 py-0.5 text-[0.7rem]"
+            >
               Worklog
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <IconButton
-            size="small"
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             aria-label="Add time entry"
             onClick={handleAddClick}
           >
-            <AddIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      </Box>
+            <Plus className="size-4" />
+          </Button>
+        </div>
+      </div>
       {isLoading && (
-        <Box className={styles.centeredState}>
-          <CircularProgress size={20} />
-        </Box>
+        <div className={styles.centeredState}>
+          <Loader2 className="size-5 animate-spin text-muted-foreground" />
+        </div>
       )}
       {timeTrackError && !isLoading && (
-        <Alert severity="error" sx={{ m: 1.5 }}>
-          Failed to load time entries.
+        <Alert variant="destructive" className="m-3">
+          <AlertDescription>Failed to load time entries.</AlertDescription>
         </Alert>
       )}
       {createTimeTrackMutation.isError && (
-        <Alert severity="error" sx={{ mx: 1.5, mt: 1 }}>
-          Failed to save time entry.
+        <Alert variant="destructive" className="mx-3 mt-2">
+          <AlertDescription>Failed to save time entry.</AlertDescription>
         </Alert>
       )}
       {viewMode === 'history' &&
         !isLoading &&
         !timeTrackError &&
         sortedTimeTracks.length === 0 && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ px: 1.5, py: 2 }}
-          >
+          <span className="block px-3 py-4 text-sm text-muted-foreground">
             No time entries for this note.
-          </Typography>
+          </span>
         )}
       {viewMode === 'history' &&
         !isLoading &&
         !timeTrackError &&
         sortedTimeTracks.length > 0 && (
-          <List
-            dense
-            disablePadding
-            sx={{
-              overflowY: 'auto',
-              flex: 1,
-              minHeight: 0,
-              scrollbarWidth: 'none',
-              '&::-webkit-scrollbar': { display: 'none' },
-            }}
+          <ul
+            className={`${styles.list} min-h-0 flex-1 list-none overflow-y-auto p-0`}
           >
             {sortedTimeTracks.map(timeTrack => (
-              <ListItem
+              <li
                 key={timeTrack.id}
-                disablePadding
-                sx={{
-                  py: 0.5,
-                  px: 1.5,
-                  alignItems: 'center',
-                  borderBottom: '1px solid var(--color-overlay-stronger)',
-                }}
+                className="flex items-center gap-2 border-b border-[var(--color-overlay-stronger)] px-3 py-1"
               >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    width: '100%',
-                    gap: 1,
-                  }}
-                >
-                  <ListItemText
-                    primary={formatDateForDisplay(timeTrack.date)}
-                    secondary={
-                      <>
-                        <Box component="span" sx={{ display: 'block' }}>
-                          {`${timeTrack.startTime} • ${formatDurationMinutes(timeTrack.durationMinutes)}`}
-                        </Box>
-                        {timeTrack.note && (
-                          <Tooltip title={timeTrack.note}>
-                            <Box
-                              component="span"
-                              className={styles.entryNote}
-                              sx={{ display: 'block', fontSize: '0.75rem' }}
-                            >
-                              {timeTrack.note}
-                            </Box>
-                          </Tooltip>
-                        )}
-                      </>
-                    }
-                    sx={{
-                      my: 0,
-                      '& .MuiListItemText-primary': { fontSize: '0.875rem' },
-                      '& .MuiListItemText-secondary': { fontSize: '0.75rem' },
-                    }}
-                  />
-                  <IconButton
-                    size="small"
+                <div className="flex w-full items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm">
+                      {formatDateForDisplay(timeTrack.date)}
+                    </p>
+                    <span className="block text-xs text-muted-foreground">
+                      {`${timeTrack.startTime} • ${formatDurationMinutes(timeTrack.durationMinutes)}`}
+                    </span>
+                    {timeTrack.note && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className={`${styles.entryNote} text-xs text-muted-foreground`}
+                          >
+                            {timeTrack.note}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>{timeTrack.note}</TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
                     aria-label="Delete time entry"
                     onClick={() => handleDeleteClick(timeTrack)}
                     disabled={deleteTimeTrackMutation.isPending}
-                    sx={{ color: 'text.secondary' }}
+                    className="text-muted-foreground"
                   >
-                    <DeleteOutlineRounded fontSize="small" />
-                  </IconButton>
-                </Box>
-              </ListItem>
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </li>
             ))}
-          </List>
+          </ul>
         )}
       {viewMode === 'worklog' &&
         !isLoading &&
         !timeTrackError &&
         worklogEntries.length === 0 && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ px: 1.5, py: 2 }}
-          >
+          <span className="block px-3 py-4 text-sm text-muted-foreground">
             No worklog notes yet. Add a note when you log time to build a
             history of what you worked on.
-          </Typography>
+          </span>
         )}
       {viewMode === 'worklog' &&
         !isLoading &&
         !timeTrackError &&
         worklogEntries.length > 0 && (
-          <Box
-            sx={{
-              overflowY: 'auto',
-              flex: 1,
-              minHeight: 0,
-              scrollbarWidth: 'none',
-              '&::-webkit-scrollbar': { display: 'none' },
-            }}
+          <div
+            className={`${styles.list} min-h-0 flex-1 overflow-y-auto`}
           >
             {worklogEntries.map(timeTrack => (
-              <Box key={timeTrack.id} className={styles.worklogEntry}>
-                <Box className={styles.worklogMeta}>
-                  <Typography component="span" className={styles.worklogDate}>
+              <div key={timeTrack.id} className={styles.worklogEntry}>
+                <div className={styles.worklogMeta}>
+                  <span className={styles.worklogDate}>
                     {formatDateForDisplay(timeTrack.date)}
-                  </Typography>
-                  <Typography
-                    component="span"
-                    className={styles.worklogDuration}
-                  >
+                  </span>
+                  <span className={styles.worklogDuration}>
                     {`${timeTrack.startTime} • ${formatDurationMinutes(timeTrack.durationMinutes)}`}
-                  </Typography>
+                  </span>
                   {editingId !== timeTrack.id && (
-                    <IconButton
-                      size="small"
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
                       aria-label="Edit note"
                       onClick={() => handleEditStart(timeTrack)}
-                      sx={{ ml: 'auto', color: 'text.secondary', p: 0.25 }}
+                      className="ml-auto text-muted-foreground"
                     >
-                      <EditOutlined sx={{ fontSize: '1rem' }} />
-                    </IconButton>
+                      <Pencil className="size-4" />
+                    </Button>
                   )}
-                </Box>
+                </div>
                 {editingId === timeTrack.id ? (
-                  <Box sx={{ mt: 0.5 }}>
-                    <TextField
+                  <div className="mt-1">
+                    <Textarea
                       value={editingText}
                       onChange={event => setEditingText(event.target.value)}
-                      multiline
-                      minRows={2}
-                      fullWidth
-                      size="small"
+                      rows={2}
                       autoFocus
-                      sx={{ '& .MuiInputBase-input': { fontSize: '0.8rem' } }}
+                      className="text-sm"
                     />
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        gap: 1,
-                        mt: 0.5,
-                      }}
-                    >
+                    <div className="mt-1 flex justify-end gap-2">
                       <Button
-                        size="small"
+                        variant="ghost"
+                        size="sm"
                         onClick={handleEditCancel}
                         disabled={updateNoteMutation.isPending}
                       >
                         Cancel
                       </Button>
                       <Button
-                        size="small"
-                        variant="contained"
+                        size="sm"
                         onClick={() => handleEditSave(timeTrack.id)}
                         disabled={updateNoteMutation.isPending}
                       >
                         Save
                       </Button>
-                    </Box>
-                  </Box>
+                    </div>
+                  </div>
                 ) : (
-                  <Typography className={styles.worklogNote}>
-                    {timeTrack.note}
-                  </Typography>
+                  <p className={styles.worklogNote}>{timeTrack.note}</p>
                 )}
-              </Box>
+              </div>
             ))}
-          </Box>
+          </div>
         )}
       {viewMode === 'worklog' && updateNoteMutation.isError && (
-        <Alert severity="error" sx={{ mx: 1.5, mb: 1 }}>
-          Failed to update note.
+        <Alert variant="destructive" className="mx-3 mb-2">
+          <AlertDescription>Failed to update note.</AlertDescription>
         </Alert>
       )}
-      <Box
-        sx={{
-          px: 1.5,
-          py: 1,
-          borderTop: '1px solid var(--color-overlay-stronger)',
-          flexShrink: 0,
-        }}
-      ></Box>
+      <div className="shrink-0 border-t border-[var(--color-overlay-stronger)] px-3 py-2"></div>
       <TimeTrackingForm
         isOpen={isAddFormOpen}
         onClose={handleAddFormClose}
@@ -429,31 +362,34 @@ export const TimeTrackHistoryView: React.FC<TimeTrackHistoryViewProps> = ({
         isSubmitting={createTimeTrackMutation.isPending}
         hasPendingTracks={false}
       />
-      <Dialog open={isDeleteDialogOpen} onClose={handleDeleteCancel}>
-        <DialogTitle>Delete time entry?</DialogTitle>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={open => !open && handleDeleteCancel()}>
         <DialogContent>
-          <DialogContentText>
+          <DialogHeader>
+            <DialogTitle>Delete time entry?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
             {timeTrackPendingDelete
               ? `Delete the entry from ${formatDateForDisplay(timeTrackPendingDelete.date)}?`
               : 'Delete this time entry?'}
-          </DialogContentText>
+          </p>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={handleDeleteCancel}
+              disabled={deleteTimeTrackMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={deleteTimeTrackMutation.isPending}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleDeleteCancel}
-            disabled={deleteTimeTrackMutation.isPending}
-          >
-            Cancel
-          </Button>
-          <Button
-            color="error"
-            onClick={handleDeleteConfirm}
-            disabled={deleteTimeTrackMutation.isPending}
-          >
-            Delete
-          </Button>
-        </DialogActions>
       </Dialog>
-    </Box>
+    </div>
   );
 };

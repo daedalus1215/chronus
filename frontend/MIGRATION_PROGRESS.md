@@ -113,7 +113,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/pages/NotePage/components/SidebarFolderView/SidebarFolderView.tsx
 - [x] src/pages/NotePage/components/SidebarNoteHistoryView/SidebarNoteHistoryView.tsx
 - [x] src/pages/NotePage/components/SidebarTagsView/SidebarTagsView.tsx
-- [ ] src/pages/NotePage/components/TimeTrackHistoryView/TimeTrackHistoryView.tsx
+- [x] src/pages/NotePage/components/TimeTrackHistoryView/TimeTrackHistoryView.tsx
 - [x] src/pages/NotePage/components/TopRailActions/TopRailActions.tsx
 - [x] src/pages/NotePage/components/TranscriptionRecorder/TranscriptionRecorder.tsx
 
