@@ -41,7 +41,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### ActivityPage
 
-- [ ] src/pages/ActivityPage/ActivityPage.tsx
+- [x] src/pages/ActivityPage/ActivityPage.tsx
 - [x] src/pages/ActivityPage/components/ActivityScatterChart/ActivityScatterChart.tsx (was already hand-rolled SVG, not x-charts — just MUI chrome removed)
 - [x] src/pages/ActivityPage/components/DailyTimeTracksDataGrid/DailyTimeTracksDataGrid.tsx (hand-rolled table + sort + pagination)
 - [x] src/pages/ActivityPage/components/DailyTimeTracksRadar/DailyTimeTracksRadar.tsx (MUI x-charts → Recharts)
