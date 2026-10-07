@@ -59,8 +59,8 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [ ] src/pages/ExplorerPage/components/ExplorerTree/FolderSubtree/FolderRow.tsx
 - [ ] src/pages/ExplorerPage/components/ExplorerTree/FolderSubtree/FolderSubtree.tsx
 - [ ] src/pages/ExplorerPage/components/ExplorerTree/NoteRow.tsx
-- [ ] src/pages/ExplorerPage/components/FolderTree/FolderTreeItem.tsx
-- [ ] src/pages/ExplorerPage/components/FolderTree/FolderTree.tsx
+- [x] src/pages/ExplorerPage/components/FolderTree/FolderTreeItem.tsx
+- [x] src/pages/ExplorerPage/components/FolderTree/FolderTree.tsx
 - [ ] src/pages/ExplorerPage/components/MergeNotesDialog/MergeNotesDialog.tsx
 - [ ] src/pages/ExplorerPage/components/NotesBrowser/NotesBrowser.tsx
 

@@ -1,18 +1,20 @@
 import React, { useRef, useState } from 'react';
 import {
-  Box,
-  IconButton,
-  ListItemButton,
-  Menu,
-  MenuItem,
-  TextField,
-} from '@mui/material';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FolderIcon from '@mui/icons-material/Folder';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+  ChevronRight,
+  ChevronDown,
+  Folder,
+  FolderOpen,
+  MoreHorizontal,
+  FolderPlus,
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import { FolderTreeNode } from '../../../../api/dtos/folder.dtos';
 import styles from './FolderTree.module.css';
 
@@ -36,7 +38,7 @@ export const FolderTreeItem: React.FC<Props> = ({
   onDelete,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState(node.name);
   const renameRef = useRef<HTMLInputElement>(null);
@@ -54,13 +56,8 @@ export const FolderTreeItem: React.FC<Props> = ({
     if (hasChildren) setExpanded(true);
   };
 
-  const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => {
-    e.stopPropagation();
-    setMenuAnchor(e.currentTarget);
-  };
-
   const handleRenameStart = () => {
-    setMenuAnchor(null);
+    setMenuOpen(false);
     setRenameValue(node.name);
     setRenaming(true);
     setTimeout(() => renameRef.current?.select(), 0);
@@ -81,59 +78,59 @@ export const FolderTreeItem: React.FC<Props> = ({
 
   return (
     <>
-      <ListItemButton
-        disableRipple
-        selected={isSelected}
+      <div
+        role="button"
+        tabIndex={0}
+        aria-selected={isSelected}
         onClick={handleSelect}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleSelect();
+          }
+        }}
         className={styles.item}
-        sx={{ pl: `${indentPx}px` }}
+        style={{ paddingLeft: `${indentPx}px` }}
       >
         {/* chevron */}
-        <Box component="span" className={styles.chevron} onClick={handleToggle}>
+        <span className={styles.chevron} onClick={handleToggle}>
           {hasChildren ? (
             expanded ? (
-              <ExpandMoreIcon sx={{ fontSize: 14 }} />
+              <ChevronDown size={14} />
             ) : (
-              <ChevronRightIcon sx={{ fontSize: 14 }} />
+              <ChevronRight size={14} />
             )
           ) : null}
-        </Box>
+        </span>
 
         {/* folder icon */}
-        <Box component="span" className={styles.icon}>
+        <span className={styles.icon}>
           {expanded || isSelected ? (
-            <FolderOpenIcon
-              sx={{
-                fontSize: 14,
-                color: isSelected ? 'primary.light' : 'var(--color-text-muted)',
-              }}
+            <FolderOpen
+              size={14}
+              className={isSelected ? 'text-primary' : undefined}
+              style={!isSelected ? { color: 'var(--color-text-muted)' } : undefined}
             />
           ) : (
-            <FolderIcon
-              sx={{ fontSize: 14, color: 'var(--color-text-muted)' }}
-            />
+            <Folder size={14} style={{ color: 'var(--color-text-muted)' }} />
           )}
-        </Box>
+        </span>
 
         {/* label or inline rename */}
         {renaming ? (
-          <TextField
-            inputRef={renameRef}
+          <Input
+            ref={renameRef}
             value={renameValue}
             onChange={e => setRenameValue(e.target.value)}
             onBlur={handleRenameCommit}
             onKeyDown={handleRenameKeyDown}
             onClick={e => e.stopPropagation()}
             autoFocus
-            variant="standard"
-            size="small"
-            className={styles.renameInput}
-            sx={{ flex: 1 }}
-            InputProps={{ disableUnderline: false }}
+            className={cn(styles.renameInput, 'h-5 flex-1')}
           />
         ) : (
           <span
-            className={`${styles.label} ${isSelected ? styles.labelSelected : ''}`}
+            className={cn(styles.label, isSelected && styles.labelSelected)}
           >
             {node.name}
           </span>
@@ -141,12 +138,9 @@ export const FolderTreeItem: React.FC<Props> = ({
 
         {/* hover actions */}
         {!renaming && (
-          <Box
-            className={styles.itemActions}
-            onClick={e => e.stopPropagation()}
-          >
-            <IconButton
-              size="small"
+          <span className={styles.itemActions} onClick={e => e.stopPropagation()}>
+            <button
+              type="button"
               className={styles.actionBtn}
               onClick={e => {
                 onCreateChild(node.id);
@@ -154,40 +148,40 @@ export const FolderTreeItem: React.FC<Props> = ({
               }}
               title="New subfolder"
             >
-              <CreateNewFolderIcon sx={{ fontSize: 13 }} />
-            </IconButton>
-            <IconButton
-              size="small"
-              className={styles.actionBtn}
-              onClick={handleMenuOpen}
-            >
-              <MoreHorizIcon sx={{ fontSize: 13 }} />
-            </IconButton>
-          </Box>
+              <FolderPlus size={13} />
+            </button>
+            <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className={styles.actionBtn}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <MoreHorizontal size={13} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="min-w-[140px]"
+                onClick={e => e.stopPropagation()}
+              >
+                <DropdownMenuItem onClick={handleRenameStart}>
+                  Rename
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDelete(node.id);
+                  }}
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </span>
         )}
-      </ListItemButton>
-
-      <Menu
-        anchorEl={menuAnchor}
-        open={Boolean(menuAnchor)}
-        onClose={() => setMenuAnchor(null)}
-        onClick={e => e.stopPropagation()}
-        slotProps={{ paper: { sx: { minWidth: 140 } } }}
-      >
-        <MenuItem dense onClick={handleRenameStart}>
-          Rename
-        </MenuItem>
-        <MenuItem
-          dense
-          onClick={() => {
-            setMenuAnchor(null);
-            onDelete(node.id);
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          Delete
-        </MenuItem>
-      </Menu>
+      </div>
 
       {expanded &&
         node.children.map(child => (
