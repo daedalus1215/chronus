@@ -109,7 +109,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/pages/NotePage/components/MobileTagsView/MobileTagsView.tsx
 - [x] src/pages/NotePage/components/RightSidebar/RightSidebar.tsx
 - [x] src/pages/NotePage/components/SidebarAudioHistoryView/SidebarAudioHistoryView.tsx
-- [ ] src/pages/NotePage/components/SidebarChecklistView/SidebarChecklistView.tsx
+- [x] src/pages/NotePage/components/SidebarChecklistView/SidebarChecklistView.tsx
 - [x] src/pages/NotePage/components/SidebarFolderView/SidebarFolderView.tsx
 - [x] src/pages/NotePage/components/SidebarNoteHistoryView/SidebarNoteHistoryView.tsx
 - [x] src/pages/NotePage/components/SidebarTagsView/SidebarTagsView.tsx
