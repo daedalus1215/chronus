@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
-import { RadarChart } from '@mui/x-charts/RadarChart';
-import { Box, Typography, TextField, Paper } from '@mui/material';
+import {
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts';
+import type { TooltipProps } from 'recharts';
+import { Input } from '@/components/ui/input';
 import { TimeTrackAggregationResponse } from '../../../../api/dtos/time-tracks.dtos';
 import styles from './DailyTimeTracksRadar.module.css';
 import { getCurrentDateString } from '../../../../utils/dateUtils';
@@ -12,6 +21,24 @@ type Props = {
   data?: TimeTrackAggregationResponse[];
   loading?: boolean;
   showControls?: boolean;
+};
+
+const formatMinutes = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours === 0) return `${mins}m`;
+  return `${hours}h ${mins}m`;
+};
+
+const RadarTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  const point = payload[0];
+  return (
+    <div className={styles.tooltip}>
+      <div className={styles.tooltipTitle}>{point.payload.metric}</div>
+      <div className={styles.tooltipValue}>{formatMinutes(point.value ?? 0)}</div>
+    </div>
+  );
 };
 
 export const DailyTimeTracksRadar: React.FC<Props> = ({
@@ -51,7 +78,7 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
 
   // Prepare radar chart data
   const prepareRadarData = () => {
-    if (!timeTracks.length) return { series: [], metrics: [], maxValue: 0 };
+    if (!timeTracks.length) return { chartData: [], maxValue: 0 };
 
     // Take top 6 notes by daily time for better visualization
     const topNotes = [...timeTracks]
@@ -59,91 +86,80 @@ export const DailyTimeTracksRadar: React.FC<Props> = ({
       .sort((a, b) => b.dailyTimeMinutes - a.dailyTimeMinutes)
       .slice(0, 6);
 
-    if (topNotes.length === 0) return { series: [], metrics: [], maxValue: 0 };
+    if (topNotes.length === 0) return { chartData: [], maxValue: 0 };
 
-    // Note titles become the metrics (axes/spokes)
-    const metrics = topNotes.map(note =>
-      note.noteName.length > 12
-        ? note.noteName.substring(0, 12) + '...'
-        : note.noteName
-    );
-
-    // Daily time values become the series data
     const dailyTimeData = topNotes.map(note => note.dailyTimeMinutes);
     const maxDailyTime = Math.max(...dailyTimeData);
 
-    // Create series for daily time spent
-    const series = [
-      {
-        label: 'Daily Time (minutes)',
-        data: dailyTimeData,
-        color: '#8b5cf6',
-      },
-    ];
+    const chartData = topNotes.map(note => ({
+      metric:
+        note.noteName.length > 12
+          ? note.noteName.substring(0, 12) + '...'
+          : note.noteName,
+      value: note.dailyTimeMinutes,
+    }));
 
-    return { series, metrics, maxValue: Math.ceil(maxDailyTime / 10) * 10 }; // Round up to nearest 10
+    return { chartData, maxValue: Math.ceil(maxDailyTime / 10) * 10 }; // Round up to nearest 10
   };
 
-  const { series, metrics, maxValue } = prepareRadarData();
+  const { chartData, maxValue } = prepareRadarData();
 
   const shouldShowControls =
     showControls || (!externalSelectedDate && !onDateChange);
 
   return (
-    <Paper className={styles.container}>
-      <Box className={styles.header}>
+    <div className={styles.container}>
+      <div className={styles.header}>
         {shouldShowControls && (
-          <Box className={styles.dateControls}>
-            <TextField
+          <div className={styles.dateControls}>
+            <Input
               type="date"
               value={selectedDate}
               onChange={handleDateChange}
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              sx={{ minWidth: 150 }}
+              className="h-9 min-w-[150px]"
             />
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       {error ? (
-        <Box className={styles.error}>
-          <Typography color="error">{error}</Typography>
-        </Box>
+        <div className={styles.error}>
+          <span className="text-destructive">{error}</span>
+        </div>
       ) : loading ? (
-        <Box className={styles.loading}>
-          <Typography>Loading time tracks...</Typography>
-        </Box>
-      ) : series.length === 0 ? (
-        <Box className={styles.noData}>
-          <Typography color="textSecondary">
+        <div className={styles.loading}>Loading time tracks...</div>
+      ) : chartData.length === 0 ? (
+        <div className={styles.noData}>
+          <span className="text-muted-foreground">
             No time tracks found for this date
-          </Typography>
-        </Box>
+          </span>
+        </div>
       ) : (
-        <Box className={styles.chartContainer}>
-          <RadarChart
-            series={series}
-            radar={{
-              max: maxValue || 60, // Default to 60 minutes if no max calculated
-              metrics: metrics,
-            }}
-            slotProps={{
-              tooltip: {
-                trigger: 'item',
-              },
-            }}
-            sx={{
-              '& .MuiChartsLegend-series': {
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                gap: 1,
-              },
-            }}
-          />
-        </Box>
+        <div className={styles.chartContainer}>
+          <ResponsiveContainer width="100%" height={320}>
+            <RadarChart data={chartData}>
+              <PolarGrid stroke="var(--color-border-light)" />
+              <PolarAngleAxis
+                dataKey="metric"
+                tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+              />
+              <PolarRadiusAxis
+                domain={[0, maxValue || 60]}
+                tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }}
+                tickFormatter={formatMinutes}
+              />
+              <Tooltip content={<RadarTooltip />} />
+              <Radar
+                name="Daily Time"
+                dataKey="value"
+                stroke="var(--accent-2)"
+                fill="var(--accent-2)"
+                fillOpacity={0.35}
+              />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
       )}
-    </Paper>
+    </div>
   );
 };

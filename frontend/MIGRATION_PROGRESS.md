@@ -45,8 +45,8 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [ ] src/pages/ActivityPage/ActivityPage.tsx
 - [ ] src/pages/ActivityPage/components/ActivityScatterChart/ActivityScatterChart.tsx (MUI x-charts → Recharts)
 - [ ] src/pages/ActivityPage/components/DailyTimeTracksDataGrid/DailyTimeTracksDataGrid.tsx (MUI x-data-grid → TanStack Table + shadcn table)
-- [ ] src/pages/ActivityPage/components/DailyTimeTracksRadar/DailyTimeTracksRadar.tsx (MUI x-charts → Recharts)
-- [ ] src/pages/ActivityPage/components/WeeklyTrendChart/WeeklyTrendChart.tsx (MUI x-charts → Recharts)
+- [x] src/pages/ActivityPage/components/DailyTimeTracksRadar/DailyTimeTracksRadar.tsx (MUI x-charts → Recharts)
+- [x] src/pages/ActivityPage/components/WeeklyTrendChart/WeeklyTrendChart.tsx (MUI x-charts → Recharts)
 
 ### ExplorerPage
 
