@@ -12,20 +12,22 @@ import { useAudioActions } from '../../../hooks/useAudioActions/useAudioActions'
 import { useCreateTimeTrack } from '../../../hooks/useCreateTimeTrack/useCreateTimeTrack';
 import { useIsMobile } from '../../../../../hooks/useIsMobile';
 import { AudioHistoryView } from './AudioHistoryView/AudioHistoryView';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-import SnackbarContent from '@mui/material/SnackbarContent';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   convertChecklistToMemo,
   deleteNote,
   updateNoteTimestamp,
 } from '../../../../../api/requests/notes.requests';
-import PushPin from '@mui/icons-material/PushPin';
+import { Pin } from 'lucide-react';
 import styles from './NoteItem.module.css';
 import { useArchiveNote } from '../../../hooks/useArchiveNote';
 import { useExportNote } from '../../../hooks/useExportNote';
@@ -69,7 +71,6 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   const location = useLocation();
   const isMobile = useIsMobile();
   const mergeFileInputRef = React.useRef<HTMLInputElement>(null);
-  const moreButtonRef = React.useRef<HTMLButtonElement>(null);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [mergeMemo, setMergeMemo] = useState<{
     version: number;
@@ -126,10 +127,13 @@ export const NoteItem: React.FC<NoteItemProps> = ({
   const [convertError, setConvertError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [archiveError, setArchiveError] = useState<string | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>(
-    'success'
-  );
+
+  React.useEffect(() => {
+    if (moveSnackbarMessage !== null) {
+      toast.success(moveSnackbarMessage);
+      closeMoveSnackbar();
+    }
+  }, [moveSnackbarMessage, closeMoveSnackbar]);
 
   const handleClick = () => {
     if (onClick) {
@@ -174,8 +178,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     } catch (err) {
       console.error('Failed to update pin state:', err);
       onPinnedChange?.(note.id, !nextPinned);
-      setToastSeverity('error');
-      setToastMessage('Failed to update pin state');
+      toast.error('Failed to update pin state');
     }
   };
 
@@ -318,12 +321,10 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     setIsActionsOpen(false);
     try {
       await exportNote(note.id, note.name);
-      setToastSeverity('success');
-      setToastMessage('Note exported successfully');
+      toast.success('Note exported successfully');
     } catch (err) {
       console.error('Failed to export note:', err);
-      setToastSeverity('error');
-      setToastMessage('Failed to export note');
+      toast.error('Failed to export note');
     }
   };
 
@@ -350,22 +351,19 @@ export const NoteItem: React.FC<NoteItemProps> = ({
       };
 
       if (parsed.version !== 1) {
-        setToastSeverity('error');
-        setToastMessage(`Unsupported file version: ${parsed.version}`);
+        toast.error(`Unsupported file version: ${parsed.version}`);
         return;
       }
 
       if (!parsed.memo?.name) {
-        setToastSeverity('error');
-        setToastMessage('Invalid .chronus file: missing memo name.');
+        toast.error('Invalid .chronus file: missing memo name.');
         return;
       }
 
       setMergeMemo({ version: parsed.version, memo: parsed.memo });
     } catch (err) {
       console.error('Failed to read .chronus file:', err);
-      setToastSeverity('error');
-      setToastMessage('Failed to read file. Please check the file format.');
+      toast.error('Failed to read file. Please check the file format.');
     }
   };
 
@@ -373,12 +371,10 @@ export const NoteItem: React.FC<NoteItemProps> = ({
     try {
       await mergeIntoNote(payload);
       setMergeMemo(null);
-      setToastSeverity('success');
-      setToastMessage('Imported into memo successfully');
+      toast.success('Imported into memo successfully');
     } catch (err) {
       console.error('Failed to import into memo:', err);
-      setToastSeverity('error');
-      setToastMessage('Failed to import into memo');
+      toast.error('Failed to import into memo');
     }
   };
 
@@ -423,17 +419,10 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         note: data.note,
       });
       setIsTimeTrackingOpen(false);
-      setToastSeverity('success');
-      setToastMessage('Time track saved successfully');
+      toast.success('Time track saved successfully');
     } catch {
-      setToastSeverity('error');
-      const errorMessage = createTimeTrackError || 'Failed to save time track';
-      setToastMessage(errorMessage);
+      toast.error(createTimeTrackError || 'Failed to save time track');
     }
-  };
-
-  const handleCloseToast = () => {
-    setToastMessage(null);
   };
 
   return (
@@ -452,7 +441,7 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         <div className={styles.noteInfo}>
           <div className={styles.noteNameRow}>
             {note.pinned && (
-              <PushPin className={styles.pinIcon} aria-label="Pinned" />
+              <Pin className={styles.pinIcon} aria-label="Pinned" />
             )}
             <span className={styles.noteName} title={note.name}>
               {note.name}
@@ -463,7 +452,6 @@ export const NoteItem: React.FC<NoteItemProps> = ({
           </span>
         </div>
         <button
-          ref={moreButtonRef}
           className={styles.moreButton}
           onClick={handleMoreClick}
           aria-label="More options"
@@ -475,7 +463,6 @@ export const NoteItem: React.FC<NoteItemProps> = ({
       <NoteActionsGrid
         isOpen={isActionsOpen}
         onClose={() => setIsActionsOpen(false)}
-        anchorEl={moreButtonRef.current}
         onShare={handleShare}
         onDelete={handleDelete}
         onArchive={handleArchive}
@@ -559,120 +546,101 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         isDeleting={isAudioDeleting}
       />
 
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        aria-labelledby="delete-dialog-title"
-      >
-        <DialogTitle id="delete-dialog-title">Delete Note?</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this note? This action cannot be
-          undone.
+      <Dialog open={deleteDialogOpen} onOpenChange={(open) => !open && setDeleteDialogOpen(false)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Note?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete this note? This action cannot be
+            undone.
+          </p>
           {deleteError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {deleteError}
+            <Alert variant="destructive">
+              <AlertDescription>{deleteError}</AlertDescription>
             </Alert>
           )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setDeleteDialogOpen(false)}
-            disabled={isDeleting}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={confirmDelete}
-            color="error"
-            variant="contained"
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={archiveDialogOpen}
-        onClose={() => setArchiveDialogOpen(false)}
-        aria-labelledby="archive-dialog-title"
-      >
-        <DialogTitle id="archive-dialog-title">Archive Note?</DialogTitle>
-        <DialogContent>
-          Are you sure you want to archive this note? It will be hidden from
-          your main list but can be restored later.
+      <Dialog open={archiveDialogOpen} onOpenChange={(open) => !open && setArchiveDialogOpen(false)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Archive Note?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to archive this note? It will be hidden from
+            your main list but can be restored later.
+          </p>
           {archiveError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {archiveError}
+            <Alert variant="destructive">
+              <AlertDescription>{archiveError}</AlertDescription>
             </Alert>
           )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setArchiveDialogOpen(false)}
+              disabled={isArchiving}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmArchive}
+              disabled={isArchiving}
+              className="bg-[var(--color-warning)] text-white hover:bg-[var(--color-warning-dark)]"
+            >
+              {isArchiving ? 'Archiving...' : 'Archive'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setArchiveDialogOpen(false)}
-            disabled={isArchiving}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={confirmArchive}
-            color="warning"
-            variant="contained"
-            disabled={isArchiving}
-          >
-            {isArchiving ? 'Archiving...' : 'Archive'}
-          </Button>
-        </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={convertDialogOpen}
-        onClose={() => setConvertDialogOpen(false)}
-        aria-labelledby="convert-dialog-title"
-      >
-        <DialogTitle id="convert-dialog-title">Convert to Memo?</DialogTitle>
-        <DialogContent>
-          Convert this checklist to a memo note? Your check items will be
-          available in the sidebar checklist, and time tracks will be preserved.
+      <Dialog open={convertDialogOpen} onOpenChange={(open) => !open && setConvertDialogOpen(false)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Convert to Memo?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Convert this checklist to a memo note? Your check items will be
+            available in the sidebar checklist, and time tracks will be preserved.
+          </p>
           {convertError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {convertError}
+            <Alert variant="destructive">
+              <AlertDescription>{convertError}</AlertDescription>
             </Alert>
           )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConvertDialogOpen(false)}
+              disabled={isConvertingToMemo}
+            >
+              Cancel
+            </Button>
+            <Button onClick={confirmConvertToMemo} disabled={isConvertingToMemo}>
+              {isConvertingToMemo ? 'Converting...' : 'Convert'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setConvertDialogOpen(false)}
-            disabled={isConvertingToMemo}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={confirmConvertToMemo}
-            color="primary"
-            variant="contained"
-            disabled={isConvertingToMemo}
-          >
-            {isConvertingToMemo ? 'Converting...' : 'Convert'}
-          </Button>
-        </DialogActions>
       </Dialog>
 
-      <Snackbar
-        open={toastMessage !== null}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toastSeverity}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {toastMessage}
-        </Alert>
-      </Snackbar>
       <MoveNoteDialog
         open={isMoveDialogOpen}
         onClose={handleMoveDialogClose}
@@ -680,14 +648,6 @@ export const NoteItem: React.FC<NoteItemProps> = ({
         currentFolderId={note.folderId}
         error={moveError}
       />
-
-      <Snackbar
-        open={moveSnackbarMessage !== null}
-        autoHideDuration={4000}
-        onClose={closeMoveSnackbar}
-      >
-        <SnackbarContent message={moveSnackbarMessage ?? ''} />
-      </Snackbar>
     </>
   );
 };

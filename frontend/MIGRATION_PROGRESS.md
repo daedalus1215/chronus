@@ -75,7 +75,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/pages/HomePage/components/NoteListView/NoteItem/AudioHistoryView/AudioHistoryView.tsx
 - [x] src/pages/HomePage/components/NoteListView/NoteItem/DateTimePicker/DateTimePicker.tsx
 - [x] src/pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid.tsx
-- [ ] src/pages/HomePage/components/NoteListView/NoteItem/NoteItem.tsx
+- [x] src/pages/HomePage/components/NoteListView/NoteItem/NoteItem.tsx
 - [x] src/pages/HomePage/components/NoteListView/NoteItem/TimeTrackingForm/TimeTrackingForm.tsx
 - [x] src/pages/HomePage/components/NoteListView/NoteItem/TimeTrackListView/TimeTrackListView.tsx
 - [x] src/pages/HomePage/components/NoteListView/SearchBar/SearchBar.tsx
