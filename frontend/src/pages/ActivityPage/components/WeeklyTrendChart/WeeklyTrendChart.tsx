@@ -1,6 +1,14 @@
 import React from 'react';
-import { Box, Typography, Paper } from '@mui/material';
-import { BarChart } from '@mui/x-charts/BarChart';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import type { TooltipProps } from 'recharts';
 import { WeeklyTrendResponseDto } from '../../../../api/dtos/weekly-trend.dtos';
 import styles from './WeeklyTrendChart.module.css';
 
@@ -25,15 +33,23 @@ const formatTime = (minutes: number): string => {
   return `${hours}h ${mins}m`;
 };
 
+const ChartTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  const minutes = payload[0].value ?? 0;
+  return (
+    <div className={styles.tooltip}>
+      <span className={styles.tooltipValue}>{formatTime(minutes)}</span>
+    </div>
+  );
+};
+
 export const WeeklyTrendChart: React.FC<Props> = ({ data, loading }) => {
   if (loading) {
     return (
-      <Paper className={styles.container}>
-        <Typography variant="h6">Weekly Trend</Typography>
-        <Box className={styles.loading}>
-          <Typography>Loading...</Typography>
-        </Box>
-      </Paper>
+      <div className={styles.container}>
+        <h2 className={styles.heading}>Weekly Trend</h2>
+        <div className={styles.loading}>Loading...</div>
+      </div>
     );
   }
 
@@ -41,53 +57,63 @@ export const WeeklyTrendChart: React.FC<Props> = ({ data, loading }) => {
 
   if (!hasActivity) {
     return (
-      <Paper className={styles.container}>
-        <Typography variant="h6">Weekly Trend</Typography>
-        <Box className={styles.noData}>
-          <Typography color="textSecondary">
-            No activity in the last 7 days
-          </Typography>
-        </Box>
-      </Paper>
+      <div className={styles.container}>
+        <h2 className={styles.heading}>Weekly Trend</h2>
+        <div className={styles.noData}>
+          <span className="text-muted-foreground">No activity in the last 7 days</span>
+        </div>
+      </div>
     );
   }
 
-  const xAxisData = data.trend.map(day => formatDayLabel(day.date));
-  const seriesData = data.trend.map(day => day.totalMinutes);
+  const chartData = data.trend.map(day => ({
+    label: formatDayLabel(day.date),
+    minutes: day.totalMinutes,
+  }));
 
   return (
-    <Paper className={styles.container}>
-      <Box className={styles.header}>
-        <Typography variant="h6">Weekly Trend</Typography>
-        <Typography variant="subtitle2" color="textSecondary">
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.heading}>Weekly Trend</h2>
+        <span className="text-sm text-muted-foreground">
           Total: {formatTime(data.weeklyTotal)}
-        </Typography>
-      </Box>
-      <Box className={styles.chartContainer}>
-        <BarChart
-          xAxis={[
-            {
-              scaleType: 'band',
-              data: xAxisData,
-            },
-          ]}
-          series={[
-            {
-              data: seriesData,
-              label: 'Minutes',
-              color: '#6366f1',
-              valueFormatter: value => formatTime(value || 0),
-            },
-          ]}
-          height={250}
-          margin={{ top: 20, bottom: 30, left: 50, right: 20 }}
-          slotProps={{
-            legend: {
-              hidden: true,
-            },
-          }}
-        />
-      </Box>
-    </Paper>
+        </span>
+      </div>
+      <div className={styles.chartContainer}>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 10 }}>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="var(--color-border-light)"
+              vertical={false}
+            />
+            <XAxis
+              dataKey="label"
+              tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+              axisLine={{ stroke: 'var(--color-border)' }}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+              width={50}
+              tickFormatter={formatTime}
+            />
+            <Tooltip
+              content={<ChartTooltip />}
+              cursor={{ fill: 'var(--color-overlay-light)' }}
+            />
+            <Bar
+              dataKey="minutes"
+              fill="var(--color-primary)"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={48}
+              name="Minutes"
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 };
