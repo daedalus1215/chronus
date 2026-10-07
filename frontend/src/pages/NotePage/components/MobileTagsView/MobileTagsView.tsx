@@ -1,7 +1,5 @@
 import React from 'react';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Box from '@mui/material/Box';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { RightSheet } from '@components/RightSheet/RightSheet';
 import { Note } from '../../api/responses';
 import { SidebarChecklistView } from '../SidebarChecklistView/SidebarChecklistView';
@@ -40,48 +38,28 @@ export const MobileTagsView: React.FC<MobileTagsViewProps> = ({
   onVersionLoaded,
 }) => (
   <RightSheet isOpen={isOpen} onClose={onClose}>
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        minHeight: 0,
-        margin: -2,
-      }}
-    >
-      <ToggleButtonGroup
+    <div className="-m-4 flex min-h-0 flex-1 flex-col">
+      <ToggleGroup
+        type="single"
         value={activeTab}
-        exclusive
-        onChange={(_, value) => {
+        onValueChange={value => {
           if (value) {
             onTabChange(value);
           }
         }}
-        sx={{
-          borderBottom: '1px solid var(--color-overlay-stronger)',
-          '& .MuiToggleButtonGroup-grouped': {
-            margin: 0,
-            border: 0,
-            borderRadius: 0,
-            py: 0.75,
-            px: 1.5,
-          },
-          '& .MuiToggleButtonGroup-grouped:not(:first-of-type)': {
-            borderLeft: '1px solid var(--color-overlay-stronger)',
-          },
-          '& .Mui-selected': {
-            backgroundColor: 'var(--accent-soft)',
-            color: 'primary.main',
-          },
-        }}
+        className="w-full border-b border-[var(--color-overlay-stronger)] [&>*:not(:first-child)]:border-l [&>*:not(:first-child)]:border-[var(--color-overlay-stronger)]"
       >
         {tabs.map(tab => (
-          <ToggleButton key={tab.id} value={tab.id}>
+          <ToggleGroupItem
+            key={tab.id}
+            value={tab.id}
+            className="rounded-none border-0 px-3 py-1.5 data-[state=on]:bg-[var(--accent-soft)] data-[state=on]:text-primary"
+          >
             {tab.icon}
-          </ToggleButton>
+          </ToggleGroupItem>
         ))}
-      </ToggleButtonGroup>
-      <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+      </ToggleGroup>
+      <div className="min-h-0 flex-1 overflow-hidden">
         {activeTab === 'checklist' && <SidebarChecklistView note={note} />}
         {activeTab === 'tags' && <SidebarTagsView noteId={noteId} />}
         {activeTab === 'folder' && (
@@ -96,7 +74,7 @@ export const MobileTagsView: React.FC<MobileTagsViewProps> = ({
             onVersionLoaded={onVersionLoaded}
           />
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   </RightSheet>
 );

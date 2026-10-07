@@ -106,15 +106,15 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/pages/NotePage/components/CheckListView/components/EditCheckItemDialog/EditCheckItemDialog.tsx
 - [ ] src/pages/NotePage/components/CheckListView/DesktopCheckListView/DesktopCheckListView.tsx
 - [ ] src/pages/NotePage/components/CheckListView/MobileCheckListView/MobileCheckListView.tsx
-- [ ] src/pages/NotePage/components/MobileTagsView/MobileTagsView.tsx
-- [ ] src/pages/NotePage/components/RightSidebar/RightSidebar.tsx
+- [x] src/pages/NotePage/components/MobileTagsView/MobileTagsView.tsx
+- [x] src/pages/NotePage/components/RightSidebar/RightSidebar.tsx
 - [ ] src/pages/NotePage/components/SidebarAudioHistoryView/SidebarAudioHistoryView.tsx
 - [ ] src/pages/NotePage/components/SidebarChecklistView/SidebarChecklistView.tsx
-- [ ] src/pages/NotePage/components/SidebarFolderView/SidebarFolderView.tsx
+- [x] src/pages/NotePage/components/SidebarFolderView/SidebarFolderView.tsx
 - [ ] src/pages/NotePage/components/SidebarNoteHistoryView/SidebarNoteHistoryView.tsx
 - [ ] src/pages/NotePage/components/SidebarTagsView/SidebarTagsView.tsx
 - [ ] src/pages/NotePage/components/TimeTrackHistoryView/TimeTrackHistoryView.tsx
-- [ ] src/pages/NotePage/components/TopRailActions/TopRailActions.tsx
+- [x] src/pages/NotePage/components/TopRailActions/TopRailActions.tsx
 - [ ] src/pages/NotePage/components/TranscriptionRecorder/TranscriptionRecorder.tsx
 
 ### SettingsPage
