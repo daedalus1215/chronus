@@ -19,14 +19,91 @@
 .treeWrapper::-webkit-scrollbar {
   display: none;
 }
+
 /*
  * Children outline: vertical connector line for each group of children.
- * margin-left keeps the line visible (gap from parent row). Nested item
- * content/icon styling is applied via CustomTagTreeItem slotProps.
+ * margin-left keeps the line visible (gap from parent row), and nests
+ * further for each additional level since every group gets its own
+ * border/margin.
  */
-.treeWrapper :global(.MuiTreeItem-groupTransition) {
+.childrenGroup {
   border-left: 1px solid var(--color-border);
   margin-left: 4px;
   padding-left: 0;
   min-width: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 0.375rem 0.5rem;
+  border-bottom: 1px solid var(--color-border-light);
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.row:hover {
+  background-color: var(--color-overlay-light);
+}
+
+.rowSelected {
+  color: var(--color-primary);
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.rowSelected .icon {
+  color: var(--color-primary);
+}
+
+.tagLabel {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowSelected .tagLabel {
+  color: var(--color-primary);
+}
+
+.noteLabel {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pinIcon {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.25rem;
+}
+
+.moreButton {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
 }

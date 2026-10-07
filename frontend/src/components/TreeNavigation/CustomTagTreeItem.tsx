@@ -1,23 +1,20 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-import SnackbarContent from '@mui/material/SnackbarContent';
-import MoreVert from '@mui/icons-material/MoreVert';
-import PushPin from '@mui/icons-material/PushPin';
-import LocalOffer from '@mui/icons-material/LocalOffer';
+import { toast } from 'sonner';
+import { MoreVertical, Pin, Tag as TagIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { cn } from '@/lib/utils';
 import { ROUTES } from '../../constants/routes';
-import { NOTE_PREFIX, TAG_PREFIX, parseNoteId } from './tagTreeItems';
+import { NOTE_PREFIX, TAG_PREFIX, parseNoteId, getTagTreeItemLabel, type TagTreeItem } from './tagTreeItems';
 import { NoteActionsGrid } from '../../pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid';
 import { MoveNoteDialog } from '../../components/MoveNoteDialog/MoveNoteDialog';
 import { useMoveNoteToFolder } from '../../pages/NotePage/hooks/useMoveNoteToFolder/useMoveNoteToFolder';
@@ -37,549 +34,404 @@ import { useArchiveNote } from '../../pages/HomePage/hooks/useArchiveNote';
 import { usePinNote } from '../../pages/HomePage/hooks/usePinNote';
 import { TagActionPanel } from '../../pages/TagPage/components/TagListView/TagItem/TagActionPanel/TagActionPanel';
 import type { Tag } from '../../api/dtos/tag.dtos';
+import styles from './TagTreeNavigation.module.css';
 
-/** Font size to match DesktopNoteListView compact items. */
-const LIST_FONT_SIZE = '0.8125rem';
-
-/** Tag (folder) label: same font, size and color as DesktopNoteListView compact .noteName. */
-const TAG_LABEL_SX = {
-  fontSize: LIST_FONT_SIZE,
-  fontWeight: 500,
-  color: 'var(--color-text)',
-};
-
-/** Nested note label: same size, secondary color to distinguish from tags. */
-const NESTED_NOTE_LABEL_COLOR = 'var(--color-text-secondary)';
-const NOTE_LABEL_SX = {
-  fontSize: LIST_FONT_SIZE,
-  color: NESTED_NOTE_LABEL_COLOR,
-};
-
-const ICON_CONTAINER_SX = {
-  fontSize: 20,
-  color: 'var(--color-text-secondary)',
-  '& svg': { fontSize: 20 },
-};
-
-/** Content row: padding to match compact note list, divider. */
-const CONTENT_DIVIDER_SX = {
-  padding: '0.375rem 0.5rem',
-  borderBottom: '1px solid var(--color-border-light)',
+type CustomTagTreeItemProps = {
+  item: TagTreeItem;
+  isExpanded: boolean;
+  pinned?: boolean;
+  tagMeta?: { name: string; noteCount: number };
+  onClick: () => void;
+  onNotePinned?: (noteId: number, tagId: number) => void;
 };
 
 /**
- * Custom TreeItem that applies slotProps for nested item styling:
- * - Note items (id starting with "note-"): smaller label font, secondary color, and 3-dots menu (bottom sheet) like NoteItem.
- * - All items: icon container size/color, and a bottom border divider per row.
+ * One row of the tag/note tree (and recursively, its dialogs/menus). Hand-
+ * rolled: expand/collapse and selection state live in the parent
+ * (TagTreeNavigation); this component owns only a row's own click
+ * behavior plus the note/tag action surfaces (⋮ menu, delete/archive
+ * confirm, move, time tracking).
  */
-export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
-  (props, ref) => {
-    const {
-      itemId,
-      slotProps = {},
-      slots = {},
-      pinned: isPinned = false,
-      onNotePinned,
-      tagMeta,
-      ...rest
-    } = props as TreeItemProps & {
-      pinned?: boolean;
-      onNotePinned?: (noteId: number, tagId: number) => void;
-      tagMeta?: { name: string; noteCount: number };
-    };
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const { tagId: routeTagId } = useParams<{ tagId: string }>();
-    const isNote = typeof itemId === 'string' && itemId.startsWith(NOTE_PREFIX);
-    const parsed = typeof itemId === 'string' ? parseNoteId(itemId) : null;
-    const noteId = parsed?.noteId ?? 0;
-    const tagId = parsed?.tagId;
-    const tagIdFromItem =
-      typeof itemId === 'string' && itemId.startsWith(TAG_PREFIX)
-        ? itemId.slice(TAG_PREFIX.length)
-        : '';
-    const isTagSelected = Boolean(
-      routeTagId && tagIdFromItem && routeTagId === tagIdFromItem
-    );
+export const CustomTagTreeItem: React.FC<CustomTagTreeItemProps> = ({
+  item,
+  isExpanded,
+  pinned: isPinned = false,
+  tagMeta,
+  onClick,
+  onNotePinned,
+}) => {
+  const itemId = item.id;
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { tagId: routeTagId } = useParams<{ tagId: string }>();
+  const isNote = itemId.startsWith(NOTE_PREFIX);
+  const parsed = parseNoteId(itemId);
+  const noteId = parsed?.noteId ?? 0;
+  const tagId = parsed?.tagId;
+  const tagIdFromItem = itemId.startsWith(TAG_PREFIX)
+    ? itemId.slice(TAG_PREFIX.length)
+    : '';
+  const isTagSelected = Boolean(
+    routeTagId && tagIdFromItem && routeTagId === tagIdFromItem
+  );
 
-    const [isActionsOpen, setIsActionsOpen] = useState(false);
-    const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
-    const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
-    const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [deleteError, setDeleteError] = useState<string | null>(null);
-    const [archiveError, setArchiveError] = useState<string | null>(null);
-    const [toastMessage, setToastMessage] = useState<string | null>(null);
-    const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>(
-      'success'
-    );
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isTimeTrackingOpen, setIsTimeTrackingOpen] = useState(false);
+  const [isTimeTrackListOpen, setIsTimeTrackListOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [archiveError, setArchiveError] = useState<string | null>(null);
 
-    const { archiveNote, isArchiving } = useArchiveNote();
-    const { pinNote } = usePinNote();
-    const {
-      createTimeTrack,
-      isCreating,
-      error: createTimeTrackError,
-    } = useCreateTimeTrack();
-    const {
-      moveNote,
-      error: moveError,
-      clearError: clearMoveError,
-      snackbarMessage: moveSnackbarMessage,
-      closeSnackbar: closeMoveSnackbar,
-    } = useMoveNoteToFolder(noteId);
-    const {
-      timeTracks,
-      isLoadingTimeTracks,
-      totalTimeData,
-      isLoadingTotal,
-      timeTrackError,
-    } = useNoteTimeTracks(noteId, isTimeTrackListOpen);
+  const { archiveNote, isArchiving } = useArchiveNote();
+  const { pinNote } = usePinNote();
+  const {
+    createTimeTrack,
+    isCreating,
+    error: createTimeTrackError,
+  } = useCreateTimeTrack();
+  const {
+    moveNote,
+    error: moveError,
+    clearError: clearMoveError,
+    snackbarMessage: moveSnackbarMessage,
+    closeSnackbar: closeMoveSnackbar,
+  } = useMoveNoteToFolder(noteId);
+  const {
+    timeTracks,
+    isLoadingTimeTracks,
+    totalTimeData,
+    isLoadingTotal,
+    timeTrackError,
+  } = useNoteTimeTracks(noteId, isTimeTrackListOpen);
 
-    const handleMoreClick = useCallback(
-      (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        updateNoteTimestamp(noteId)
-          .then(() => setIsActionsOpen(true))
-          .catch(() => setIsActionsOpen(true));
-      },
-      [noteId]
-    );
+  useEffect(() => {
+    if (moveSnackbarMessage !== null) {
+      toast.success(moveSnackbarMessage);
+      closeMoveSnackbar();
+    }
+  }, [moveSnackbarMessage, closeMoveSnackbar]);
 
-    const handleDelete = useCallback(() => {
-      setIsActionsOpen(false);
-      setDeleteDialogOpen(true);
-    }, []);
-
-    const handleArchive = useCallback(() => {
-      setIsActionsOpen(false);
-      setArchiveDialogOpen(true);
-    }, []);
-    const handlePin = useCallback(async () => {
-      const nextPinned = !isPinned;
-      setIsActionsOpen(false);
-      try {
-        await pinNote(noteId, nextPinned);
-        if (tagId != null) {
-          onNotePinned?.(noteId, tagId);
-        }
-      } catch (err) {
-        console.error('Failed to update pin state:', err);
-        setToastSeverity('error');
-        setToastMessage('Failed to update pin state');
-      }
-    }, [isPinned, noteId, tagId, pinNote, onNotePinned]);
-
-    const handleTimeTracking = useCallback(() => {
-      setIsActionsOpen(false);
-      setIsTimeTrackingOpen(true);
-    }, []);
-
-    const handleViewTimeEntries = useCallback(() => {
-      setIsActionsOpen(false);
-      setIsTimeTrackListOpen(true);
-    }, []);
-
-    const handleTagMoreClick = useCallback((e: React.MouseEvent) => {
+  const handleMoreClick = useCallback(
+    (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
-      setIsActionsOpen(true);
-    }, []);
+      updateNoteTimestamp(noteId)
+        .then(() => setIsActionsOpen(true))
+        .catch(() => setIsActionsOpen(true));
+    },
+    [noteId]
+  );
 
-    const handleTimeTrackingSubmit = useCallback(
-      async (data: TimeTrackingData) => {
-        try {
-          await createTimeTrack({
-            date: data.date,
-            startTime: data.startTime,
-            durationMinutes:
-              data.durationMinutes === undefined
-                ? 1
-                : Number(data.durationMinutes),
-            noteId,
-            note: data.note,
-          });
-          setIsTimeTrackingOpen(false);
-          setToastSeverity('success');
-          setToastMessage('Time track saved successfully');
-        } catch {
-          setToastSeverity('error');
-          const errorMessage =
-            createTimeTrackError || 'Failed to save time track';
-          setToastMessage(errorMessage);
-        }
-      },
-      [noteId, createTimeTrack, createTimeTrackError]
-    );
+  const handleDelete = useCallback(() => {
+    setIsActionsOpen(false);
+    setDeleteDialogOpen(true);
+  }, []);
 
-    const handleCloseToast = useCallback(() => {
-      setToastMessage(null);
-    }, []);
-
-    const confirmDelete = useCallback(async () => {
-      setIsDeleting(true);
-      setDeleteError(null);
-      try {
-        await deleteNote(noteId);
-        setDeleteDialogOpen(false);
-        await queryClient.invalidateQueries({ queryKey: ['tags'] });
-        if (tagId != null) {
-          navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
-        }
-      } catch (err: unknown) {
-        setIsDeleting(false);
-        const message =
-          err &&
-          typeof err === 'object' &&
-          err !== null &&
-          'response' in err &&
-          (err as { response?: { data?: { message?: string } } }).response?.data
-            ?.message
-            ? String(
-                (err as { response: { data: { message: string } } }).response
-                  .data.message
-              )
-            : 'Failed to delete note';
-        setDeleteError(message);
+  const handleArchive = useCallback(() => {
+    setIsActionsOpen(false);
+    setArchiveDialogOpen(true);
+  }, []);
+  const handlePin = useCallback(async () => {
+    const nextPinned = !isPinned;
+    setIsActionsOpen(false);
+    try {
+      await pinNote(noteId, nextPinned);
+      if (tagId != null) {
+        onNotePinned?.(noteId, tagId);
       }
-    }, [noteId, queryClient, tagId, navigate]);
+    } catch (err) {
+      console.error('Failed to update pin state:', err);
+      toast.error('Failed to update pin state');
+    }
+  }, [isPinned, noteId, tagId, pinNote, onNotePinned]);
 
-    const confirmArchive = useCallback(async () => {
-      setArchiveError(null);
+  const handleTimeTracking = useCallback(() => {
+    setIsActionsOpen(false);
+    setIsTimeTrackingOpen(true);
+  }, []);
+
+  const handleViewTimeEntries = useCallback(() => {
+    setIsActionsOpen(false);
+    setIsTimeTrackListOpen(true);
+  }, []);
+
+  const handleTagMoreClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsActionsOpen(true);
+  }, []);
+
+  const handleTimeTrackingSubmit = useCallback(
+    async (data: TimeTrackingData) => {
       try {
-        await archiveNote(noteId);
-        setArchiveDialogOpen(false);
-        await queryClient.invalidateQueries({ queryKey: ['tags'] });
-        if (tagId != null) {
-          navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
-        }
-      } catch (err: unknown) {
-        const message =
-          err &&
-          typeof err === 'object' &&
-          err !== null &&
-          'response' in err &&
-          (err as { response?: { data?: { message?: string } } }).response?.data
-            ?.message
-            ? String(
-                (err as { response: { data: { message: string } } }).response
-                  .data.message
-              )
-            : 'Failed to archive note';
-        setArchiveError(message);
+        await createTimeTrack({
+          date: data.date,
+          startTime: data.startTime,
+          durationMinutes:
+            data.durationMinutes === undefined
+              ? 1
+              : Number(data.durationMinutes),
+          noteId,
+          note: data.note,
+        });
+        setIsTimeTrackingOpen(false);
+        toast.success('Time track saved successfully');
+      } catch {
+        toast.error(createTimeTrackError || 'Failed to save time track');
       }
-    }, [noteId, archiveNote, queryClient, tagId, navigate]);
+    },
+    [noteId, createTimeTrack, createTimeTrackError]
+  );
 
-    const handleViewBoard = useCallback(() => {
-      setIsActionsOpen(false);
-      navigate(ROUTES.KANBAN(noteId));
-    }, [noteId, navigate]);
+  const confirmDelete = useCallback(async () => {
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteNote(noteId);
+      setDeleteDialogOpen(false);
+      await queryClient.invalidateQueries({ queryKey: ['tags'] });
+      if (tagId != null) {
+        navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
+      }
+    } catch (err: unknown) {
+      setIsDeleting(false);
+      const message =
+        err &&
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+          ? String(
+              (err as { response: { data: { message: string } } }).response
+                .data.message
+            )
+          : 'Failed to delete note';
+      setDeleteError(message);
+    }
+  }, [noteId, queryClient, tagId, navigate]);
 
-    const handleLabel = useCallback(() => {
-      setIsActionsOpen(false);
-      const base = tagId != null ? ROUTES.TAG_NOTES(tagId) : ROUTES.HOME;
-      navigate(`${base}/notes/${noteId}?sidebar=tags`);
-    }, [noteId, tagId, navigate]);
+  const confirmArchive = useCallback(async () => {
+    setArchiveError(null);
+    try {
+      await archiveNote(noteId);
+      setArchiveDialogOpen(false);
+      await queryClient.invalidateQueries({ queryKey: ['tags'] });
+      if (tagId != null) {
+        navigate(ROUTES.TAG_NOTES(tagId), { replace: true });
+      }
+    } catch (err: unknown) {
+      const message =
+        err &&
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+          ? String(
+              (err as { response: { data: { message: string } } }).response
+                .data.message
+            )
+          : 'Failed to archive note';
+      setArchiveError(message);
+    }
+  }, [noteId, archiveNote, queryClient, tagId, navigate]);
 
-    const handleEdit = useCallback(() => {
-      setIsActionsOpen(false);
-      // Open the note in edit mode; NotePage consumes ?edit=1 and strips it.
-      const base = tagId != null ? ROUTES.TAG_NOTES(tagId) : ROUTES.HOME;
-      navigate(`${base}/notes/${noteId}?edit=1`);
-    }, [noteId, tagId, navigate]);
+  const handleViewBoard = useCallback(() => {
+    setIsActionsOpen(false);
+    navigate(ROUTES.KANBAN(noteId));
+  }, [noteId, navigate]);
 
-    const handleMoveToFolder = useCallback(() => {
-      clearMoveError();
-      setIsActionsOpen(false);
-      setIsMoveDialogOpen(true);
-    }, [clearMoveError]);
+  const handleLabel = useCallback(() => {
+    setIsActionsOpen(false);
+    const base = tagId != null ? ROUTES.TAG_NOTES(tagId) : ROUTES.HOME;
+    navigate(`${base}/notes/${noteId}?sidebar=tags`);
+  }, [noteId, tagId, navigate]);
 
-    const handleMoveConfirm = useCallback(
-      async (folder: FolderDto | null) => {
-        try {
-          await moveNote(folder);
-          setIsMoveDialogOpen(false);
-        } catch {
-          // Error is exposed via the hook; the dialog stays open with the
-          // message and the user can retry.
+  const handleEdit = useCallback(() => {
+    setIsActionsOpen(false);
+    // Open the note in edit mode; NotePage consumes ?edit=1 and strips it.
+    const base = tagId != null ? ROUTES.TAG_NOTES(tagId) : ROUTES.HOME;
+    navigate(`${base}/notes/${noteId}?edit=1`);
+  }, [noteId, tagId, navigate]);
+
+  const handleMoveToFolder = useCallback(() => {
+    clearMoveError();
+    setIsActionsOpen(false);
+    setIsMoveDialogOpen(true);
+  }, [clearMoveError]);
+
+  const handleMoveConfirm = useCallback(
+    async (folder: FolderDto | null) => {
+      try {
+        await moveNote(folder);
+        setIsMoveDialogOpen(false);
+      } catch {
+        // Error is exposed via the hook; the dialog stays open with the
+        // message and the user can retry.
+      }
+    },
+    [moveNote]
+  );
+
+  const handleMoveDialogClose = useCallback(() => {
+    setIsMoveDialogOpen(false);
+    clearMoveError();
+  }, [clearMoveError]);
+
+  const noop = useCallback(() => setIsActionsOpen(false), []);
+
+  // Tag rows surface the shared tag management panel (edit form, delete
+  // dialog, ⋮ grid). The panel needs the full Tag DTO; the tree item only
+  // carries name/noteCount, so fetch-backed fields (description) are
+  // resolved by the panel's own query when the form opens.
+  const tagData: Tag | null =
+    !isNote && tagIdFromItem
+      ? {
+          id: Number(tagIdFromItem),
+          name: tagMeta?.name ?? '',
+          noteCount: tagMeta?.noteCount ?? 0,
         }
-      },
-      [moveNote]
-    );
+      : null;
 
-    const handleMoveDialogClose = useCallback(() => {
-      setIsMoveDialogOpen(false);
-      clearMoveError();
-    }, [clearMoveError]);
+  if (item.isLoadingPlaceholder) {
+    return <div className={cn(styles.row, 'cursor-default')}>…</div>;
+  }
 
-    const noop = useCallback(() => setIsActionsOpen(false), []);
-
-    const contentSlot = slotProps.content as { sx?: object } | undefined;
-    const labelSlot = slotProps.label as { sx?: object } | undefined;
-    const iconSlot = slotProps.iconContainer as { sx?: object } | undefined;
-
-    const CustomNoteLabel = useCallback(
-      (labelProps: Record<string, unknown>) => {
-        const { ...labelPropsForDom } = labelProps;
-
-        return (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              minWidth: 0,
-            }}
-          >
-            {isPinned && (
-              <PushPin
-                fontSize="small"
-                sx={{
-                  flexShrink: 0,
-                  color: 'var(--color-primary)',
-                  fontSize: '0.8rem',
-                  mr: 0.5,
-                }}
-              />
-            )}
-            <Box
-              {...labelPropsForDom}
-              sx={[
-                NOTE_LABEL_SX,
-                (labelProps.sx as object) ?? {},
-                { flex: 1, minWidth: 0 },
-              ]}
-            />
-            <IconButton
-              size="small"
-              onClick={handleMoreClick}
-              onPointerDown={e => e.stopPropagation()}
-              aria-label="More options"
-              sx={{ flexShrink: 0, color: 'var(--color-text-secondary)' }}
-            >
-              <MoreVert fontSize="small" />
-            </IconButton>
-          </Box>
-        );
-      },
-      [handleMoreClick, isPinned]
-    );
-
-    const CustomTagLabel = useCallback(
-      (labelProps: Record<string, unknown>) => {
-        const { ...labelPropsForDom } = labelProps;
-
-        return (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              minWidth: 0,
-            }}
-          >
-            <Box
-              {...labelPropsForDom}
-              sx={[
-                TAG_LABEL_SX,
-                ...(isTagSelected
-                  ? [{ color: 'var(--color-primary)' }]
-                  : []),
-                (labelProps.sx as object) ?? {},
-                { flex: 1, minWidth: 0 },
-              ]}
-            />
-            <IconButton
-              size="small"
-              onClick={handleTagMoreClick}
-              onPointerDown={e => e.stopPropagation()}
-              aria-label="More options"
-              sx={{ flexShrink: 0, color: 'var(--color-text-secondary)' }}
-            >
-              <MoreVert fontSize="small" />
-            </IconButton>
-          </Box>
-        );
-      },
-      [handleTagMoreClick, isTagSelected]
-    );
-
-    const tagLabelSx = {
-      ...TAG_LABEL_SX,
-      ...(isTagSelected ? { color: 'var(--color-primary)' } : {}),
-    };
-    const tagIconContainerSx = {
-      ...ICON_CONTAINER_SX,
-      ...(isTagSelected ? { color: 'var(--color-primary)' } : {}),
-    };
-    const mergedSlotProps = {
-      ...slotProps,
-      content: {
-        ...slotProps.content,
-        sx: { ...CONTENT_DIVIDER_SX, ...contentSlot?.sx },
-      },
-      label: isNote
-        ? { ...slotProps.label, sx: { ...NOTE_LABEL_SX, ...labelSlot?.sx } }
-        : { ...slotProps.label, sx: { ...tagLabelSx, ...labelSlot?.sx } },
-      iconContainer: {
-        ...slotProps.iconContainer,
-        sx: isNote
-          ? { ...ICON_CONTAINER_SX, ...iconSlot?.sx }
-          : { ...tagIconContainerSx, ...iconSlot?.sx },
-      },
-    };
-
-    const mergedSlots = isNote
-      ? { ...slots, label: CustomNoteLabel }
-      : { ...slots, icon: LocalOffer, label: CustomTagLabel };
-
-    // Tag rows surface the shared tag management panel (edit form, delete
-    // dialog, ⋮ grid). The panel needs the full Tag DTO; the tree item only
-    // carries name/noteCount, so fetch-backed fields (description) are
-    // resolved by the panel's own query when the form opens.
-    const tagData: Tag | null =
-      !isNote && tagIdFromItem
-        ? {
-            id: Number(tagIdFromItem),
-            name: tagMeta?.name ?? '',
-            noteCount: tagMeta?.noteCount ?? 0,
+  return (
+    <>
+      <div
+        role="treeitem"
+        aria-expanded={isNote ? undefined : isExpanded}
+        aria-selected={isTagSelected}
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick();
           }
-        : null;
+        }}
+        className={cn(styles.row, isTagSelected && styles.rowSelected)}
+      >
+        {!isNote && <TagIcon className={styles.icon} />}
+        {isNote && isPinned && <Pin className={styles.pinIcon} />}
+        {isNote ? (
+          <span className={styles.noteLabel}>{item.label}</span>
+        ) : (
+          <span className={styles.tagLabel}>{getTagTreeItemLabel(item)}</span>
+        )}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className={styles.moreButton}
+          onClick={isNote ? handleMoreClick : handleTagMoreClick}
+          onPointerDown={e => e.stopPropagation()}
+          aria-label="More options"
+        >
+          <MoreVertical className="size-4" />
+        </Button>
+      </div>
 
-    return (
-      <>
-        <TreeItem
-          ref={ref}
-          {...rest}
-          itemId={itemId}
-          slotProps={mergedSlotProps}
-          slots={mergedSlots}
-        />
-        {isNote && (
-          <>
-            <NoteActionsGrid
-              isOpen={isActionsOpen}
-              onClose={() => setIsActionsOpen(false)}
-              onShare={noop}
-              onDuplicate={noop}
-              onDelete={handleDelete}
-              onArchive={handleArchive}
-              onTimeTracking={handleTimeTracking}
-              onViewTimeEntries={handleViewTimeEntries}
-              onMoveToFolder={handleMoveToFolder}
-              onTextToSpeech={noop}
-              onDownloadAudio={noop}
-              onEdit={handleEdit}
-              onLabel={handleLabel}
-              onPin={handlePin}
-              isPinned={isPinned}
-              onExport={noop}
-              onViewAudioHistory={function (): void {
-                throw new Error('Function not implemented.');
-              }}
-              onViewBoard={handleViewBoard}
-            />
-            <TimeTrackingForm
-              isOpen={isTimeTrackingOpen}
-              onClose={() => setIsTimeTrackingOpen(false)}
-              onSubmit={handleTimeTrackingSubmit}
-              isSubmitting={isCreating}
-              hasPendingTracks={false}
-            />
-            <TimeTrackListView
-              isOpen={isTimeTrackListOpen}
-              onClose={() => setIsTimeTrackListOpen(false)}
-              noteId={noteId}
-              timeTracks={timeTracks}
-              isLoadingTimeTracks={isLoadingTimeTracks}
-              error={timeTrackError ?? undefined}
-              totalTimeData={totalTimeData}
-              isLoadingTotal={isLoadingTotal}
-            />
-            <Snackbar
-              open={toastMessage !== null}
-              autoHideDuration={6000}
-              onClose={handleCloseToast}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-              <Alert
-                onClose={handleCloseToast}
-                severity={toastSeverity}
-                variant="filled"
-                sx={{ width: '100%' }}
-              >
-                {toastMessage}
-              </Alert>
-            </Snackbar>
-            <MoveNoteDialog
-              open={isMoveDialogOpen}
-              onClose={handleMoveDialogClose}
-              onConfirm={handleMoveConfirm}
-              error={moveError}
-            />
-            <Snackbar
-              open={moveSnackbarMessage !== null}
-              autoHideDuration={4000}
-              onClose={closeMoveSnackbar}
-            >
-              <SnackbarContent message={moveSnackbarMessage ?? ''} />
-            </Snackbar>
-            <Dialog
-              open={deleteDialogOpen}
-              onClose={() => setDeleteDialogOpen(false)}
-              aria-labelledby="tree-note-delete-dialog-title"
-            >
-              <DialogTitle id="tree-note-delete-dialog-title">
-                Delete Note?
-              </DialogTitle>
-              <DialogContent>
-                Are you sure you want to delete this note? This action cannot be
-                undone.
-                {deleteError && (
-                  <Alert severity="error" sx={{ mt: 2 }}>
-                    {deleteError}
-                  </Alert>
-                )}
-              </DialogContent>
-              <DialogActions>
+      {isNote && (
+        <>
+          <NoteActionsGrid
+            isOpen={isActionsOpen}
+            onClose={() => setIsActionsOpen(false)}
+            onShare={noop}
+            onDuplicate={noop}
+            onDelete={handleDelete}
+            onArchive={handleArchive}
+            onTimeTracking={handleTimeTracking}
+            onViewTimeEntries={handleViewTimeEntries}
+            onMoveToFolder={handleMoveToFolder}
+            onTextToSpeech={noop}
+            onDownloadAudio={noop}
+            onEdit={handleEdit}
+            onLabel={handleLabel}
+            onPin={handlePin}
+            isPinned={isPinned}
+            onExport={noop}
+            onViewAudioHistory={function (): void {
+              throw new Error('Function not implemented.');
+            }}
+            onViewBoard={handleViewBoard}
+          />
+          <TimeTrackingForm
+            isOpen={isTimeTrackingOpen}
+            onClose={() => setIsTimeTrackingOpen(false)}
+            onSubmit={handleTimeTrackingSubmit}
+            isSubmitting={isCreating}
+            hasPendingTracks={false}
+          />
+          <TimeTrackListView
+            isOpen={isTimeTrackListOpen}
+            onClose={() => setIsTimeTrackListOpen(false)}
+            noteId={noteId}
+            timeTracks={timeTracks}
+            isLoadingTimeTracks={isLoadingTimeTracks}
+            error={timeTrackError ?? undefined}
+            totalTimeData={totalTimeData}
+            isLoadingTotal={isLoadingTotal}
+          />
+          <MoveNoteDialog
+            open={isMoveDialogOpen}
+            onClose={handleMoveDialogClose}
+            onConfirm={handleMoveConfirm}
+            error={moveError}
+          />
+          <Dialog open={deleteDialogOpen} onOpenChange={(open) => !open && setDeleteDialogOpen(false)}>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Delete Note?</DialogTitle>
+              </DialogHeader>
+              <p className="text-sm text-muted-foreground">
+                Are you sure you want to delete this note? This action cannot
+                be undone.
+              </p>
+              {deleteError && (
+                <Alert variant="destructive">
+                  <AlertDescription>{deleteError}</AlertDescription>
+                </Alert>
+              )}
+              <DialogFooter>
                 <Button
+                  variant="outline"
                   onClick={() => setDeleteDialogOpen(false)}
                   disabled={isDeleting}
                 >
                   Cancel
                 </Button>
                 <Button
+                  variant="destructive"
                   onClick={confirmDelete}
-                  color="error"
-                  variant="contained"
                   disabled={isDeleting}
                 >
                   {isDeleting ? 'Deleting...' : 'Delete'}
                 </Button>
-              </DialogActions>
-            </Dialog>
-            <Dialog
-              open={archiveDialogOpen}
-              onClose={() => setArchiveDialogOpen(false)}
-              aria-labelledby="tree-note-archive-dialog-title"
-            >
-              <DialogTitle id="tree-note-archive-dialog-title">
-                Archive Note?
-              </DialogTitle>
-              <DialogContent>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Dialog open={archiveDialogOpen} onOpenChange={(open) => !open && setArchiveDialogOpen(false)}>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Archive Note?</DialogTitle>
+              </DialogHeader>
+              <p className="text-sm text-muted-foreground">
                 Are you sure you want to archive this note? It will be hidden
                 from your main list but can be restored later.
-                {archiveError && (
-                  <Alert severity="error" sx={{ mt: 2 }}>
-                    {archiveError}
-                  </Alert>
-                )}
-              </DialogContent>
-              <DialogActions>
+              </p>
+              {archiveError && (
+                <Alert variant="destructive">
+                  <AlertDescription>{archiveError}</AlertDescription>
+                </Alert>
+              )}
+              <DialogFooter>
                 <Button
+                  variant="outline"
                   onClick={() => setArchiveDialogOpen(false)}
                   disabled={isArchiving}
                 >
@@ -587,27 +439,24 @@ export const CustomTagTreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(
                 </Button>
                 <Button
                   onClick={confirmArchive}
-                  color="warning"
-                  variant="contained"
                   disabled={isArchiving}
+                  className="bg-[var(--color-warning)] text-white hover:bg-[var(--color-warning-dark)]"
                 >
                   {isArchiving ? 'Archiving...' : 'Archive'}
                 </Button>
-              </DialogActions>
-            </Dialog>
-          </>
-        )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
 
-        {tagData && (
-          <TagActionPanel
-            tag={tagData}
-            isOpen={isActionsOpen}
-            onClose={() => setIsActionsOpen(false)}
-          />
-        )}
-      </>
-    );
-  }
-);
-
-CustomTagTreeItem.displayName = 'CustomTagTreeItem';
+      {tagData && (
+        <TagActionPanel
+          tag={tagData}
+          isOpen={isActionsOpen}
+          onClose={() => setIsActionsOpen(false)}
+        />
+      )}
+    </>
+  );
+};

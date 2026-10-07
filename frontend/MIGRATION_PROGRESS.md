@@ -35,9 +35,9 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [x] src/components/RightSheet/RightSheet.tsx
 - [x] src/components/ThemeToggle/ThemeToggleButton.tsx
 - [x] src/components/TopRail/TopRail.tsx
-- [ ] src/components/TreeNavigation/CustomTagTreeItem.tsx (MUI x-tree-view —
-      no shadcn equivalent, needs a hand-rolled tree)
-- [ ] src/components/TreeNavigation/TagTreeNavigation.tsx (same)
+- [x] src/components/TreeNavigation/CustomTagTreeItem.tsx (hand-rolled tree;
+      see commit for the keyboard-nav caveat)
+- [x] src/components/TreeNavigation/TagTreeNavigation.tsx (same)
 
 ### ActivityPage
 
