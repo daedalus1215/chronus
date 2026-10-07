@@ -1,18 +1,11 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  Autocomplete,
-  Chip,
-  CircularProgress,
-  Typography,
-  Paper,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
-import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Plus, X, Search, Clock, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandItem, CommandList } from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 import styles from './QuickAddRow.module.css';
 import {
   useNoteSearch,
@@ -58,6 +51,9 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
     reset,
     hasNoResults,
   } = useNoteSearch();
+
+  const [isNoteMenuOpen, setIsNoteMenuOpen] = useState(false);
+  const noteInputRef = useRef<HTMLInputElement>(null);
 
   // Anchor time — captured at mount, re-anchored on note selection
   const [anchorNow, setAnchorNow] = useState(() => new Date());
@@ -165,168 +161,151 @@ export const QuickAddRow: React.FC<Props> = ({ onSubmit }) => {
     setDuration(String(min));
   };
 
-  const isOptionEqualToValue = (
-    option: NoteAutocompleteOption,
-    value: NoteAutocompleteOption
-  ) => {
-    return option.id === value.id;
+  const handleNoteOptionSelect = (option: NoteAutocompleteOption) => {
+    handleSelect(option);
+    setIsNoteMenuOpen(false);
+  };
+
+  const handleNoteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedNote) {
+      // Typing again after a selection starts a fresh search.
+      handleSelect(null);
+    }
+    setQuery(e.target.value);
+    setIsNoteMenuOpen(true);
   };
 
   const canSubmit = selectedNote && duration && parseInt(duration, 10) >= 1;
 
   return (
-    <Paper className={styles.container} elevation={0}>
-      <Box className={styles.header}>
-        <ScheduleIcon className={styles.headerIcon} />
-        <Typography className={styles.headerTitle}>
-          Quick Add Time Entry
-        </Typography>
-      </Box>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <Clock className={styles.headerIcon} />
+        <span className={styles.headerTitle}>Quick Add Time Entry</span>
+      </div>
 
-      <Box className={styles.formRow}>
-        <Box className={styles.noteField}>
-          <Autocomplete
-            options={displayOptions}
-            loading={searchLoading}
-            getOptionLabel={opt => (opt as { name: string }).name}
-            isOptionEqualToValue={isOptionEqualToValue}
-            value={selectedNote ?? null}
-            onChange={(_e, val) =>
-              handleSelect(val as NoteAutocompleteOption | null)
-            }
-            onInputChange={(_e, val, reason) => {
-              if (reason === 'input') {
-                setQuery(val);
-              }
-            }}
-            renderInput={params => (
-              <TextField
-                {...params}
-                placeholder="Search note..."
-                size="small"
-                variant="outlined"
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <>
-                      <SearchIcon className={styles.searchIcon} />
-                      {params.InputProps.startAdornment}
-                    </>
-                  ),
-                  endAdornment: (
-                    <>
-                      {searchLoading ? (
-                        <CircularProgress
-                          size={18}
-                          className={styles.loadingSpinner}
-                        />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                }}
-              />
-            )}
-            noOptionsText="Type at least 2 characters"
-          />
-        </Box>
+      <div className={styles.formRow}>
+        <div className={styles.noteField}>
+          <Popover open={isNoteMenuOpen} onOpenChange={setIsNoteMenuOpen}>
+            <PopoverTrigger asChild>
+              <div className="relative flex items-center">
+                <Search className={styles.searchIcon} />
+                <Input
+                  ref={noteInputRef}
+                  placeholder="Search note..."
+                  value={selectedNote ? selectedNote.name : query}
+                  onChange={handleNoteInputChange}
+                  onFocus={() => setIsNoteMenuOpen(true)}
+                  className="h-9"
+                />
+                {searchLoading && (
+                  <Loader2 className={cn(styles.loadingSpinner, 'absolute right-2 size-[18px] animate-spin')} />
+                )}
+              </div>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-[--radix-popover-trigger-width] p-0"
+              onOpenAutoFocus={e => e.preventDefault()}
+            >
+              <Command shouldFilter={false}>
+                <CommandList>
+                  {displayOptions.length === 0 ? (
+                    <CommandEmpty>
+                      {query.length < 2
+                        ? 'Type at least 2 characters'
+                        : 'No results'}
+                    </CommandEmpty>
+                  ) : (
+                    displayOptions.map(opt => (
+                      <CommandItem
+                        key={opt.id}
+                        value={String(opt.id)}
+                        onSelect={() => handleNoteOptionSelect(opt)}
+                      >
+                        {opt.name}
+                      </CommandItem>
+                    ))
+                  )}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
 
-        <Box className={styles.dateTimeFields}>
+        <div className={styles.dateTimeFields}>
           {!autoMode && (
-            <Typography
-              component="span"
-              color="primary"
-              sx={{
-                cursor: 'pointer',
-                fontSize: '0.75rem',
-                mb: 0.5,
-                display: 'block',
-              }}
+            <button
+              type="button"
+              className="mb-1 block border-0 bg-transparent p-0 text-xs text-primary"
               onClick={handleResetToNow}
             >
               Reset to now
-            </Typography>
+            </button>
           )}
-          <TextField
+          <Input
             type="date"
             value={date}
             onChange={e => {
               setAutoMode(false);
               setDate(e.target.value);
             }}
-            size="small"
-            className={styles.dateField}
+            className={cn(styles.dateField, 'h-9')}
           />
-          <TextField
+          <Input
             type="time"
             value={startTime}
             onChange={e => {
               setAutoMode(false);
               setStartTime(e.target.value);
             }}
-            size="small"
-            InputLabelProps={{ shrink: true }}
-            className={styles.timeField}
+            className={cn(styles.timeField, 'h-9')}
           />
-        </Box>
+        </div>
 
-        <Box className={styles.durationSection}>
-          <TextField
-            type="number"
-            placeholder="30"
-            value={duration}
-            onChange={e => setDuration(e.target.value)}
-            size="small"
-            className={styles.durationInput}
-            inputProps={{ min: 1, max: 1440 }}
-            InputProps={{
-              endAdornment: (
-                <Typography className={styles.durationSuffix}>min</Typography>
-              ),
-            }}
-          />
-        </Box>
-
-        <Box className={styles.actions}>
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<AddIcon />}
-            onClick={handleSubmit}
-            disabled={!canSubmit}
-            className={styles.addButton}
-          >
-            Add
-          </Button>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={handleClear}
-            className={styles.clearButton}
-          >
-            <CloseIcon fontSize="small" />
-          </Button>
-        </Box>
-      </Box>
-
-      <Box className={styles.chipsRow}>
-        <Typography className={styles.chipsLabel}>Quick select:</Typography>
-        <Box className={styles.chipsContainer}>
-          {DURATION_CHIPS.map(min => (
-            <Chip
-              key={min}
-              label={`${min}m`}
-              size="small"
-              onClick={() => handleDurationChipClick(min)}
-              className={`${styles.durationChip} ${
-                parseInt(duration, 10) === min
-                  ? styles.durationChipSelected
-                  : ''
-              }`}
+        <div className={styles.durationSection}>
+          <div className="relative">
+            <Input
+              type="number"
+              placeholder="30"
+              value={duration}
+              onChange={e => setDuration(e.target.value)}
+              min={1}
+              max={1440}
+              className={cn(styles.durationInput, 'h-9 pr-10')}
             />
+            <span className={cn(styles.durationSuffix, 'absolute right-2.5 top-1/2 -translate-y-1/2')}>
+              min
+            </span>
+          </div>
+        </div>
+
+        <div className={styles.actions}>
+          <Button onClick={handleSubmit} disabled={!canSubmit} className={styles.addButton}>
+            <Plus /> Add
+          </Button>
+          <Button variant="outline" onClick={handleClear} className={styles.clearButton}>
+            <X className="size-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div className={styles.chipsRow}>
+        <span className={styles.chipsLabel}>Quick select:</span>
+        <div className={styles.chipsContainer}>
+          {DURATION_CHIPS.map(min => (
+            <Badge
+              key={min}
+              className={cn(
+                styles.durationChip,
+                parseInt(duration, 10) === min && styles.durationChipSelected
+              )}
+              onClick={() => handleDurationChipClick(min)}
+            >
+              {min}m
+            </Badge>
           ))}
-        </Box>
-      </Box>
-    </Paper>
+        </div>
+      </div>
+    </div>
   );
 };
