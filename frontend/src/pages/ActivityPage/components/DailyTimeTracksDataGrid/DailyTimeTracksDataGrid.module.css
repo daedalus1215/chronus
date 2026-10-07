@@ -27,6 +27,89 @@
   padding: 40px;
 }
 
+.heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.tableContainer {
+  height: 400px;
+  width: 100%;
+  overflow-y: auto;
+  border: none;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.table thead {
+  background-color: var(--color-overlay-light);
+  position: sticky;
+  top: 0;
+}
+
+.sortHeader {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
+}
+
+.sortIcon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.4;
+}
+
+.sortIconActive {
+  opacity: 1;
+  color: var(--color-primary);
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row:hover {
+  background-color: var(--accent-soft);
+}
+
+.noteTitle {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emptyRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-secondary);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 10px 14px;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
 @media (max-width: 600px) {
   .container {
     padding: 16px;

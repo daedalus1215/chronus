@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Paper, Typography } from '@mui/material';
 import { TimeTrackWithNoteResponse } from '../../../../api/dtos/time-tracks.dtos';
 import styles from './ActivityScatterChart.module.css';
 
@@ -125,12 +124,10 @@ export const ActivityScatterChart: React.FC<Props> = ({
 
   if (loading) {
     return (
-      <Paper className={styles.container}>
-        <Typography variant="h6">Activity</Typography>
-        <Box className={styles.loading}>
-          <Typography>Loading...</Typography>
-        </Box>
-      </Paper>
+      <div className={styles.container}>
+        <h6>Activity</h6>
+        <div className={styles.loading}>Loading...</div>
+      </div>
     );
   }
 
@@ -138,14 +135,14 @@ export const ActivityScatterChart: React.FC<Props> = ({
 
   if (!hasActivity) {
     return (
-      <Paper className={styles.container}>
-        <Typography variant="h6">Activity</Typography>
-        <Box className={styles.noData}>
-          <Typography color="textSecondary">
+      <div className={styles.container}>
+        <h6>Activity</h6>
+        <div className={styles.noData}>
+          <span className="text-muted-foreground">
             No activity in the selected range
-          </Typography>
-        </Box>
-      </Paper>
+          </span>
+        </div>
+      </div>
     );
   }
 
@@ -172,13 +169,13 @@ export const ActivityScatterChart: React.FC<Props> = ({
   const hovered = hoveredIndex !== null ? points[hoveredIndex] : null;
 
   return (
-    <Paper className={styles.container}>
+    <div className={styles.container}>
       <div className={styles.header}>
-        <Typography variant="h6">Activity</Typography>
-        <Typography variant="subtitle2" color="textSecondary">
+        <h6>Activity</h6>
+        <span className="text-sm text-muted-foreground">
           {tracks.length} session{tracks.length === 1 ? '' : 's'} ·{' '}
           {formatDuration(totalMinutes)} total
-        </Typography>
+        </span>
       </div>
 
       {noteTotals.length > 0 && (
@@ -195,9 +192,8 @@ export const ActivityScatterChart: React.FC<Props> = ({
         </div>
       )}
 
-      <Box
-        className={styles.chartContainer}
-        sx={{ color: 'text.secondary' }}
+      <div
+        className={`${styles.chartContainer} text-muted-foreground`}
         onMouseLeave={() => setHoveredIndex(null)}
       >
         <svg
@@ -326,7 +322,7 @@ export const ActivityScatterChart: React.FC<Props> = ({
             </foreignObject>
           )}
         </svg>
-      </Box>
-    </Paper>
+      </div>
+    </div>
   );
 };
