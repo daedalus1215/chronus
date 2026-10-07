@@ -72,7 +72,7 @@ gone. Group commits by directory/feature, not necessarily one file each.
 - [ ] src/pages/HomePage/components/MergeSelectionDialog/MergeSelectionDialog.tsx
 - [ ] src/pages/HomePage/components/NoteListView/DesktopNoteListView/DesktopNoteListView.tsx
 - [ ] src/pages/HomePage/components/NoteListView/MobileNoteListVIew/MobileNoteListView.tsx
-- [ ] src/pages/HomePage/components/NoteListView/NoteItem/AudioHistoryView/AudioHistoryView.tsx
+- [x] src/pages/HomePage/components/NoteListView/NoteItem/AudioHistoryView/AudioHistoryView.tsx
 - [x] src/pages/HomePage/components/NoteListView/NoteItem/DateTimePicker/DateTimePicker.tsx
 - [x] src/pages/HomePage/components/NoteListView/NoteItem/NoteActionGrid/NoteActionGrid.tsx
 - [ ] src/pages/HomePage/components/NoteListView/NoteItem/NoteItem.tsx

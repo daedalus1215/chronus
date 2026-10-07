@@ -30,7 +30,8 @@
 }
 
 .emptyIcon {
-  font-size: 48px;
+  width: 48px;
+  height: 48px;
   color: var(--color-text-secondary);
   margin-bottom: 16px;
 }
@@ -120,16 +121,41 @@
   line-height: 1;
 }
 
-.playButton {
+.playButton,
+.downloadButton,
+.deleteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.playButton,
+.downloadButton {
+  color: var(--color-text-secondary);
+}
+
+.playButton[data-active='true'] {
   color: var(--primary);
 }
 
-.playButton:hover {
+.playButton:hover,
+.downloadButton:hover {
   background-color: var(--color-primary-light);
 }
 
 .downloadButton {
   margin-left: 0;
+}
+
+.downloadButton:disabled,
+.deleteButton:disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .deleteButton {

@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { BottomSheet } from '../../../../../../components/BottomSheet/BottomSheet';
 import { NoteAudio } from '../../../../../../api/requests/audio.requests';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
-  IconButton,
-  Chip,
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
-  Button,
-} from '@mui/material';
-import DownloadIcon from '@mui/icons-material/Download';
-import DeleteIcon from '@mui/icons-material/Delete';
-import HeadphonesIcon from '@mui/icons-material/Headphones';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Download, Trash2, Headphones, Play, Pause } from 'lucide-react';
 import { useAudioPlayer } from '@/contexts/useAudioPlayer';
 import styles from './AudioHistoryView.module.css';
 
@@ -119,7 +115,7 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
         <h3 className={styles.title}>Audio History</h3>
         {audios.length === 0 ? (
           <div className={styles.empty}>
-            <HeadphonesIcon className={styles.emptyIcon} />
+            <Headphones className={styles.emptyIcon} />
             <p>No audio files yet</p>
             <p className={styles.emptySubtext}>
               Convert text to speech to create audio files
@@ -134,11 +130,9 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
                     <span className={styles.audioNumber}>
                       #{audios.length - index}
                     </span>
-                    <Chip
-                      label={getFormatLabel(audio.fileFormat)}
-                      size="small"
-                      className={styles.formatChip}
-                    />
+                    <Badge variant="secondary" className={styles.formatChip}>
+                      {getFormatLabel(audio.fileFormat)}
+                    </Badge>
                   </div>
                   <div className={styles.audioDate}>
                     {formatDate(audio.createdAt)}
@@ -147,46 +141,46 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
                 </div>
                 <div className={styles.actionButtons}>
                   <div className={styles.playColumn}>
-                    <IconButton
+                    <button
+                      type="button"
                       aria-label={
                         isCurrentTrack(audio.id) && isPlaying
                           ? 'Pause audio'
                           : 'Play audio'
                       }
-                      size="small"
                       onClick={() => handlePlay(audio)}
                       className={styles.playButton}
-                      color={isCurrentTrack(audio.id) ? 'primary' : 'default'}
+                      data-active={isCurrentTrack(audio.id)}
                     >
                       {isCurrentTrack(audio.id) && isPlaying ? (
-                        <PauseIcon fontSize="small" />
+                        <Pause size={16} />
                       ) : (
-                        <PlayArrowIcon fontSize="small" />
+                        <Play size={16} />
                       )}
-                    </IconButton>
+                    </button>
                     <span className={styles.audioTime}>
                       {formatTime(audio.lastPositionSeconds)} /{' '}
                       {formatTime(audio.durationSeconds)}
                     </span>
                   </div>
-                  <IconButton
+                  <button
+                    type="button"
                     aria-label="Download audio"
-                    size="small"
                     onClick={() => onDownload(audio.id, audio.fileName)}
                     disabled={isDownloading}
                     className={styles.downloadButton}
                   >
-                    <DownloadIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
+                    <Download size={16} />
+                  </button>
+                  <button
+                    type="button"
                     aria-label="Delete audio"
-                    size="small"
                     onClick={() => setDeleteConfirmId(audio.id)}
                     disabled={isDeleting}
                     className={styles.deleteButton}
                   >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
             ))}
@@ -196,25 +190,29 @@ export const AudioHistoryView: React.FC<AudioHistoryViewProps> = ({
 
       <Dialog
         open={deleteConfirmId !== null}
-        onClose={() => setDeleteConfirmId(null)}
-        aria-labelledby="delete-audio-dialog-title"
+        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogTitle id="delete-audio-dialog-title">Delete Audio</DialogTitle>
-        <DialogContent>
-          Are you sure you want to permanently delete this audio file? This
-          action cannot be undone.
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Audio</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to permanently delete this audio file? This
+            action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            variant="contained"
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
       </Dialog>
     </BottomSheet>
   );
