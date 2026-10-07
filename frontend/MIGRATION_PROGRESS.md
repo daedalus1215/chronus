@@ -119,10 +119,10 @@ gone. Group commits by directory/feature, not necessarily one file each.
 
 ### SettingsPage
 
-- [ ] src/pages/SettingsPage/SettingsPage.tsx
-- [ ] src/pages/SettingsPage/components/AppearanceSettings/AppearanceSettings.tsx
-- [ ] src/pages/SettingsPage/components/ChangePasswordForm/ChangePasswordForm.tsx
-- [ ] src/pages/SettingsPage/components/ChangeUsernameForm/ChangeUsernameForm.tsx
+- [x] src/pages/SettingsPage/SettingsPage.tsx
+- [x] src/pages/SettingsPage/components/AppearanceSettings/AppearanceSettings.tsx
+- [x] src/pages/SettingsPage/components/ChangePasswordForm/ChangePasswordForm.tsx
+- [x] src/pages/SettingsPage/components/ChangeUsernameForm/ChangeUsernameForm.tsx
 
 ### SearchPage
 

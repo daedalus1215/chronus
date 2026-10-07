@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, Button } from '@mui/material';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '../../auth/useAuth';
 import { ChangeUsernameForm } from './components/ChangeUsernameForm/ChangeUsernameForm';
 import { ChangePasswordForm } from './components/ChangePasswordForm/ChangePasswordForm';
@@ -9,39 +9,26 @@ export const SettingsPage: React.FC = () => {
   const { logout } = useAuth();
 
   return (
-    <Box
-      sx={{
-        height: '100%',
-        overflowY: 'scroll',
-        overflowX: 'hidden',
-      }}
-    >
-      <Container maxWidth="md" sx={{ py: 4, pb: 6 }}>
-        <Typography variant="h4" gutterBottom>
-          Settings
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+    <div className="h-full overflow-y-scroll overflow-x-hidden">
+      <div className="mx-auto max-w-2xl px-4 py-8 pb-12">
+        <h1 className="mb-2 text-3xl font-semibold">Settings</h1>
+        <p className="mb-8 text-base text-muted-foreground">
           Manage your settings. Choose an appearance, update your username,
           or change your password.
-        </Typography>
-        <Box sx={{ pb: 4 }}>
+        </p>
+        <div className="pb-8">
           <AppearanceSettings />
-        </Box>
-        <Box sx={{ pb: 4 }}>
+        </div>
+        <div className="pb-8">
           <ChangeUsernameForm />
           <ChangePasswordForm />
-        </Box>
-        <Box sx={{ pt: 2, pb: 8, borderTop: 1, borderColor: 'divider' }}>
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={() => logout()}
-            aria-label="Sign out"
-          >
+        </div>
+        <div className="border-t border-border pb-16 pt-4">
+          <Button variant="outline" onClick={() => logout()} aria-label="Sign out">
             Sign out
           </Button>
-        </Box>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };

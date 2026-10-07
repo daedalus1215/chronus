@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-  Paper,
-} from '@mui/material';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
 import { useUpdatePassword } from '../../hooks/useUpdatePassword';
 
 export const ChangePasswordForm: React.FC = () => {
@@ -57,71 +54,72 @@ export const ChangePasswordForm: React.FC = () => {
   };
 
   return (
-    <Paper sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Change Password
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Enter your current password and choose a new password.
-      </Typography>
-      <Box component="form" onSubmit={handleSubmit}>
-        <TextField
-          label="Current Password"
-          type="password"
-          value={currentPassword}
-          onChange={e => setCurrentPassword(e.target.value)}
-          fullWidth
-          required
-          margin="normal"
-          disabled={isUpdating}
-        />
-        <TextField
-          label="New Password"
-          type="password"
-          value={newPassword}
-          onChange={e => setNewPassword(e.target.value)}
-          fullWidth
-          required
-          margin="normal"
-          disabled={isUpdating}
-          inputProps={{ minLength: 6, maxLength: 50 }}
-        />
-        <TextField
-          label="Confirm New Password"
-          type="password"
-          value={confirmPassword}
-          onChange={e => setConfirmPassword(e.target.value)}
-          fullWidth
-          required
-          margin="normal"
-          disabled={isUpdating}
-          inputProps={{ minLength: 6, maxLength: 50 }}
-        />
-        {validationError && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            {validationError}
-          </Alert>
-        )}
-        {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            {error}
-          </Alert>
-        )}
-        {successMessage && (
-          <Alert severity="success" sx={{ mt: 2 }}>
-            {successMessage}
-          </Alert>
-        )}
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={isUpdating}
-          sx={{ mt: 2 }}
-        >
-          {isUpdating ? 'Updating...' : 'Update Password'}
-        </Button>
-      </Box>
-    </Paper>
+    <Card>
+      <CardContent className="p-6">
+        <h2 className="mb-1 text-lg font-semibold">Change Password</h2>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Enter your current password and choose a new password.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="current-password">Current Password</Label>
+            <Input
+              id="current-password"
+              type="password"
+              value={currentPassword}
+              onChange={e => setCurrentPassword(e.target.value)}
+              required
+              disabled={isUpdating}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-password">New Password</Label>
+            <Input
+              id="new-password"
+              type="password"
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
+              required
+              disabled={isUpdating}
+              minLength={6}
+              maxLength={50}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="confirm-new-password">Confirm New Password</Label>
+            <Input
+              id="confirm-new-password"
+              type="password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              required
+              disabled={isUpdating}
+              minLength={6}
+              maxLength={50}
+            />
+          </div>
+          {validationError && (
+            <Alert variant="destructive">
+              <AlertDescription>{validationError}</AlertDescription>
+            </Alert>
+          )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {successMessage && (
+            <Alert className="border-green-600/50 text-green-700 dark:text-green-400">
+              <AlertDescription className="text-green-700 dark:text-green-400">
+                {successMessage}
+              </AlertDescription>
+            </Alert>
+          )}
+          <Button type="submit" disabled={isUpdating}>
+            {isUpdating ? 'Updating...' : 'Update Password'}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
