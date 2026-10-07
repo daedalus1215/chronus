@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import Alert from '@mui/material/Alert';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import DownloadIcon from '@mui/icons-material/Download';
-import DeleteIcon from '@mui/icons-material/Delete';
-import HeadphonesIcon from '@mui/icons-material/Headphones';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import { Download, Trash2, Headphones, Play, Pause } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { NoteAudio } from '@/api/requests/audio.requests';
 import { useAudioPlayer } from '@/contexts/useAudioPlayer';
 import { useNoteAudios } from '../../hooks/useNoteAudios/useNoteAudios';
@@ -90,159 +86,126 @@ export const SidebarAudioHistoryView: React.FC<
   };
 
   return (
-    <Box className={styles.sidebarAudio}>
+    <div className={styles.sidebarAudio}>
       {error && (
-        <Alert severity="error" sx={{ mx: 2, mt: 2 }}>
-          {error.message}
+        <Alert variant="destructive" className="mx-4 mt-4 w-auto">
+          <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
 
       {isLoading ? (
-        <Box sx={{ p: 2, color: 'text.secondary', fontSize: '0.875rem' }}>
+        <div className="p-4 text-sm text-muted-foreground">
           Loading audio files...
-        </Box>
+        </div>
       ) : audios.length === 0 ? (
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            gap: 0.5,
-            px: 2,
-            py: 4,
-            color: 'text.secondary',
-          }}
-        >
-          <HeadphonesIcon sx={{ fontSize: 40, opacity: 0.5 }} />
-          <p style={{ margin: 0 }}>No audio files yet</p>
-          <p style={{ margin: 0, fontSize: '0.8125rem', opacity: 0.7 }}>
+        <div className="flex flex-col items-center justify-center gap-1 px-4 py-8 text-center text-muted-foreground">
+          <Headphones className="size-10 opacity-50" />
+          <p className="m-0">No audio files yet</p>
+          <p className="m-0 text-[0.8125rem] opacity-70">
             Convert text to speech to create audio files
           </p>
-        </Box>
+        </div>
       ) : (
-        <List
-          className={styles.list}
-          sx={{
-            flex: 1,
-            overflowY: 'auto',
-            minHeight: 0,
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
-          }}
-        >
+        <ul className={`${styles.list} min-h-0 flex-1 list-none overflow-y-auto p-0`}>
           {audios.map((audio, index) => (
-            <Box
+            <li
               key={audio.id}
-              sx={{
-                borderBottom: '1px solid var(--color-overlay-stronger)',
-                px: 2,
-                py: 1,
-              }}
+              className="border-b border-[var(--color-overlay-stronger)] px-4 py-2"
             >
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}
-              >
-                <Box
-                  component="span"
-                  sx={{ fontSize: '0.875rem', fontWeight: 600 }}
-                >
+              <div className="mb-1 flex items-center gap-2">
+                <span className="text-sm font-semibold">
                   #{audios.length - index}
-                </Box>
-                <Chip label={audio.fileFormat.toUpperCase()} size="small" />
-              </Box>
-              <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
+                </span>
+                <Badge variant="secondary">{audio.fileFormat.toUpperCase()}</Badge>
+              </div>
+              <div className="text-xs text-muted-foreground">
                 {formatDate(audio.createdAt)}
-              </Box>
-              <Box
-                className={styles.fileName}
-                sx={{ fontSize: '0.8125rem', mt: 0.25 }}
+              </div>
+              <div
+                className={`${styles.fileName} mt-0.5 text-[0.8125rem]`}
                 title={audio.fileName}
               >
                 {audio.fileName}
-              </Box>
+              </div>
 
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  mt: 0.5,
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <IconButton
+              <div className="mt-1 flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
                     aria-label={
                       isCurrentTrack(audio.id) && isPlaying
                         ? 'Pause audio'
                         : 'Play audio'
                     }
-                    size="small"
                     onClick={() => handlePlay(audio)}
-                    color={isCurrentTrack(audio.id) ? 'primary' : 'default'}
+                    className={isCurrentTrack(audio.id) ? 'text-primary' : undefined}
                   >
                     {isCurrentTrack(audio.id) && isPlaying ? (
-                      <PauseIcon fontSize="small" />
+                      <Pause className="size-4" />
                     ) : (
-                      <PlayArrowIcon fontSize="small" />
+                      <Play className="size-4" />
                     )}
-                  </IconButton>
-                  <Box
-                    component="span"
-                    sx={{ fontSize: '0.75rem', color: 'text.secondary' }}
-                  >
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
                     {formatTime(audio.lastPositionSeconds)} /{' '}
                     {formatTime(audio.durationSeconds)}
-                  </Box>
-                </Box>
+                  </span>
+                </div>
 
-                <Box>
-                  <IconButton
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
                     aria-label="Download audio"
-                    size="small"
                     onClick={() => downloadAudio(audio.id, audio.fileName)}
                     disabled={isDownloading}
                   >
-                    <DownloadIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
+                    <Download className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
                     aria-label="Delete audio"
-                    size="small"
                     onClick={() => setDeleteConfirmId(audio.id)}
                     disabled={isDeleting}
+                    className="text-destructive"
                   >
-                    <DeleteIcon fontSize="small" color="error" />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Box>
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </li>
           ))}
-        </List>
+        </ul>
       )}
 
       <Dialog
         open={deleteConfirmId !== null}
-        onClose={() => setDeleteConfirmId(null)}
-        aria-labelledby="delete-audio-dialog-title"
+        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogTitle id="delete-audio-dialog-title">Delete Audio</DialogTitle>
-        <DialogContent>
-          Are you sure you want to permanently delete this audio file? This
-          action cannot be undone.
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Audio</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to permanently delete this audio file? This
+            action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteConfirmId(null)}>Cancel</Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            variant="contained"
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
       </Dialog>
-    </Box>
+    </div>
   );
 };
