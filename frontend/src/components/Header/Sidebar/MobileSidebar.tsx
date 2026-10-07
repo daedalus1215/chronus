@@ -162,7 +162,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                     onClose();
                     onSignOut();
                   }}
-                  className="mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-md px-4 py-2 text-left hover:bg-[var(--accent-soft)]"
+                  className="mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-md border-0 bg-transparent px-4 py-2 text-left hover:bg-[var(--accent-soft)]"
                 >
                   <LogOut className="size-5 text-muted-foreground" />
                   <span>Sign Out</span>

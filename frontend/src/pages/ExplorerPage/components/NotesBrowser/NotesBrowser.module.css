@@ -113,6 +113,8 @@
 }
 
 .noteMenuBtn {
+  background: none;
+  border: none;
   opacity: 0 !important;
   padding: 2px !important;
   transition: opacity 0.1s;

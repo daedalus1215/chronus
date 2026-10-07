@@ -92,7 +92,7 @@ export const NotesBrowser: React.FC<Props> = ({ folderId, folderLabel }) => {
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 border-0 bg-transparent p-0.5"
               style={{ color: 'var(--color-text-muted)' }}
             >
               <X size={13} />
