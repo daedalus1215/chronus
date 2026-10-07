@@ -66,7 +66,9 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = () => {
                     </span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">{item.label}</TooltipContent>
+                <TooltipContent side="right" sideOffset={8}>
+                  {item.label}
+                </TooltipContent>
               </Tooltip>
             </li>
           );
