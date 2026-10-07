@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Loader2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   DndContext,
@@ -20,7 +20,6 @@ import {
 } from '@dnd-kit/sortable';
 import { ExplorerTreeDialogs } from './ExplorerTreeDialogs';
 import { ExplorerTreeHeader } from './ExplorerTreeHeader';
-import { ExplorerTreeMenus } from './ExplorerTreeMenus';
 import { FolderSubtree } from './FolderSubtree/FolderSubtree';
 import { NoteRow } from './NoteRow';
 import { DragGhostRow } from './DragGhostRow';
@@ -43,16 +42,6 @@ export type DragMode = 'off' | 'on';
 export const ExplorerTree: React.FC = () => {
   const navigate = useNavigate();
   const { id: activeNoteId } = useParams<{ id: string }>();
-
-  // Menu state
-  const [folderMenu, setFolderMenu] = useState<{
-    anchor: HTMLElement;
-    id: number;
-  } | null>(null);
-  const [noteMenu, setNoteMenu] = useState<{
-    anchor: HTMLElement;
-    id: number;
-  } | null>(null);
 
   // Selection state
   const [selectedFolderIds, setSelectedFolderIds] = useState<Set<number>>(
@@ -394,9 +383,9 @@ export const ExplorerTree: React.FC = () => {
   // Loading state
   if (loading) {
     return (
-      <Box className={styles.loading}>
-        <CircularProgress size={18} thickness={3} />
-      </Box>
+      <div className={styles.loading}>
+        <Loader2 className="size-[18px] animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
@@ -409,7 +398,7 @@ export const ExplorerTree: React.FC = () => {
   ];
 
   return (
-    <Box className={styles.tree} ref={treeRef} tabIndex={-1}>
+    <div className={styles.tree} ref={treeRef} tabIndex={-1}>
       <ExplorerTreeHeader
         selectionCount={selectionCount}
         pickItemsMode={pickItemsMode}
@@ -452,7 +441,7 @@ export const ExplorerTree: React.FC = () => {
         onDragEnd={onDragEnd}
         onDragCancel={onDragCancel}
       >
-        <Box className={styles.body}>
+        <div className={styles.body}>
           <SortableContext
             items={rootSortableItems}
             strategy={verticalListSortingStrategy}
@@ -471,12 +460,20 @@ export const ExplorerTree: React.FC = () => {
                 onRenameChange={setRenameValue}
                 onRenameCommit={commitRename}
                 onRenameCancel={cancelRename}
-                onFolderMenu={(anchor, id) => setFolderMenu({ anchor, id })}
+                onRename={startRename}
                 onFolderRowClick={handleFolderRowClick}
                 onChevronClick={toggle}
                 onNoteOpen={id => navigate(`notes/${id}`)}
-                onNoteMenu={(anchor, id) => setNoteMenu({ anchor, id })}
+                onNoteOpenBoard={id => navigate(`/notes/${id}/kanban`)}
+                onNoteMoveToFolder={id =>
+                  setReparentTarget({ folderIds: [], noteIds: [id] })
+                }
                 onNewSubfolder={id => setNewFolderParentId(id)}
+                onNewMemoInFolder={handleCreateMemoInFolder}
+                onFolderMoveToFolder={id =>
+                  setReparentTarget({ folderIds: [id], noteIds: [] })
+                }
+                onDeleteFolder={setDeleteConfirmId}
                 selectedFolderIds={selectedFolderIds}
                 selectedNoteIds={selectedNoteIds}
                 onNoteRowClick={handleNoteRowClick}
@@ -502,7 +499,10 @@ export const ExplorerTree: React.FC = () => {
                 dragMode={dragMode}
                 onOpen={id => navigate(`notes/${id}`)}
                 onRowClick={handleNoteRowClick}
-                onMenuOpen={(anchor, id) => setNoteMenu({ anchor, id })}
+                onOpenBoard={id => navigate(`/notes/${id}/kanban`)}
+                onMoveToFolder={id =>
+                  setReparentTarget({ folderIds: [], noteIds: [id] })
+                }
                 onTogglePick={() => toggleNoteInSelection(note.id)}
                 isMatch={filter.noteMatches.has(note.id)}
                 filterActive={filter.active}
@@ -511,13 +511,13 @@ export const ExplorerTree: React.FC = () => {
           </SortableContext>
 
           {rootNotes.length === 0 && tree.length === 0 && (
-            <Box sx={{ px: 2, py: 1 }}>
-              <Typography sx={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+            <div className="px-4 py-2">
+              <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 No notes or folders yet
-              </Typography>
-            </Box>
+              </span>
+            </div>
           )}
-        </Box>
+        </div>
 
         <DragOverlay>
           {activeId ? (
@@ -540,19 +540,6 @@ export const ExplorerTree: React.FC = () => {
         disabledMoveDestFolderIds={disabledMoveDestFolderIds}
       />
 
-      {/* Context menus */}
-      <ExplorerTreeMenus
-        folderMenu={folderMenu}
-        setFolderMenu={setFolderMenu}
-        folders={folders}
-        startRename={startRename}
-        setReparentTarget={setReparentTarget}
-        setNewFolderParentId={setNewFolderParentId}
-        setDeleteConfirmId={setDeleteConfirmId}
-        onCreateMemoInFolder={handleCreateMemoInFolder}
-        noteMenu={noteMenu}
-        setNoteMenu={setNoteMenu}
-      />
       {/* Merge dialog */}
       <MergeNotesDialog
         key={notesToMerge.map(n => n.id).join(',')}
@@ -567,6 +554,6 @@ export const ExplorerTree: React.FC = () => {
         }}
         onConfirm={handleMergeConfirm}
       />
-    </Box>
+    </div>
   );
 };

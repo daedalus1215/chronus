@@ -51,15 +51,15 @@ gone. Group commits by directory/feature, not necessarily one file each.
 ### ExplorerPage
 
 - [ ] src/pages/ExplorerPage/ExplorerPage.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/DragGhostRow.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/ExplorerFilterBar.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTreeDialogs.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTreeHeader.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTreeMenus.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTree.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/FolderSubtree/FolderRow.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/FolderSubtree/FolderSubtree.tsx
-- [ ] src/pages/ExplorerPage/components/ExplorerTree/NoteRow.tsx
+- [x] src/pages/ExplorerPage/components/ExplorerTree/DragGhostRow.tsx
+- [x] src/pages/ExplorerPage/components/ExplorerTree/ExplorerFilterBar.tsx
+- [x] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTreeDialogs.tsx
+- [x] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTreeHeader.tsx
+- [x] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTreeMenus.tsx (deleted — folded into FolderRow/NoteRow)
+- [x] src/pages/ExplorerPage/components/ExplorerTree/ExplorerTree.tsx
+- [x] src/pages/ExplorerPage/components/ExplorerTree/FolderSubtree/FolderRow.tsx
+- [x] src/pages/ExplorerPage/components/ExplorerTree/FolderSubtree/FolderSubtree.tsx
+- [x] src/pages/ExplorerPage/components/ExplorerTree/NoteRow.tsx
 - [x] src/pages/ExplorerPage/components/FolderTree/FolderTreeItem.tsx
 - [x] src/pages/ExplorerPage/components/FolderTree/FolderTree.tsx
 - [ ] src/pages/ExplorerPage/components/MergeNotesDialog/MergeNotesDialog.tsx

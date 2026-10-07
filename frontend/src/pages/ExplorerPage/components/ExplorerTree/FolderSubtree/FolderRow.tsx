@@ -1,13 +1,23 @@
-import React from 'react';
-import { Box, Checkbox, IconButton, TextField } from '@mui/material';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import FolderIcon from '@mui/icons-material/Folder';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import React, { useState } from 'react';
+import {
+  ChevronRight,
+  Folder,
+  FolderOpen,
+  FolderPlus,
+  MoreHorizontal,
+  GripVertical,
+} from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 import { FolderTreeNode } from '../../../../../api/dtos/folder.dtos';
 import { DragMode } from '../ExplorerTree';
 import { DropIntent } from '../useDragOperations';
@@ -28,10 +38,13 @@ type FolderRowProps = {
   onRenameChange: (v: string) => void;
   onRenameCommit: () => void;
   onRenameCancel: () => void;
-  onFolderMenu: (anchor: HTMLElement, id: number) => void;
+  onRename: (id: number, currentName: string) => void;
   onFolderRowClick: (e: React.MouseEvent, folderId: number) => void;
   onChevronClick: (id: number) => void;
   onNewSubfolder: (parentId: number) => void;
+  onNewMemoInFolder: (id: number) => void;
+  onMoveToFolder: (id: number) => void;
+  onDelete: (id: number) => void;
   onTogglePick: (id: number) => void;
 };
 
@@ -51,12 +64,16 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(
     onRenameChange,
     onRenameCommit,
     onRenameCancel,
-    onFolderMenu,
+    onRename,
     onFolderRowClick,
     onChevronClick,
     onNewSubfolder,
+    onNewMemoInFolder,
+    onMoveToFolder,
+    onDelete,
     onTogglePick,
   }) => {
+    const [menuOpen, setMenuOpen] = useState(false);
     const isOpen = expanded.has(node.id);
     const indent = 10 + depth * 16;
     const isDropTarget =
@@ -84,11 +101,15 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(
         : undefined;
 
     return (
-      <Box
+      <div
         ref={setNodeRef}
-        style={style}
-        className={`${styles.row} ${selected ? styles.rowActive : ''} ${isDropTarget ? styles.rowDropTarget : ''} ${dimmed ? styles.rowDimmed : ''}`}
-        sx={{ pl: `${indent}px` }}
+        style={{ ...style, paddingLeft: `${indent}px` }}
+        className={cn(
+          styles.row,
+          selected && styles.rowActive,
+          isDropTarget && styles.rowDropTarget,
+          dimmed && styles.rowDimmed
+        )}
         onClick={e => onFolderRowClick(e, node.id)}
       >
         {dragMode !== 'off' && (
@@ -98,46 +119,38 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(
             {...listeners}
             onClick={e => e.stopPropagation()}
           >
-            <DragIndicatorIcon
-              sx={{ fontSize: 13, color: 'var(--color-text-muted)' }}
-            />
+            <GripVertical size={13} style={{ color: 'var(--color-text-muted)' }} />
           </span>
         )}
         {pickItemsMode && (
           <span className={styles.rowCheck} onClick={e => e.stopPropagation()}>
             <Checkbox
-              size="small"
               checked={selected}
-              onChange={() => onTogglePick(node.id)}
-              inputProps={{ 'aria-label': `Select folder ${node.name}` }}
-              sx={{ p: 0.25, color: 'var(--color-text-muted)' }}
+              onCheckedChange={() => onTogglePick(node.id)}
+              aria-label={`Select folder ${node.name}`}
             />
           </span>
         )}
         <span
-          className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}
+          className={cn(styles.chevron, isOpen && styles.chevronOpen)}
           onClick={ev => {
             ev.stopPropagation();
             onChevronClick(node.id);
           }}
         >
-          <ChevronRightIcon sx={{ fontSize: 14 }} />
+          <ChevronRight size={14} />
         </span>
         <span className={styles.rowIcon}>
           {isOpen ? (
-            <FolderOpenIcon
-              sx={{ fontSize: 14, color: 'var(--color-text-secondary)' }}
-            />
+            <FolderOpen size={14} style={{ color: 'var(--color-text-secondary)' }} />
           ) : (
-            <FolderIcon
-              sx={{ fontSize: 14, color: 'var(--color-text-muted)' }}
-            />
+            <Folder size={14} style={{ color: 'var(--color-text-muted)' }} />
           )}
         </span>
 
         {renaming === node.id ? (
-          <TextField
-            inputRef={renameRef}
+          <Input
+            ref={renameRef}
             value={renameValue}
             onChange={e => onRenameChange(e.target.value)}
             onBlur={onRenameCommit}
@@ -147,35 +160,52 @@ export const FolderRow: React.FC<FolderRowProps> = React.memo(
             }}
             onClick={e => e.stopPropagation()}
             autoFocus
-            variant="standard"
-            size="small"
-            className={styles.renameInput}
-            sx={{ flex: 1 }}
+            className={cn(styles.renameInput, 'h-5 flex-1')}
           />
         ) : (
           <span className={styles.label}>{node.name}</span>
         )}
 
         {renaming !== node.id && (
-          <Box className={styles.rowActions} onClick={e => e.stopPropagation()}>
-            <IconButton
-              size="small"
+          <span className={styles.rowActions} onClick={e => e.stopPropagation()}>
+            <button
+              type="button"
               className={styles.actionBtn}
               title="New subfolder"
               onClick={() => onNewSubfolder(node.id)}
             >
-              <CreateNewFolderIcon sx={{ fontSize: 13 }} />
-            </IconButton>
-            <IconButton
-              size="small"
-              className={styles.actionBtn}
-              onClick={e => onFolderMenu(e.currentTarget, node.id)}
-            >
-              <MoreHorizIcon sx={{ fontSize: 13 }} />
-            </IconButton>
-          </Box>
+              <FolderPlus size={13} />
+            </button>
+            <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className={styles.actionBtn}>
+                  <MoreHorizontal size={13} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="min-w-[160px]">
+                <DropdownMenuItem onClick={() => onMoveToFolder(node.id)}>
+                  Move to folder…
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onRename(node.id, node.name)}>
+                  Rename
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onNewSubfolder(node.id)}>
+                  New subfolder
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onNewMemoInFolder(node.id)}>
+                  New memo
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => onDelete(node.id)}
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </span>
         )}
-      </Box>
+      </div>
     );
   }
 );
