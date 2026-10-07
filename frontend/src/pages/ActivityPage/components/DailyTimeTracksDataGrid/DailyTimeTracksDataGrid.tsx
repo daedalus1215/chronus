@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import {
-  DataGrid,
-  GridColDef,
-  GridRowsProp,
-  GridRowParams,
-} from '@mui/x-data-grid';
-import { Box, Typography, TextField, Button, Paper } from '@mui/material';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { TimeTrackAggregationResponse } from '../../../../api/dtos/time-tracks.dtos';
 import { ROUTES } from '../../../../constants/routes';
@@ -32,6 +36,26 @@ const formatDate = (dateString: string): string => {
   });
 };
 
+type Row = {
+  id: number;
+  noteName: string;
+  dailyTimeMinutes: number;
+  totalTimeMinutes: number;
+  mostRecentDate: string;
+};
+
+type SortField = keyof Omit<Row, 'id'>;
+type SortDirection = 'asc' | 'desc';
+
+const COLUMNS: { field: SortField; header: string }[] = [
+  { field: 'noteName', header: 'Note' },
+  { field: 'dailyTimeMinutes', header: 'Daily Time' },
+  { field: 'totalTimeMinutes', header: 'Total Time' },
+  { field: 'mostRecentDate', header: 'Last Activity' },
+];
+
+const PAGE_SIZE_OPTIONS = [5, 10, 25];
+
 type Props = {
   selectedDate?: string;
   onDateChange?: (date: string) => void;
@@ -51,6 +75,10 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
     }
   );
   const navigate = useNavigate();
+  const [sortField, setSortField] = useState<SortField>('dailyTimeMinutes');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const selectedDate = externalSelectedDate || internalSelectedDate;
   const shouldFetch = !externalData;
@@ -83,132 +111,171 @@ export const DailyTimeTracksDataGrid: React.FC<Props> = ({
     }
   };
 
-  const handleRowClick = (params: GridRowParams) => {
-    const noteId = params.row.id;
+  const handleRowClick = (noteId: number) => {
     navigate(ROUTES.NOTE(noteId));
   };
 
-  const columns: GridColDef[] = [
-    {
-      field: 'noteName',
-      headerName: 'Note',
-      flex: 1,
-      minWidth: 200,
-    },
-    {
-      field: 'dailyTimeMinutes',
-      headerName: 'Daily Time',
-      width: 120,
-      valueFormatter: (value: number) => formatTime(value),
-    },
-    {
-      field: 'totalTimeMinutes',
-      headerName: 'Total Time',
-      width: 120,
-      valueFormatter: (value: number) => formatTime(value),
-    },
-    {
-      field: 'mostRecentDate',
-      headerName: 'Last Activity',
-      width: 140,
-      valueFormatter: (value: string) => formatDate(value),
-    },
-  ];
+  const handleSort = (field: SortField) => {
+    if (field === sortField) {
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+    setPageIndex(0);
+  };
 
-  const rows: GridRowsProp = timeTracks.map(track => ({
-    id: track.noteId,
-    noteName: track.noteName,
-    dailyTimeMinutes: track.dailyTimeMinutes,
-    totalTimeMinutes: track.totalTimeMinutes,
-    mostRecentDate: track.mostRecentDate,
-  }));
+  const rows: Row[] = useMemo(
+    () =>
+      timeTracks.map(track => ({
+        id: track.noteId,
+        noteName: track.noteName,
+        dailyTimeMinutes: track.dailyTimeMinutes,
+        totalTimeMinutes: track.totalTimeMinutes,
+        mostRecentDate: track.mostRecentDate,
+      })),
+    [timeTracks]
+  );
+
+  const sortedRows = useMemo(() => {
+    const sorted = [...rows].sort((a, b) => {
+      const av = a[sortField];
+      const bv = b[sortField];
+      const cmp =
+        typeof av === 'number' && typeof bv === 'number'
+          ? av - bv
+          : String(av).localeCompare(String(bv));
+      return sortDirection === 'asc' ? cmp : -cmp;
+    });
+    return sorted;
+  }, [rows, sortField, sortDirection]);
+
+  const pageCount = Math.max(1, Math.ceil(sortedRows.length / pageSize));
+  const clampedPageIndex = Math.min(pageIndex, pageCount - 1);
+  const pagedRows = sortedRows.slice(
+    clampedPageIndex * pageSize,
+    clampedPageIndex * pageSize + pageSize
+  );
 
   const shouldShowControls = !externalSelectedDate && !onDateChange;
 
+  const renderSortIcon = (field: SortField) => {
+    if (field !== sortField) {
+      return <ArrowUpDown className={styles.sortIcon} />;
+    }
+    const Icon = sortDirection === 'asc' ? ArrowUp : ArrowDown;
+    return <Icon className={`${styles.sortIcon} ${styles.sortIconActive}`} />;
+  };
+
   return (
-    <Paper className={styles.container}>
-      <Box className={styles.header}>
-        <Typography variant="h5" component="h2" sx={{ fontWeight: 600 }}>
-          Daily Time Tracks
-        </Typography>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.heading}>Daily Time Tracks</h2>
         {shouldShowControls && (
-          <Box className={styles.dateControls}>
-            <TextField
+          <div className={styles.dateControls}>
+            <Input
               type="date"
               value={selectedDate}
               onChange={handleDateChange}
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              sx={{ minWidth: 150 }}
+              className="h-9 min-w-[150px]"
             />
-            <Button
-              variant="contained"
-              onClick={handleTodayClick}
-              size="small"
-              sx={{ minWidth: 70 }}
-            >
+            <Button size="sm" onClick={handleTodayClick} className="min-w-[70px]">
               Today
             </Button>
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       {error ? (
-        <Box className={styles.error}>
-          <Typography color="error">{error}</Typography>
-        </Box>
+        <div className={styles.error}>
+          <span className="text-destructive">{error}</span>
+        </div>
       ) : (
-        <Box sx={{ height: 400, width: '100%' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            loading={loading}
-            pageSizeOptions={[5, 10, 25]}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 10 },
-              },
-            }}
-            onRowClick={handleRowClick}
-            sx={{
-              border: 'none',
-              '& .MuiDataGrid-cell': {
-                borderBottom: '1px solid var(--color-border-light)',
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: 'var(--color-overlay-light)',
-                borderBottom: '1px solid var(--color-border-light)',
-              },
-              '& .MuiDataGrid-columnHeaderTitle': {
-                fontWeight: 600,
-                letterSpacing: '0.02em',
-              },
-              '& .MuiDataGrid-row': {
-                cursor: 'pointer',
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: 'var(--accent-soft)',
-              },
-            }}
-            slots={{
-              noRowsOverlay: () => (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100%',
-                  }}
-                >
-                  <Typography color="textSecondary">
-                    No time tracks found for {formatDate(selectedDate)}
-                  </Typography>
-                </Box>
-              ),
-            }}
-          />
-        </Box>
+        <>
+          <div className={styles.tableContainer}>
+            {rows.length === 0 ? (
+              <div className={styles.emptyRow}>
+                No time tracks found for {formatDate(selectedDate)}
+              </div>
+            ) : (
+              <Table className={styles.table}>
+                <TableHeader>
+                  <TableRow>
+                    {COLUMNS.map(col => (
+                      <TableHead key={col.field}>
+                        <button
+                          type="button"
+                          className={styles.sortHeader}
+                          onClick={() => handleSort(col.field)}
+                        >
+                          {col.header}
+                          {renderSortIcon(col.field)}
+                        </button>
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pagedRows.map(row => (
+                    <TableRow
+                      key={row.id}
+                      className={styles.row}
+                      onClick={() => handleRowClick(row.id)}
+                    >
+                      <TableCell className={styles.noteTitle} title={row.noteName}>
+                        {row.noteName}
+                      </TableCell>
+                      <TableCell>{formatTime(row.dailyTimeMinutes)}</TableCell>
+                      <TableCell>{formatTime(row.totalTimeMinutes)}</TableCell>
+                      <TableCell>{formatDate(row.mostRecentDate)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+
+          {rows.length > 0 && (
+            <div className={styles.pagination}>
+              <span>
+                {clampedPageIndex * pageSize + 1}–
+                {Math.min((clampedPageIndex + 1) * pageSize, sortedRows.length)} of{' '}
+                {sortedRows.length}
+              </span>
+              <select
+                value={pageSize}
+                onChange={e => {
+                  setPageSize(Number(e.target.value));
+                  setPageIndex(0);
+                }}
+                className="h-7 rounded border border-input bg-transparent px-1 text-sm"
+              >
+                {PAGE_SIZE_OPTIONS.map(size => (
+                  <option key={size} value={size}>
+                    {size} / page
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={clampedPageIndex === 0}
+                onClick={() => setPageIndex(p => Math.max(0, p - 1))}
+              >
+                Prev
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={clampedPageIndex >= pageCount - 1}
+                onClick={() => setPageIndex(p => Math.min(pageCount - 1, p + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </>
       )}
-    </Paper>
+    </div>
   );
 };
