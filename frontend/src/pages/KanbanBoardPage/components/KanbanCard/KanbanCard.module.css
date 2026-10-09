@@ -10,6 +10,7 @@
   );
   border-radius: 10px;
   min-height: 88px;
+  cursor: grab;
   box-shadow: var(--elevation-1);
   transition:
     transform 0.18s var(--ease-out),
@@ -37,6 +38,7 @@
 .cardDragging {
   box-shadow: var(--elevation-4), var(--glow-accent-soft);
   opacity: 0.85;
+  cursor: grabbing;
 }
 
 .cardContent {
