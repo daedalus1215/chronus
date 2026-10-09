@@ -85,7 +85,10 @@ export const KanbanBoardPage: React.FC = () => {
   const [items, setItems] = useState<CheckItem[]>([]);
   const [activeId, setActiveId] = useState<number | null>(null);
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    // 5px before a drag starts: the whole card is the handle now, so without
+    // this the pointerdown preventDefault would swallow clicks on the
+    // card's dropdown trigger.
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 

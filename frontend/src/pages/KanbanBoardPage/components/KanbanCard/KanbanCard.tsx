@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { CheckCircle, Pencil, MoreVertical } from 'lucide-react';
 import { CheckItem } from '../../../NotePage/api/responses';
-import styles from './KanbanCard.module.css';
+import { useIsMobile } from '../../../../hooks/useIsMobile';
 
 type KanbanCardProps = {
   item: CheckItem;
@@ -31,7 +31,15 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
     transition,
     isDragging,
   } = useSortable({ id: item.id });
+  const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Desktop: the whole card is the drag handle — the title row alone is too
+  // small a target. Mobile keeps the handle on the title row: a whole-card
+  // touch handle would swallow list scrolling, swipe-to-tab, and
+  // pull-to-refresh gestures that start on a card.
+  const cardDnd = isMobile ? undefined : { ...attributes, ...(listeners ?? {}) };
+  const handleDnd = isMobile ? { ...attributes, ...(listeners ?? {}) } : undefined;
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -56,9 +64,10 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({
       role="button"
       tabIndex={0}
       aria-label={`Kanban card: ${item.name}`}
+      {...cardDnd}
     >
       <div className={styles.cardContent}>
-        <div className={styles.dragHandle} {...attributes} {...listeners}>
+        <div className={styles.dragHandle} {...handleDnd}>
           <span
             className={styles.statusDot}
             style={{ backgroundColor: statusColor }}
