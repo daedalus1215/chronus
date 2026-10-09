@@ -10,6 +10,7 @@ import {
 import { CheckCircle, Pencil, MoreVertical } from 'lucide-react';
 import { CheckItem } from '../../../NotePage/api/responses';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
+import styles from './KanbanCard.module.css';
 
 type KanbanCardProps = {
   item: CheckItem;
