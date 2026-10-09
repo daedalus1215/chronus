@@ -194,7 +194,7 @@ export const HomePage: React.FC = () => {
           aria-label="Create new note"
           onClick={() => setShowMenu(true)}
           disabled={isCreating}
-          className="fixed bottom-8 right-8 rounded-full"
+          className="fixed bottom-8 right-8 z-[2] rounded-full"
         >
           {isCreating ? (
             <Loader2 className="size-6 animate-spin" />
